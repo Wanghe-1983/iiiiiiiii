@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FMI 印尼语学习助手</title>
+  <style>
+    /* 全局样式重置与基础设置 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+    
+    :root {
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --primary-dark: #4f46e5;
+      --secondary: #f59e0b;
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --border-light: #e2e8f0;
+      --success: #10b981;
+      --danger: #ef4444;
+      --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    
+    /* 顶部导航栏 */
+    .header {
+      background-color: var(--bg-secondary);
+      box-shadow: var(--shadow-sm);
+      padding: 16px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--primary);
+      text-align: center;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .title:hover {
+      color: var(--primary-dark);
+    }
+    
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .nav-btn {
+      padding: 8px 16px;
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .nav-btn:hover {
+      border-color: var(--primary-light);
+      color: var(--primary);
+    }
+    
+    .nav-btn.active {
+      background-color: var(--primary);
+      color: white;
+      border-color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    /* 主内容区域 */
+    .container {
+      max-width: 800px;
+      margin: 24px auto;
+      padding: 0 20px;
+    }
+    
+    /* 卡片通用样式 */
+    .card {
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border-light);
+      transition: var(--transition);
+    }
+    
+    .card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+    
+    .card-header {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      font-weight: 500;
+    }
+    
+    /* 单词展示区域 */
+    .word-display {
+      margin-bottom: 20px;
+    }
+    
+    .word {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    
+    .translation {
+      font-size: 18px;
+      color: var(--text-primary);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    /* 功能按钮区域 */
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .btn-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 20px;
+    }
+    
+    .btn-prev, .btn-next {
+      background-color: var(--bg-secondary);
+      color: var(--primary);
+      border: 1px solid var(--border-light);
+    }
+    
+    .btn-prev:hover, .btn-next:hover {
+      background-color: var(--primary-light);
+      color: white;
+      transform: scale(1.05);
+    }
+    
+    .btn-play {
+      background-color: var(--primary);
+      color: white;
+      width: 60px;
+      height: 60px;
+      font-size: 24px;
+    }
+    
+    .btn-play:hover {
+      background-color: var(--primary-dark);
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+    }
+    
+    .btn-play.playing {
+      background-color: var(--danger);
+    }
+    
+    .btn-favorite {
+      background-color: var(--bg-secondary);
+      color: var(--secondary);
+      border: 1px solid var(--border-light);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .btn-favorite:hover, .btn-favorite.active {
+      background-color: var(--secondary);
+      color: white;
+    }
+    
+    /* 设置面板 */
+    .settings-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+    }
+    
+    .setting-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    
+    .setting-label {
+      font-size: 14px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    
+    .setting-select {
+      padding: 8px 12px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      font-size: 14px;
+      transition: var(--transition);
+    }
+    
+    .setting-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+    
+    /* 练习页面样式 */
+    .practice-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 16px;
+      margin: 16px 0;
+      transition: var(--transition);
+    }
+    
+    .practice-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    }
+    
+    .btn-submit {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .btn-submit:hover {
+      background-color: var(--primary-dark);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .result {
+      text-align: center;
+      font-size: 16px;
+      font-weight: 500;
+      margin-top: 16px;
+      padding: 8px;
+      border-radius: var(--radius-sm);
+    }
+    
+    .result.correct {
+      color: var(--success);
+      background-color: rgba(16, 185, 129, 0.1);
+    }
+    
+    .result.wrong {
+      color: var(--danger);
+      background-color: rgba(239, 68, 68, 0.1);
+    }
+    
+    /* 列表样式 */
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .list-item {
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      border: 1px solid var(--border-light);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    
+    .list-item:hover {
+      border-color: var(--primary-light);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-1px);
+    }
+    
+    .list-item-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+    
+    .list-item-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    
+    .list-empty {
+      text-align: center;
+      padding: 48px 0;
+      color: var(--text-secondary);
+      font-size: 16px;
+    }
+    
+    .btn-delete {
+      background-color: transparent;
+      color: var(--danger);
+      border: 1px solid var(--danger);
+      border-radius: var(--radius-sm);
+      padding: 4px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-top: 8px;
+    }
+    
+    .btn-delete:hover {
+      background-color: var(--danger);
+      color: white;
+    }
+    
+    /* 管理员后台样式 */
+    .admin-panel {
+      display: none;
+    }
+    
+    .admin-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    
+    .admin-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    
+    .admin-input.textarea {
+      height: 80px;
+      resize: vertical;
+    }
+    
+    .admin-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    
+    .btn-admin {
+      padding: 10px 16px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .btn-danger {
+      background-color: var(--danger);
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background-color: #dc2626;
+    }
+    
+    .import-area {
+      border: 2px dashed var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 24px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .import-area:hover {
+      border-color: var(--primary-light);
+      background-color: rgba(99, 102, 241, 0.05);
+    }
+    
+    .import-text {
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+    
+    .import-hint {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      font-style: italic;
+    }
+    
+    .admin-list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: var(--bg-secondary);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      border: 1px solid var(--border-light);
+      margin-bottom: 12px;
+    }
+    
+    .admin-item-content {
+      flex: 1;
+    }
+    
+    .admin-item-actions {
+      display: flex;
+      gap: 8px;
+    }
+    
+    .btn-edit {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    
+    .btn-edit:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .btn-item-delete {
+      background-color: var(--danger);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    
+    .btn-item-delete:hover {
+      background-color: #dc2626;
+    }
+    
+    /* 分类标签样式 */
+    .category-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    
+    .category-tab {
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-light);
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 14px;
+    }
+    
+    .category-tab.active {
+      background-color: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    
+    /* 页面切换 */
+    .page {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .page.active {
+      display: block;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* 底部信息 */
+    .footer {
+      text-align: center;
+      padding: 24px 0;
+      color: var(--text-secondary);
+      font-size: 14px;
+      border-top: 1px solid var(--border-light);
+      margin-top: 48px;
+    }
+    
+    /* 响应式适配 */
+    @media (max-width: 600px) {
+      .action-buttons {
+        gap: 12px;
+      }
+      
+      .btn-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+      }
+      
+      .btn-play {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+      }
+      
+      .card {
+        padding: 16px;
+      }
+      
+      .word {
+        font-size: 28px;
+      }
+      
+      .admin-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header class="header">
+    <div class="header-container">
+      <h1 class="title" id="admin-trigger">FMI 印尼语学习助手</h1>
+      <nav class="nav">
+        <button class="nav-btn" onclick="switchPage('course')">课程</button>
+        <button class="nav-btn active" onclick="switchPage('learn')">学习</button>
+        <button class="nav-btn" onclick="switchPage('practice')">练习</button>
+        <button class="nav-btn" onclick="switchPage('favorite')">收藏</button>
+        <button class="nav-btn" onclick="switchPage('wrong')">错题本</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <main class="container">
+    <!-- 学习页面 -->
+    <div id="learn" class="page active">
+      <div class="card">
+        <div class="card-header" id="learn-header">第1课 | 生词</div>
+        <div class="word-display">
+          <div class="word" id="learn-word">Halo</div>
+          <div class="translation" id="learn-trans">你好</div>
+          <button class="btn-favorite" id="learn-favorite" onclick="toggleFavorite()">
+            <span>☆</span> 收藏
+          </button>
+        </div>
+        
+        <div class="action-buttons">
+          <button class="btn-icon btn-prev" onclick="prevLesson('learn')">&lt;</button>
+          <button class="btn-icon btn-play" id="learn-play" onclick="togglePlay('learn')">▶</button>
+          <button class="btn-icon btn-next" onclick="nextLesson('learn')">&gt;</button>
+        </div>
+        
+        <div class="settings-panel">
+          <div class="setting-item">
+            <label class="setting-label">语速</label>
+            <select class="setting-select" id="learn-speed" onchange="updateSpeed()">
+              <option value="0.5">0.5x</option>
+              <option value="0.75">0.75x</option>
+              <option value="1" selected>1x</option>
+              <option value="1.25">1.25x</option>
+              <option value="1.5">1.5x</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label class="setting-label">播放次数</label>
+            <select class="setting-select" id="learn-loop">
+              <option value="1">1次</option>
+              <option value="3">3次</option>
+              <option value="5">5次</option>
+              <option value="infinite">无限</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label class="setting-label">翻页自动播放</label>
+            <select class="setting-select" id="learn-auto-play">
+              <option value="1">开启</option>
+              <option value="0" selected>关闭</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 练习页面 -->
+    <div id="practice" class="page">
+      <div class="card">
+        <div class="card-header" id="practice-header">第1课 | 生词</div>
+        <div class="word-display">
+          <div class="translation" id="practice-trans">你好</div>
+          <input type="text" class="practice-input" id="practice-input" placeholder="请输入对应的印尼语单词/短句">
+        </div>
+        
+        <div class="action-buttons">
+          <button class="btn-icon btn-prev" onclick="prevLesson('practice')">&lt;</button>
+          <button class="btn-icon btn-play" id="practice-play" onclick="togglePlay('practice')">▶</button>
+          <button class="btn-icon btn-next" onclick="nextLesson('practice')">&gt;</button>
+        </div>
+        
+        <div class="settings-panel">
+          <div class="setting-item">
+            <label class="setting-label">语速</label>
+            <select class="setting-select" id="practice-speed" onchange="updateSpeed()">
+              <option value="0.5">0.5x</option>
+              <option value="0.75">0.75x</option>
+              <option value="1" selected>1x</option>
+              <option value="1.25">1.25x</option>
+              <option value="1.5">1.5x</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label class="setting-label">播放次数</label>
+            <select class="setting-select" id="practice-loop">
+              <option value="1">1次</option>
+              <option value="3">3次</option>
+              <option value="5">5次</option>
+              <option value="infinite">无限</option>
+            </select>
+          </div>
+          <div class="setting-item">
+            <label class="setting-label">翻页自动播放</label>
+            <select class="setting-select" id="practice-auto-play">
+              <option value="1">开启</option>
+              <option value="0" selected>关闭</option>
+            </select>
+          </div>
+        </div>
+        
+        <button class="btn-submit" onclick="checkAnswer()">提交答案</button>
+        <div class="result" id="practice-result"></div>
+      </div>
+    </div>
+
+    <!-- 课程页面 -->
+    <div id="course" class="page">
+      <div class="card">
+        <div class="card-header">课程列表</div>
+        <div class="category-tabs">
+          <div class="category-tab active" onclick="filterCourses('all')">全部</div>
+          <div class="category-tab" onclick="filterCourses('生词')">生词</div>
+          <div class="category-tab" onclick="filterCourses('短句')">短句</div>
+          <div class="category-tab" onclick="filterCourses('对话')">对话</div>
+        </div>
+        <div class="list" id="course-list"></div>
+      </div>
+    </div>
+
+    <!-- 收藏页面 -->
+    <div id="favorite" class="page">
+      <div class="card">
+        <div class="card-header">我的收藏</div>
+        <div class="list" id="favorite-list"></div>
+      </div>
+    </div>
+
+    <!-- 错题本页面 -->
+    <div id="wrong" class="page">
+      <div class="card">
+        <div class="card-header">我的错题</div>
+        <div class="list" id="wrong-list"></div>
+      </div>
+    </div>
+
+    <!-- 管理员后台页面 -->
+    <div class="admin-panel" id="admin-panel">
+      <div class="card">
+        <div class="card-header">课程管理后台</div>
+        
+        <div class="admin-actions">
+          <!-- 添加生词模块 -->
+          <div>
+            <h3 style="margin-bottom: 12px; color: var(--primary); font-size: 16px;">添加生词</h3>
+            <input type="text" class="admin-input" id="new-word" placeholder="输入印尼语单词">
+            <input type="text" class="admin-input" id="new-trans" placeholder="输入中文翻译">
+            <button class="btn-admin btn-primary" onclick="addLesson('生词')">添加生词</button>
+          </div>
+          
+          <!-- 添加短句模块 -->
+          <div>
+            <h3 style="margin-bottom: 12px; color: var(--primary); font-size: 16px;">添加短句</h3>
+            <input type="text" class="admin-input" id="new-phrase" placeholder="输入印尼语短句">
+            <input type="text" class="admin-input" id="new-phrase-trans" placeholder="输入中文翻译">
+            <button class="btn-admin btn-primary" onclick="addLesson('短句')">添加短句</button>
+          </div>
+          
+          <!-- 添加对话模块 -->
+          <div>
+            <h3 style="margin-bottom: 12px; color: var(--primary); font-size: 16px;">添加对话</h3>
+            <textarea class="admin-input textarea" id="new-dialog" placeholder="输入印尼语对话（每行一句）"></textarea>
+            <textarea class="admin-input textarea" id="new-dialog-trans" placeholder="输入中文翻译（每行一句）"></textarea>
+            <button class="btn-admin btn-primary" onclick="addLesson('对话')">添加对话</button>
+          </div>
+          
+          <!-- 批量导入和清空 -->
+          <div>
+            <!-- 批量导入区域 -->
+            <div class="import-area" onclick="document.getElementById('file-import').click()">
+              <div class="import-text">点击上传文件批量导入</div>
+              <button class="btn-admin btn-primary">选择文件</button>
+              <div class="import-hint">支持格式：每行一个内容，格式为"内容,翻译,类型"（例：Halo,你好,生词）</div>
+              <input type="file" id="file-import" accept=".txt,.csv" style="display: none;" onchange="importLessonsFromFile(event)">
+            </div>
+            <button class="btn-admin btn-danger" onclick="clearAllLessons()">清空所有课程</button>
+          </div>
+        </div>
+        
+        <!-- 分类标签 -->
+        <div class="category-tabs">
+          <div class="category-tab active" onclick="filterAdminCourses('all')">全部</div>
+          <div class="category-tab" onclick="filterAdminCourses('生词')">生词</div>
+          <div class="category-tab" onclick="filterAdminCourses('短句')">短句</div>
+          <div class="category-tab" onclick="filterAdminCourses('对话')">对话</div>
+        </div>
+        
+        <div id="admin-course-list"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 底部信息 -->
+  <footer class="footer">
+    © 2026 FMI 印尼语学习助手 | 禁止用于商业用途 | 如有问题请联系 王鹤
+  </footer>
+
+  <script>
+    // 初始化数据
+    let lessons = JSON.parse(localStorage.getItem('indonesian_lessons')) || [
+      { id: 1, type: "生词", text: "Halo", trans: "你好" },
+      { id: 2, type: "生词", text: "Selamat", trans: "安全/祝福" },
+      { id: 3, type: "生词", text: "Maaf", trans: "对不起" },
+      { id: 4, type: "生词", text: "Terima kasih", trans: "谢谢" },
+      { id: 5, type: "生词", text: "Sampai jumpa", trans: "再见" }
+    ];
+    
+    // 全局状态
+    let currentIndex = 0;
+    let isPlaying = { learn: false, practice: false };
+    let speechSpeed = 1;
+    let favorites = JSON.parse(localStorage.getItem('indonesian_favs') || '[]');
+    let wrongAnswers = JSON.parse(localStorage.getItem('indonesian_wrongs') || '[]');
+    let isAdmin = false;
+    let clickCount = 0;
+    let clickTimer = null;
+    let currentFilter = 'all'; // 当前课程筛选类型
+    
+    // 页面加载初始化
+    window.onload = function() {
+      renderLearnPage();
+      renderCourseList();
+      document.getElementById('admin-trigger').addEventListener('click', countTitleClicks);
+    };
+    
+    // 管理员入口：点击标题5次
+    function countTitleClicks() {
+      clickCount++;
+      if (clickTimer) clearTimeout(clickTimer);
+      
+      clickTimer = setTimeout(() => {
+        clickCount = 0;
+      }, 5000);
+      
+      if (clickCount === 5) {
+        clickCount = 0;
+        clearTimeout(clickTimer);
+        adminLogin();
+      }
+    }
+    
+    // 页面切换
+    function switchPage(pageId) {
+      // 隐藏所有页面
+      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+      document.getElementById('admin-panel').style.display = 'none';
+      
+      // 重置导航按钮状态
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+      
+      // 显示目标页面
+      if (pageId === 'admin') {
+        if (isAdmin) {
+          document.getElementById('admin-panel').style.display = 'block';
+          renderAdminCourseList();
+        } else {
+          alert('请先登录管理员！');
+        }
+      } else {
+        document.getElementById(pageId).classList.add('active');
+        event.target.classList.add('active');
+        
+        // 初始化对应页面
+        if (pageId === 'learn') renderLearnPage();
+        if (pageId === 'practice') renderPracticePage();
+        if (pageId === 'course') renderCourseList();
+        if (pageId === 'favorite') renderFavoriteList();
+        if (pageId === 'wrong') renderWrongList();
+      }
+    }
+    
+    // 渲染学习页面
+    function renderLearnPage() {
+      if (lessons.length === 0) {
+        alert('暂无课程，请先添加内容！');
+        switchPage('course');
+        return;
+      }
+      
+      const lesson = lessons[currentIndex];
+      document.getElementById('learn-header').textContent = `第${lesson.id}课 | ${lesson.type}`;
+      document.getElementById('learn-word').textContent = lesson.text;
+      document.getElementById('learn-trans').textContent = lesson.trans;
+      
+      // 更新收藏按钮状态
+      updateFavoriteButton();
+      
+      // 翻页自动播放（默认关闭）
+      if (document.getElementById('learn-auto-play').value === '1') {
+        setTimeout(() => speakWord('learn'), 300);
+      }
+    }
+    
+    // 渲染练习页面
+    function renderPracticePage() {
+      if (lessons.length === 0) {
+        alert('暂无课程，请先添加内容！');
+        switchPage('course');
+        return;
+      }
+      
+      const lesson = lessons[currentIndex];
+      document.getElementById('practice-header').textContent = `第${lesson.id}课 | ${lesson.type}`;
+      document.getElementById('practice-trans').textContent = lesson.trans;
+      document.getElementById('practice-input').value = '';
+      document.getElementById('practice-result').textContent = '';
+      document.getElementById('practice-result').className = 'result';
+      
+      // 翻页自动播放（默认关闭）
+      if (document.getElementById('practice-auto-play').value === '1') {
+        setTimeout(() => speakWord('practice'), 300);
+      }
+    }
+    
+    // 修复：确保使用印尼语发音
+    function speakWord(context) {
+      if (!('speechSynthesis' in window)) {
+        alert('您的浏览器不支持语音合成，请使用Chrome/Edge浏览器');
+        return;
+      }
+      
+      // 停止当前播放
+      window.speechSynthesis.cancel();
+      
+      const lesson = lessons[currentIndex];
+      // 对话类型只朗读第一句
+      const speakText = lesson.type === '对话' ? lesson.text.split('\n')[0] : lesson.text;
+      
+      // 创建语音实例并强制设置印尼语
+      const utterance = new SpeechSynthesisUtterance(speakText);
+      
+      // 修复：强制设置印尼语语言代码，兼容不同浏览器
+      utterance.lang = 'id-ID'; // 标准印尼语代码
+      
+      // 备选方案：如果浏览器不支持id-ID，尝试印尼语变体
+      const voices = window.speechSynthesis.getVoices();
+      const indonesianVoice = voices.find(voice => 
+        voice.lang === 'id-ID' || 
+        voice.lang === 'id' ||
+        voice.name.toLowerCase().includes('indonesian') ||
+        voice.name.toLowerCase().includes('indonesia')
+      );
+      
+      if (indonesianVoice) {
+        utterance.voice = indonesianVoice; // 使用印尼语语音包
+      }
+      
+      utterance.rate = speechSpeed;
+      utterance.volume = 1; // 最大音量
+      utterance.pitch = 1; // 正常音调
+      
+      window.speechSynthesis.speak(utterance);
+      
+      // 更新播放按钮状态
+      const playBtn = document.getElementById(`${context}-play`);
+      playBtn.textContent = '■';
+      playBtn.classList.add('playing');
+      isPlaying[context] = true;
+      
+      // 播放结束后重置按钮
+      utterance.onend = function() {
+        if (isPlaying[context]) {
+          const loopMode = document.getElementById(`${context}-loop`).value;
+          if (loopMode === 'infinite') {
+            // 无限循环
+            setTimeout(() => speakWord(context), 500);
+          } else {
+            // 单次播放
+            playBtn.textContent = '▶';
+            playBtn.classList.remove('playing');
+            isPlaying[context] = false;
+          }
+        }
+      };
+      
+      // 播放错误处理
+      utterance.onerror = function(event) {
+        console.error('语音播放错误:', event.error);
+        alert('语音播放失败，请确保您的浏览器安装了印尼语语音包');
+        playBtn.textContent = '▶';
+        playBtn.classList.remove('playing');
+        isPlaying[context] = false;
+      };
+    }
+    
+    // 播放/暂停控制
+    function togglePlay(context) {
+      const playBtn = document.getElementById(`${context}-play`);
+      
+      if (isPlaying[context]) {
+        // 停止播放
+        window.speechSynthesis.cancel();
+        playBtn.textContent = '▶';
+        playBtn.classList.remove('playing');
+        isPlaying[context] = false;
+      } else {
+        // 开始播放
+        speakWord(context);
+      }
+    }
+    
+    // 更新语速
+    function updateSpeed() {
+      // 同步学习和练习页面的语速
+      const speed = document.getElementById('learn-speed').value;
+      document.getElementById('practice-speed').value = speed;
+      speechSpeed = parseFloat(speed);
+    }
+    
+    // 上一课
+    function prevLesson(context) {
+      if (currentIndex > 0) {
+        currentIndex--;
+        if (context === 'learn') {
+          renderLearnPage();
+        } else {
+          renderPracticePage();
+        }
+      }
+    }
+    
+    // 下一课
+    function nextLesson(context) {
+      if (currentIndex < lessons.length - 1) {
+        currentIndex++;
+        if (context === 'learn') {
+          renderLearnPage();
+        } else {
+          renderPracticePage();
+        }
+      }
+    }
+    
+    // 切换收藏状态
+    function toggleFavorite() {
+      if (lessons.length === 0) return;
+      
+      const lessonId = lessons[currentIndex].id;
+      const favIndex = favorites.indexOf(lessonId);
+      
+      if (favIndex > -1) {
+        favorites.splice(favIndex, 1);
+      } else {
+        favorites.push(lessonId);
+      }
+      
+      localStorage.setItem('indonesian_favs', JSON.stringify(favorites));
+      updateFavoriteButton();
+    }
+    
+    // 更新收藏按钮显示
+    function updateFavoriteButton() {
+      const favBtn = document.getElementById('learn-favorite');
+      const lessonId = lessons[currentIndex].id;
+      
+      if (favorites.includes(lessonId)) {
+        favBtn.innerHTML = '<span>★</span> 已收藏';
+        favBtn.classList.add('active');
+      } else {
+        favBtn.innerHTML = '<span>☆</span> 收藏';
+        favBtn.classList.remove('active');
+      }
+    }
+    
+    // 检查练习答案
+    function checkAnswer() {
+      const userInput = document.getElementById('practice-input').value.trim().toLowerCase();
+      const correctAnswer = lessons[currentIndex].text.toLowerCase();
+      const resultEl = document.getElementById('practice-result');
+      const lessonId = lessons[currentIndex].id;
+      
+      if (userInput === correctAnswer) {
+        // 回答正确
+        resultEl.textContent = '✅ 回答正确！';
+        resultEl.className = 'result correct';
+        
+        // 从错题本移除
+        const wrongIndex = wrongAnswers.indexOf(lessonId);
+        if (wrongIndex > -1) {
+          wrongAnswers.splice(wrongIndex, 1);
+          localStorage.setItem('indonesian_wrongs', JSON.stringify(wrongAnswers));
+        }
+      } else {
+        // 回答错误
+        resultEl.textContent = `❌ 回答错误，正确答案：${lessons[currentIndex].text}`;
+        resultEl.className = 'result wrong';
+        
+        // 添加到错题本
+        if (!wrongAnswers.includes(lessonId)) {
+          wrongAnswers.push(lessonId);
+          localStorage.setItem('indonesian_wrongs', JSON.stringify(wrongAnswers));
+        }
+      }
+    }
+    
+    // 筛选课程
+    function filterCourses(type) {
+      currentFilter = type;
+      // 更新标签状态
+      document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
+      event.target.classList.add('active');
+      renderCourseList();
+    }
+    
+    // 渲染课程列表
+    function renderCourseList() {
+      const courseList = document.getElementById('course-list');
+      let filteredLessons = lessons;
+      
+      // 根据筛选条件过滤
+      if (currentFilter !== 'all') {
+        filteredLessons = lessons.filter(lesson => lesson.type === currentFilter);
+      }
+      
+      if (filteredLessons.length === 0) {
+        courseList.innerHTML = `<div class="list-empty">暂无${currentFilter === 'all' ? '' : currentFilter}内容</div>`;
+        return;
+      }
+      
+      let html = '';
+      filteredLessons.forEach((lesson, index) => {
+        // 处理长文本显示
+        let displayText = lesson.text;
+        if (lesson.text.length > 30) {
+          displayText = lesson.text.substring(0, 30) + '...';
+        }
+        // 对话类型特殊处理
+        if (lesson.type === '对话') {
+          displayText = '📞 ' + lesson.text.split('\n')[0].substring(0, 25) + '...';
+        }
+        
+        html += `
+          <div class="list-item" onclick="jumpToLesson(${lessons.findIndex(l => l.id === lesson.id)})">
+            <div class="list-item-title">${displayText}</div>
+            <div class="list-item-desc">${lesson.trans.substring(0, 50)}${lesson.trans.length > 50 ? '...' : ''} | ${lesson.type}</div>
+          </div>
+        `;
+      });
+      
+      courseList.innerHTML = html;
+    }
+    
+    // 筛选管理员课程列表
+    function filterAdminCourses(type) {
+      currentFilter = type;
+      // 更新标签状态
+      document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
+      event.target.classList.add('active');
+      renderAdminCourseList();
+    }
+    
+    // 跳转到指定课程
+    function jumpToLesson(index) {
+      currentIndex = index;
+      renderLearnPage();
+      switchPage('learn');
+    }
+    
+    // 渲染收藏列表
+    function renderFavoriteList() {
+      const favList = document.getElementById('favorite-list');
+      const favLessons = lessons.filter(lesson => favorites.includes(lesson.id));
+      
+      if (favLessons.length === 0) {
+        favList.innerHTML = '<div class="list-empty">暂无收藏内容</div>';
+        return;
+      }
+      
+      let html = '';
+      favLessons.forEach(lesson => {
+        html += `
+          <div class="list-item">
+            <div class="list-item-title">${lesson.text.substring(0, 30)}${lesson.text.length > 30 ? '...' : ''}</div>
+            <div class="list-item-desc">${lesson.trans.substring(0, 50)}${lesson.trans.length > 50 ? '...' : ''} | ${lesson.type}</div>
+            <button class="btn-delete" onclick="removeFavorite(${lesson.id})">取消收藏</button>
+          </div>
+        `;
+      });
+      
+      favList.innerHTML = html;
+    }
+    
+    // 移除收藏
+    function removeFavorite(lessonId) {
+      favorites = favorites.filter(id => id !== lessonId);
+      localStorage.setItem('indonesian_favs', JSON.stringify(favorites));
+      renderFavoriteList();
+      // 如果当前显示的是收藏的课程，更新收藏按钮
+      if (lessons[currentIndex] && lessons[currentIndex].id === lessonId) {
+        updateFavoriteButton();
+      }
+    }
+    
+    // 渲染错题本
+    function renderWrongList() {
+      const wrongList = document.getElementById('wrong-list');
+      const wrongLessons = lessons.filter(lesson => wrongAnswers.includes(lesson.id));
+      
+      if (wrongLessons.length === 0) {
+        wrongList.innerHTML = '<div class="list-empty">暂无错题</div>';
+        return;
+      }
+      
+      let html = '';
+      wrongLessons.forEach(lesson => {
+        html += `
+          <div class="list-item">
+            <div class="list-item-title">${lesson.text.substring(0, 30)}${lesson.text.length > 30 ? '...' : ''}</div>
+            <div class="list-item-desc">${lesson.trans.substring(0, 50)}${lesson.trans.length > 50 ? '...' : ''} | ${lesson.type}</div>
+            <button class="btn-delete" onclick="removeWrong(${lesson.id})">删除错题</button>
+          </div>
+        `;
+      });
+      
+      wrongList.innerHTML = html;
+    }
+    
+    // 移除错题
+    function removeWrong(lessonId) {
+      wrongAnswers = wrongAnswers.filter(id => id !== lessonId);
+      localStorage.setItem('indonesian_wrongs', JSON.stringify(wrongAnswers));
+      renderWrongList();
+    }
+    
+    // 管理员登录
+    function adminLogin() {
+      const password = prompt('🔒 请输入管理员密码：');
+      if (password === 'admin123') {
+        isAdmin = true;
+        alert('✅ 管理员登录成功！');
+        switchPage('admin');
+      } else if (password !== null) {
+        alert('❌ 密码错误！');
+      }
+    }
+    
+    // 渲染管理员课程列表
+    function renderAdminCourseList() {
+      const adminList = document.getElementById('admin-course-list');
+      let filteredLessons = lessons;
+      
+      // 根据筛选条件过滤
+      if (currentFilter !== 'all') {
+        filteredLessons = lessons.filter(lesson => lesson.type === currentFilter);
+      }
+      
+      if (filteredLessons.length === 0) {
+        adminList.innerHTML = `<div class="list-empty">暂无${currentFilter === 'all' ? '' : currentFilter}内容可管理</div>`;
+        return;
+      }
+      
+      let html = '';
+      filteredLessons.forEach((lesson, index) => {
+        // 找到原始索引
+        const originalIndex = lessons.findIndex(l => l.id === lesson.id);
+        // 处理长文本显示
+        let displayText = lesson.text;
+        if (lesson.text.length > 50) {
+          displayText = lesson.text.substring(0, 50) + '...';
+        }
+        
+        html += `
+          <div class="admin-list-item">
+            <div class="admin-item-content">
+              <div class="list-item-title">${displayText}</div>
+              <div class="list-item-desc">${lesson.trans.substring(0, 80)}${lesson.trans.length > 80 ? '...' : ''} | ${lesson.type}</div>
+            </div>
+            <div class="admin-item-actions">
+              <button class="btn-edit" onclick="editLesson(${originalIndex})">编辑</button>
+              <button class="btn-item-delete" onclick="deleteLesson(${originalIndex})">删除</button>
+            </div>
+          </div>
+        `;
+      });
+      
+      adminList.innerHTML = html;
+    }
+    
+    // 添加课程（支持生词/短句/对话）
+    function addLesson(type) {
+      let text, trans;
+      
+      switch(type) {
+        case '生词':
+          text = document.getElementById('new-word').value.trim();
+          trans = document.getElementById('new-trans').value.trim();
+          if (!text || !trans) {
+            alert('请输入完整的单词和翻译！');
+            return;
+          }
+          // 清空输入框
+          document.getElementById('new-word').value = '';
+          document.getElementById('new-trans').value = '';
+          break;
+          
+        case '短句':
+          text = document.getElementById('new-phrase').value.trim();
+          trans = document.getElementById('new-phrase-trans').value.trim();
+          if (!text || !trans) {
+            alert('请输入完整的短句和翻译！');
+            return;
+          }
+          // 清空输入框
+          document.getElementById('new-phrase').value = '';
+          document.getElementById('new-phrase-trans').value = '';
+          break;
+          
+        case '对话':
+          text = document.getElementById('new-dialog').value.trim();
+          trans = document.getElementById('new-dialog-trans').value.trim();
+          if (!text || !trans) {
+            alert('请输入完整的对话和翻译！');
+            return;
+          }
+          // 清空输入框
+          document.getElementById('new-dialog').value = '';
+          document.getElementById('new-dialog-trans').value = '';
+          break;
+      }
+      
+      const maxId = lessons.length > 0 ? Math.max(...lessons.map(l => l.id)) : 0;
+      const newLesson = {
+        id: maxId + 1,
+        type: type,
+        text: text,
+        trans: trans
+      };
+      
+      lessons.push(newLesson);
+      localStorage.setItem('indonesian_lessons', JSON.stringify(lessons));
+      
+      alert(`${type}添加成功！`);
+      renderAdminCourseList();
+      renderCourseList();
+    }
+    
+    // 批量导入课程
+    function importLessonsFromFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const content = e.target.result;
+          const lines = content.split('\n').filter(line => line.trim());
+          let importedCount = 0;
+          
+          lines.forEach(line => {
+            const parts = line.split(',').map(item => item.trim());
+            // 兼容旧格式（只有两个字段，默认为生词）
+            const word = parts[0];
+            const trans = parts[1];
+            const type = parts[2] || '生词';
+            
+            if (word && trans) {
+              const maxId = lessons.length > 0 ? Math.max(...lessons.map(l => l.id)) : 0;
+              lessons.push({
+                id: maxId + 1 + importedCount,
+                type: type,
+                text: word,
+                trans: trans
+              });
+              importedCount++;
+            }
+          });
+          
+          localStorage.setItem('indonesian_lessons', JSON.stringify(lessons));
+          alert(`成功导入 ${importedCount} 条内容！`);
+          renderAdminCourseList();
+          renderCourseList();
+          
+          // 重置文件输入
+          document.getElementById('file-import').value = '';
+        } catch (error) {
+          alert('导入失败：' + error.message);
+        }
+      };
+      
+      reader.readAsText(file);
+    }
+    
+    // 编辑课程
+    function editLesson(index) {
+      const lesson = lessons[index];
+      let newText, newTrans;
+      
+      if (lesson.type === '对话') {
+        newText = prompt('编辑印尼语对话（每行一句）', lesson.text);
+        newTrans = prompt('编辑中文翻译（每行一句）', lesson.trans);
+      } else {
+        newText = prompt(`编辑印尼语${lesson.type}`, lesson.text);
+        newTrans = prompt(`编辑中文翻译`, lesson.trans);
+      }
+      
+      if (newText !== null && newTrans !== null && newText.trim() && newTrans.trim()) {
+        lessons[index].text = newText.trim();
+        lessons[index].trans = newTrans.trim();
+        localStorage.setItem('indonesian_lessons', JSON.stringify(lessons));
+        
+        alert('编辑成功！');
+        renderAdminCourseList();
+        renderCourseList();
+        
+        if (currentIndex === index) {
+          renderLearnPage();
+          renderPracticePage();
+        }
+      }
+    }
+    
+    // 删除课程
+    function deleteLesson(index) {
+      if (confirm('确定要删除该内容吗？')) {
+        const deletedId = lessons[index].id;
+        lessons.splice(index, 1);
+        localStorage.setItem('indonesian_lessons', JSON.stringify(lessons));
+        
+        // 同步删除收藏和错题本
+        favorites = favorites.filter(id => id !== deletedId);
+        wrongAnswers = wrongAnswers.filter(id => id !== deletedId);
+        localStorage.setItem('indonesian_favs', JSON.stringify(favorites));
+        localStorage.setItem('indonesian_wrongs', JSON.stringify(wrongAnswers));
+        
+        alert('删除成功！');
+        renderAdminCourseList();
+        renderCourseList();
+        renderFavoriteList();
+        renderWrongList();
+        
+        // 重置当前索引
+        if (currentIndex >= lessons.length && lessons.length > 0) {
+          currentIndex = lessons.length - 1;
+          renderLearnPage();
+          renderPracticePage();
+        } else if (lessons.length === 0) {
+          switchPage('course');
+        }
+      }
+    }
+    
+    // 清空所有课程
+    function clearAllLessons() {
+      if (confirm('确定要清空所有内容吗？此操作不可恢复！')) {
+        lessons = [];
+        favorites = [];
+        wrongAnswers = [];
+        
+        localStorage.setItem('indonesian_lessons', JSON.stringify(lessons));
+        localStorage.setItem('indonesian_favs', JSON.stringify(favorites));
+        localStorage.setItem('indonesian_wrongs', JSON.stringify(wrongAnswers));
+        
+        alert('所有内容已清空！');
+        renderAdminCourseList();
+        renderCourseList();
+        renderFavoriteList();
+        renderWrongList();
+        switchPage('course');
+      }
+    }
+  </script>
+</body>
+</html>
