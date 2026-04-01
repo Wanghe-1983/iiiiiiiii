@@ -5,180 +5,434 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>印尼语学习系统 | TMI</title>
     <style>
+        /* 全局样式 - 钢铁/金属风格 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
-        html, body {
-            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            background: #12141d;
-            color: #e0e0e0;
-            min-height: 100vh;
-            line-height: 1.6;
-        }
+
         body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 30px 20px;
         }
-        h1 {
-            font-size: 2.4rem;
-            background: linear-gradient(90deg, #4facfe, #00f2fe);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 10px;
-            font-weight: 700;
-            text-align: center;
-        }
-        .subtitle {
-            text-align: center;
-            color: #a0a8b7;
-            margin-bottom: 40px;
-            font-size: 1.1rem;
-        }
+
+        /* 卡片样式 */
         .card {
-            background: #1b1e29;
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
             border-radius: 16px;
             padding: 24px;
             margin-bottom: 24px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 40px rgba(79, 172, 254, 0.15);
-        }
-        h2 {
-            font-size: 1.5rem;
-            color: #ffffff;
-            margin: 0 0 15px;
+
+        .card h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #f1f5f9;
+            border-left: 4px solid #3b82f6;
             padding-left: 12px;
-            border-left: 4px solid #4facfe;
         }
-        button {
-            background: linear-gradient(90deg, #4facfe, #00f2fe);
-            color: #12141d;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer;
-            transition: 0.25s ease;
-            margin: 8px 5px 8px 0;
-        }
-        button:hover {
-            transform: scale(1.04);
-            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
-        }
-        .unit-list, .lesson-list {
+
+        /* 按钮样式 */
+        .btn-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
+            gap: 12px;
+            margin-bottom: 8px;
         }
-        .item-btn {
-            background: #242836;
-            color: #e0e0e0;
-            padding: 10px 16px;
-            border-radius: 8px;
+
+        .btn {
+            background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+            color: #cbd5e1;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            padding: 12px 20px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: 0.2s;
-            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
-        .item-btn:hover {
-            background: #2d3244;
-            border-color: #4facfe;
+
+        .btn:hover {
+            background: linear-gradient(135deg, #475569 0%, #334155 100%);
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
-        #content {
-            margin-top: 20px;
-            line-height: 1.8;
-            font-size: 1rem;
-            color: #c0c8d7;
+
+        .btn.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-color: #3b82f6;
         }
-        .highlight {
-            color: #4facfe;
+
+        .btn-action {
+            background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-action:hover {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        }
+
+        /* 学习内容区域 */
+        .content-box {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 12px;
+            line-height: 2;
+        }
+
+        .content-item {
+            font-size: 17px;
+            margin-bottom: 8px;
+        }
+
+        .indonesian {
+            color: #38bdf8;
             font-weight: 600;
+        }
+
+        .chinese {
+            color: #94a3b8;
+        }
+
+        /* 状态提示 */
+        .status-tip {
+            margin-top: 16px;
+            font-size: 14px;
+            color: #a0aec0;
+            min-height: 20px;
+        }
+
+        .status-tip.success {
+            color: #22c55e;
+        }
+
+        .status-tip.error {
+            color: #ef4444;
         }
     </style>
 </head>
 <body>
-
-    <h1>印尼语智能学习系统</h1>
-    <p class="subtitle">Indonesian Learning Platform | TMI-Online.Store</p>
-
-    <div class="card">
-        <h2>选择单元</h2>
-        <div class="unit-list" id="unitList">
-            <div class="item-btn" onclick="selectUnit(1)">单元 1 - 基础问候</div>
-            <div class="item-btn" onclick="selectUnit(2)">单元 2 - 数字与时间</div>
-            <div class="item-btn" onclick="selectUnit(3)">单元 3 - 日常交流</div>
-            <div class="item-btn" onclick="selectUnit(4)">单元 4 - 交通出行</div>
-            <div class="item-btn" onclick="selectUnit(5)">单元 5 - 购物用语</div>
+    <div class="container">
+        <!-- 选择单元 -->
+        <div class="card">
+            <h2>选择单元</h2>
+            <div class="btn-group" id="unitBtns">
+                <button class="btn" data-unit="1">单元 1 - 基础问候</button>
+                <button class="btn" data-unit="2">单元 2 - 数字与时间</button>
+                <button class="btn" data-unit="3">单元 3 - 日常交流</button>
+                <button class="btn" data-unit="4">单元 4 - 交通出行</button>
+                <button class="btn" data-unit="5">单元 5 - 购物用语</button>
+            </div>
         </div>
-    </div>
 
-    <div class="card">
-        <h2>选择课程</h2>
-        <div class="lesson-list" id="lessonList">
-            <div class="item-btn" onclick="loadLesson(1)">课程 1</div>
-            <div class="item-btn" onclick="loadLesson(2)">课程 2</div>
-            <div class="item-btn" onclick="loadLesson(3)">课程 3</div>
-            <div class="item-btn" onclick="loadLesson(4)">课程 4</div>
+        <!-- 选择课程 -->
+        <div class="card">
+            <h2>选择课程</h2>
+            <div class="btn-group" id="lessonBtns">
+                <button class="btn" data-lesson="1">课程 1</button>
+                <button class="btn" data-lesson="2">课程 2</button>
+                <button class="btn" data-lesson="3">课程 3</button>
+                <button class="btn" data-lesson="4">课程 4</button>
+            </div>
         </div>
-    </div>
 
-    <div class="card">
-        <h2>学习内容</h2>
-        <div id="content">
-            请选择单元与课程开始学习 📚
+        <!-- 学习内容 -->
+        <div class="card">
+            <h2>学习内容</h2>
+            <div class="content-box" id="contentBox">
+                <p style="color: #64748b;">请先选择单元和课程</p>
+            </div>
         </div>
-    </div>
 
-    <div class="card">
-        <h2>快捷操作</h2>
-        <button onclick="showContent()">显示内容</button>
-        <button onclick="playAudio()">朗读发音</button>
-        <button onclick="clearContent()">清空内容</button>
+        <!-- 快捷操作 -->
+        <div class="card">
+            <h2>快捷操作</h2>
+            <div class="btn-group">
+                <button class="btn btn-action" id="showBtn">显示内容</button>
+                <button class="btn btn-action" id="readBtn">朗读发音</button>
+                <button class="btn btn-action" id="clearBtn">清空内容</button>
+            </div>
+            <p class="status-tip" id="statusTip"></p>
+        </div>
     </div>
 
     <script>
-        let currentUnit = 1;
-        let currentLesson = 1;
+        // ==================== 学习数据 ====================
+        const learningData = {
+            1: { // 单元1 - 基础问候
+                1: [
+                    { id: "Selamat pagi", cn: "早上好" },
+                    { id: "Selamat siang", cn: "下午好" },
+                    { id: "Selamat malam", cn: "晚上好" },
+                    { id: "Terima kasih", cn: "谢谢" },
+                    { id: "Maaf", cn: "对不起" },
+                    { id: "Selamat tinggal", cn: "再见" },
+                    { id: "Berapa harganya?", cn: "多少钱？" }
+                ],
+                2: [
+                    { id: "Apa kabar?", cn: "你好吗？" },
+                    { id: "Saya baik-baik saja", cn: "我很好" },
+                    { id: "Nama saya...", cn: "我的名字是..." },
+                    { id: "Senang bertemu denganmu", cn: "很高兴认识你" }
+                ],
+                3: [
+                    { id: "Ya", cn: "是" },
+                    { id: "Tidak", cn: "不是" },
+                    { id: "Mungkin", cn: "也许" },
+                    { id: "Tentu saja", cn: "当然" }
+                ],
+                4: [
+                    { id: "Tolong", cn: "请" },
+                    { id: "Bolehkah saya...?", cn: "我可以...吗？" },
+                    { id: "Silakan", cn: "请便" },
+                    { id: "Terima kasih banyak", cn: "非常感谢" }
+                ]
+            },
+            2: { // 单元2 - 数字与时间
+                1: [
+                    { id: "Satu", cn: "一" },
+                    { id: "Dua", cn: "二" },
+                    { id: "Tiga", cn: "三" },
+                    { id: "Empat", cn: "四" },
+                    { id: "Lima", cn: "五" }
+                ],
+                2: [
+                    { id: "Enam", cn: "六" },
+                    { id: "Tujuh", cn: "七" },
+                    { id: "Delapan", cn: "八" },
+                    { id: "Sembilan", cn: "九" },
+                    { id: "Sepuluh", cn: "十" }
+                ],
+                3: [
+                    { id: "Pukul berapa?", cn: "几点了？" },
+                    { id: "Pukul sepuluh", cn: "十点" },
+                    { id: "Hari ini", cn: "今天" },
+                    { id: "Besok", cn: "明天" }
+                ],
+                4: [
+                    { id: "Minggu ini", cn: "这周" },
+                    { id: "Bulan ini", cn: "这个月" },
+                    { id: "Tahun ini", cn: "今年" },
+                    { id: "Kemarin", cn: "昨天" }
+                ]
+            },
+            3: { // 单元3 - 日常交流
+                1: [
+                    { id: "Saya lapar", cn: "我饿了" },
+                    { id: "Saya haus", cn: "我渴了" },
+                    { id: "Saya lelah", cn: "我累了" },
+                    { id: "Saya senang", cn: "我很开心" }
+                ],
+                2: [
+                    { id: "Apa ini?", cn: "这是什么？" },
+                    { id: "Ini adalah...", cn: "这是..." },
+                    { id: "Di mana...?", cn: "...在哪里？" },
+                    { id: "Ada di sana", cn: "在那里" }
+                ],
+                3: [
+                    { id: "Saya suka...", cn: "我喜欢..." },
+                    { id: "Saya tidak suka...", cn: "我不喜欢..." },
+                    { id: "Bagus", cn: "好的" },
+                    { id: "Buruk", cn: "不好" }
+                ],
+                4: [
+                    { id: "Bisa bicara lebih lambat?", cn: "能说慢一点吗？" },
+                    { id: "Saya tidak mengerti", cn: "我不明白" },
+                    { id: "Mengerti", cn: "明白了" },
+                    { id: "Ulangi lagi", cn: "再说一遍" }
+                ]
+            },
+            4: { // 单元4 - 交通出行
+                1: [
+                    { id: "Ke stasiun, tolong", cn: "请到车站" },
+                    { id: "Ke bandara", cn: "去机场" },
+                    { id: "Berapa lama?", cn: "需要多久？" },
+                    { id: "Sampai", cn: "到了" }
+                ],
+                2: [
+                    { id: "Kiri", cn: "左" },
+                    { id: "Kanan", cn: "右" },
+                    { id: "Lurus", cn: "直走" },
+                    { id: "Berhenti", cn: "停" }
+                ],
+                3: [
+                    { id: "Tiket, tolong", cn: "请给我票" },
+                    { id: "Berapa harganya?", cn: "多少钱？" },
+                    { id: "Kapan berangkat?", cn: "什么时候出发？" },
+                    { id: "Kapan sampai?", cn: "什么时候到？" }
+                ],
+                4: [
+                    { id: "Saya tersesat", cn: "我迷路了" },
+                    { id: "Tolong bantu saya", cn: "请帮帮我" },
+                    { id: "Di mana toilet?", cn: "厕所在哪里？" },
+                    { id: "Terima kasih atas bantuannya", cn: "谢谢你的帮助" }
+                ]
+            },
+            5: { // 单元5 - 购物用语
+                1: [
+                    { id: "Ini berapa?", cn: "这个多少钱？" },
+                    { id: "Mahal", cn: "贵" },
+                    { id: "Murah", cn: "便宜" },
+                    { id: "Bisa diskon?", cn: "能打折吗？" }
+                ],
+                2: [
+                    { id: "Saya mau beli...", cn: "我想买..." },
+                    { id: "Ini saja", cn: "就这个" },
+                    { id: "Ada yang lain?", cn: "有其他的吗？" },
+                    { id: "Tidak, terima kasih", cn: "不用了，谢谢" }
+                ],
+                3: [
+                    { id: "Ukuran kecil", cn: "小码" },
+                    { id: "Ukuran sedang", cn: "中码" },
+                    { id: "Ukuran besar", cn: "大码" },
+                    { id: "Bisa coba?", cn: "能试一下吗？" }
+                ],
+                4: [
+                    { id: "Bagus, saya beli", cn: "好的，我买了" },
+                    { id: "Tidak jadi", cn: "不要了" },
+                    { id: "Struk, tolong", cn: "请给我收据" },
+                    { id: "Sampai jumpa lagi", cn: "下次见" }
+                ]
+            }
+        };
 
-        function selectUnit(unit) {
-            currentUnit = unit;
-            document.getElementById('content').innerHTML = `已选择 <span class="highlight">单元 ${unit}</span>，请选择课程`;
+        // ==================== 全局状态 ====================
+        let currentUnit = null;
+        let currentLesson = null;
+        let currentTextToRead = "";
+
+        // ==================== DOM 元素 ====================
+        const unitBtns = document.querySelectorAll('#unitBtns .btn');
+        const lessonBtns = document.querySelectorAll('#lessonBtns .btn');
+        const contentBox = document.getElementById('contentBox');
+        const showBtn = document.getElementById('showBtn');
+        const readBtn = document.getElementById('readBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const statusTip = document.getElementById('statusTip');
+
+        // ==================== 事件监听 ====================
+        // 单元选择
+        unitBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                unitBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentUnit = parseInt(btn.dataset.unit);
+                updateContent();
+            });
+        });
+
+        // 课程选择
+        lessonBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                lessonBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentLesson = parseInt(btn.dataset.lesson);
+                updateContent();
+            });
+        });
+
+        // 显示内容
+        showBtn.addEventListener('click', updateContent);
+
+        // 朗读发音（核心修复：兼容 Safari）
+        readBtn.addEventListener('click', () => {
+            if (!currentTextToRead) {
+                setStatus("请先选择单元和课程", "error");
+                return;
+            }
+
+            // 停止之前的播放
+            window.speechSynthesis.cancel();
+            setStatus("正在播放发音...", "");
+
+            // 创建语音对象
+            const utterance = new SpeechSynthesisUtterance(currentTextToRead);
+            utterance.lang = "id-ID"; // 印尼语标准代码
+            utterance.rate = 0.75; // 语速
+            utterance.pitch = 1;
+            utterance.volume = 1;
+
+            // 播放完成
+            utterance.onend = () => {
+                setStatus("播放完成", "success");
+            };
+
+            // 播放出错
+            utterance.onerror = (e) => {
+                console.error("播放错误:", e);
+                setStatus("播放失败，请刷新重试", "error");
+            };
+
+            // 执行播放（Safari 必须在点击事件内直接调用）
+            window.speechSynthesis.speak(utterance);
+        });
+
+        // 清空内容
+        clearBtn.addEventListener('click', () => {
+            window.speechSynthesis.cancel();
+            contentBox.innerHTML = '<p style="color: #64748b;">请先选择单元和课程</p>';
+            currentTextToRead = "";
+            setStatus("", "");
+            unitBtns.forEach(b => b.classList.remove('active'));
+            lessonBtns.forEach(b => b.classList.remove('active'));
+            currentUnit = null;
+            currentLesson = null;
+        });
+
+        // ==================== 辅助函数 ====================
+        function updateContent() {
+            if (!currentUnit || !currentLesson) {
+                contentBox.innerHTML = '<p style="color: #64748b;">请先选择单元和课程</p>';
+                currentTextToRead = "";
+                return;
+            }
+
+            const data = learningData[currentUnit][currentLesson];
+            if (!data) {
+                contentBox.innerHTML = '<p style="color: #64748b;">暂无内容</p>';
+                currentTextToRead = "";
+                return;
+            }
+
+            // 渲染内容
+            let html = `<p style="color: #38bdf8; font-weight: 600; margin-bottom: 12px;">📘 单元 ${currentUnit} - 课程 ${currentLesson}</p>`;
+            let textToRead = "";
+            
+            data.forEach(item => {
+                html += `<div class="content-item">
+                    <span class="indonesian">${item.id}</span>
+                    <span class="chinese"> → ${item.cn}</span>
+                </div>`;
+                textToRead += item.id + ". ";
+            });
+
+            contentBox.innerHTML = html;
+            currentTextToRead = textToRead.trim();
+            setStatus("内容已加载", "success");
         }
 
-        function loadLesson(lesson) {
-            currentLesson = lesson;
-            const content = `
-                <p>📘 <span class="highlight">单元 ${currentUnit} - 课程 ${lesson}</span></p>
-                <p>Selamat pagi → 早上好</p>
-                <p>Terima kasih → 谢谢</p>
-                <p>Maaf → 对不起</p>
-                <p>Selamat tinggal → 再见</p>
-                <p>Berapa harganya? → 多少钱？</p>
-            `;
-            document.getElementById('content').innerHTML = content;
-        }
-
-        function showContent() {
-            loadLesson(currentLesson);
-        }
-
-        function playAudio() {
-            document.getElementById('content').innerHTML += `<p>🔊 正在播放发音...</p>`;
-        }
-
-        function clearContent() {
-            document.getElementById('content').innerHTML = "内容已清空 ✅";
+        function setStatus(text, type) {
+            statusTip.textContent = text;
+            statusTip.className = "status-tip";
+            if (type) statusTip.classList.add(type);
         }
     </script>
-
 </body>
 </html>
