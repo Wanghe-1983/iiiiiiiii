@@ -51,6 +51,7 @@
             flex-wrap: wrap;
             gap: 12px;
             margin-bottom: 8px;
+            align-items: center;
         }
 
         .btn {
@@ -86,6 +87,26 @@
 
         .btn-action:hover {
             background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
         }
 
         /* 学习内容区域 */
@@ -126,277 +147,555 @@
         .status-tip.error {
             color: #ef4444;
         }
+
+        /* 后台管理样式 */
+        .admin-section {
+            display: none;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 2px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .admin-section.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 15px;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .data-table th {
+            background: rgba(15, 23, 42, 0.8);
+            color: #38bdf8;
+            font-weight: 600;
+        }
+
+        .data-table tr:hover {
+            background: rgba(30, 41, 59, 0.5);
+        }
+
+        .admin-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .hidden-file-input {
+            display: none;
+        }
+
+        /* 标签页样式 */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            padding-bottom: 12px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            color: #e2e8f0;
+            background: rgba(30, 41, 59, 0.5);
+        }
+
+        .tab.active {
+            color: #38bdf8;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 语速调节样式 */
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 10px;
+            margin-top: 12px;
+        }
+
+        .speed-control label {
+            color: #cbd5e1;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .speed-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 6px;
+            background: rgba(148, 163, 184, 0.3);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .speed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #38bdf8;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .speed-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+        }
+
+        .speed-value {
+            color: #38bdf8;
+            font-weight: 600;
+            font-size: 16px;
+            min-width: 50px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- 选择单元 -->
-        <div class="card">
-            <h2>选择单元</h2>
-            <div class="btn-group" id="unitBtns">
-                <button class="btn" data-unit="1">单元 1 - 基础问候</button>
-                <button class="btn" data-unit="2">单元 2 - 数字与时间</button>
-                <button class="btn" data-unit="3">单元 3 - 日常交流</button>
-                <button class="btn" data-unit="4">单元 4 - 交通出行</button>
-                <button class="btn" data-unit="5">单元 5 - 购物用语</button>
+        <!-- 前台学习区域 -->
+        <div id="learningSection">
+            <!-- 选择单元 -->
+            <div class="card">
+                <h2>选择单元</h2>
+                <div class="btn-group" id="unitBtns"></div>
+            </div>
+
+            <!-- 选择课程 -->
+            <div class="card">
+                <h2>选择课程</h2>
+                <div class="btn-group" id="lessonBtns"></div>
+            </div>
+
+            <!-- 学习内容 -->
+            <div class="card">
+                <h2>学习内容</h2>
+                <div class="content-box" id="contentBox">
+                    <p style="color: #64748b;">请先选择单元和课程</p>
+                </div>
+            </div>
+
+            <!-- 快捷操作 -->
+            <div class="card">
+                <h2>快捷操作</h2>
+                <div class="btn-group">
+                    <button class="btn btn-action" id="showBtn">显示内容</button>
+                    <button class="btn btn-action" id="readBtn">朗读发音</button>
+                    <button class="btn btn-action" id="clearBtn">清空内容</button>
+                </div>
+                
+                <!-- 语速调节 -->
+                <div class="speed-control">
+                    <label for="speedSlider">语速调节：</label>
+                    <input type="range" id="speedSlider" class="speed-slider" min="0.5" max="2" step="0.1" value="0.75">
+                    <span class="speed-value" id="speedValue">0.75x</span>
+                </div>
+                
+                <p class="status-tip" id="statusTip"></p>
             </div>
         </div>
 
-        <!-- 选择课程 -->
-        <div class="card">
-            <h2>选择课程</h2>
-            <div class="btn-group" id="lessonBtns">
-                <button class="btn" data-lesson="1">课程 1</button>
-                <button class="btn" data-lesson="2">课程 2</button>
-                <button class="btn" data-lesson="3">课程 3</button>
-                <button class="btn" data-lesson="4">课程 4</button>
-            </div>
-        </div>
+        <!-- 后台管理区域 -->
+        <div id="adminSection" class="admin-section">
+            <div class="card">
+                <h2>后台管理系统</h2>
+                
+                <!-- 标签页 -->
+                <div class="tabs">
+                    <button class="tab active" data-tab="units">单元管理</button>
+                    <button class="tab" data-tab="lessons">课程管理</button>
+                    <button class="tab" data-tab="import-export">导入/导出</button>
+                </div>
 
-        <!-- 学习内容 -->
-        <div class="card">
-            <h2>学习内容</h2>
-            <div class="content-box" id="contentBox">
-                <p style="color: #64748b;">请先选择单元和课程</p>
-            </div>
-        </div>
+                <!-- 单元管理 -->
+                <div id="unitsTab" class="tab-content active">
+                    <div class="form-group">
+                        <label>单元名称</label>
+                        <input type="text" id="unitName" placeholder="例如：单元 1 - 基础问候">
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-success" id="addUnitBtn">添加单元</button>
+                        <button class="btn btn-danger" id="deleteUnitBtn">删除选中单元</button>
+                    </div>
+                    <table class="data-table" id="unitsTable">
+                        <thead>
+                            <tr>
+                                <th>选择</th>
+                                <th>单元ID</th>
+                                <th>单元名称</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
 
-        <!-- 快捷操作 -->
-        <div class="card">
-            <h2>快捷操作</h2>
-            <div class="btn-group">
-                <button class="btn btn-action" id="showBtn">显示内容</button>
-                <button class="btn btn-action" id="readBtn">朗读发音</button>
-                <button class="btn btn-action" id="clearBtn">清空内容</button>
+                <!-- 课程管理 -->
+                <div id="lessonsTab" class="tab-content">
+                    <div class="form-group">
+                        <label>选择单元</label>
+                        <select id="lessonUnitSelect"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>课程ID</label>
+                        <input type="number" id="lessonId" placeholder="例如：1">
+                    </div>
+                    <div class="form-group">
+                        <label>课程内容 (JSON格式)</label>
+                        <textarea id="lessonContent" placeholder='[{"id": "Selamat pagi", "cn": "早上好"}, {"id": "Terima kasih", "cn": "谢谢"}]'></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-success" id="addLessonBtn">添加/更新课程</button>
+                        <button class="btn btn-danger" id="deleteLessonBtn">删除课程</button>
+                    </div>
+                    <table class="data-table" id="lessonsTable">
+                        <thead>
+                            <tr>
+                                <th>课程ID</th>
+                                <th>内容预览</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+                <!-- 导入/导出 -->
+                <div id="importExportTab" class="tab-content">
+                    <div class="form-group">
+                        <label>导入课程数据 (JSON文件)</label>
+                        <input type="file" id="importFile" class="hidden-file-input" accept=".json">
+                        <button class="btn btn-action" id="importBtn">选择文件并导入</button>
+                    </div>
+                    <div class="form-group">
+                        <label>导出当前课程数据</label>
+                        <button class="btn btn-success" id="exportBtn">导出为 JSON</button>
+                    </div>
+                    <div class="form-group">
+                        <label>重置为默认数据</label>
+                        <button class="btn btn-danger" id="resetBtn">重置数据</button>
+                    </div>
+                </div>
             </div>
-            <p class="status-tip" id="statusTip"></p>
         </div>
     </div>
 
+    <!-- 后台管理开关 -->
+    <div class="admin-toggle">
+        <button class="btn btn-action" id="adminToggleBtn">后台管理</button>
+    </div>
+
     <script>
-        // ==================== 学习数据 ====================
-        const learningData = {
-            1: { // 单元1 - 基础问候
-                1: [
-                    { id: "Selamat pagi", cn: "早上好" },
-                    { id: "Selamat siang", cn: "下午好" },
-                    { id: "Selamat malam", cn: "晚上好" },
-                    { id: "Terima kasih", cn: "谢谢" },
-                    { id: "Maaf", cn: "对不起" },
-                    { id: "Selamat tinggal", cn: "再见" },
-                    { id: "Berapa harganya?", cn: "多少钱？" }
-                ],
-                2: [
-                    { id: "Apa kabar?", cn: "你好吗？" },
-                    { id: "Saya baik-baik saja", cn: "我很好" },
-                    { id: "Nama saya...", cn: "我的名字是..." },
-                    { id: "Senang bertemu denganmu", cn: "很高兴认识你" }
-                ],
-                3: [
-                    { id: "Ya", cn: "是" },
-                    { id: "Tidak", cn: "不是" },
-                    { id: "Mungkin", cn: "也许" },
-                    { id: "Tentu saja", cn: "当然" }
-                ],
-                4: [
-                    { id: "Tolong", cn: "请" },
-                    { id: "Bolehkah saya...?", cn: "我可以...吗？" },
-                    { id: "Silakan", cn: "请便" },
-                    { id: "Terima kasih banyak", cn: "非常感谢" }
-                ]
+        // ==================== 配置 ====================
+        const ADMIN_PASSWORD = "admin123"; // 后台密码，可在此修改
+        const DEFAULT_SPEECH_RATE = 0.75; // 默认语速
+
+        // ==================== 默认学习数据 ====================
+        const defaultData = {
+            1: {
+                name: "单元 1 - 基础问候",
+                lessons: {
+                    1: [
+                        { id: "Selamat pagi", cn: "早上好" },
+                        { id: "Selamat siang", cn: "下午好" },
+                        { id: "Selamat malam", cn: "晚上好" },
+                        { id: "Terima kasih", cn: "谢谢" },
+                        { id: "Maaf", cn: "对不起" },
+                        { id: "Selamat tinggal", cn: "再见" },
+                        { id: "Berapa harganya?", cn: "多少钱？" }
+                    ],
+                    2: [
+                        { id: "Apa kabar?", cn: "你好吗？" },
+                        { id: "Saya baik-baik saja", cn: "我很好" },
+                        { id: "Nama saya...", cn: "我的名字是..." },
+                        { id: "Senang bertemu denganmu", cn: "很高兴认识你" }
+                    ],
+                    3: [
+                        { id: "Ya", cn: "是" },
+                        { id: "Tidak", cn: "不是" },
+                        { id: "Mungkin", cn: "也许" },
+                        { id: "Tentu saja", cn: "当然" }
+                    ],
+                    4: [
+                        { id: "Tolong", cn: "请" },
+                        { id: "Bolehkah saya...?", cn: "我可以...吗？" },
+                        { id: "Silakan", cn: "请便" },
+                        { id: "Terima kasih banyak", cn: "非常感谢" }
+                    ]
+                }
             },
-            2: { // 单元2 - 数字与时间
-                1: [
-                    { id: "Satu", cn: "一" },
-                    { id: "Dua", cn: "二" },
-                    { id: "Tiga", cn: "三" },
-                    { id: "Empat", cn: "四" },
-                    { id: "Lima", cn: "五" }
-                ],
-                2: [
-                    { id: "Enam", cn: "六" },
-                    { id: "Tujuh", cn: "七" },
-                    { id: "Delapan", cn: "八" },
-                    { id: "Sembilan", cn: "九" },
-                    { id: "Sepuluh", cn: "十" }
-                ],
-                3: [
-                    { id: "Pukul berapa?", cn: "几点了？" },
-                    { id: "Pukul sepuluh", cn: "十点" },
-                    { id: "Hari ini", cn: "今天" },
-                    { id: "Besok", cn: "明天" }
-                ],
-                4: [
-                    { id: "Minggu ini", cn: "这周" },
-                    { id: "Bulan ini", cn: "这个月" },
-                    { id: "Tahun ini", cn: "今年" },
-                    { id: "Kemarin", cn: "昨天" }
-                ]
+            2: {
+                name: "单元 2 - 数字与时间",
+                lessons: {
+                    1: [
+                        { id: "Satu", cn: "一" },
+                        { id: "Dua", cn: "二" },
+                        { id: "Tiga", cn: "三" },
+                        { id: "Empat", cn: "四" },
+                        { id: "Lima", cn: "五" }
+                    ],
+                    2: [
+                        { id: "Enam", cn: "六" },
+                        { id: "Tujuh", cn: "七" },
+                        { id: "Delapan", cn: "八" },
+                        { id: "Sembilan", cn: "九" },
+                        { id: "Sepuluh", cn: "十" }
+                    ],
+                    3: [
+                        { id: "Pukul berapa?", cn: "几点了？" },
+                        { id: "Pukul sepuluh", cn: "十点" },
+                        { id: "Hari ini", cn: "今天" },
+                        { id: "Besok", cn: "明天" }
+                    ],
+                    4: [
+                        { id: "Minggu ini", cn: "这周" },
+                        { id: "Bulan ini", cn: "这个月" },
+                        { id: "Tahun ini", cn: "今年" },
+                        { id: "Kemarin", cn: "昨天" }
+                    ]
+                }
             },
-            3: { // 单元3 - 日常交流
-                1: [
-                    { id: "Saya lapar", cn: "我饿了" },
-                    { id: "Saya haus", cn: "我渴了" },
-                    { id: "Saya lelah", cn: "我累了" },
-                    { id: "Saya senang", cn: "我很开心" }
-                ],
-                2: [
-                    { id: "Apa ini?", cn: "这是什么？" },
-                    { id: "Ini adalah...", cn: "这是..." },
-                    { id: "Di mana...?", cn: "...在哪里？" },
-                    { id: "Ada di sana", cn: "在那里" }
-                ],
-                3: [
-                    { id: "Saya suka...", cn: "我喜欢..." },
-                    { id: "Saya tidak suka...", cn: "我不喜欢..." },
-                    { id: "Bagus", cn: "好的" },
-                    { id: "Buruk", cn: "不好" }
-                ],
-                4: [
-                    { id: "Bisa bicara lebih lambat?", cn: "能说慢一点吗？" },
-                    { id: "Saya tidak mengerti", cn: "我不明白" },
-                    { id: "Mengerti", cn: "明白了" },
-                    { id: "Ulangi lagi", cn: "再说一遍" }
-                ]
+            3: {
+                name: "单元 3 - 日常交流",
+                lessons: {
+                    1: [
+                        { id: "Saya lapar", cn: "我饿了" },
+                        { id: "Saya haus", cn: "我渴了" },
+                        { id: "Saya lelah", cn: "我累了" },
+                        { id: "Saya senang", cn: "我很开心" }
+                    ],
+                    2: [
+                        { id: "Apa ini?", cn: "这是什么？" },
+                        { id: "Ini adalah...", cn: "这是..." },
+                        { id: "Di mana...?", cn: "...在哪里？" },
+                        { id: "Ada di sana", cn: "在那里" }
+                    ],
+                    3: [
+                        { id: "Saya suka...", cn: "我喜欢..." },
+                        { id: "Saya tidak suka...", cn: "我不喜欢..." },
+                        { id: "Bagus", cn: "好的" },
+                        { id: "Buruk", cn: "不好" }
+                    ],
+                    4: [
+                        { id: "Bisa bicara lebih lambat?", cn: "能说慢一点吗？" },
+                        { id: "Saya tidak mengerti", cn: "我不明白" },
+                        { id: "Mengerti", cn: "明白了" },
+                        { id: "Ulangi lagi", cn: "再说一遍" }
+                    ]
+                }
             },
-            4: { // 单元4 - 交通出行
-                1: [
-                    { id: "Ke stasiun, tolong", cn: "请到车站" },
-                    { id: "Ke bandara", cn: "去机场" },
-                    { id: "Berapa lama?", cn: "需要多久？" },
-                    { id: "Sampai", cn: "到了" }
-                ],
-                2: [
-                    { id: "Kiri", cn: "左" },
-                    { id: "Kanan", cn: "右" },
-                    { id: "Lurus", cn: "直走" },
-                    { id: "Berhenti", cn: "停" }
-                ],
-                3: [
-                    { id: "Tiket, tolong", cn: "请给我票" },
-                    { id: "Berapa harganya?", cn: "多少钱？" },
-                    { id: "Kapan berangkat?", cn: "什么时候出发？" },
-                    { id: "Kapan sampai?", cn: "什么时候到？" }
-                ],
-                4: [
-                    { id: "Saya tersesat", cn: "我迷路了" },
-                    { id: "Tolong bantu saya", cn: "请帮帮我" },
-                    { id: "Di mana toilet?", cn: "厕所在哪里？" },
-                    { id: "Terima kasih atas bantuannya", cn: "谢谢你的帮助" }
-                ]
+            4: {
+                name: "单元 4 - 交通出行",
+                lessons: {
+                    1: [
+                        { id: "Ke stasiun, tolong", cn: "请到车站" },
+                        { id: "Ke bandara", cn: "去机场" },
+                        { id: "Berapa lama?", cn: "需要多久？" },
+                        { id: "Sampai", cn: "到了" }
+                    ],
+                    2: [
+                        { id: "Kiri", cn: "左" },
+                        { id: "Kanan", cn: "右" },
+                        { id: "Lurus", cn: "直走" },
+                        { id: "Berhenti", cn: "停" }
+                    ],
+                    3: [
+                        { id: "Tiket, tolong", cn: "请给我票" },
+                        { id: "Berapa harganya?", cn: "多少钱？" },
+                        { id: "Kapan berangkat?", cn: "什么时候出发？" },
+                        { id: "Kapan sampai?", cn: "什么时候到？" }
+                    ],
+                    4: [
+                        { id: "Saya tersesat", cn: "我迷路了" },
+                        { id: "Tolong bantu saya", cn: "请帮帮我" },
+                        { id: "Di mana toilet?", cn: "厕所在哪里？" },
+                        { id: "Terima kasih atas bantuannya", cn: "谢谢你的帮助" }
+                    ]
+                }
             },
-            5: { // 单元5 - 购物用语
-                1: [
-                    { id: "Ini berapa?", cn: "这个多少钱？" },
-                    { id: "Mahal", cn: "贵" },
-                    { id: "Murah", cn: "便宜" },
-                    { id: "Bisa diskon?", cn: "能打折吗？" }
-                ],
-                2: [
-                    { id: "Saya mau beli...", cn: "我想买..." },
-                    { id: "Ini saja", cn: "就这个" },
-                    { id: "Ada yang lain?", cn: "有其他的吗？" },
-                    { id: "Tidak, terima kasih", cn: "不用了，谢谢" }
-                ],
-                3: [
-                    { id: "Ukuran kecil", cn: "小码" },
-                    { id: "Ukuran sedang", cn: "中码" },
-                    { id: "Ukuran besar", cn: "大码" },
-                    { id: "Bisa coba?", cn: "能试一下吗？" }
-                ],
-                4: [
-                    { id: "Bagus, saya beli", cn: "好的，我买了" },
-                    { id: "Tidak jadi", cn: "不要了" },
-                    { id: "Struk, tolong", cn: "请给我收据" },
-                    { id: "Sampai jumpa lagi", cn: "下次见" }
-                ]
+            5: {
+                name: "单元 5 - 购物用语",
+                lessons: {
+                    1: [
+                        { id: "Ini berapa?", cn: "这个多少钱？" },
+                        { id: "Mahal", cn: "贵" },
+                        { id: "Murah", cn: "便宜" },
+                        { id: "Bisa diskon?", cn: "能打折吗？" }
+                    ],
+                    2: [
+                        { id: "Saya mau beli...", cn: "我想买..." },
+                        { id: "Ini saja", cn: "就这个" },
+                        { id: "Ada yang lain?", cn: "有其他的吗？" },
+                        { id: "Tidak, terima kasih", cn: "不用了，谢谢" }
+                    ],
+                    3: [
+                        { id: "Ukuran kecil", cn: "小码" },
+                        { id: "Ukuran sedang", cn: "中码" },
+                        { id: "Ukuran besar", cn: "大码" },
+                        { id: "Bisa coba?", cn: "能试一下吗？" }
+                    ],
+                    4: [
+                        { id: "Bagus, saya beli", cn: "好的，我买了" },
+                        { id: "Tidak jadi", cn: "不要了" },
+                        { id: "Struk, tolong", cn: "请给我收据" },
+                        { id: "Sampai jumpa lagi", cn: "下次见" }
+                    ]
+                }
             }
         };
 
         // ==================== 全局状态 ====================
+        let learningData = {};
         let currentUnit = null;
         let currentLesson = null;
         let currentTextToRead = "";
+        let isAdminOpen = false;
+        let speechRate = DEFAULT_SPEECH_RATE;
 
         // ==================== DOM 元素 ====================
-        const unitBtns = document.querySelectorAll('#unitBtns .btn');
-        const lessonBtns = document.querySelectorAll('#lessonBtns .btn');
+        const unitBtns = document.getElementById('unitBtns');
+        const lessonBtns = document.getElementById('lessonBtns');
         const contentBox = document.getElementById('contentBox');
         const showBtn = document.getElementById('showBtn');
         const readBtn = document.getElementById('readBtn');
         const clearBtn = document.getElementById('clearBtn');
         const statusTip = document.getElementById('statusTip');
+        const adminSection = document.getElementById('adminSection');
+        const adminToggleBtn = document.getElementById('adminToggleBtn');
+        const speedSlider = document.getElementById('speedSlider');
+        const speedValue = document.getElementById('speedValue');
 
-        // ==================== 事件监听 ====================
-        // 单元选择
-        unitBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                unitBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentUnit = parseInt(btn.dataset.unit);
-                updateContent();
+        // ==================== 初始化 ====================
+        function init() {
+            loadData();
+            renderUnitButtons();
+            setupEventListeners();
+            setupAdminEventListeners();
+            setupSpeedControl();
+        }
+
+        // ==================== 语速控制 ====================
+        function setupSpeedControl() {
+            speedSlider.value = speechRate;
+            speedValue.textContent = speechRate + 'x';
+
+            speedSlider.addEventListener('input', (e) => {
+                speechRate = parseFloat(e.target.value);
+                speedValue.textContent = speechRate.toFixed(2) + 'x';
             });
-        });
+        }
 
-        // 课程选择
-        lessonBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                lessonBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentLesson = parseInt(btn.dataset.lesson);
-                updateContent();
+        // ==================== 数据管理 ====================
+        function loadData() {
+            const savedData = localStorage.getItem('indonesianLearningData');
+            learningData = savedData ? JSON.parse(savedData) : JSON.parse(JSON.stringify(defaultData));
+        }
+
+        function saveData() {
+            localStorage.setItem('indonesianLearningData', JSON.stringify(learningData));
+            renderUnitButtons();
+            renderAdminUnitsTable();
+            renderAdminLessonsTable();
+            updateLessonUnitSelect();
+        }
+
+        // ==================== 前台学习功能 ====================
+        function renderUnitButtons() {
+            unitBtns.innerHTML = '';
+            Object.keys(learningData).sort((a, b) => a - b).forEach(unitId => {
+                const btn = document.createElement('button');
+                btn.className = 'btn';
+                btn.dataset.unit = unitId;
+                btn.textContent = learningData[unitId].name;
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#unitBtns .btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentUnit = parseInt(unitId);
+                    renderLessonButtons();
+                    updateContent();
+                });
+                unitBtns.appendChild(btn);
             });
-        });
+        }
 
-        // 显示内容
-        showBtn.addEventListener('click', updateContent);
+        function renderLessonButtons() {
+            lessonBtns.innerHTML = '';
+            if (!currentUnit || !learningData[currentUnit]) return;
 
-        // 朗读发音（核心修复：兼容 Safari）
-        readBtn.addEventListener('click', () => {
-            if (!currentTextToRead) {
-                setStatus("请先选择单元和课程", "error");
-                return;
-            }
+            Object.keys(learningData[currentUnit].lessons).sort((a, b) => a - b).forEach(lessonId => {
+                const btn = document.createElement('button');
+                btn.className = 'btn';
+                btn.dataset.lesson = lessonId;
+                btn.textContent = `课程 ${lessonId}`;
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#lessonBtns .btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentLesson = parseInt(lessonId);
+                    updateContent();
+                });
+                lessonBtns.appendChild(btn);
+            });
+        }
 
-            // 停止之前的播放
-            window.speechSynthesis.cancel();
-            setStatus("正在播放发音...", "");
-
-            // 创建语音对象
-            const utterance = new SpeechSynthesisUtterance(currentTextToRead);
-            utterance.lang = "id-ID"; // 印尼语标准代码
-            utterance.rate = 0.75; // 语速
-            utterance.pitch = 1;
-            utterance.volume = 1;
-
-            // 播放完成
-            utterance.onend = () => {
-                setStatus("播放完成", "success");
-            };
-
-            // 播放出错
-            utterance.onerror = (e) => {
-                console.error("播放错误:", e);
-                setStatus("播放失败，请刷新重试", "error");
-            };
-
-            // 执行播放（Safari 必须在点击事件内直接调用）
-            window.speechSynthesis.speak(utterance);
-        });
-
-        // 清空内容
-        clearBtn.addEventListener('click', () => {
-            window.speechSynthesis.cancel();
-            contentBox.innerHTML = '<p style="color: #64748b;">请先选择单元和课程</p>';
-            currentTextToRead = "";
-            setStatus("", "");
-            unitBtns.forEach(b => b.classList.remove('active'));
-            lessonBtns.forEach(b => b.classList.remove('active'));
-            currentUnit = null;
-            currentLesson = null;
-        });
-
-        // ==================== 辅助函数 ====================
         function updateContent() {
             if (!currentUnit || !currentLesson) {
                 contentBox.innerHTML = '<p style="color: #64748b;">请先选择单元和课程</p>';
@@ -404,15 +703,14 @@
                 return;
             }
 
-            const data = learningData[currentUnit][currentLesson];
+            const data = learningData[currentUnit]?.lessons?.[currentLesson];
             if (!data) {
                 contentBox.innerHTML = '<p style="color: #64748b;">暂无内容</p>';
                 currentTextToRead = "";
                 return;
             }
 
-            // 渲染内容
-            let html = `<p style="color: #38bdf8; font-weight: 600; margin-bottom: 12px;">📘 单元 ${currentUnit} - 课程 ${currentLesson}</p>`;
+            let html = `<p style="color: #38bdf8; font-weight: 600; margin-bottom: 12px;">📘 ${learningData[currentUnit].name} - 课程 ${currentLesson}</p>`;
             let textToRead = "";
             
             data.forEach(item => {
@@ -433,6 +731,225 @@
             statusTip.className = "status-tip";
             if (type) statusTip.classList.add(type);
         }
+
+        function setupEventListeners() {
+            showBtn.addEventListener('click', updateContent);
+
+            readBtn.addEventListener('click', () => {
+                if (!currentTextToRead) {
+                    setStatus("请先选择单元和课程", "error");
+                    return;
+                }
+
+                window.speechSynthesis.cancel();
+                setStatus("正在播放发音...", "");
+
+                const utterance = new SpeechSynthesisUtterance(currentTextToRead);
+                utterance.lang = "id-ID";
+                utterance.rate = speechRate; // 使用用户设置的语速
+                utterance.pitch = 1;
+                utterance.volume = 1;
+
+                utterance.onend = () => setStatus("播放完成", "success");
+                utterance.onerror = () => setStatus("播放失败，请刷新重试", "error");
+
+                window.speechSynthesis.speak(utterance);
+            });
+
+            clearBtn.addEventListener('click', () => {
+                window.speechSynthesis.cancel();
+                contentBox.innerHTML = '<p style="color: #64748b;">请先选择单元和课程</p>';
+                currentTextToRead = "";
+                setStatus("", "");
+                document.querySelectorAll('#unitBtns .btn, #lessonBtns .btn').forEach(b => b.classList.remove('active'));
+                currentUnit = null;
+                currentLesson = null;
+            });
+
+            adminToggleBtn.addEventListener('click', () => {
+                if (!isAdminOpen) {
+                    // 请求密码
+                    const password = prompt("请输入后台管理密码：");
+                    if (password === ADMIN_PASSWORD) {
+                        isAdminOpen = true;
+                        adminSection.classList.add('active');
+                        adminToggleBtn.textContent = "关闭后台";
+                        renderAdminUnitsTable();
+                        renderAdminLessonsTable();
+                        updateLessonUnitSelect();
+                    } else if (password !== null) {
+                        alert("密码错误！");
+                    }
+                } else {
+                    isAdminOpen = false;
+                    adminSection.classList.remove('active');
+                    adminToggleBtn.textContent = "后台管理";
+                }
+            });
+        }
+
+        // ==================== 后台管理功能 ====================
+        function setupAdminEventListeners() {
+            // 标签页切换
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(`${tab.dataset.tab}Tab`).classList.add('active');
+                });
+            });
+
+            // 单元管理
+            document.getElementById('addUnitBtn').addEventListener('click', () => {
+                const name = document.getElementById('unitName').value.trim();
+                if (!name) return alert('请输入单元名称');
+                
+                const newId = Math.max(0, ...Object.keys(learningData).map(Number)) + 1;
+                learningData[newId] = { name, lessons: {} };
+                saveData();
+                document.getElementById('unitName').value = '';
+            });
+
+            document.getElementById('deleteUnitBtn').addEventListener('click', () => {
+                const selected = document.querySelector('#unitsTable input[type="checkbox"]:checked');
+                if (!selected) return alert('请选择要删除的单元');
+                if (!confirm('确定要删除这个单元吗？')) return;
+                
+                delete learningData[selected.value];
+                saveData();
+            });
+
+            // 课程管理
+            document.getElementById('lessonUnitSelect').addEventListener('change', renderAdminLessonsTable);
+
+            document.getElementById('addLessonBtn').addEventListener('click', () => {
+                const unitId = document.getElementById('lessonUnitSelect').value;
+                const lessonId = document.getElementById('lessonId').value;
+                const contentStr = document.getElementById('lessonContent').value.trim();
+                
+                if (!unitId || !lessonId || !contentStr) return alert('请填写完整信息');
+                
+                try {
+                    const content = JSON.parse(contentStr);
+                    if (!learningData[unitId].lessons) learningData[unitId].lessons = {};
+                    learningData[unitId].lessons[lessonId] = content;
+                    saveData();
+                    document.getElementById('lessonId').value = '';
+                    document.getElementById('lessonContent').value = '';
+                } catch (e) {
+                    alert('JSON格式错误，请检查');
+                }
+            });
+
+            document.getElementById('deleteLessonBtn').addEventListener('click', () => {
+                const unitId = document.getElementById('lessonUnitSelect').value;
+                const lessonId = document.getElementById('lessonId').value;
+                if (!unitId || !lessonId) return alert('请选择要删除的课程');
+                if (!confirm('确定要删除这个课程吗？')) return;
+                
+                delete learningData[unitId].lessons[lessonId];
+                saveData();
+            });
+
+            // 导入/导出
+            document.getElementById('importBtn').addEventListener('click', () => {
+                document.getElementById('importFile').click();
+            });
+
+            document.getElementById('importFile').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        learningData = JSON.parse(event.target.result);
+                        saveData();
+                        alert('导入成功');
+                    } catch (err) {
+                        alert('导入失败：JSON格式错误');
+                    }
+                };
+                reader.readAsText(file);
+            });
+
+            document.getElementById('exportBtn').addEventListener('click', () => {
+                const dataStr = JSON.stringify(learningData, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'indonesian_learning_data.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                if (!confirm('确定要重置为默认数据吗？这将删除所有自定义内容！')) return;
+                learningData = JSON.parse(JSON.stringify(defaultData));
+                saveData();
+                alert('数据已重置');
+            });
+        }
+
+        function renderAdminUnitsTable() {
+            const tbody = document.querySelector('#unitsTable tbody');
+            tbody.innerHTML = '';
+            Object.keys(learningData).sort((a, b) => a - b).forEach(unitId => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><input type="checkbox" value="${unitId}"></td>
+                    <td>${unitId}</td>
+                    <td>${learningData[unitId].name}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateLessonUnitSelect() {
+            const select = document.getElementById('lessonUnitSelect');
+            select.innerHTML = '';
+            Object.keys(learningData).sort((a, b) => a - b).forEach(unitId => {
+                const option = document.createElement('option');
+                option.value = unitId;
+                option.textContent = learningData[unitId].name;
+                select.appendChild(option);
+            });
+        }
+
+        function renderAdminLessonsTable() {
+            const unitId = document.getElementById('lessonUnitSelect')?.value;
+            const tbody = document.querySelector('#lessonsTable tbody');
+            if (!unitId || !learningData[unitId]) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#64748b;">请先选择单元</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            const lessons = learningData[unitId].lessons || {};
+            Object.keys(lessons).sort((a, b) => a - b).forEach(lessonId => {
+                const tr = document.createElement('tr');
+                const preview = lessons[lessonId].slice(0, 2).map(i => `${i.id} → ${i.cn}`).join('; ');
+                tr.innerHTML = `
+                    <td>${lessonId}</td>
+                    <td>${preview}${lessons[lessonId].length > 2 ? '...' : ''}</td>
+                    <td>
+                        <button class="btn btn-action" style="padding:6px 12px;font-size:13px;" onclick="editLesson('${unitId}', '${lessonId}')">编辑</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function editLesson(unitId, lessonId) {
+            document.getElementById('lessonUnitSelect').value = unitId;
+            document.getElementById('lessonId').value = lessonId;
+            document.getElementById('lessonContent').value = JSON.stringify(learningData[unitId].lessons[lessonId], null, 2);
+        }
+
+        // 启动应用
+        init();
     </script>
 </body>
 </html>
