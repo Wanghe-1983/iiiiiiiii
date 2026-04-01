@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>印尼语学习系统 | TMI</title>
     <style>
-        /* 全局样式 - 钢铁/金属风格 */
         * {
             margin: 0;
             padding: 0;
@@ -25,7 +24,6 @@
             margin: 0 auto;
         }
 
-        /* 卡片样式 */
         .card {
             background: rgba(30, 41, 59, 0.8);
             backdrop-filter: blur(10px);
@@ -45,7 +43,6 @@
             padding-left: 12px;
         }
 
-        /* 按钮样式 */
         .btn-group {
             display: flex;
             flex-wrap: wrap;
@@ -109,7 +106,6 @@
             background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
         }
 
-        /* 学习内容区域 */
         .content-box {
             background: rgba(15, 23, 42, 0.6);
             border-radius: 12px;
@@ -132,7 +128,6 @@
             color: #94a3b8;
         }
 
-        /* 状态提示 */
         .status-tip {
             margin-top: 16px;
             font-size: 14px;
@@ -148,16 +143,10 @@
             color: #ef4444;
         }
 
-        /* 后台管理样式 */
         .admin-section {
-            display: none;
             margin-top: 40px;
             padding-top: 40px;
             border-top: 2px solid rgba(148, 163, 184, 0.2);
-        }
-
-        .admin-section.active {
-            display: block;
         }
 
         .form-group {
@@ -222,7 +211,6 @@
             display: none;
         }
 
-        /* 标签页样式 */
         .tabs {
             display: flex;
             gap: 8px;
@@ -261,7 +249,6 @@
             display: block;
         }
 
-        /* 语速调节样式 */
         .speed-control {
             display: flex;
             align-items: center;
@@ -421,10 +408,13 @@
 
                 <!-- 导入/导出 -->
                 <div id="importExportTab" class="tab-content">
+                    <!-- 修复：文件输入框放在这里，确保DOM存在 -->
+                    <input type="file" id="importFile" class="hidden-file-input" accept=".json">
+                    
                     <div class="form-group">
                         <label>导入课程数据 (JSON文件)</label>
-                        <input type="file" id="importFile" class="hidden-file-input" accept=".json">
                         <button class="btn btn-action" id="importBtn">选择文件并导入</button>
+                        <p class="status-tip" id="importStatusTip"></p>
                     </div>
                     <div class="form-group">
                         <label>导出当前课程数据</label>
@@ -446,8 +436,8 @@
 
     <script>
         // ==================== 配置 ====================
-        const ADMIN_PASSWORD = "admin123"; // 后台密码，可在此修改
-        const DEFAULT_SPEECH_RATE = 0.75; // 默认语速
+        const ADMIN_PASSWORD = "admin123";
+        const DEFAULT_SPEECH_RATE = 0.75;
 
         // ==================== 默认学习数据 ====================
         const defaultData = {
@@ -462,142 +452,6 @@
                         { id: "Maaf", cn: "对不起" },
                         { id: "Selamat tinggal", cn: "再见" },
                         { id: "Berapa harganya?", cn: "多少钱？" }
-                    ],
-                    2: [
-                        { id: "Apa kabar?", cn: "你好吗？" },
-                        { id: "Saya baik-baik saja", cn: "我很好" },
-                        { id: "Nama saya...", cn: "我的名字是..." },
-                        { id: "Senang bertemu denganmu", cn: "很高兴认识你" }
-                    ],
-                    3: [
-                        { id: "Ya", cn: "是" },
-                        { id: "Tidak", cn: "不是" },
-                        { id: "Mungkin", cn: "也许" },
-                        { id: "Tentu saja", cn: "当然" }
-                    ],
-                    4: [
-                        { id: "Tolong", cn: "请" },
-                        { id: "Bolehkah saya...?", cn: "我可以...吗？" },
-                        { id: "Silakan", cn: "请便" },
-                        { id: "Terima kasih banyak", cn: "非常感谢" }
-                    ]
-                }
-            },
-            2: {
-                name: "单元 2 - 数字与时间",
-                lessons: {
-                    1: [
-                        { id: "Satu", cn: "一" },
-                        { id: "Dua", cn: "二" },
-                        { id: "Tiga", cn: "三" },
-                        { id: "Empat", cn: "四" },
-                        { id: "Lima", cn: "五" }
-                    ],
-                    2: [
-                        { id: "Enam", cn: "六" },
-                        { id: "Tujuh", cn: "七" },
-                        { id: "Delapan", cn: "八" },
-                        { id: "Sembilan", cn: "九" },
-                        { id: "Sepuluh", cn: "十" }
-                    ],
-                    3: [
-                        { id: "Pukul berapa?", cn: "几点了？" },
-                        { id: "Pukul sepuluh", cn: "十点" },
-                        { id: "Hari ini", cn: "今天" },
-                        { id: "Besok", cn: "明天" }
-                    ],
-                    4: [
-                        { id: "Minggu ini", cn: "这周" },
-                        { id: "Bulan ini", cn: "这个月" },
-                        { id: "Tahun ini", cn: "今年" },
-                        { id: "Kemarin", cn: "昨天" }
-                    ]
-                }
-            },
-            3: {
-                name: "单元 3 - 日常交流",
-                lessons: {
-                    1: [
-                        { id: "Saya lapar", cn: "我饿了" },
-                        { id: "Saya haus", cn: "我渴了" },
-                        { id: "Saya lelah", cn: "我累了" },
-                        { id: "Saya senang", cn: "我很开心" }
-                    ],
-                    2: [
-                        { id: "Apa ini?", cn: "这是什么？" },
-                        { id: "Ini adalah...", cn: "这是..." },
-                        { id: "Di mana...?", cn: "...在哪里？" },
-                        { id: "Ada di sana", cn: "在那里" }
-                    ],
-                    3: [
-                        { id: "Saya suka...", cn: "我喜欢..." },
-                        { id: "Saya tidak suka...", cn: "我不喜欢..." },
-                        { id: "Bagus", cn: "好的" },
-                        { id: "Buruk", cn: "不好" }
-                    ],
-                    4: [
-                        { id: "Bisa bicara lebih lambat?", cn: "能说慢一点吗？" },
-                        { id: "Saya tidak mengerti", cn: "我不明白" },
-                        { id: "Mengerti", cn: "明白了" },
-                        { id: "Ulangi lagi", cn: "再说一遍" }
-                    ]
-                }
-            },
-            4: {
-                name: "单元 4 - 交通出行",
-                lessons: {
-                    1: [
-                        { id: "Ke stasiun, tolong", cn: "请到车站" },
-                        { id: "Ke bandara", cn: "去机场" },
-                        { id: "Berapa lama?", cn: "需要多久？" },
-                        { id: "Sampai", cn: "到了" }
-                    ],
-                    2: [
-                        { id: "Kiri", cn: "左" },
-                        { id: "Kanan", cn: "右" },
-                        { id: "Lurus", cn: "直走" },
-                        { id: "Berhenti", cn: "停" }
-                    ],
-                    3: [
-                        { id: "Tiket, tolong", cn: "请给我票" },
-                        { id: "Berapa harganya?", cn: "多少钱？" },
-                        { id: "Kapan berangkat?", cn: "什么时候出发？" },
-                        { id: "Kapan sampai?", cn: "什么时候到？" }
-                    ],
-                    4: [
-                        { id: "Saya tersesat", cn: "我迷路了" },
-                        { id: "Tolong bantu saya", cn: "请帮帮我" },
-                        { id: "Di mana toilet?", cn: "厕所在哪里？" },
-                        { id: "Terima kasih atas bantuannya", cn: "谢谢你的帮助" }
-                    ]
-                }
-            },
-            5: {
-                name: "单元 5 - 购物用语",
-                lessons: {
-                    1: [
-                        { id: "Ini berapa?", cn: "这个多少钱？" },
-                        { id: "Mahal", cn: "贵" },
-                        { id: "Murah", cn: "便宜" },
-                        { id: "Bisa diskon?", cn: "能打折吗？" }
-                    ],
-                    2: [
-                        { id: "Saya mau beli...", cn: "我想买..." },
-                        { id: "Ini saja", cn: "就这个" },
-                        { id: "Ada yang lain?", cn: "有其他的吗？" },
-                        { id: "Tidak, terima kasih", cn: "不用了，谢谢" }
-                    ],
-                    3: [
-                        { id: "Ukuran kecil", cn: "小码" },
-                        { id: "Ukuran sedang", cn: "中码" },
-                        { id: "Ukuran besar", cn: "大码" },
-                        { id: "Bisa coba?", cn: "能试一下吗？" }
-                    ],
-                    4: [
-                        { id: "Bagus, saya beli", cn: "好的，我买了" },
-                        { id: "Tidak jadi", cn: "不要了" },
-                        { id: "Struk, tolong", cn: "请给我收据" },
-                        { id: "Sampai jumpa lagi", cn: "下次见" }
                     ]
                 }
             }
@@ -611,30 +465,26 @@
         let isAdminOpen = false;
         let speechRate = DEFAULT_SPEECH_RATE;
 
-        // ==================== DOM 元素 ====================
-        const unitBtns = document.getElementById('unitBtns');
-        const lessonBtns = document.getElementById('lessonBtns');
-        const contentBox = document.getElementById('contentBox');
-        const showBtn = document.getElementById('showBtn');
-        const readBtn = document.getElementById('readBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        const statusTip = document.getElementById('statusTip');
-        const adminSection = document.getElementById('adminSection');
-        const adminToggleBtn = document.getElementById('adminToggleBtn');
-        const speedSlider = document.getElementById('speedSlider');
-        const speedValue = document.getElementById('speedValue');
+        // ==================== 页面加载完成后执行所有逻辑 ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化所有功能
+            init();
+            // 绑定所有事件
+            setupAllEventListeners();
+        });
 
         // ==================== 初始化 ====================
         function init() {
             loadData();
             renderUnitButtons();
-            setupEventListeners();
-            setupAdminEventListeners();
             setupSpeedControl();
         }
 
         // ==================== 语速控制 ====================
         function setupSpeedControl() {
+            const speedSlider = document.getElementById('speedSlider');
+            const speedValue = document.getElementById('speedValue');
+            
             speedSlider.value = speechRate;
             speedValue.textContent = speechRate + 'x';
 
@@ -660,12 +510,15 @@
 
         // ==================== 前台学习功能 ====================
         function renderUnitButtons() {
+            const unitBtns = document.getElementById('unitBtns');
             unitBtns.innerHTML = '';
+            
             Object.keys(learningData).sort((a, b) => a - b).forEach(unitId => {
                 const btn = document.createElement('button');
                 btn.className = 'btn';
                 btn.dataset.unit = unitId;
                 btn.textContent = learningData[unitId].name;
+                
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('#unitBtns .btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
@@ -673,12 +526,15 @@
                     renderLessonButtons();
                     updateContent();
                 });
+                
                 unitBtns.appendChild(btn);
             });
         }
 
         function renderLessonButtons() {
+            const lessonBtns = document.getElementById('lessonBtns');
             lessonBtns.innerHTML = '';
+            
             if (!currentUnit || !learningData[currentUnit]) return;
 
             Object.keys(learningData[currentUnit].lessons).sort((a, b) => a - b).forEach(lessonId => {
@@ -686,17 +542,22 @@
                 btn.className = 'btn';
                 btn.dataset.lesson = lessonId;
                 btn.textContent = `课程 ${lessonId}`;
+                
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('#lessonBtns .btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     currentLesson = parseInt(lessonId);
                     updateContent();
                 });
+                
                 lessonBtns.appendChild(btn);
             });
         }
 
         function updateContent() {
+            const contentBox = document.getElementById('contentBox');
+            const statusTip = document.getElementById('statusTip');
+            
             if (!currentUnit || !currentLesson) {
                 contentBox.innerHTML = '<p style="color: #64748b;">请先选择单元和课程</p>';
                 currentTextToRead = "";
@@ -727,15 +588,18 @@
         }
 
         function setStatus(text, type) {
+            const statusTip = document.getElementById('statusTip');
             statusTip.textContent = text;
             statusTip.className = "status-tip";
             if (type) statusTip.classList.add(type);
         }
 
-        function setupEventListeners() {
-            showBtn.addEventListener('click', updateContent);
-
-            readBtn.addEventListener('click', () => {
+        // ==================== 所有事件绑定 ====================
+        function setupAllEventListeners() {
+            // 前台按钮事件
+            document.getElementById('showBtn').addEventListener('click', updateContent);
+            
+            document.getElementById('readBtn').addEventListener('click', () => {
                 if (!currentTextToRead) {
                     setStatus("请先选择单元和课程", "error");
                     return;
@@ -746,7 +610,7 @@
 
                 const utterance = new SpeechSynthesisUtterance(currentTextToRead);
                 utterance.lang = "id-ID";
-                utterance.rate = speechRate; // 使用用户设置的语速
+                utterance.rate = speechRate;
                 utterance.pitch = 1;
                 utterance.volume = 1;
 
@@ -756,9 +620,9 @@
                 window.speechSynthesis.speak(utterance);
             });
 
-            clearBtn.addEventListener('click', () => {
+            document.getElementById('clearBtn').addEventListener('click', () => {
                 window.speechSynthesis.cancel();
-                contentBox.innerHTML = '<p style="color: #64748b;">请先选择单元和课程</p>';
+                document.getElementById('contentBox').innerHTML = '<p style="color: #64748b;">请先选择单元和课程</p>';
                 currentTextToRead = "";
                 setStatus("", "");
                 document.querySelectorAll('#unitBtns .btn, #lessonBtns .btn').forEach(b => b.classList.remove('active'));
@@ -766,14 +630,14 @@
                 currentLesson = null;
             });
 
-            adminToggleBtn.addEventListener('click', () => {
+            // 后台开关事件
+            document.getElementById('adminToggleBtn').addEventListener('click', () => {
                 if (!isAdminOpen) {
-                    // 请求密码
                     const password = prompt("请输入后台管理密码：");
                     if (password === ADMIN_PASSWORD) {
                         isAdminOpen = true;
-                        adminSection.classList.add('active');
-                        adminToggleBtn.textContent = "关闭后台";
+                        document.getElementById('adminSection').style.display = 'block';
+                        document.getElementById('adminToggleBtn').textContent = "关闭后台";
                         renderAdminUnitsTable();
                         renderAdminLessonsTable();
                         updateLessonUnitSelect();
@@ -782,14 +646,11 @@
                     }
                 } else {
                     isAdminOpen = false;
-                    adminSection.classList.remove('active');
-                    adminToggleBtn.textContent = "后台管理";
+                    document.getElementById('adminSection').style.display = 'none';
+                    document.getElementById('adminToggleBtn').textContent = "后台管理";
                 }
             });
-        }
 
-        // ==================== 后台管理功能 ====================
-        function setupAdminEventListeners() {
             // 标签页切换
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.addEventListener('click', () => {
@@ -800,7 +661,7 @@
                 });
             });
 
-            // 单元管理
+            // 单元管理事件
             document.getElementById('addUnitBtn').addEventListener('click', () => {
                 const name = document.getElementById('unitName').value.trim();
                 if (!name) return alert('请输入单元名称');
@@ -820,7 +681,7 @@
                 saveData();
             });
 
-            // 课程管理
+            // 课程管理事件
             document.getElementById('lessonUnitSelect').addEventListener('change', renderAdminLessonsTable);
 
             document.getElementById('addLessonBtn').addEventListener('click', () => {
@@ -852,28 +713,52 @@
                 saveData();
             });
 
-            // 导入/导出
-            document.getElementById('importBtn').addEventListener('click', () => {
-                document.getElementById('importFile').click();
+            // ==================== 修复后的导入导出事件 ====================
+            const importFile = document.getElementById('importFile');
+            const importBtn = document.getElementById('importBtn');
+            const importStatusTip = document.getElementById('importStatusTip');
+
+            // 导入按钮点击事件（Safari兼容：同步触发文件选择）
+            importBtn.addEventListener('click', () => {
+                importFile.click();
             });
 
-            document.getElementById('importFile').addEventListener('change', (e) => {
+            // 文件选择后自动导入
+            importFile.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
                 
+                importStatusTip.textContent = "正在读取文件...";
+                importStatusTip.className = "status-tip";
+
                 const reader = new FileReader();
                 reader.onload = (event) => {
                     try {
-                        learningData = JSON.parse(event.target.result);
+                        const newData = JSON.parse(event.target.result);
+                        learningData = newData;
                         saveData();
-                        alert('导入成功');
+                        importStatusTip.textContent = "✅ 导入成功！页面已刷新数据";
+                        importStatusTip.className = "status-tip success";
+                        // 清空文件输入，允许重复导入同一个文件
+                        importFile.value = '';
                     } catch (err) {
-                        alert('导入失败：JSON格式错误');
+                        console.error("导入错误:", err);
+                        importStatusTip.textContent = "❌ 导入失败：JSON格式错误，请检查文件";
+                        importStatusTip.className = "status-tip error";
+                        importFile.value = '';
                     }
                 };
+
+                reader.onerror = () => {
+                    importStatusTip.textContent = "❌ 文件读取失败，请重试";
+                    importStatusTip.className = "status-tip error";
+                    importFile.value = '';
+                };
+
                 reader.readAsText(file);
             });
 
+            // 导出按钮事件
             document.getElementById('exportBtn').addEventListener('click', () => {
                 const dataStr = JSON.stringify(learningData, null, 2);
                 const blob = new Blob([dataStr], { type: 'application/json' });
@@ -885,6 +770,7 @@
                 URL.revokeObjectURL(url);
             });
 
+            // 重置按钮事件
             document.getElementById('resetBtn').addEventListener('click', () => {
                 if (!confirm('确定要重置为默认数据吗？这将删除所有自定义内容！')) return;
                 learningData = JSON.parse(JSON.stringify(defaultData));
@@ -893,6 +779,7 @@
             });
         }
 
+        // ==================== 后台管理渲染函数 ====================
         function renderAdminUnitsTable() {
             const tbody = document.querySelector('#unitsTable tbody');
             tbody.innerHTML = '';
@@ -942,14 +829,12 @@
             });
         }
 
-        function editLesson(unitId, lessonId) {
+        // 编辑课程函数（全局可访问）
+        window.editLesson = function(unitId, lessonId) {
             document.getElementById('lessonUnitSelect').value = unitId;
             document.getElementById('lessonId').value = lessonId;
             document.getElementById('lessonContent').value = JSON.stringify(learningData[unitId].lessons[lessonId], null, 2);
-        }
-
-        // 启动应用
-        init();
+        };
     </script>
 </body>
 </html>
