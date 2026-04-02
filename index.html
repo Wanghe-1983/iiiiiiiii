@@ -635,8 +635,8 @@
                     </table>
                 </div>
 
-                <!-- 导入/导出 -->
-                <div id="importExportTab" class="tab-content">
+                <!-- 导入/导出 - 修复ID与标签对应 -->
+                <div id="import-exportTab" class="tab-content">
                     <div class="form-group">
                         <label>1. 选择JSON课程文件</label>
                         <input type="file" id="importFile" accept=".json">
@@ -943,19 +943,28 @@
                 }
             };
 
-            // 标签页切换
+            // 标签页切换 - 修复ID匹配和容错处理
             document.querySelectorAll('.tab').forEach(function(tab) {
                 tab.onclick = function() {
+                    // 切换标签激活状态
                     document.querySelectorAll('.tab').forEach(function(t) {
                         t.classList.remove('active');
                     });
                     tab.classList.add('active');
                     
+                    // 切换内容显示 - 增加容错判断
                     const tabName = tab.dataset.tab;
+                    const targetElement = document.getElementById(tabName + 'Tab');
+                    
+                    if (!targetElement) {
+                        console.error("未找到标签页元素：" + tabName + 'Tab');
+                        return;
+                    }
+
                     document.querySelectorAll('.tab-content').forEach(function(content) {
                         content.style.display = 'none';
                     });
-                    document.getElementById(tabName + 'Tab').style.display = 'block';
+                    targetElement.style.display = 'block';
                 };
             });
 
