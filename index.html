@@ -5,1163 +5,446 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>印尼语学习系统 | TMI</title>
     <style>
-        /* 全局重置与基础配置 */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
-
         :root {
-            --primary-blue: #3b82f6;
-            --primary-light: #60a5fa;
-            --primary-dark: #2563eb;
-            --accent-cyan: #38bdf8;
-            --success-green: #22c55e;
-            --danger-red: #ef4444;
-            --bg-main: linear-gradient(135deg, #0f172a 0%, #131c31 50%, #0f172a 100%);
-            --card-bg: rgba(30, 41, 59, 0.6);
-            --card-border: rgba(148, 163, 184, 0.15);
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --text-muted: #94a3b8;
-            --input-bg: rgba(15, 23, 42, 0.7);
-            --input-border: rgba(148, 163, 184, 0.2);
-            --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.25);
-            --shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.35);
-            --shadow-primary: 0 4px 16px rgba(59, 130, 246, 0.3);
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 20px;
+            --primary: #3b82f6;
+            --cyan: #38bdf8;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --bg: #0f172a;
+            --card: rgba(30, 41, 59, 0.7);
+            --text: #f1f5f9;
+            --text2: #cbd5e1;
+            --radius: 16px;
         }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
-            background: var(--bg-main);
-            background-attachment: fixed;
-            color: var(--text-primary);
+            background: var(--bg);
+            color: var(--text);
+            padding: 20px;
             min-height: 100vh;
-            padding: 24px 20px 80px;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.5);
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(148, 163, 184, 0.3);
-            border-radius: 10px;
-            transition: background 0.3s ease;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(148, 163, 184, 0.5);
-        }
-
         .container {
-            max-width: 1080px;
+            max-width: 1000px;
             margin: 0 auto;
         }
-
         .card {
-            background: var(--card-bg);
-            -webkit-backdrop-filter: blur(20px) saturate(120%);
-            backdrop-filter: blur(20px) saturate(120%);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 28px;
-            margin-bottom: 24px;
-            box-shadow: var(--shadow-soft);
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            box-shadow: var(--shadow-hover);
-            border-color: rgba(148, 163, 184, 0.25);
-        }
-
-        .card h2 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: var(--text-primary);
-            border-left: 4px solid var(--primary-blue);
-            padding-left: 14px;
-            letter-spacing: 0.3px;
-            display: flex;
-            align-items: center;
-        }
-
-        .btn-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-bottom: 8px;
-            align-items: center;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
-            color: var(--text-secondary);
-            border: 1px solid var(--input-border);
-            padding: 12px 22px;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 500;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            letter-spacing: 0.2px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn:hover {
-            background: linear-gradient(135deg, #475569 0%, #334155 100%);
-            border-color: var(--primary-blue);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-primary);
-            color: var(--text-primary);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn.active {
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-dark) 100%);
-            color: white;
-            border-color: var(--primary-blue);
-            box-shadow: var(--shadow-primary);
-        }
-
-        .btn-action {
-            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--primary-dark) 100%);
-            color: white;
-            border: none;
-        }
-
-        .btn-action:hover {
-            background: linear-gradient(135deg, #0ea5e9 0%, var(--primary-dark) 100%);
-            border-color: var(--accent-cyan);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, var(--danger-red) 0%, #dc2626 100%);
-            color: white;
-            border: none;
-        }
-
-        .btn-danger:hover {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-            border-color: var(--danger-red);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, var(--success-green) 0%, #16a34a 100%);
-            color: white;
-            border: none;
-        }
-
-        .btn-success:hover {
-            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-            border-color: var(--success-green);
-        }
-
-        .content-box {
-            background: var(--input-bg);
-            border-radius: var(--radius-md);
+            background: var(--card);
+            border-radius: var(--radius);
             padding: 24px;
-            margin-top: 12px;
-            line-height: 2.2;
-            border: 1px solid var(--card-border);
+            margin-bottom: 20px;
+            border: 1px solid rgba(148,163,184,0.2);
         }
-
-        .content-item {
-            font-size: 17px;
-            margin-bottom: 10px;
-            padding: 8px 12px;
-            border-radius: var(--radius-sm);
-            transition: background 0.2s ease;
+        .card h2 {
+            margin-bottom: 16px;
+            border-left: 4px solid var(--primary);
+            padding-left: 12px;
         }
-
-        .content-item:hover {
-            background: rgba(59, 130, 246, 0.08);
-        }
-
-        .indonesian {
-            color: var(--accent-cyan);
-            font-weight: 600;
-            font-size: 18px;
-            letter-spacing: 0.5px;
-        }
-
-        .chinese {
-            color: var(--text-muted);
-            margin-left: 10px;
-        }
-
-        .status-tip {
-            margin-top: 16px;
-            font-size: 14px;
-            color: var(--text-muted);
-            min-height: 20px;
-            padding-left: 4px;
-        }
-
-        .status-tip.success {
-            color: var(--success-green);
-            font-weight: 500;
-        }
-
-        .status-tip.error {
-            color: var(--danger-red);
-            font-weight: 500;
-        }
-
-        .admin-section {
-            margin-top: 40px;
-            padding-top: 40px;
-            border-top: 2px solid var(--card-border);
-            display: none;
-        }
-
-        .form-group {
-            margin-bottom: 22px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 10px;
-            color: var(--text-secondary);
-            font-weight: 500;
-            font-size: 15px;
-            letter-spacing: 0.2px;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 14px 16px;
-            background: var(--input-bg);
-            border: 1px solid var(--input-border);
-            border-radius: var(--radius-md);
-            color: var(--text-primary);
-            font-size: 15px;
-            transition: all 0.3s ease;
-            -webkit-appearance: none;
-            appearance: none;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-        }
-
-        .form-group textarea {
-            min-height: 140px;
-            resize: vertical;
-            line-height: 1.6;
-            font-family: inherit;
-        }
-
-        .form-group input[type="file"] {
+        .btn {
+            padding: 10px 18px;
+            border-radius: 10px;
+            border: none;
             cursor: pointer;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            background: #334155;
+            color: white;
         }
-
-        .form-group input[type="file"]:hover {
-            border-color: var(--primary-blue);
+        .btn-success { background: var(--success); }
+        .btn-danger { background: var(--danger); }
+        .btn-action { background: var(--cyan); }
+        .btn-group { margin-bottom: 16px; }
+        .content-box {
+            background: rgba(15,23,42,0.6);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 10px;
         }
-
+        .indonesian { color: var(--cyan); font-weight: bold; }
+        .chinese { color: #94a3b8; margin-left: 8px; }
+        .admin-section { display: none; margin-top: 40px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            background: #1e293b;
+            color: white;
+            border: 1px solid #475569;
+        }
         .data-table {
             width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-top: 16px;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            border: 1px solid var(--card-border);
+            border-collapse: collapse;
+            margin-top: 12px;
         }
-
-        .data-table th,
-        .data-table td {
-            padding: 14px 16px;
+        .data-table th, .data-table td {
+            padding: 10px;
             text-align: left;
-            border-bottom: 1px solid var(--card-border);
+            border-bottom: 1px solid #334155;
         }
-
-        .data-table th {
-            background: var(--input-bg);
-            color: var(--accent-cyan);
-            font-weight: 600;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .data-table tr {
-            transition: background 0.2s ease;
-        }
-
-        .data-table tr:nth-child(even) {
-            background: rgba(15, 23, 42, 0.3);
-        }
-
-        .data-table tr:hover {
-            background: rgba(59, 130, 246, 0.08);
-        }
-
-        .data-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-            border-bottom: 1px solid var(--card-border);
-            padding-bottom: 12px;
-        }
-
-        .tab {
-            padding: 12px 24px;
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 500;
-            border-radius: var(--radius-sm);
-            transition: all 0.3s ease;
-            position: relative;
-            letter-spacing: 0.2px;
-        }
-
-        .tab:hover {
-            color: var(--text-primary);
-            background: rgba(30, 41, 59, 0.5);
-        }
-
-        .tab.active {
-            color: var(--accent-cyan);
-            background: rgba(59, 130, 246, 0.1);
-            font-weight: 600;
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab { padding: 10px 16px; background: #1e293b; border: none; color: white; border-radius: 8px; cursor: pointer; }
+        .tab.active { background: var(--primary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
         .speed-control {
             display: flex;
             align-items: center;
-            gap: 16px;
-            padding: 16px 20px;
-            background: var(--input-bg);
-            border-radius: var(--radius-md);
-            margin-top: 16px;
-            border: 1px solid var(--card-border);
+            gap: 10px;
+            margin-top: 12px;
         }
-
-        .speed-control label {
-            color: var(--text-secondary);
-            font-weight: 500;
-            white-space: nowrap;
-            font-size: 15px;
-        }
-
-        .speed-slider {
-            flex: 1;
-            -webkit-appearance: none;
-            appearance: none;
-            height: 6px;
-            background: rgba(148, 163, 184, 0.2);
-            border-radius: 10px;
-            outline: none;
-        }
-
-        .speed-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 22px;
-            height: 22px;
-            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--primary-blue) 100%);
-            border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(56, 189, 248, 0.4);
-        }
-
-        .speed-slider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.6);
-        }
-
-        .speed-value {
-            color: var(--accent-cyan);
-            font-weight: 700;
-            font-size: 16px;
-            min-width: 55px;
-            text-align: center;
-        }
-
+        .speed-slider { flex: 1; }
         .admin-toggle {
             position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 1000;
+            bottom: 20px;
+            right: 20px;
         }
-
-        .admin-toggle .btn {
-            box-shadow: var(--shadow-hover);
-        }
-
         .version-footer {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(15, 23, 42, 0.8);
-            -webkit-backdrop-filter: blur(20px);
-            backdrop-filter: blur(20px);
-            padding: 10px 20px;
+            background: rgba(15,23,42,0.9);
+            padding: 8px;
             text-align: center;
-            color: var(--text-muted);
-            font-size: 13px;
-            border-top: 1px solid var(--card-border);
-            z-index: 999;
-        }
-
-        .version-footer span {
-            color: var(--accent-cyan);
-            font-weight: 600;
-        }
-
-        hr {
-            border: none;
-            border-top: 1px solid var(--card-border);
-            margin: 28px 0;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 16px 12px 80px;
-            }
-            .card {
-                padding: 20px;
-            }
-            .card h2 {
-                font-size: 20px;
-            }
-            .btn {
-                padding: 10px 16px;
-                font-size: 14px;
-            }
-            .tabs {
-                flex-wrap: wrap;
-            }
-            .tab {
-                padding: 10px 16px;
-                font-size: 14px;
-            }
-            .speed-control {
-                flex-wrap: wrap;
-            }
-            .data-table {
-                font-size: 14px;
-            }
-            .data-table th, .data-table td {
-                padding: 10px 8px;
-            }
+            font-size: 12px;
+            color: #94a3b8;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div id="learningSection">
-            <div class="card">
-                <h2>选择单元</h2>
-                <div class="btn-group" id="unitBtns"></div>
-            </div>
-
-            <div class="card">
-                <h2>选择课程</h2>
-                <div class="btn-group" id="lessonBtns"></div>
-            </div>
-
-            <div class="card">
-                <h2>学习内容</h2>
-                <div class="content-box" id="contentBox">
-                    <p style="color: var(--text-muted);">请先选择单元和课程</p>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>快捷操作</h2>
-                <div class="btn-group">
-                    <button class="btn btn-action" id="showBtn">显示内容</button>
-                    <button class="btn btn-action" id="readBtn">朗读发音</button>
-                    <button class="btn btn-action" id="clearBtn">清空内容</button>
-                </div>
-                
-                <div class="speed-control">
-                    <label for="speedSlider">语速调节：</label>
-                    <input type="range" id="speedSlider" class="speed-slider" min="0.5" max="2" step="0.1" value="0.75">
-                    <span class="speed-value" id="speedValue">0.75x</span>
-                </div>
-                
-                <p class="status-tip" id="statusTip"></p>
-            </div>
+<div class="container">
+    <div class="card">
+        <h2>选择单元</h2>
+        <div class="btn-group" id="unitBtns"></div>
+    </div>
+    <div class="card">
+        <h2>选择课程</h2>
+        <div class="btn-group" id="lessonBtns"></div>
+    </div>
+    <div class="card">
+        <h2>学习内容</h2>
+        <div class="content-box" id="contentBox">请先选择单元和课程</div>
+    </div>
+    <div class="card">
+        <h2>快捷操作</h2>
+        <button class="btn btn-action" id="showBtn">显示内容</button>
+        <button class="btn btn-action" id="readBtn">朗读发音</button>
+        <button class="btn btn-action" id="clearBtn">清空内容</button>
+        <div class="speed-control">
+            <label>语速：</label>
+            <input type="range" min="0.5" max="2" step="0.1" value="0.9" class="speed-slider" id="speedSlider">
+            <span id="speedValue">0.9x</span>
         </div>
+    </div>
 
-        <div id="adminSection" class="admin-section">
-            <div class="card">
-                <h2>后台管理系统 
-                    <span style="font-size:14px; color:var(--text-muted); font-weight:normal; margin-left:12px;">
-                        版本 <span id="adminVersion">1.3.0</span>
-                    </span>
-                </h2>
-                
+    <div class="admin-section" id="adminSection">
+        <div class="card">
+            <h2>后台管理 | 版本 <span id="adminVersion">1.4.0</span></h2>
+            <div class="form-group">
+                <label>版本号</label>
+                <input type="text" id="versionInput" value="1.4.0">
+                <button class="btn btn-success" id="saveVersionBtn">保存版本</button>
+            </div>
+            <div class="tabs">
+                <button class="tab active" data-target="unitsTab">单元管理</button>
+                <button class="tab" data-target="lessonsTab">课程管理</button>
+                <button class="tab" data-target="importTab">导入导出</button>
+            </div>
+
+            <div class="tab-content active" id="unitsTab">
                 <div class="form-group">
-                    <label>版本号管理</label>
-                    <input type="text" id="versionInput" placeholder="例如：1.3.0" value="1.3.0">
-                    <button class="btn btn-success" id="saveVersionBtn" style="margin-top:8px;">保存版本号</button>
+                    <label>单元名称</label>
+                    <input type="text" id="unitName">
                 </div>
-                
-                <div class="tabs">
-                    <button class="tab active" data-tab="units">单元管理</button>
-                    <button class="tab" data-tab="lessons">课程管理</button>
-                    <button class="tab" data-tab="import-export">导入/导出</button>
-                </div>
+                <button class="btn btn-success" id="addUnitBtn">添加单元</button>
+                <button class="btn btn-danger" id="deleteUnitBtn">删除单元</button>
+                <table class="data-table" id="unitsTable">
+                    <thead><tr><th>选择</th><th>ID</th><th>名称</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
 
-                <div id="unitsTab" class="tab-content" style="display: block;">
-                    <div class="form-group">
-                        <label>单元名称</label>
-                        <input type="text" id="unitName" placeholder="例如：单元 1 - 基础问候">
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-success" id="addUnitBtn">添加单元</button>
-                        <button class="btn btn-danger" id="deleteUnitBtn">删除选中单元</button>
-                    </div>
-                    <table class="data-table" id="unitsTable">
-                        <thead>
-                            <tr>
-                                <th>选择</th>
-                                <th>单元ID</th>
-                                <th>单元名称</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+            <div class="tab-content" id="lessonsTab">
+                <div class="form-group">
+                    <label>选择单元</label>
+                    <select id="lessonUnitSelect"></select>
                 </div>
+                <div class="form-group">
+                    <label>课程ID</label>
+                    <input type="number" id="lessonId">
+                </div>
+                <div class="form-group">
+                    <label>课程内容（JSON）</label>
+                    <textarea id="lessonContent" rows="6"></textarea>
+                </div>
+                <button class="btn btn-success" id="addLessonBtn">保存课程</button>
+                <button class="btn btn-danger" id="deleteLessonBtn">删除课程</button>
+                <button class="btn btn-danger" id="clearAllLessonsBtn">一键清空本单元所有课程</button>
+                <table class="data-table" id="lessonsTable">
+                    <thead><tr><th>课程ID</th><th>预览</th><th>操作</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
 
-                <div id="lessonsTab" class="tab-content">
-                    <div class="form-group">
-                        <label>选择单元</label>
-                        <select id="lessonUnitSelect"></select>
-                    </div>
-                    <div class="form-group">
-                        <label>课程ID</label>
-                        <input type="number" id="lessonId" placeholder="例如：1">
-                    </div>
-                    <div class="form-group">
-                        <label>课程内容 (JSON格式)</label>
-                        <textarea id="lessonContent" placeholder='[{"id": "Selamat pagi", "cn": "早上好"}, {"id": "Terima kasih", "cn": "谢谢"}]'></textarea>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-success" id="addLessonBtn">添加/更新课程</button>
-                        <button class="btn btn-danger" id="deleteLessonBtn">删除课程</button>
-                        <button class="btn btn-danger" id="clearAllLessonsBtn">清空选中单元所有课程</button>
-                    </div>
-                    <table class="data-table" id="lessonsTable">
-                        <thead>
-                            <tr>
-                                <th>课程ID</th>
-                                <th>内容预览</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
+            <div class="tab-content" id="importTab">
+                <div class="form-group">
+                    <label>导入JSON</label>
+                    <input type="file" id="importFile" accept=".json">
+                    <button class="btn btn-action" id="importBtn">确认导入</button>
                 </div>
-
-                <div id="import-exportTab" class="tab-content">
-                    <div class="form-group">
-                        <label>1. 选择JSON课程文件</label>
-                        <input type="file" id="importFile" accept=".json">
-                    </div>
-                    <div class="form-group">
-                        <label>2. 执行导入</label>
-                        <button class="btn btn-action" id="importBtn">确认导入课程数据</button>
-                        <p class="status-tip" id="importStatusTip"></p>
-                    </div>
-                    <hr>
-                    <div class="form-group">
-                        <label>导出当前课程数据</label>
-                        <button class="btn btn-success" id="exportBtn">导出为 JSON 文件</button>
-                    </div>
-                    <hr>
-                    <div class="form-group">
-                        <label>重置为默认数据</label>
-                        <button class="btn btn-danger" id="resetBtn">重置所有数据</button>
-                    </div>
-                </div>
+                <button class="btn btn-success" id="exportBtn">导出数据</button>
+                <button class="btn btn-danger" id="resetBtn">重置全部数据</button>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="admin-toggle">
-        <button class="btn btn-action" id="adminToggleBtn">后台管理</button>
-    </div>
+<div class="admin-toggle">
+    <button class="btn btn-action" id="adminToggle">后台管理</button>
+</div>
+<div class="version-footer">印尼语学习系统 | 版本 <span id="footerVersion">V1.4.0</span></div>
 
-    <div class="version-footer">
-        印尼语学习系统 | 版本 <span id="footerVersion">V1.3.0</span> © 2024 TMI
-    </div>
+<script>
+let VERSION = "1.4.0";
+const ADMIN_PASSWORD = "admin123";
 
-    <script>
-        let VERSION = "1.3.0";
-        const ADMIN_PASSWORD = "admin123";
-        const DEFAULT_SPEECH_RATE = 0.75;
+const defaultData = {
+    "1": {
+        name: "单元1 - 基础问候",
+        lessons: {
+            "1": [
+                { id: "Selamat pagi", cn: "早上好" },
+                { id: "Terima kasih", cn: "谢谢" }
+            ]
+        }
+    }
+};
 
-        const defaultData = {
-            "1": {
-                "name": "单元 1 - 基础问候",
-                "lessons": {
-                    "1": [
-                        { "id": "Selamat pagi", "cn": "早上好" },
-                        { "id": "Selamat siang", "cn": "下午好" },
-                        { "id": "Selamat malam", "cn": "晚上好" },
-                        { "id": "Terima kasih", "cn": "谢谢" },
-                        { "id": "Maaf", "cn": "对不起" }
-                    ]
-                }
-            },
-            "2": {
-                "name": "单元 2 - 数字",
-                "lessons": {
-                    "1": [
-                        { "id": "Satu", "cn": "一" },
-                        { "id": "Dua", "cn": "二" },
-                        { "id": "Tiga", "cn": "三" },
-                        { "id": "Empat", "cn": "四" },
-                        { "id": "Lima", "cn": "五" }
-                    ]
-                }
-            }
+let learningData = JSON.parse(JSON.stringify(defaultData));
+let currentUnit = null;
+let currentLesson = null;
+let speechRate = 0.9;
+
+window.onload = () => {
+    loadData();
+    initUI();
+    bindEvents();
+};
+
+function loadData() {
+    let d = localStorage.getItem("indonesianLearningData");
+    let v = localStorage.getItem("indonesianLearningVersion");
+    if (d) learningData = JSON.parse(d);
+    if (v) VERSION = v;
+    updateVersionUI();
+}
+
+function saveData() {
+    localStorage.setItem("indonesianLearningData", JSON.stringify(learningData));
+    refreshUI();
+}
+
+function updateVersionUI() {
+    document.getElementById("adminVersion").innerText = VERSION;
+    document.getElementById("footerVersion").innerText = "V" + VERSION;
+    document.getElementById("versionInput").value = VERSION;
+}
+
+function initUI() {
+    refreshUI();
+    updateVersionUI();
+}
+
+function refreshUI() {
+    renderUnits();
+    renderLessons();
+    renderAdminUnits();
+    renderAdminLessons();
+    renderUnitSelect();
+}
+
+function renderUnits() {
+    let box = document.getElementById("unitBtns");
+    box.innerHTML = "";
+    Object.keys(learningData).forEach(id => {
+        let btn = document.createElement("button");
+        btn.className = "btn";
+        btn.innerText = learningData[id].name;
+        btn.onclick = () => {
+            currentUnit = id;
+            renderLessons();
         };
+        box.appendChild(btn);
+    });
+}
 
-        let learningData = {};
-        let currentUnit = null;
-        let currentLesson = null;
-        let currentTextToRead = "";
-        let isAdminOpen = false;
-        let speechRate = DEFAULT_SPEECH_RATE;
+function renderLessons() {
+    let box = document.getElementById("lessonBtns");
+    box.innerHTML = "";
+    if (!currentUnit || !learningData[currentUnit]?.lessons) return;
+    Object.keys(learningData[currentUnit].lessons).forEach(lid => {
+        let btn = document.createElement("button");
+        btn.className = "btn";
+        btn.innerText = "课程 " + lid;
+        btn.onclick = () => {
+            currentLesson = lid;
+            showContent();
+        };
+        box.appendChild(btn);
+    });
+}
 
-        window.onload = function() {
-            console.log("印尼语学习系统 版本" + VERSION + " 加载完成");
-            const savedVersion = localStorage.getItem('indonesianLearningVersion');
-            if (savedVersion) {
-                VERSION = savedVersion;
-                document.getElementById('versionInput').value = VERSION;
-            }
-            updateVersionDisplay();
-            
+function showContent() {
+    let c = document.getElementById("contentBox");
+    if (!currentUnit || !currentLesson) { c.innerHTML = "请选择单元和课程"; return; }
+    let list = learningData[currentUnit].lessons[currentLesson] || [];
+    let html = "";
+    list.forEach(i => {
+        html += `<div><span class='indonesian'>${i.id}</span> <span class='chinese'>${i.cn}</span></div>`;
+    });
+    c.innerHTML = html;
+}
+
+function bindEvents() {
+    document.getElementById("showBtn").onclick = showContent;
+    document.getElementById("clearBtn").onclick = () => {
+        document.getElementById("contentBox").innerText = "已清空";
+        currentUnit = currentLesson = null;
+    };
+
+    document.getElementById("speedSlider").oninput = e => {
+        speechRate = e.target.value;
+        document.getElementById("speedValue").innerText = speechRate + "x";
+    };
+
+    document.getElementById("readBtn").onclick = () => {
+        if (!currentUnit || !currentLesson) return;
+        let txt = learningData[currentUnit].lessons[currentLesson].map(i=>i.id).join(". ");
+        let u = new SpeechSynthesisUtterance(txt);
+        u.lang = "id-ID";
+        u.rate = speechRate;
+        speechSynthesis.speak(u);
+    };
+
+    document.getElementById("adminToggle").onclick = () => {
+        let p = prompt("输入后台密码：");
+        if (p === ADMIN_PASSWORD) {
+            document.getElementById("adminSection").style.display = "block";
+        }
+    };
+
+    document.querySelectorAll(".tab").forEach(t => {
+        t.onclick = () => {
+            document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+            document.querySelectorAll(".tab-content").forEach(x => x.classList.remove("active"));
+            t.classList.add("active");
+            document.getElementById(t.dataset.target).classList.add("active");
+        };
+    });
+
+    document.getElementById("addUnitBtn").onclick = () => {
+        let name = document.getElementById("unitName").value;
+        if (!name) return;
+        let id = Object.keys(learningData).length + 1;
+        learningData[id] = { name, lessons: {} };
+        saveData();
+    };
+
+    document.getElementById("addLessonBtn").onclick = () => {
+        let u = document.getElementById("lessonUnitSelect").value;
+        let lid = document.getElementById("lessonId").value;
+        let c = document.getElementById("lessonContent").value;
+        if (!u || !lid || !c) return;
+        try {
+            let data = JSON.parse(c);
+            if (!learningData[u].lessons) learningData[u].lessons = {};
+            learningData[u].lessons[lid] = data;
+            saveData();
+        } catch(e) { alert("JSON格式错误"); }
+    };
+
+    document.getElementById("clearAllLessonsBtn").onclick = () => {
+        let u = document.getElementById("lessonUnitSelect").value;
+        if (!u) return;
+        if (!confirm("确定清空此单元所有课程？")) return;
+        learningData[u].lessons = {};
+        saveData();
+    };
+
+    document.getElementById("importBtn").onclick = () => {
+        let f = document.getElementById("importFile").files[0];
+        if (!f) return;
+        let r = new FileReader();
+        r.onload = e => {
             try {
-                init();
-                setupAllEvents();
-                console.log("系统初始化成功");
-            } catch (err) {
-                console.error("初始化报错：", err);
-                alert("页面初始化失败：" + err.message);
-            }
+                learningData = JSON.parse(e.target.result);
+                saveData();
+                alert("导入成功！");
+            } catch(e) { alert("导入失败"); }
         };
+        r.readAsText(f);
+    };
 
-        function updateVersionDisplay() {
-            document.getElementById('adminVersion').textContent = VERSION;
-            document.getElementById('footerVersion').textContent = 'V' + VERSION;
-        }
+    document.getElementById("exportBtn").onclick = () => {
+        let blob = new Blob([JSON.stringify(learningData)], {type:"application/json"});
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        a.href = url;
+        a.download = "learning_data_v"+VERSION+".json";
+        a.click();
+    };
 
-        function init() {
-            const savedData = localStorage.getItem('indonesianLearningData');
-            if (savedData) {
-                try {
-                    learningData = JSON.parse(savedData);
-                    console.log("本地数据加载成功", learningData);
-                } catch (e) {
-                    console.error("本地数据解析失败，使用默认数据", e);
-                    learningData = JSON.parse(JSON.stringify(defaultData));
-                }
-            } else {
-                console.log("无本地数据，使用默认数据");
-                learningData = JSON.parse(JSON.stringify(defaultData));
-            }
+    document.getElementById("resetBtn").onclick = () => {
+        if (!confirm("确定重置所有数据？")) return;
+        learningData = JSON.parse(JSON.stringify(defaultData));
+        saveData();
+    };
 
-            renderUnitButtons();
-            initSpeedControl();
-        }
+    document.getElementById("saveVersionBtn").onclick = () => {
+        VERSION = document.getElementById("versionInput").value;
+        localStorage.setItem("indonesianLearningVersion", VERSION);
+        updateVersionUI();
+    };
+}
 
-        function refreshAllUI() {
-            renderUnitButtons();
-            renderAdminUnitsTable();
-            updateLessonUnitSelect();
-            renderAdminLessonsTable();
-            currentUnit = null;
-            currentLesson = null;
-            document.querySelectorAll('#unitBtns .btn, #lessonBtns .btn').forEach(function(b) {
-                b.classList.remove('active');
-            });
-            document.getElementById('contentBox').innerHTML = '<p style="color: var(--text-muted);">请先选择单元和课程</p>';
-        }
+function renderAdminUnits() {
+    let t = document.getElementById("unitsTable").querySelector("tbody");
+    t.innerHTML = "";
+    Object.keys(learningData).forEach(id => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `<td><input type='checkbox' value='${id}'></td><td>${id}</td><td>${learningData[id].name}</td>`;
+        t.appendChild(tr);
+    });
+}
 
-        function initSpeedControl() {
-            const speedSlider = document.getElementById('speedSlider');
-            const speedValue = document.getElementById('speedValue');
-            
-            speedSlider.value = speechRate;
-            speedValue.textContent = speechRate + 'x';
+function renderUnitSelect() {
+    let s = document.getElementById("lessonUnitSelect");
+    s.innerHTML = "";
+    Object.keys(learningData).forEach(id => {
+        let o = document.createElement("option");
+        o.value = id;
+        o.innerText = learningData[id].name;
+        s.appendChild(o);
+    });
+}
 
-            speedSlider.oninput = function(e) {
-                speechRate = parseFloat(e.target.value);
-                speedValue.textContent = speechRate.toFixed(2) + 'x';
-            };
-        }
-
-        function saveData() {
-            localStorage.setItem('indonesianLearningData', JSON.stringify(learningData));
-            console.log("数据已保存");
-            refreshAllUI();
-        }
-
-        function renderUnitButtons() {
-            const unitBtns = document.getElementById('unitBtns');
-            if (!unitBtns) {
-                console.error("单元按钮容器不存在");
-                return;
-            }
-            unitBtns.innerHTML = '';
-            
-            const unitIds = Object.keys(learningData).sort(function(a,b) { return Number(a) - Number(b); });
-            console.log("渲染单元列表", unitIds);
-
-            unitIds.forEach(function(unitId) {
-                const btn = document.createElement('button');
-                btn.className = 'btn';
-                btn.dataset.unit = unitId;
-                // 强制设置文本内容，解决Safari渲染问题
-                btn.innerText = learningData[unitId].name;
-                
-                btn.onclick = function() {
-                    document.querySelectorAll('#unitBtns .btn').forEach(function(b) {
-                        b.classList.remove('active');
-                    });
-                    btn.classList.add('active');
-                    currentUnit = parseInt(unitId);
-                    renderLessonButtons();
-                    updateContent();
-                };
-                
-                unitBtns.appendChild(btn);
-            });
-        }
-
-        function renderLessonButtons() {
-            const lessonBtns = document.getElementById('lessonBtns');
-            lessonBtns.innerHTML = '';
-            
-            if (!currentUnit || !learningData[currentUnit]) {
-                console.log("无选中单元");
-                return;
-            }
-
-            const lessonIds = Object.keys(learningData[currentUnit].lessons).sort(function(a,b) { return Number(a) - Number(b); });
-            lessonIds.forEach(function(lessonId) {
-                const btn = document.createElement('button');
-                btn.className = 'btn';
-                btn.dataset.lesson = lessonId;
-                btn.innerText = '课程 ' + lessonId;
-                
-                btn.onclick = function() {
-                    document.querySelectorAll('#lessonBtns .btn').forEach(function(b) {
-                        b.classList.remove('active');
-                    });
-                    btn.classList.add('active');
-                    currentLesson = parseInt(lessonId);
-                    updateContent();
-                };
-                
-                lessonBtns.appendChild(btn);
-            });
-        }
-
-        function updateContent() {
-            const contentBox = document.getElementById('contentBox');
-            const statusTip = document.getElementById('statusTip');
-            
-            if (!currentUnit || !currentLesson) {
-                contentBox.innerHTML = '<p style="color: var(--text-muted);">请先选择单元和课程</p>';
-                currentTextToRead = "";
-                return;
-            }
-
-            const data = learningData[currentUnit]?.lessons?.[currentLesson];
-            if (!data) {
-                contentBox.innerHTML = '<p style="color: var(--text-muted);">暂无内容</p>';
-                currentTextToRead = "";
-                return;
-            }
-
-            let html = '<p style="color: var(--accent-cyan); font-weight: 600; margin-bottom: 16px;">📘 ' + learningData[currentUnit].name + ' - 课程 ' + currentLesson + '</p>';
-            let textToRead = "";
-            
-            data.forEach(function(item) {
-                html += '<div class="content-item"><span class="indonesian">' + item.id + '</span><span class="chinese"> → ' + item.cn + '</span></div>';
-                textToRead += item.id + ". ";
-            });
-
-            contentBox.innerHTML = html;
-            currentTextToRead = textToRead.trim();
-            setStatus("内容已加载", "success");
-        }
-
-        function setStatus(text, type) {
-            const statusTip = document.getElementById('statusTip');
-            statusTip.textContent = text;
-            statusTip.className = "status-tip";
-            if (type) statusTip.classList.add(type);
-        }
-
-        function setupAllEvents() {
-            console.log("开始绑定事件...");
-            document.getElementById('showBtn').onclick = updateContent;
-            
-            document.getElementById('readBtn').onclick = function() {
-                if (!currentTextToRead) {
-                    setStatus("请先选择单元和课程", "error");
-                    return;
-                }
-
-                window.speechSynthesis.cancel();
-                setStatus("正在播放发音...", "");
-
-                const utterance = new SpeechSynthesisUtterance(currentTextToRead);
-                utterance.lang = "id-ID";
-                utterance.rate = speechRate;
-                utterance.pitch = 1;
-                utterance.volume = 1;
-
-                utterance.onend = function() {
-                    setStatus("播放完成", "success");
-                };
-                utterance.onerror = function(e) {
-                    console.error("播放报错", e);
-                    setStatus("播放失败，请刷新重试", "error");
-                };
-
-                window.speechSynthesis.speak(utterance);
-            };
-
-            document.getElementById('clearBtn').onclick = function() {
-                window.speechSynthesis.cancel();
-                document.getElementById('contentBox').innerHTML = '<p style="color: var(--text-muted);">请先选择单元和课程</p>';
-                currentTextToRead = "";
-                setStatus("", "");
-                document.querySelectorAll('#unitBtns .btn, #lessonBtns .btn').forEach(function(b) {
-                    b.classList.remove('active');
-                });
-                currentUnit = null;
-                currentLesson = null;
-            };
-
-            document.getElementById('adminToggleBtn').onclick = function() {
-                if (!isAdminOpen) {
-                    const password = prompt("请输入后台管理密码：");
-                    if (password === ADMIN_PASSWORD) {
-                        isAdminOpen = true;
-                        document.getElementById('adminSection').style.display = 'block';
-                        this.textContent = "关闭后台";
-                        renderAdminUnitsTable();
-                        updateLessonUnitSelect();
-                        renderAdminLessonsTable();
-                        console.log("后台已打开");
-                    } else if (password !== null) {
-                        alert("密码错误！");
-                    }
-                } else {
-                    isAdminOpen = false;
-                    document.getElementById('adminSection').style.display = 'none';
-                    this.textContent = "后台管理";
-                }
-            };
-
-            document.getElementById('saveVersionBtn').onclick = function() {
-                const newVersion = document.getElementById('versionInput').value.trim();
-                if (!newVersion) {
-                    alert("请输入版本号");
-                    return;
-                }
-                VERSION = newVersion;
-                localStorage.setItem('indonesianLearningVersion', VERSION);
-                updateVersionDisplay();
-                alert("版本号已保存：" + VERSION);
-            };
-
-            document.querySelectorAll('.tab').forEach(function(tab) {
-                tab.onclick = function() {
-                    document.querySelectorAll('.tab').forEach(function(t) {
-                        t.classList.remove('active');
-                    });
-                    tab.classList.add('active');
-                    
-                    const tabName = tab.dataset.tab;
-                    const targetElement = document.getElementById(tabName + 'Tab');
-                    
-                    if (!targetElement) {
-                        console.error("未找到标签页元素：" + tabName + 'Tab');
-                        return;
-                    }
-
-                    document.querySelectorAll('.tab-content').forEach(function(content) {
-                        content.style.display = 'none';
-                    });
-                    targetElement.style.display = 'block';
-                };
-            });
-
-            document.getElementById('addUnitBtn').onclick = function() {
-                const name = document.getElementById('unitName').value.trim();
-                if (!name) {
-                    alert('请输入单元名称');
-                    return;
-                }
-                
-                const unitIds = Object.keys(learningData).map(Number);
-                const newId = unitIds.length > 0 ? Math.max.apply(null, unitIds) + 1 : 1;
-                learningData[newId] = { name: name, lessons: {} };
-                saveData();
-                document.getElementById('unitName').value = '';
-            };
-
-            document.getElementById('deleteUnitBtn').onclick = function() {
-                const selected = document.querySelector('#unitsTable input[type="checkbox"]:checked');
-                if (!selected) {
-                    alert('请选择要删除的单元');
-                    return;
-                }
-                if (!confirm('确定要删除这个单元吗？')) return;
-                
-                delete learningData[selected.value];
-                saveData();
-            };
-
-            document.getElementById('lessonUnitSelect').onchange = renderAdminLessonsTable;
-
-            document.getElementById('addLessonBtn').onclick = function() {
-                const unitId = document.getElementById('lessonUnitSelect').value;
-                const lessonId = document.getElementById('lessonId').value;
-                const contentStr = document.getElementById('lessonContent').value.trim();
-                
-                if (!unitId || !lessonId || !contentStr) {
-                    alert('请填写完整信息');
-                    return;
-                }
-                
-                try {
-                    const content = JSON.parse(contentStr);
-                    if (!learningData[unitId].lessons) {
-                        learningData[unitId].lessons = {};
-                    }
-                    learningData[unitId].lessons[lessonId] = content;
-                    saveData();
-                    document.getElementById('lessonId').value = '';
-                    document.getElementById('lessonContent').value = '';
-                    alert('课程添加/更新成功');
-                } catch (e) {
-                    console.error("JSON解析错误", e);
-                    alert('JSON格式错误，请检查');
-                }
-            };
-
-            document.getElementById('deleteLessonBtn').onclick = function() {
-                const unitId = document.getElementById('lessonUnitSelect').value;
-                const lessonId = document.getElementById('lessonId').value;
-                if (!unitId || !lessonId) {
-                    alert('请选择要删除的课程');
-                    return;
-                }
-                if (!confirm('确定要删除这个课程吗？')) return;
-                
-                delete learningData[unitId].lessons[lessonId];
-                saveData();
-            };
-
-            // 一键清空课程功能（完整绑定）
-            document.getElementById('clearAllLessonsBtn').onclick = function() {
-                const unitId = document.getElementById('lessonUnitSelect').value;
-                if (!unitId) {
-                    alert('请先选择要清空课程的单元');
-                    return;
-                }
-                if (!confirm('确定要清空【' + learningData[unitId].name + '】的所有课程吗？此操作不可恢复！')) return;
-                
-                learningData[unitId].lessons = {};
-                saveData();
-                alert('已清空该单元的所有课程');
-            };
-
-            const importFile = document.getElementById('importFile');
-            const importBtn = document.getElementById('importBtn');
-            const importStatusTip = document.getElementById('importStatusTip');
-
-            importBtn.onclick = function() {
-                const file = importFile.files[0];
-                if (!file) {
-                    importStatusTip.textContent = "❌ 请先选择一个JSON文件";
-                    importStatusTip.className = "status-tip error";
-                    return;
-                }
-                
-                importStatusTip.textContent = "正在读取文件...";
-                importStatusTip.className = "status-tip";
-
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    try {
-                        const newData = JSON.parse(event.target.result);
-                        console.log("导入的文件内容", newData);
-                        learningData = newData;
-                        saveData();
-                        importStatusTip.textContent = "✅ 导入成功！页面已刷新所有数据";
-                        importStatusTip.className = "status-tip success";
-                        importFile.value = '';
-                        refreshAllUI();
-                    } catch (err) {
-                        console.error("导入错误:", err);
-                        importStatusTip.textContent = "❌ 导入失败：JSON格式错误，请检查文件内容";
-                        importStatusTip.className = "status-tip error";
-                        importFile.value = '';
-                    }
-                };
-
-                reader.onerror = function() {
-                    importStatusTip.textContent = "❌ 文件读取失败，请重试";
-                    importStatusTip.className = "status-tip error";
-                    importFile.value = '';
-                };
-
-                reader.readAsText(file);
-            };
-
-            document.getElementById('exportBtn').onclick = function() {
-                const dataStr = JSON.stringify(learningData, null, 2);
-                const blob = new Blob([dataStr], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'indonesian_learning_data_v' + VERSION + '.json';
-                a.click();
-                URL.revokeObjectURL(url);
-            };
-
-            document.getElementById('resetBtn').onclick = function() {
-                if (!confirm('确定要重置为默认数据吗？这将删除所有自定义内容！')) return;
-                learningData = JSON.parse(JSON.stringify(defaultData));
-                saveData();
-                alert('数据已重置为默认值');
-                refreshAllUI();
-            };
-
-            console.log("所有事件绑定完成");
-        }
-
-        function renderAdminUnitsTable() {
-            const tbody = document.querySelector('#unitsTable tbody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-            
-            const unitIds = Object.keys(learningData).sort(function(a,b) { return Number(a) - Number(b); });
-            unitIds.forEach(function(unitId) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = '<td><input type="checkbox" value="' + unitId + '"></td><td>' + unitId + '</td><td>' + learningData[unitId].name + '</td>';
-                tbody.appendChild(tr);
-            });
-        }
-
-        function updateLessonUnitSelect() {
-            const select = document.getElementById('lessonUnitSelect');
-            if (!select) return;
-            select.innerHTML = '';
-            
-            const unitIds = Object.keys(learningData).sort(function(a,b) { return Number(a) - Number(b); });
-            unitIds.forEach(function(unitId) {
-                const option = document.createElement('option');
-                option.value = unitId;
-                option.textContent = learningData[unitId].name;
-                select.appendChild(option);
-            });
-        }
-
-        function renderAdminLessonsTable() {
-            const unitId = document.getElementById('lessonUnitSelect')?.value;
-            const tbody = document.querySelector('#lessonsTable tbody');
-            if (!tbody) return;
-
-            if (!unitId || !learningData[unitId]) {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">请先选择单元</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = '';
-            const lessons = learningData[unitId].lessons || {};
-            const lessonIds = Object.keys(lessons).sort(function(a,b) { return Number(a) - Number(b); });
-            
-            lessonIds.forEach(function(lessonId) {
-                const tr = document.createElement('tr');
-                const preview = lessons[lessonId].slice(0, 2).map(function(i) { return i.id + ' → ' + i.cn; }).join('; ');
-                tr.innerHTML = '<td>' + lessonId + '</td><td>' + preview + (lessons[lessonId].length > 2 ? '...' : '') + '</td><td><button class="btn btn-action" style="padding:6px 12px;font-size:13px;" onclick="editLesson(\'' + unitId + '\', \'' + lessonId + '\')">编辑</button></td>';
-                tbody.appendChild(tr);
-            });
-        }
-
-        window.editLesson = function(unitId, lessonId) {
-            document.getElementById('lessonUnitSelect').value = unitId;
-            document.getElementById('lessonId').value = lessonId;
-            document.getElementById('lessonContent').value = JSON.stringify(learningData[unitId].lessons[lessonId], null, 2);
-        };
-    </script>
+function renderAdminLessons() {
+    let u = document.getElementById("lessonUnitSelect").value;
+    let t = document.getElementById("lessonsTable").querySelector("tbody");
+    t.innerHTML = "";
+    if (!u || !learningData[u]?.lessons) return;
+    Object.keys(learningData[u].lessons).forEach(lid => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `<td>${lid}</td><td>${learningData[u].lessons[lid].length}条</td><td></td>`;
+        t.appendChild(tr);
+    });
+}
+</script>
 </body>
 </html>
