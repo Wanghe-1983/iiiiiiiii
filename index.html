@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>印尼语学习系统 | TMI</title>
     <style>
-        /* 全局重置与现代设计系统 */
         * {
             margin: 0;
             padding: 0;
@@ -13,11 +12,9 @@
         }
 
         :root {
-            /* 现代渐变配色系统 */
             --bg-primary: #0a0f1a;
             --bg-secondary: #0f172a;
             --bg-card: rgba(15, 23, 42, 0.8);
-            --bg-card-hover: rgba(30, 41, 59, 0.9);
             --accent-primary: #6366f1;
             --accent-secondary: #8b5cf6;
             --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
@@ -31,14 +28,8 @@
             --danger: #ef4444;
             --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.3);
             --shadow-accent: 0 4px 24px rgba(99, 102, 241, 0.3);
-            --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 16px;
-            --radius-xl: 20px;
-        }
-
-        html {
-            scroll-behavior: smooth;
         }
 
         body {
@@ -46,18 +37,14 @@
             background: var(--bg-primary);
             background-image: 
                 radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%),
-                radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.08) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.08) 0px, transparent 50%),
-                radial-gradient(at 0% 100%, rgba(99, 102, 241, 0.08) 0px, transparent 50%);
+                radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.08) 0px, transparent 50%);
             color: var(--text-primary);
             min-height: 100vh;
             padding: 20px 16px 100px;
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* 现代滚动条 */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -69,10 +56,6 @@
         ::-webkit-scrollbar-thumb {
             background: var(--accent-primary);
             border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-secondary);
         }
 
         .container {
@@ -80,7 +63,6 @@
             margin: 0 auto;
         }
 
-        /* 现代卡片设计 */
         .card {
             background: var(--bg-card);
             backdrop-filter: blur(24px) saturate(140%);
@@ -121,7 +103,7 @@
             width: 28px;
             height: 28px;
             background: var(--accent-gradient-soft);
-            border-radius: var(--radius-sm);
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -129,7 +111,6 @@
             font-weight: 700;
         }
 
-        /* 现代按钮设计 */
         .btn-group {
             display: flex;
             flex-wrap: wrap;
@@ -148,8 +129,6 @@
             font-size: 14px;
             font-weight: 500;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
         }
 
         .btn:hover {
@@ -177,45 +156,12 @@
             border-color: transparent;
         }
 
-        .btn-danger {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            color: white;
-            border: none;
-        }
-
-        .btn-danger:hover {
-            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-            border-color: transparent;
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-            color: white;
-            border: none;
-        }
-
-        .btn-success:hover {
-            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-            border-color: transparent;
-        }
-
         .btn-warning {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: white;
             border: none;
         }
 
-        .btn-warning:hover {
-            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-            border-color: transparent;
-        }
-
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 13px;
-        }
-
-        /* 单词卡片设计 */
         .word-list {
             display: grid;
             gap: 8px;
@@ -275,7 +221,6 @@
             color: var(--accent-primary);
         }
 
-        /* 状态提示 */
         .status-tip {
             margin-top: 12px;
             font-size: 13px;
@@ -298,141 +243,6 @@
             font-weight: 500;
         }
 
-        /* 后台管理 */
-        .admin-section {
-            margin-top: 32px;
-            padding-top: 32px;
-            border-top: 1px solid var(--border-color);
-            display: none;
-        }
-
-        /* 表单设计 */
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 10px 14px;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            color: var(--text-primary);
-            font-size: 14px;
-            transition: all 0.3s ease;
-            -webkit-appearance: none;
-            appearance: none;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-            background: rgba(15, 23, 42, 0.9);
-        }
-
-        .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
-            font-family: inherit;
-        }
-
-        /* 表格设计 */
-        .data-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin-top: 12px;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            font-size: 14px;
-        }
-
-        .data-table th,
-        .data-table td {
-            padding: 10px 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .data-table th {
-            background: rgba(15, 23, 42, 0.9);
-            color: var(--accent-primary);
-            font-weight: 600;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .data-table tr:nth-child(even) {
-            background: rgba(15, 23, 42, 0.4);
-        }
-
-        .data-table tr:hover {
-            background: var(--accent-gradient-soft);
-        }
-
-        .data-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* 标签页设计 */
-        .tabs {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            flex-wrap: wrap;
-        }
-
-        .tab {
-            padding: 8px 16px;
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            border-radius: var(--radius-sm);
-            transition: all 0.3s ease;
-        }
-
-        .tab:hover {
-            color: var(--text-primary);
-            background: rgba(30, 41, 59, 0.6);
-        }
-
-        .tab.active {
-            color: var(--accent-primary);
-            background: var(--accent-gradient-soft);
-            font-weight: 600;
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* 控制滑块 */
         .control-panel {
             background: rgba(15, 23, 42, 0.6);
             border-radius: var(--radius-md);
@@ -497,7 +307,6 @@
             text-align: center;
         }
 
-        /* 朗读控制 */
         .read-control {
             margin-top: 12px;
         }
@@ -513,7 +322,6 @@
             font-size: 13px;
         }
 
-        /* 底部固定按钮 */
         .admin-toggle {
             position: fixed;
             bottom: 20px;
@@ -521,11 +329,6 @@
             z-index: 1000;
         }
 
-        .admin-toggle .btn {
-            box-shadow: var(--shadow-accent);
-        }
-
-        /* 版本号底部 */
         .version-footer {
             position: fixed;
             bottom: 0;
@@ -547,51 +350,42 @@
             font-weight: 600;
         }
 
-        /* 弹窗 */
-        .modal {
+        .loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.75);
+            background: var(--bg-primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 9999;
-            display: none;
+            z-index: 99999;
         }
 
-        .modal-box {
-            background: var(--bg-card);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            max-width: 420px;
-            width: 90%;
-            box-shadow: var(--shadow-accent);
+        .loading-content {
+            text-align: center;
         }
 
-        .modal-box h3 {
-            margin-bottom: 12px;
-            font-size: 18px;
-            font-weight: 700;
+        .loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
         }
 
-        .modal-box p {
-            margin-bottom: 20px;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
             color: var(--text-secondary);
             font-size: 14px;
         }
 
-        .modal-box .btn-group {
-            justify-content: flex-end;
-            margin-bottom: 0;
-        }
-
-        /* 响应式 */
         @media (max-width: 640px) {
             body {
                 padding: 16px 12px 90px;
@@ -599,23 +393,18 @@
             .card {
                 padding: 16px;
             }
-            .card-title {
-                font-size: 16px;
-            }
-            .btn {
-                padding: 9px 14px;
-                font-size: 13px;
-            }
-            .word-item {
-                padding: 10px 12px;
-            }
-            .word-indonesian {
-                font-size: 15px;
-            }
         }
     </style>
 </head>
 <body>
+    <!-- 加载遮罩 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">正在加载课程数据...</div>
+        </div>
+    </div>
+
     <div class="container">
         <!-- 前台学习区域 -->
         <div id="learningSection">
@@ -694,112 +483,6 @@
                 <p class="status-tip" id="statusTip"></p>
             </div>
         </div>
-
-        <!-- 后台管理区域 -->
-        <div id="adminSection" class="admin-section">
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-title">
-                        <div class="card-title-icon">⚙️</div>
-                        后台管理系统
-                        <span style="font-size:13px; color:var(--text-muted); font-weight:normal;">
-                            版本 <span id="adminVersion">2.0.0</span>
-                        </span>
-                    </div>
-                </div>
-                
-                <!-- 版本号管理 -->
-                <div class="form-group">
-                    <label>版本号管理</label>
-                    <input type="text" id="versionInput" placeholder="例如：2.0.0" value="2.0.0">
-                    <button class="btn btn-success btn-sm" id="saveVersionBtn" style="margin-top:8px;">保存版本号</button>
-                </div>
-                
-                <!-- 标签页 -->
-                <div class="tabs">
-                    <button class="tab active" data-tab="units">单元管理</button>
-                    <button class="tab" data-tab="lessons">课程管理</button>
-                    <button class="tab" data-tab="import-export">导入/导出</button>
-                </div>
-
-                <!-- 单元管理 -->
-                <div id="unitsTab" class="tab-content" style="display: block;">
-                    <div class="form-group">
-                        <label>单元名称</label>
-                        <input type="text" id="unitName" placeholder="例如：单元 1 - 基础问候">
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-success" id="addUnitBtn">添加单元</button>
-                        <button class="btn btn-danger" id="batchDeleteUnitBtn">批量删除选中单元</button>
-                        <button class="btn btn-warning" id="refreshDataBtn">🔄 强制刷新数据</button>
-                    </div>
-                    <table class="data-table" id="unitsTable">
-                        <thead>
-                            <tr>
-                                <th><input type="checkbox" id="selectAllUnits"> 全选</th>
-                                <th>单元ID</th>
-                                <th>单元名称</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-
-                <!-- 课程管理 -->
-                <div id="lessonsTab" class="tab-content">
-                    <div class="form-group">
-                        <label>选择单元</label>
-                        <select id="lessonUnitSelect"></select>
-                    </div>
-                    <div class="form-group">
-                        <label>课程ID</label>
-                        <input type="number" id="lessonId" placeholder="例如：1">
-                    </div>
-                    <div class="form-group">
-                        <label>课程内容 (JSON格式)</label>
-                        <textarea id="lessonContent" placeholder='[{"id": "Selamat pagi", "cn": "早上好"}, {"id": "Terima kasih", "cn": "谢谢"}]'></textarea>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-success" id="addLessonBtn">添加/更新课程</button>
-                        <button class="btn btn-danger" id="deleteLessonBtn">删除课程</button>
-                        <button class="btn btn-danger" id="clearAllLessonsBtn">清空选中单元所有课程</button>
-                    </div>
-                    <table class="data-table" id="lessonsTable">
-                        <thead>
-                            <tr>
-                                <th>课程ID</th>
-                                <th>内容预览</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-
-                <!-- 导入/导出 -->
-                <div id="import-exportTab" class="tab-content">
-                    <div class="form-group">
-                        <label>1. 选择JSON课程文件</label>
-                        <input type="file" id="importFile" accept=".json">
-                    </div>
-                    <div class="form-group">
-                        <label>2. 执行导入</label>
-                        <button class="btn btn-primary" id="importBtn">确认导入课程数据</button>
-                        <p class="status-tip" id="importStatusTip"></p>
-                    </div>
-                    <hr style="border-color: var(--border-color); margin: 20px 0;">
-                    <div class="form-group">
-                        <label>导出当前课程数据</label>
-                        <button class="btn btn-success" id="exportBtn">导出为 JSON 文件</button>
-                    </div>
-                    <hr style="border-color: var(--border-color); margin: 20px 0;">
-                    <div class="form-group">
-                        <label>重置为默认数据</label>
-                        <button class="btn btn-danger" id="resetBtn">重置所有数据</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- 后台管理开关 -->
@@ -809,55 +492,33 @@
 
     <!-- 版本号底部显示 -->
     <div class="version-footer">
-        印尼语学习系统 | 版本 <span id="footerVersion">V2.0.0</span> © 2024 TMI
+        印尼语学习系统 | 版本 <span id="footerVersion">V3.0.0</span> | 静态数据模式
     </div>
 
-    <!-- 提示弹窗 -->
-    <div class="modal" id="tipModal">
-        <div class="modal-box">
-            <h3 id="modalTitle">提示</h3>
-            <p id="modalContent">内容</p>
-            <div class="btn-group">
-                <button class="btn btn-primary" id="modalCloseBtn">关闭</button>
+    <!-- 后台管理弹窗 -->
+    <div class="modal" id="adminModal" style="display: none;">
+        <div class="modal-box" style="max-width: 600px;">
+            <h3>后台管理</h3>
+            <p style="margin-bottom: 16px; color: var(--text-secondary); font-size: 14px;">
+                <strong>当前模式：</strong>静态文件托管<br>
+                <strong>数据来源：</strong><code style="background: rgba(99,102,241,0.1); padding: 2px 6px; border-radius: 4px;">indonesian_learning_data.json</code><br><br>
+                <strong>更新课程方法：</strong><br>
+                1. 修改仓库里的 <code style="background: rgba(99,102,241,0.1); padding: 2px 6px; border-radius: 4px;">indonesian_learning_data.json</code><br>
+                2. 提交并推送到仓库<br>
+                3. 用户刷新网页自动加载新课程
+            </p>
+            <div class="btn-group" style="justify-content: flex-end;">
+                <button class="btn btn-primary" id="closeAdminModal">关闭</button>
             </div>
         </div>
     </div>
 
     <script>
         // ==================== 全局配置 ====================
-        let VERSION = "2.0.0";
+        let VERSION = "3.0.0";
         const ADMIN_PASSWORD = "admin123";
         const DEFAULT_SPEECH_RATE = 0.75;
-        const STORAGE_KEY_DATA = "indonesianLearningData";
-        const STORAGE_KEY_VERSION = "indonesianLearningVersion";
-
-        // 默认数据
-        const defaultData = {
-            "1": {
-                "name": "单元 1 - 基础问候",
-                "lessons": {
-                    "1": [
-                        { "id": "Selamat pagi", "cn": "早上好" },
-                        { "id": "Selamat siang", "cn": "下午好" },
-                        { "id": "Selamat malam", "cn": "晚上好" },
-                        { "id": "Terima kasih", "cn": "谢谢" },
-                        { "id": "Maaf", "cn": "对不起" }
-                    ]
-                }
-            },
-            "2": {
-                "name": "单元 2 - 数字",
-                "lessons": {
-                    "1": [
-                        { "id": "Satu", "cn": "一" },
-                        { "id": "Dua", "cn": "二" },
-                        { "id": "Tiga", "cn": "三" },
-                        { "id": "Empat", "cn": "四" },
-                        { "id": "Lima", "cn": "五" }
-                    ]
-                }
-            }
-        };
+        const DATA_FILE_URL = "./indonesian_learning_data.json"; // 静态数据文件路径
 
         // ==================== 全局状态 ====================
         let learningData = {};
@@ -872,162 +533,32 @@
         let currentReadMaxTimes = 0;
         let isReading = false;
 
-        // ==================== 弹窗工具函数 ====================
-        function showModal(title, content) {
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalContent').textContent = content;
-            document.getElementById('tipModal').style.display = 'flex';
-        }
-
-        // ==================== 数据结构校验 ====================
-        function validateAndConvertData(rawData) {
-            let isStandardFormat = true;
+        // ==================== 从静态文件加载数据（核心修改） ====================
+        async function loadDataFromFile() {
             try {
-                const unitIds = Object.keys(rawData);
-                for (let unitId of unitIds) {
-                    const unit = rawData[unitId];
-                    if (typeof unit.name !== "string" || typeof unit.lessons !== "object") {
-                        isStandardFormat = false;
-                        break;
-                    }
+                console.log("正在从静态文件加载课程数据...");
+                const response = await fetch(DATA_FILE_URL);
+                if (!response.ok) {
+                    throw new Error("无法加载数据文件，HTTP状态: " + response.status);
                 }
-                if (isStandardFormat) {
-                    return { success: true, data: rawData };
-                }
-            } catch (e) {
-                isStandardFormat = false;
-            }
-
-            // 兼容词汇/句子库格式
-            try {
-                const convertedData = {};
-                let unitId = 1;
-
-                if (rawData.vocabulary && Array.isArray(rawData.vocabulary)) {
-                    const vocabList = rawData.vocabulary;
-                    convertedData[unitId] = {
-                        name: "单元 1 - 基础词汇",
-                        lessons: {}
-                    };
-                    for (let i = 0; i < vocabList.length; i += 20) {
-                        const lessonId = Math.floor(i / 20) + 1;
-                        convertedData[unitId].lessons[lessonId] = vocabList.slice(i, i + 20).map(item => {
-                            return { id: item.indonesian, cn: item.chinese };
-                        });
-                    }
-                    unitId++;
-                }
-
-                if (rawData.sentences && Array.isArray(rawData.sentences)) {
-                    const sentenceList = rawData.sentences;
-                    convertedData[unitId] = {
-                        name: "单元 2 - 常用句子",
-                        lessons: {}
-                    };
-                    for (let i = 0; i < sentenceList.length; i += 20) {
-                        const lessonId = Math.floor(i / 20) + 1;
-                        convertedData[unitId].lessons[lessonId] = sentenceList.slice(i, i + 20).map(item => {
-                            return { id: item.indonesian, cn: item.chinese };
-                        });
-                    }
-                    unitId++;
-                }
-
-                if (Object.keys(convertedData).length > 0) {
-                    return { success: true, data: convertedData };
-                } else {
-                    return { success: false, message: "未识别到有效词汇/句子数据" };
-                }
-            } catch (e) {
-                console.error("格式转换失败", e);
-                return { success: false, message: "JSON格式无法解析" };
+                learningData = await response.json();
+                console.log("✅ 课程数据加载成功", learningData);
+                
+                // 初始化UI
+                document.getElementById('loadingOverlay').style.display = 'none';
+                renderUnitButtons();
+                document.getElementById('statusTip').textContent = "课程数据加载成功！请选择单元开始学习";
+                document.getElementById('statusTip').className = "status-tip success";
+            } catch (error) {
+                console.error("❌ 数据加载失败", error);
+                document.getElementById('loadingOverlay').querySelector('.loading-text').textContent = 
+                    "数据加载失败，请确保 indonesian_learning_data.json 文件在仓库根目录";
+                document.getElementById('statusTip').textContent = "数据加载失败，请检查数据文件";
+                document.getElementById('statusTip').className = "status-tip error";
             }
         }
 
-        // ==================== 数据保存（彻底修复刷新丢失） ====================
-        function saveData() {
-            try {
-                const dataStr = JSON.stringify(learningData);
-                localStorage.setItem(STORAGE_KEY_DATA, dataStr);
-                console.log("✅ 数据已成功写入本地存储", learningData);
-                refreshAllUI();
-                return true;
-            } catch (err) {
-                console.error("❌ 数据保存失败", err);
-                showModal("错误", "数据保存失败：" + err.message);
-                return false;
-            }
-        }
-
-        // ==================== 从本地存储加载数据 ====================
-        function loadDataFromStorage() {
-            try {
-                const savedData = localStorage.getItem(STORAGE_KEY_DATA);
-                if (!savedData) {
-                    console.log("ℹ️ 无本地数据，使用默认数据");
-                    learningData = JSON.parse(JSON.stringify(defaultData));
-                    return;
-                }
-                const parsedData = JSON.parse(savedData);
-                const validateResult = validateAndConvertData(parsedData);
-                if (validateResult.success) {
-                    learningData = validateResult.data;
-                    console.log("✅ 本地数据加载成功", learningData);
-                } else {
-                    console.error("❌ 本地数据格式异常，使用默认数据");
-                    learningData = JSON.parse(JSON.stringify(defaultData));
-                    document.getElementById('statusTip').textContent = "本地数据格式异常，已恢复为默认数据";
-                    document.getElementById('statusTip').className = "status-tip warning";
-                }
-            } catch (err) {
-                console.error("❌ 本地数据解析失败，使用默认数据", err);
-                learningData = JSON.parse(JSON.stringify(defaultData));
-                document.getElementById('statusTip').textContent = "本地数据解析失败，已恢复为默认数据";
-                document.getElementById('statusTip').className = "status-tip warning";
-            }
-        }
-
-        // ==================== 全局UI刷新 ====================
-        function refreshAllUI() {
-            renderUnitButtons();
-            renderAdminUnitsTable();
-            updateLessonUnitSelect();
-            renderAdminLessonsTable();
-            currentUnit = null;
-            currentLesson = null;
-            currentSelectedWord = null;
-            currentSelectedWordIndex = null;
-            stopAllRead();
-            document.querySelectorAll('#unitBtns .btn, #lessonBtns .btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('contentBox').innerHTML = '<p style="color: var(--text-muted); font-size: 14px; padding: 12px;">请先选择单元和课程</p>';
-        }
-
-        // ==================== 版本号UI更新 ====================
-        function updateVersionDisplay() {
-            document.getElementById('adminVersion').textContent = VERSION;
-            document.getElementById('footerVersion').textContent = 'V' + VERSION;
-            document.getElementById('versionInput').value = VERSION;
-        }
-
-        // ==================== 页面初始化 ====================
-        window.onload = function() {
-            console.log("印尼语学习系统 版本" + VERSION + " 加载完成");
-            document.getElementById('modalCloseBtn').onclick = () => {
-                document.getElementById('tipModal').style.display = 'none';
-            };
-            const savedVersion = localStorage.getItem(STORAGE_KEY_VERSION);
-            if (savedVersion) {
-                VERSION = savedVersion;
-            }
-            updateVersionDisplay();
-            
-            loadDataFromStorage();
-            initSpeedControl();
-            setupAllEvents();
-            console.log("✅ 系统初始化完成");
-        };
-
-        // ==================== 渲染单元按钮 ====================
+        // ==================== UI渲染函数 ====================
         function renderUnitButtons() {
             const unitBtns = document.getElementById('unitBtns');
             unitBtns.innerHTML = '';
@@ -1051,7 +582,6 @@
             });
         }
 
-        // ==================== 渲染课程按钮 ====================
         function renderLessonButtons() {
             const lessonBtns = document.getElementById('lessonBtns');
             lessonBtns.innerHTML = '';
@@ -1075,7 +605,6 @@
             });
         }
 
-        // ==================== 更新内容显示 ====================
         function updateContent() {
             const contentBox = document.getElementById('contentBox');
             const statusTip = document.getElementById('statusTip');
@@ -1112,16 +641,13 @@
             statusTip.className = "status-tip success";
         }
 
-        // ==================== 单词点击选中事件（优化：同单元切换单词自动播放） ====================
         function bindWordClickEvent() {
             document.querySelectorAll('.word-item').forEach(item => {
                 item.onclick = () => {
                     const index = parseInt(item.dataset.index);
                     const text = item.dataset.text;
                     
-                    // 取消之前的选中
                     document.querySelectorAll('.word-item').forEach(i => i.classList.remove('active'));
-                    // 选中当前
                     item.classList.add('active');
                     currentSelectedWord = text;
                     currentSelectedWordIndex = index;
@@ -1129,10 +655,8 @@
                     document.getElementById('readStatusTip').textContent = "已选中：" + currentSelectedWord;
                     document.getElementById('readStatusTip').className = "status-tip success";
                     
-                    // 如果正在播放，自动切换到新单词
                     if (isReading || isLoopReading) {
                         stopAllRead();
-                        // 继续之前的播放模式
                         if (currentReadMaxTimes === 0) {
                             readWord(currentSelectedWord, 0, true);
                         } else {
@@ -1143,7 +667,7 @@
             });
         }
 
-        // ==================== 停止所有朗读 ====================
+        // ==================== 朗读控制 ====================
         function stopAllRead() {
             window.speechSynthesis.cancel();
             isLoopReading = false;
@@ -1153,7 +677,6 @@
             document.getElementById('readStatusTip').className = "status-tip warning";
         }
 
-        // ==================== 朗读单词 ====================
         function readWord(text, times, isLoop = false) {
             stopAllRead();
             if (!text) {
@@ -1169,7 +692,6 @@
             document.getElementById('readStatusTip').textContent = `正在朗读：${text}，${isLoop ? '无限循环中' : `共${times}次`}`;
             document.getElementById('readStatusTip').className = "status-tip success";
 
-            // 单次朗读函数
             function speakOnce() {
                 if (!isReading && !isLoopReading) return;
                 
@@ -1212,7 +734,6 @@
             }
         }
 
-        // ==================== 全文朗读 ====================
         function readAllContent() {
             stopAllRead();
             if (!currentUnit || !currentLesson) {
@@ -1249,13 +770,6 @@
             window.speechSynthesis.speak(utterance);
         }
 
-        function setStatus(text, type) {
-            const statusTip = document.getElementById('statusTip');
-            statusTip.textContent = text;
-            statusTip.className = "status-tip";
-            if (type) statusTip.classList.add(type);
-        }
-
         function initSpeedControl() {
             const speedSlider = document.getElementById('speedSlider');
             const speedValue = document.getElementById('speedValue');
@@ -1268,14 +782,14 @@
             };
         }
 
-        // ==================== 所有事件绑定 ====================
+        // ==================== 事件绑定 ====================
         function setupAllEvents() {
             document.getElementById('readAllBtn').onclick = readAllContent;
             document.getElementById('stopReadBtn').onclick = stopAllRead;
             document.getElementById('clearBtn').onclick = () => {
                 stopAllRead();
                 document.getElementById('contentBox').innerHTML = '<p style="color: var(--text-muted); font-size: 14px; padding: 12px;">请先选择单元和课程</p>';
-                setStatus("", "");
+                document.getElementById('statusTip').textContent = "";
                 document.querySelectorAll('#unitBtns .btn, #lessonBtns .btn').forEach(b => b.classList.remove('active'));
                 currentUnit = null;
                 currentLesson = null;
@@ -1283,7 +797,6 @@
                 currentSelectedWordIndex = null;
             };
 
-            // 单词朗读次数按钮
             document.querySelectorAll('.read-times-btn').forEach(btn => {
                 btn.onclick = () => {
                     const times = parseInt(btn.dataset.times);
@@ -1295,313 +808,31 @@
                 };
             });
 
-            // 后台开关
+            // 后台管理（简化版，只显示说明）
             document.getElementById('adminToggleBtn').onclick = () => {
-                if (!isAdminOpen) {
-                    const password = prompt("请输入后台管理密码：");
-                    if (password === ADMIN_PASSWORD) {
-                        isAdminOpen = true;
-                        document.getElementById('adminSection').style.display = 'block';
-                        this.textContent = "关闭后台";
-                        refreshAllUI();
-                    } else if (password !== null) {
-                        alert("密码错误！");
-                    }
-                } else {
-                    isAdminOpen = false;
-                    document.getElementById('adminSection').style.display = 'none';
-                    this.textContent = "后台管理";
+                const password = prompt("请输入后台管理密码：");
+                if (password === ADMIN_PASSWORD) {
+                    document.getElementById('adminModal').style.display = 'flex';
+                } else if (password !== null) {
+                    alert("密码错误！");
                 }
             };
 
-            // 版本号保存
-            document.getElementById('saveVersionBtn').onclick = () => {
-                const newVersion = document.getElementById('versionInput').value.trim();
-                if (!newVersion) {
-                    showModal("提示", "请输入版本号");
-                    return;
-                }
-                VERSION = newVersion;
-                localStorage.setItem(STORAGE_KEY_VERSION, VERSION);
-                updateVersionDisplay();
-                showModal("成功", "版本号已保存：" + VERSION);
-            };
-
-            // 标签页切换
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.onclick = () => {
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    const tabName = tab.dataset.tab;
-                    const targetElement = document.getElementById(tabName + 'Tab');
-                    if (!targetElement) return;
-                    document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
-                    targetElement.style.display = 'block';
-                };
-            });
-
-            // 单元管理 - 添加单元
-            document.getElementById('addUnitBtn').onclick = () => {
-                const name = document.getElementById('unitName').value.trim();
-                if (!name) {
-                    showModal("提示", "请输入单元名称");
-                    return;
-                }
-                const unitIds = Object.keys(learningData).map(Number);
-                const newId = unitIds.length > 0 ? Math.max(...unitIds) + 1 : 1;
-                learningData[newId] = { name: name, lessons: {} };
-                const saveSuccess = saveData();
-                if (saveSuccess) {
-                    document.getElementById('unitName').value = '';
-                    showModal("成功", "单元添加成功");
-                }
-            };
-
-            // 单元管理 - 全选
-            document.getElementById('selectAllUnits').onchange = (e) => {
-                const checked = e.target.checked;
-                document.querySelectorAll('#unitsTable tbody input[type="checkbox"]').forEach(cb => {
-                    cb.checked = checked;
-                });
-            };
-
-            // 单元管理 - 批量删除
-            document.getElementById('batchDeleteUnitBtn').onclick = () => {
-                const selected = document.querySelectorAll('#unitsTable tbody input[type="checkbox"]:checked');
-                if (selected.length === 0) {
-                    showModal("提示", "请选择要删除的单元");
-                    return;
-                }
-                if (!confirm(`确定要删除选中的${selected.length}个单元吗？此操作不可恢复！`)) return;
-                
-                selected.forEach(cb => {
-                    delete learningData[cb.value];
-                });
-                const saveSuccess = saveData();
-                if (saveSuccess) {
-                    document.getElementById('selectAllUnits').checked = false;
-                    showModal("成功", `已成功删除${selected.length}个单元`);
-                }
-            };
-
-            // 后台强制刷新数据
-            document.getElementById('refreshDataBtn').onclick = () => {
-                loadDataFromStorage();
-                refreshAllUI();
-                showModal("成功", "数据已强制刷新");
-            };
-
-            // 课程管理 - 单元切换
-            document.getElementById('lessonUnitSelect').onchange = renderAdminLessonsTable;
-
-            // 课程管理 - 添加/更新
-            document.getElementById('addLessonBtn').onclick = () => {
-                const unitId = document.getElementById('lessonUnitSelect').value;
-                const lessonId = document.getElementById('lessonId').value;
-                const contentStr = document.getElementById('lessonContent').value.trim();
-                
-                if (!unitId || !lessonId || !contentStr) {
-                    showModal("提示", "请填写完整信息");
-                    return;
-                }
-                
-                try {
-                    const content = JSON.parse(contentStr);
-                    if (!Array.isArray(content)) {
-                        showModal("错误", "课程内容必须是数组格式");
-                        return;
-                    }
-                    if (!learningData[unitId].lessons) {
-                        learningData[unitId].lessons = {};
-                    }
-                    learningData[unitId].lessons[lessonId] = content;
-                    const saveSuccess = saveData();
-                    if (saveSuccess) {
-                        document.getElementById('lessonId').value = '';
-                        document.getElementById('lessonContent').value = '';
-                        showModal("成功", "课程添加/更新成功");
-                    }
-                } catch (e) {
-                    console.error("JSON解析错误", e);
-                    showModal("错误", "JSON格式错误，请检查");
-                }
-            };
-
-            // 课程管理 - 删除单课程
-            document.getElementById('deleteLessonBtn').onclick = () => {
-                const unitId = document.getElementById('lessonUnitSelect').value;
-                const lessonId = document.getElementById('lessonId').value;
-                if (!unitId || !lessonId) {
-                    showModal("提示", "请选择要删除的课程");
-                    return;
-                }
-                if (!confirm('确定要删除这个课程吗？')) return;
-                
-                delete learningData[unitId].lessons[lessonId];
-                const saveSuccess = saveData();
-                if (saveSuccess) {
-                    showModal("成功", "课程删除成功");
-                }
-            };
-
-            // 课程管理 - 一键清空单元所有课程
-            document.getElementById('clearAllLessonsBtn').onclick = () => {
-                const unitId = document.getElementById('lessonUnitSelect').value;
-                if (!unitId) {
-                    showModal("提示", "请先选择要清空课程的单元");
-                    return;
-                }
-                if (!confirm(`确定要清空【${learningData[unitId].name}】的所有课程吗？此操作不可恢复！`)) return;
-                
-                learningData[unitId].lessons = {};
-                const saveSuccess = saveData();
-                if (saveSuccess) {
-                    showModal("成功", "已清空该单元的所有课程");
-                }
-            };
-
-            // 导入功能（彻底修复刷新丢失）
-            const importFile = document.getElementById('importFile');
-            const importBtn = document.getElementById('importBtn');
-            const importStatusTip = document.getElementById('importStatusTip');
-
-            importBtn.onclick = () => {
-                const file = importFile.files[0];
-                if (!file) {
-                    importStatusTip.textContent = "❌ 请先选择一个JSON文件";
-                    importStatusTip.className = "status-tip error";
-                    return;
-                }
-                
-                importStatusTip.textContent = "正在读取文件...";
-                importStatusTip.className = "status-tip";
-
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    try {
-                        const rawData = JSON.parse(event.target.result);
-                        console.log("导入的文件内容", rawData);
-                        
-                        const convertResult = validateAndConvertData(rawData);
-                        if (!convertResult.success) {
-                            importStatusTip.textContent = "❌ " + convertResult.message;
-                            importStatusTip.className = "status-tip error";
-                            importFile.value = '';
-                            return;
-                        }
-
-                        learningData = convertResult.data;
-                        const saveSuccess = saveData();
-                        if (saveSuccess) {
-                            importStatusTip.textContent = "✅ 导入成功！数据已永久保存，刷新页面不会丢失";
-                            importStatusTip.className = "status-tip success";
-                            importFile.value = '';
-                        } else {
-                            importStatusTip.textContent = "❌ 导入失败：数据保存异常";
-                            importStatusTip.className = "status-tip error";
-                        }
-                    } catch (err) {
-                        console.error("导入错误:", err);
-                        importStatusTip.textContent = "❌ 导入失败：JSON格式错误，请检查文件内容";
-                        importStatusTip.className = "status-tip error";
-                        importFile.value = '';
-                    }
-                };
-
-                reader.onerror = () => {
-                    importStatusTip.textContent = "❌ 文件读取失败，请重试";
-                    importStatusTip.className = "status-tip error";
-                    importFile.value = '';
-                };
-
-                reader.readAsText(file);
-            };
-
-            // 导出功能
-            document.getElementById('exportBtn').onclick = () => {
-                const dataStr = JSON.stringify(learningData, null, 2);
-                const blob = new Blob([dataStr], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'indonesian_learning_data_v' + VERSION + '.json';
-                a.click();
-                URL.revokeObjectURL(url);
-            };
-
-            // 重置功能
-            document.getElementById('resetBtn').onclick = () => {
-                if (!confirm('确定要重置为默认数据吗？这将删除所有自定义内容！')) return;
-                learningData = JSON.parse(JSON.stringify(defaultData));
-                const saveSuccess = saveData();
-                if (saveSuccess) {
-                    showModal("成功", "数据已重置为默认值");
-                    refreshAllUI();
-                }
+            document.getElementById('closeAdminModal').onclick = () => {
+                document.getElementById('adminModal').style.display = 'none';
             };
 
             console.log("✅ 所有事件绑定完成");
         }
 
-        // ==================== 后台渲染函数 ====================
-        function renderAdminUnitsTable() {
-            const tbody = document.querySelector('#unitsTable tbody');
-            tbody.innerHTML = '';
-            const unitIds = Object.keys(learningData).sort((a,b) => Number(a) - Number(b));
+        // ==================== 页面初始化 ====================
+        window.onload = function() {
+            console.log("印尼语学习系统 版本" + VERSION + " - 静态数据模式");
+            document.getElementById('footerVersion').textContent = 'V' + VERSION;
             
-            unitIds.forEach(unitId => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><input type="checkbox" value="${unitId}"></td>
-                    <td>${unitId}</td>
-                    <td>${learningData[unitId].name}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function updateLessonUnitSelect() {
-            const select = document.getElementById('lessonUnitSelect');
-            select.innerHTML = '';
-            const unitIds = Object.keys(learningData).sort((a,b) => Number(a) - Number(b));
-            
-            unitIds.forEach(unitId => {
-                const option = document.createElement('option');
-                option.value = unitId;
-                option.textContent = learningData[unitId].name;
-                select.appendChild(option);
-            });
-        }
-
-        function renderAdminLessonsTable() {
-            const unitId = document.getElementById('lessonUnitSelect')?.value;
-            const tbody = document.querySelector('#lessonsTable tbody');
-            if (!unitId || !learningData[unitId]) {
-                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">请先选择单元</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = '';
-            const lessons = learningData[unitId].lessons || {};
-            const lessonIds = Object.keys(lessons).sort((a,b) => Number(a) - Number(b));
-            
-            lessonIds.forEach(lessonId => {
-                const tr = document.createElement('tr');
-                const preview = lessons[lessonId].slice(0, 2).map(i => `${i.id} → ${i.cn}`).join('; ');
-                tr.innerHTML = `
-                    <td>${lessonId}</td>
-                    <td>${preview + (lessons[lessonId].length > 2 ? '...' : '')}</td>
-                    <td><button class="btn btn-primary btn-sm" onclick="editLesson('${unitId}', '${lessonId}')">编辑</button></td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // 编辑课程函数
-        window.editLesson = function(unitId, lessonId) {
-            document.getElementById('lessonUnitSelect').value = unitId;
-            document.getElementById('lessonId').value = lessonId;
-            document.getElementById('lessonContent').value = JSON.stringify(learningData[unitId].lessons[lessonId], null, 2);
+            initSpeedControl();
+            setupAllEvents();
+            loadDataFromFile(); // 从静态文件加载数据
         };
     </script>
 </body>
