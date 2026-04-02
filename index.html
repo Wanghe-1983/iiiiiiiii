@@ -574,7 +574,18 @@
         <!-- 后台管理区域 -->
         <div id="adminSection" class="admin-section">
             <div class="card">
-                <h2>后台管理系统 <span style="font-size:14px; color:var(--text-muted); font-weight:normal; margin-left:12px;">版本 <span id="adminVersion">1.2.0</span></span></h2>
+                <h2>后台管理系统 
+                    <span style="font-size:14px; color:var(--text-muted); font-weight:normal; margin-left:12px;">
+                        版本 <span id="adminVersion">1.2.0</span>
+                    </span>
+                </h2>
+                
+                <!-- 版本管理 -->
+                <div class="form-group">
+                    <label>版本号管理</label>
+                    <input type="text" id="versionInput" placeholder="例如：1.2.0" value="1.2.0">
+                    <button class="btn btn-success" id="saveVersionBtn" style="margin-top:8px;">保存版本号</button>
+                </div>
                 
                 <!-- 标签页 -->
                 <div class="tabs">
@@ -622,6 +633,7 @@
                     <div class="btn-group">
                         <button class="btn btn-success" id="addLessonBtn">添加/更新课程</button>
                         <button class="btn btn-danger" id="deleteLessonBtn">删除课程</button>
+                        <button class="btn btn-danger" id="clearAllLessonsBtn">清空选中单元所有课程</button>
                     </div>
                     <table class="data-table" id="lessonsTable">
                         <thead>
@@ -673,7 +685,7 @@
 
     <script>
         // ==================== 全局配置 ====================
-        const VERSION = "1.2.0"; // 版本号，后续迭代直接修改这里
+        let VERSION = "1.2.0"; // 版本号改为可修改的变量
         const ADMIN_PASSWORD = "admin123";
         const DEFAULT_SPEECH_RATE = 0.75;
 
@@ -716,9 +728,14 @@
         // ==================== 页面加载完成后执行 ====================
         window.onload = function() {
             console.log("印尼语学习系统 版本" + VERSION + " 加载完成");
+            // 从本地存储加载版本号（如果有）
+            const savedVersion = localStorage.getItem('indonesianLearningVersion');
+            if (savedVersion) {
+                VERSION = savedVersion;
+                document.getElementById('versionInput').value = VERSION;
+            }
             // 初始化页面版本号显示
-            document.getElementById('adminVersion').textContent = VERSION;
-            document.getElementById('footerVersion').textContent = 'V' + VERSION;
+            updateVersionDisplay();
             
             try {
                 init();
@@ -729,6 +746,12 @@
                 alert("页面初始化失败：" + err.message);
             }
         };
+
+        // ==================== 版本号更新函数 ====================
+        function updateVersionDisplay() {
+            document.getElementById('adminVersion').textContent = VERSION;
+            document.getElementById('footerVersion').textContent = 'V' + VERSION;
+        }
 
         // ==================== 初始化函数 ====================
         function init() {
@@ -753,6 +776,21 @@
             initSpeedControl();
         }
 
+        // ==================== 刷新所有UI数据 ====================
+        function refreshAllUI() {
+            renderUnitButtons();
+            renderAdminUnitsTable();
+            updateLessonUnitSelect();
+            renderAdminLessonsTable();
+            // 清空选中状态，确保数据刷新后UI同步
+            currentUnit = null;
+            currentLesson = null;
+            document.querySelectorAll('#unitBtns .btn, #lessonBtns .btn').forEach(function(b) {
+                b.classList.remove('active');
+            });
+            document.getElementById('contentBox').innerHTML = '<p style="color: var(--text-muted);">请先选择单元和课程</p>';
+        }
+
         // ==================== 语速控制初始化 ====================
         function initSpeedControl() {
             const speedSlider = document.getElementById('speedSlider');
@@ -772,10 +810,7 @@
             localStorage.setItem('indonesianLearningData', JSON.stringify(learningData));
             console.log("数据已保存");
             // 重新渲染页面
-            renderUnitButtons();
-            renderAdminUnitsTable();
-            renderAdminLessonsTable();
-            updateLessonUnitSelect();
+            refreshAllUI();
         }
 
         // ==================== 前台渲染函数 ====================
@@ -943,6 +978,19 @@
                 }
             };
 
+            // 版本号保存事件
+            document.getElementById('saveVersionBtn').onclick = function() {
+                const newVersion = document.getElementById('versionInput').value.trim();
+                if (!newVersion) {
+                    alert("请输入版本号");
+                    return;
+                }
+                VERSION = newVersion;
+                localStorage.setItem('indonesianLearningVersion', VERSION);
+                updateVersionDisplay();
+                alert("版本号已保存：" + VERSION);
+            };
+
             // 标签页切换 - 修复ID匹配和容错处理
             document.querySelectorAll('.tab').forEach(function(tab) {
                 tab.onclick = function() {
@@ -1037,7 +1085,21 @@
                 saveData();
             };
 
-            // 导入功能
+            // 新增：清空选中单元所有课程
+            document.getElementById('clearAllLessonsBtn').onclick = function() {
+                const unitId = document.getElementById('lessonUnitSelect').value;
+                if (!unitId) {
+                    alert('请先选择要清空课程的单元');
+                    return;
+                }
+                if (!confirm('确定要清空【' + learningData[unitId].name + '】的所有课程吗？此操作不可恢复！')) return;
+                
+                learningData[unitId].lessons = {};
+                saveData();
+                alert('已清空该单元的所有课程');
+            };
+
+            // 导入功能 - 优化：导入后自动刷新所有UI
             const importFile = document.getElementById('importFile');
             const importBtn = document.getElementById('importBtn');
             const importStatusTip = document.getElementById('importStatusTip');
@@ -1059,11 +1121,12 @@
                         const newData = JSON.parse(event.target.result);
                         console.log("导入的文件内容", newData);
                         learningData = newData;
-                        saveData();
+                        saveData(); // 保存并刷新UI
                         importStatusTip.textContent = "✅ 导入成功！页面已刷新所有数据";
                         importStatusTip.className = "status-tip success";
                         importFile.value = '';
-                        renderUnitButtons();
+                        // 额外刷新前台UI，确保导入后能立即看到课程
+                        refreshAllUI();
                     } catch (err) {
                         console.error("导入错误:", err);
                         importStatusTip.textContent = "❌ 导入失败：JSON格式错误，请检查文件内容";
@@ -1081,7 +1144,7 @@
                 reader.readAsText(file);
             };
 
-            // 导出按钮事件
+            // 导出按钮事件 - 优化：导出文件名使用当前版本号
             document.getElementById('exportBtn').onclick = function() {
                 const dataStr = JSON.stringify(learningData, null, 2);
                 const blob = new Blob([dataStr], { type: 'application/json' });
@@ -1093,12 +1156,13 @@
                 URL.revokeObjectURL(url);
             };
 
-            // 重置按钮事件
+            // 重置按钮事件 - 优化：重置后自动刷新所有UI
             document.getElementById('resetBtn').onclick = function() {
                 if (!confirm('确定要重置为默认数据吗？这将删除所有自定义内容！')) return;
                 learningData = JSON.parse(JSON.stringify(defaultData));
-                saveData();
-                alert('数据已重置');
+                saveData(); // 保存并刷新UI
+                alert('数据已重置为默认值');
+                refreshAllUI();
             };
 
             console.log("所有事件绑定完成");
