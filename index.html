@@ -14,7 +14,6 @@
         }
 
         :root {
-            /* 主题色系统 - 适配Mac暗黑模式 */
             --primary-blue: #3b82f6;
             --primary-light: #60a5fa;
             --primary-dark: #2563eb;
@@ -49,12 +48,10 @@
             min-height: 100vh;
             padding: 24px 20px 80px;
             line-height: 1.6;
-            /* 适配Safari字体平滑 */
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
 
-        /* 自定义滚动条 - 适配Safari */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -77,7 +74,6 @@
             margin: 0 auto;
         }
 
-        /* 卡片样式升级 - 磨砂玻璃质感 */
         .card {
             background: var(--card-bg);
             -webkit-backdrop-filter: blur(20px) saturate(120%);
@@ -107,7 +103,6 @@
             align-items: center;
         }
 
-        /* 按钮样式全面升级 */
         .btn-group {
             display: flex;
             flex-wrap: wrap;
@@ -198,7 +193,6 @@
             border-color: var(--success-green);
         }
 
-        /* 学习内容区域优化 */
         .content-box {
             background: var(--input-bg);
             border-radius: var(--radius-md);
@@ -232,7 +226,6 @@
             margin-left: 10px;
         }
 
-        /* 状态提示优化 */
         .status-tip {
             margin-top: 16px;
             font-size: 14px;
@@ -251,7 +244,6 @@
             font-weight: 500;
         }
 
-        /* 后台管理区域 */
         .admin-section {
             margin-top: 40px;
             padding-top: 40px;
@@ -259,7 +251,6 @@
             display: none;
         }
 
-        /* 表单样式升级 */
         .form-group {
             margin-bottom: 22px;
         }
@@ -311,7 +302,6 @@
             border-color: var(--primary-blue);
         }
 
-        /* 表格样式优化 */
         .data-table {
             width: 100%;
             border-collapse: separate;
@@ -354,7 +344,6 @@
             border-bottom: none;
         }
 
-        /* 标签页样式升级 */
         .tabs {
             display: flex;
             gap: 8px;
@@ -398,7 +387,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 语速调节滑块优化 - 适配Safari */
         .speed-control {
             display: flex;
             align-items: center;
@@ -452,7 +440,6 @@
             text-align: center;
         }
 
-        /* 后台开关按钮 */
         .admin-toggle {
             position: fixed;
             bottom: 24px;
@@ -464,7 +451,6 @@
             box-shadow: var(--shadow-hover);
         }
 
-        /* 版本号底部固定显示 */
         .version-footer {
             position: fixed;
             bottom: 0;
@@ -486,14 +472,12 @@
             font-weight: 600;
         }
 
-        /* 分割线 */
         hr {
             border: none;
             border-top: 1px solid var(--card-border);
             margin: 28px 0;
         }
 
-        /* 响应式适配 */
         @media (max-width: 768px) {
             body {
                 padding: 16px 12px 80px;
@@ -529,21 +513,17 @@
 </head>
 <body>
     <div class="container">
-        <!-- 前台学习区域 -->
         <div id="learningSection">
-            <!-- 选择单元 -->
             <div class="card">
                 <h2>选择单元</h2>
                 <div class="btn-group" id="unitBtns"></div>
             </div>
 
-            <!-- 选择课程 -->
             <div class="card">
                 <h2>选择课程</h2>
                 <div class="btn-group" id="lessonBtns"></div>
             </div>
 
-            <!-- 学习内容 -->
             <div class="card">
                 <h2>学习内容</h2>
                 <div class="content-box" id="contentBox">
@@ -551,7 +531,6 @@
                 </div>
             </div>
 
-            <!-- 快捷操作 -->
             <div class="card">
                 <h2>快捷操作</h2>
                 <div class="btn-group">
@@ -560,7 +539,6 @@
                     <button class="btn btn-action" id="clearBtn">清空内容</button>
                 </div>
                 
-                <!-- 语速调节 -->
                 <div class="speed-control">
                     <label for="speedSlider">语速调节：</label>
                     <input type="range" id="speedSlider" class="speed-slider" min="0.5" max="2" step="0.1" value="0.75">
@@ -571,30 +549,26 @@
             </div>
         </div>
 
-        <!-- 后台管理区域 -->
         <div id="adminSection" class="admin-section">
             <div class="card">
                 <h2>后台管理系统 
                     <span style="font-size:14px; color:var(--text-muted); font-weight:normal; margin-left:12px;">
-                        版本 <span id="adminVersion">1.2.0</span>
+                        版本 <span id="adminVersion">1.3.0</span>
                     </span>
                 </h2>
                 
-                <!-- 版本管理 -->
                 <div class="form-group">
                     <label>版本号管理</label>
-                    <input type="text" id="versionInput" placeholder="例如：1.2.0" value="1.2.0">
+                    <input type="text" id="versionInput" placeholder="例如：1.3.0" value="1.3.0">
                     <button class="btn btn-success" id="saveVersionBtn" style="margin-top:8px;">保存版本号</button>
                 </div>
                 
-                <!-- 标签页 -->
                 <div class="tabs">
                     <button class="tab active" data-tab="units">单元管理</button>
                     <button class="tab" data-tab="lessons">课程管理</button>
                     <button class="tab" data-tab="import-export">导入/导出</button>
                 </div>
 
-                <!-- 单元管理 -->
                 <div id="unitsTab" class="tab-content" style="display: block;">
                     <div class="form-group">
                         <label>单元名称</label>
@@ -616,7 +590,6 @@
                     </table>
                 </div>
 
-                <!-- 课程管理 -->
                 <div id="lessonsTab" class="tab-content">
                     <div class="form-group">
                         <label>选择单元</label>
@@ -647,7 +620,6 @@
                     </table>
                 </div>
 
-                <!-- 导入/导出 - 修复ID与标签对应 -->
                 <div id="import-exportTab" class="tab-content">
                     <div class="form-group">
                         <label>1. 选择JSON课程文件</label>
@@ -673,23 +645,19 @@
         </div>
     </div>
 
-    <!-- 后台管理开关 -->
     <div class="admin-toggle">
         <button class="btn btn-action" id="adminToggleBtn">后台管理</button>
     </div>
 
-    <!-- 版本号底部显示 -->
     <div class="version-footer">
-        印尼语学习系统 | 版本 <span id="footerVersion">V1.2.0</span> © 2024 TMI
+        印尼语学习系统 | 版本 <span id="footerVersion">V1.3.0</span> © 2024 TMI
     </div>
 
     <script>
-        // ==================== 全局配置 ====================
-        let VERSION = "1.2.0"; // 版本号改为可修改的变量
+        let VERSION = "1.3.0";
         const ADMIN_PASSWORD = "admin123";
         const DEFAULT_SPEECH_RATE = 0.75;
 
-        // ==================== 默认学习数据 ====================
         const defaultData = {
             "1": {
                 "name": "单元 1 - 基础问候",
@@ -717,7 +685,6 @@
             }
         };
 
-        // ==================== 全局状态 ====================
         let learningData = {};
         let currentUnit = null;
         let currentLesson = null;
@@ -725,16 +692,13 @@
         let isAdminOpen = false;
         let speechRate = DEFAULT_SPEECH_RATE;
 
-        // ==================== 页面加载完成后执行 ====================
         window.onload = function() {
             console.log("印尼语学习系统 版本" + VERSION + " 加载完成");
-            // 从本地存储加载版本号（如果有）
             const savedVersion = localStorage.getItem('indonesianLearningVersion');
             if (savedVersion) {
                 VERSION = savedVersion;
                 document.getElementById('versionInput').value = VERSION;
             }
-            // 初始化页面版本号显示
             updateVersionDisplay();
             
             try {
@@ -747,15 +711,12 @@
             }
         };
 
-        // ==================== 版本号更新函数 ====================
         function updateVersionDisplay() {
             document.getElementById('adminVersion').textContent = VERSION;
             document.getElementById('footerVersion').textContent = 'V' + VERSION;
         }
 
-        // ==================== 初始化函数 ====================
         function init() {
-            // 加载数据
             const savedData = localStorage.getItem('indonesianLearningData');
             if (savedData) {
                 try {
@@ -770,19 +731,15 @@
                 learningData = JSON.parse(JSON.stringify(defaultData));
             }
 
-            // 渲染单元按钮
             renderUnitButtons();
-            // 初始化语速控制
             initSpeedControl();
         }
 
-        // ==================== 刷新所有UI数据 ====================
         function refreshAllUI() {
             renderUnitButtons();
             renderAdminUnitsTable();
             updateLessonUnitSelect();
             renderAdminLessonsTable();
-            // 清空选中状态，确保数据刷新后UI同步
             currentUnit = null;
             currentLesson = null;
             document.querySelectorAll('#unitBtns .btn, #lessonBtns .btn').forEach(function(b) {
@@ -791,7 +748,6 @@
             document.getElementById('contentBox').innerHTML = '<p style="color: var(--text-muted);">请先选择单元和课程</p>';
         }
 
-        // ==================== 语速控制初始化 ====================
         function initSpeedControl() {
             const speedSlider = document.getElementById('speedSlider');
             const speedValue = document.getElementById('speedValue');
@@ -805,15 +761,12 @@
             };
         }
 
-        // ==================== 数据保存 ====================
         function saveData() {
             localStorage.setItem('indonesianLearningData', JSON.stringify(learningData));
             console.log("数据已保存");
-            // 重新渲染页面
             refreshAllUI();
         }
 
-        // ==================== 前台渲染函数 ====================
         function renderUnitButtons() {
             const unitBtns = document.getElementById('unitBtns');
             if (!unitBtns) {
@@ -829,7 +782,8 @@
                 const btn = document.createElement('button');
                 btn.className = 'btn';
                 btn.dataset.unit = unitId;
-                btn.textContent = learningData[unitId].name;
+                // 强制设置文本内容，解决Safari渲染问题
+                btn.innerText = learningData[unitId].name;
                 
                 btn.onclick = function() {
                     document.querySelectorAll('#unitBtns .btn').forEach(function(b) {
@@ -859,7 +813,7 @@
                 const btn = document.createElement('button');
                 btn.className = 'btn';
                 btn.dataset.lesson = lessonId;
-                btn.textContent = '课程 ' + lessonId;
+                btn.innerText = '课程 ' + lessonId;
                 
                 btn.onclick = function() {
                     document.querySelectorAll('#lessonBtns .btn').forEach(function(b) {
@@ -911,10 +865,8 @@
             if (type) statusTip.classList.add(type);
         }
 
-        // ==================== 所有事件绑定 ====================
         function setupAllEvents() {
             console.log("开始绑定事件...");
-            // 前台按钮事件
             document.getElementById('showBtn').onclick = updateContent;
             
             document.getElementById('readBtn').onclick = function() {
@@ -955,7 +907,6 @@
                 currentLesson = null;
             };
 
-            // 后台开关事件
             document.getElementById('adminToggleBtn').onclick = function() {
                 if (!isAdminOpen) {
                     const password = prompt("请输入后台管理密码：");
@@ -963,7 +914,6 @@
                         isAdminOpen = true;
                         document.getElementById('adminSection').style.display = 'block';
                         this.textContent = "关闭后台";
-                        // 渲染后台数据
                         renderAdminUnitsTable();
                         updateLessonUnitSelect();
                         renderAdminLessonsTable();
@@ -978,7 +928,6 @@
                 }
             };
 
-            // 版本号保存事件
             document.getElementById('saveVersionBtn').onclick = function() {
                 const newVersion = document.getElementById('versionInput').value.trim();
                 if (!newVersion) {
@@ -991,16 +940,13 @@
                 alert("版本号已保存：" + VERSION);
             };
 
-            // 标签页切换 - 修复ID匹配和容错处理
             document.querySelectorAll('.tab').forEach(function(tab) {
                 tab.onclick = function() {
-                    // 切换标签激活状态
                     document.querySelectorAll('.tab').forEach(function(t) {
                         t.classList.remove('active');
                     });
                     tab.classList.add('active');
                     
-                    // 切换内容显示 - 增加容错判断
                     const tabName = tab.dataset.tab;
                     const targetElement = document.getElementById(tabName + 'Tab');
                     
@@ -1016,7 +962,6 @@
                 };
             });
 
-            // 单元管理事件
             document.getElementById('addUnitBtn').onclick = function() {
                 const name = document.getElementById('unitName').value.trim();
                 if (!name) {
@@ -1043,7 +988,6 @@
                 saveData();
             };
 
-            // 课程管理事件
             document.getElementById('lessonUnitSelect').onchange = renderAdminLessonsTable;
 
             document.getElementById('addLessonBtn').onclick = function() {
@@ -1085,7 +1029,7 @@
                 saveData();
             };
 
-            // 新增：清空选中单元所有课程
+            // 一键清空课程功能（完整绑定）
             document.getElementById('clearAllLessonsBtn').onclick = function() {
                 const unitId = document.getElementById('lessonUnitSelect').value;
                 if (!unitId) {
@@ -1099,7 +1043,6 @@
                 alert('已清空该单元的所有课程');
             };
 
-            // 导入功能 - 优化：导入后自动刷新所有UI
             const importFile = document.getElementById('importFile');
             const importBtn = document.getElementById('importBtn');
             const importStatusTip = document.getElementById('importStatusTip');
@@ -1121,11 +1064,10 @@
                         const newData = JSON.parse(event.target.result);
                         console.log("导入的文件内容", newData);
                         learningData = newData;
-                        saveData(); // 保存并刷新UI
+                        saveData();
                         importStatusTip.textContent = "✅ 导入成功！页面已刷新所有数据";
                         importStatusTip.className = "status-tip success";
                         importFile.value = '';
-                        // 额外刷新前台UI，确保导入后能立即看到课程
                         refreshAllUI();
                     } catch (err) {
                         console.error("导入错误:", err);
@@ -1144,7 +1086,6 @@
                 reader.readAsText(file);
             };
 
-            // 导出按钮事件 - 优化：导出文件名使用当前版本号
             document.getElementById('exportBtn').onclick = function() {
                 const dataStr = JSON.stringify(learningData, null, 2);
                 const blob = new Blob([dataStr], { type: 'application/json' });
@@ -1156,11 +1097,10 @@
                 URL.revokeObjectURL(url);
             };
 
-            // 重置按钮事件 - 优化：重置后自动刷新所有UI
             document.getElementById('resetBtn').onclick = function() {
                 if (!confirm('确定要重置为默认数据吗？这将删除所有自定义内容！')) return;
                 learningData = JSON.parse(JSON.stringify(defaultData));
-                saveData(); // 保存并刷新UI
+                saveData();
                 alert('数据已重置为默认值');
                 refreshAllUI();
             };
@@ -1168,7 +1108,6 @@
             console.log("所有事件绑定完成");
         }
 
-        // ==================== 后台管理渲染函数 ====================
         function renderAdminUnitsTable() {
             const tbody = document.querySelector('#unitsTable tbody');
             if (!tbody) return;
@@ -1218,7 +1157,6 @@
             });
         }
 
-        // 编辑课程函数
         window.editLesson = function(unitId, lessonId) {
             document.getElementById('lessonUnitSelect').value = unitId;
             document.getElementById('lessonId').value = lessonId;
