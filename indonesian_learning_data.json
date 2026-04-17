@@ -1,1839 +1,593 @@
 {
-    "3": {
-        "name": "单元 3 - 考试题库",
+    "1": {
+        "name": "基础词汇",
         "lessons": {
-            "1": [
-                {
-                    "id": "Admin",
-                    "cn": "文员"
-                },
-                {
-                    "id": "Air",
-                    "cn": "水"
-                },
-                {
-                    "id": "Air Dingin",
-                    "cn": "冷水"
-                },
-                {
-                    "id": "Air Hangat",
-                    "cn": "温水"
-                },
-                {
-                    "id": "Apa kabar",
-                    "cn": "你好"
-                },
-                {
-                    "id": "Apotek",
-                    "cn": "药店"
-                },
-                {
-                    "id": "Area",
-                    "cn": "区域"
-                },
-                {
-                    "id": "Asrama",
-                    "cn": "宿舍"
-                },
-                {
-                    "id": "Atas",
-                    "cn": "上面"
-                },
-                {
-                    "id": "ATM",
-                    "cn": "提款机"
-                },
-                {
-                    "id": "Bagaimana",
-                    "cn": "如何"
-                },
-                {
-                    "id": "Bahaya",
-                    "cn": "危险"
-                },
-                {
-                    "id": "Baik hati",
-                    "cn": "善良"
-                },
-                {
-                    "id": "Baik-baik saja",
-                    "cn": "挺好的"
-                },
-                {
-                    "id": "Bakso",
-                    "cn": "肉丸"
-                },
-                {
-                    "id": "bank",
-                    "cn": "银行"
-                },
-                {
-                    "id": "bantu",
-                    "cn": "帮"
-                },
-                {
-                    "id": "tolong",
-                    "cn": "帮"
-                },
-                {
-                    "id": "banyak",
-                    "cn": "多"
-                },
-                {
-                    "id": "pak",
-                    "cn": "先生"
-                },
-                {
-                    "id": "barang",
-                    "cn": "东西/物品"
-                },
-                {
-                    "id": "barat",
-                    "cn": "西"
-                },
-                {
-                    "id": "baru",
-                    "cn": "新"
-                },
-                {
-                    "id": "batal",
-                    "cn": "取消"
-                },
-                {
-                    "id": "merepotkan",
-                    "cn": "麻烦"
-                },
-                {
-                    "id": "merokok",
-                    "cn": "吸烟"
-                },
-                {
-                    "id": "mi",
-                    "cn": "面"
-                },
-                {
-                    "id": "mi instan",
-                    "cn": "方便面"
-                },
-                {
-                    "id": "minggu",
-                    "cn": "星期天"
-                },
-                {
-                    "id": "minum",
-                    "cn": "喝"
-                },
-                {
-                    "id": "makan obat",
-                    "cn": "吃药"
-                },
-                {
-                    "id": "Mobil",
-                    "cn": "车"
-                },
-                {
-                    "id": "Mohon Maaf",
-                    "cn": "抱歉"
-                },
-                {
-                    "id": "Maaf",
-                    "cn": "对不起/抱歉"
-                },
-                {
-                    "id": "Muda",
-                    "cn": "年轻"
-                },
-                {
-                    "id": "Mudah",
-                    "cn": "容易"
-                },
-                {
-                    "id": "Murah",
-                    "cn": "便宜"
-                },
-                {
-                    "id": "Musim dingin",
-                    "cn": "冬天"
-                },
-                {
-                    "id": "Musim gugur",
-                    "cn": "秋天"
-                },
-                {
-                    "id": "Musim hujan",
-                    "cn": "雨季"
-                },
-                {
-                    "id": "Musim kemarau",
-                    "cn": "旱季"
-                },
-                {
-                    "id": "Musim panas",
-                    "cn": "夏天"
-                },
-                {
-                    "id": "Musim semi",
-                    "cn": "春天"
-                },
-                {
-                    "id": "Naik",
-                    "cn": "上"
-                },
-                {
-                    "id": "Nasi",
-                    "cn": "米饭"
-                },
-                {
-                    "id": "Natal",
-                    "cn": "圣诞"
-                },
-                {
-                    "id": "Negara",
-                    "cn": "国家"
-                },
-                {
-                    "id": "nikah",
-                    "cn": "结婚"
-                },
-                {
-                    "id": "nol",
-                    "cn": "零"
-                },
-                {
-                    "id": "nomor",
-                    "cn": "号码"
-                },
-                {
-                    "id": "nyanyi",
-                    "cn": "唱歌"
-                },
-                {
-                    "id": "Memperkenalkan diri",
-                    "cn": "自我介绍"
-                },
-                {
-                    "id": "perkenalkan diri",
-                    "cn": "自我介绍"
-                },
-                {
-                    "id": "Batuk",
-                    "cn": "咳嗽"
-                },
-                {
-                    "id": "Bawa",
-                    "cn": "拿"
-                },
-                {
-                    "id": "Ambil",
-                    "cn": "拿"
-                },
-                {
-                    "id": "Bawah",
-                    "cn": "下"
-                },
-                {
-                    "id": "Begadang",
-                    "cn": "熬夜"
-                },
-                {
-                    "id": "Belakang",
-                    "cn": "后面"
-                },
-                {
-                    "id": "Belanja",
-                    "cn": "购物"
-                },
-                {
-                    "id": "Belok",
-                    "cn": "拐"
-                },
-                {
-                    "id": "Benar",
-                    "cn": "对"
-                },
-                {
-                    "id": "Berat",
-                    "cn": "重"
-                },
-                {
-                    "id": "Berawan",
-                    "cn": "多云"
-                },
-                {
-                    "id": "Berdasarkan",
-                    "cn": "根据"
-                },
-                {
-                    "id": "berhenti",
-                    "cn": "停"
-                },
-                {
-                    "id": "berkas",
-                    "cn": "资料"
-                },
-                {
-                    "id": "bertemu",
-                    "cn": "见面"
-                },
-                {
-                    "id": "besok",
-                    "cn": "明天"
-                },
-                {
-                    "id": "biskuit",
-                    "cn": "饼干"
-                },
-                {
-                    "id": "botol",
-                    "cn": "瓶子"
-                },
-                {
-                    "id": "botol air",
-                    "cn": "水瓶"
-                },
-                {
-                    "id": "buah",
-                    "cn": "水果"
-                },
-                {
-                    "id": "bubur",
-                    "cn": "粥"
-                },
-                {
-                    "id": "budaya",
-                    "cn": "文化"
-                },
-                {
-                    "id": "tidak",
-                    "cn": "不"
-                },
-                {
-                    "id": "Bulan",
-                    "cn": "月"
-                },
-                {
-                    "id": "Olahraga",
-                    "cn": "运动"
-                },
-                {
-                    "id": "Orang",
-                    "cn": "人"
-                },
-                {
-                    "id": "Paham",
-                    "cn": "懂"
-                },
-                {
-                    "id": "Pahit",
-                    "cn": "苦"
-                },
-                {
-                    "id": "Pakai",
-                    "cn": "用"
-                },
-                {
-                    "id": "Pakai masker",
-                    "cn": "戴口罩"
-                },
-                {
-                    "id": "Pamit",
-                    "cn": "告辞"
-                },
-                {
-                    "id": "Panas",
-                    "cn": "热"
-                },
-                {
-                    "id": "Panggil",
-                    "cn": "叫"
-                },
-                {
-                    "id": "Pasta gigi",
-                    "cn": "牙膏"
-                },
-                {
-                    "id": "pedas",
-                    "cn": "辣"
-                },
-                {
-                    "id": "kerja",
-                    "cn": "工作"
-                },
-                {
-                    "id": "pelatihan",
-                    "cn": "培训"
-                },
-                {
-                    "id": "pendek",
-                    "cn": "矮"
-                },
-                {
-                    "id": "penting",
-                    "cn": "重要"
-                },
-                {
-                    "id": "peraturan",
-                    "cn": "制度/规定"
-                },
-                {
-                    "id": "pergi",
-                    "cn": "去"
-                },
-                {
-                    "id": "perhatikan",
-                    "cn": "注意"
-                },
-                {
-                    "id": "perkenalkan",
-                    "cn": "介绍"
-                },
-                {
-                    "id": "perut",
-                    "cn": "肚子"
-                },
-                {
-                    "id": "Bunga",
-                    "cn": "花"
-                },
-                {
-                    "id": "Bungkus",
-                    "cn": "包"
-                },
-                {
-                    "id": "Bunyi",
-                    "cn": "声音"
-                },
-                {
-                    "id": "Bus",
-                    "cn": "公交车"
-                },
-                {
-                    "id": "Cantik",
-                    "cn": "漂亮"
-                },
-                {
-                    "id": "Cemilan",
-                    "cn": "零食"
-                },
-                {
-                    "id": "Cepat",
-                    "cn": "快"
-                },
-                {
-                    "id": "Coklat",
-                    "cn": "巧克力"
-                },
-                {
-                    "id": "Cuaca",
-                    "cn": "天气"
-                },
-                {
-                    "id": "Cuti",
-                    "cn": "休假"
-                },
-                {
-                    "id": "Cuti kunjungan keluarga",
-                    "cn": "探亲假"
-                },
-                {
-                    "id": "Cuti Melahirkan",
-                    "cn": "产假"
-                },
-                {
-                    "id": "Cuti Nikah",
-                    "cn": "婚假"
-                },
-                {
-                    "id": "Cuti tahunan",
-                    "cn": "年假"
-                },
-                {
-                    "id": "Daging",
-                    "cn": "肉"
-                },
-                {
-                    "id": "Dari",
-                    "cn": "来自"
-                },
-                {
-                    "id": "Berasal",
-                    "cn": "来自"
-                },
-                {
-                    "id": "Dekat",
-                    "cn": "近"
-                },
-                {
-                    "id": "Delapan",
-                    "cn": "八"
-                },
-                {
-                    "id": "Depan",
-                    "cn": "前面"
-                },
-                {
-                    "id": "Di",
-                    "cn": "在"
-                },
-                {
-                    "id": "Dia",
-                    "cn": "他"
-                },
-                {
-                    "id": "Dilarang",
-                    "cn": "禁止"
-                },
-                {
-                    "id": "Dimana",
-                    "cn": "在哪里"
-                },
-                {
-                    "id": "Dingin",
-                    "cn": "冷"
-                },
-                {
-                    "id": "diri sendiri",
-                    "cn": "自己"
-                },
-                {
-                    "id": "disana",
-                    "cn": "那边"
-                },
-                {
-                    "id": "disini",
-                    "cn": "这边"
-                },
-                {
-                    "id": "dokter",
-                    "cn": "医生"
-                },
-                {
-                    "id": "dua",
-                    "cn": "二、两"
-                },
-                {
-                    "id": "dua belas",
-                    "cn": "十二"
-                },
-                {
-                    "id": "pizza",
-                    "cn": "披萨"
-                },
-                {
-                    "id": "pohon",
-                    "cn": "树"
-                },
-                {
-                    "id": "POS SECURITY",
-                    "cn": "保安亭"
-                },
-                {
-                    "id": "PRODUKSI",
-                    "cn": "生产"
-                },
-                {
-                    "id": "PULANG KERJA",
-                    "cn": "下班"
-                },
-                {
-                    "id": "PULUH RIBU",
-                    "cn": "万"
-                },
-                {
-                    "id": "PUTIH",
-                    "cn": "白"
-                },
-                {
-                    "id": "biru",
-                    "cn": "蓝"
-                },
-                {
-                    "id": "kuning",
-                    "cn": "黄"
-                },
-                {
-                    "id": "merah",
-                    "cn": "红"
-                },
-                {
-                    "id": "oren",
-                    "cn": "橙"
-                },
-                {
-                    "id": "RAPAT",
-                    "cn": "开会"
-                },
-                {
-                    "id": "ratus",
-                    "cn": "百"
-                },
-                {
-                    "id": "restoran",
-                    "cn": "餐厅"
-                },
-                {
-                    "id": "ribu",
-                    "cn": "千"
-                },
-                {
-                    "id": "roti",
-                    "cn": "面包"
-                },
-                {
-                    "id": "ruang rapat",
-                    "cn": "会议室"
-                },
-                {
-                    "id": "rumah sakit",
-                    "cn": "医院"
-                },
-                {
-                    "id": "rusak",
-                    "cn": "损坏"
-                },
-                {
-                    "id": "sakit",
-                    "cn": "生病"
-                },
-                {
-                    "id": "sakit gigi",
-                    "cn": "牙痛"
-                },
-                {
-                    "id": "sakit kepala",
-                    "cn": "头痛"
-                },
-                {
-                    "id": "Lima",
-                    "cn": "五"
-                },
-                {
-                    "id": "Mahal",
-                    "cn": "贵"
-                },
-                {
-                    "id": "Makan",
-                    "cn": "吃"
-                },
-                {
-                    "id": "Makanan",
-                    "cn": "食物"
-                },
-                {
-                    "id": "Makanan penutup",
-                    "cn": "甜点"
-                },
-                {
-                    "id": "Malam",
-                    "cn": "晚上"
-                },
-                {
-                    "id": "Mana",
-                    "cn": "哪里"
-                },
-                {
-                    "id": "Manajer",
-                    "cn": "经理"
-                },
-                {
-                    "id": "Mangkok",
-                    "cn": "碗"
-                },
-                {
-                    "id": "Manis",
-                    "cn": "甜"
-                },
-                {
-                    "id": "Marah",
-                    "cn": "生气"
-                },
-                {
-                    "id": "Masih",
-                    "cn": "还"
-                },
-                {
-                    "id": "Masuk",
-                    "cn": "进"
-                },
-                {
-                    "id": "masuk kerja",
-                    "cn": "上班"
-                },
-                {
-                    "id": "mau",
-                    "cn": "要"
-                },
-                {
-                    "id": "meja kerja",
-                    "cn": "办公桌"
-                },
-                {
-                    "id": "memberi tahu",
-                    "cn": "告诉"
-                },
-                {
-                    "id": "mendung",
-                    "cn": "阴天"
-                },
-                {
-                    "id": "mengapa",
-                    "cn": "为什么"
-                },
-                {
-                    "id": "menu",
-                    "cn": "菜单"
-                },
-                {
-                    "id": "warna tua",
-                    "cn": "深色"
-                },
-                {
-                    "id": "warna ungu",
-                    "cn": "紫色"
-                },
-                {
-                    "id": "departemen",
-                    "cn": "部门"
-                },
-                {
-                    "id": "GA",
-                    "cn": "综合管理部"
-                },
-                {
-                    "id": "HRD",
-                    "cn": "人事部"
-                },
-                {
-                    "id": "jangan",
-                    "cn": "别"
-                },
-                {
-                    "id": "Jakarta",
-                    "cn": "雅加达"
-                },
-                {
-                    "id": "Jalan",
-                    "cn": "路"
-                },
-                {
-                    "id": "Jalan kaki",
-                    "cn": "走路"
-                },
-                {
-                    "id": "Jangan lupa",
-                    "cn": "别忘"
-                },
-                {
-                    "id": "Jauh",
-                    "cn": "远"
-                },
-                {
-                    "id": "Jelek",
-                    "cn": "丑"
-                },
-                {
-                    "id": "Juga",
-                    "cn": "也"
-                },
-                {
-                    "id": "Jus Buah",
-                    "cn": "果汁"
-                },
-                {
-                    "id": "Jus Lemon",
-                    "cn": "柠檬汁"
-                },
-                {
-                    "id": "Juta",
-                    "cn": "百万"
-                },
-                {
-                    "id": "Kabar baik",
-                    "cn": "好消息"
-                },
-                {
-                    "id": "Informasi",
-                    "cn": "信息"
-                },
-                {
-                    "id": "Kacang tanah",
-                    "cn": "花生"
-                },
-                {
-                    "id": "Kadang",
-                    "cn": "有时候"
-                },
-                {
-                    "id": "Kamar",
-                    "cn": "房间"
-                },
-                {
-                    "id": "Kamu",
-                    "cn": "你"
-                },
-                {
-                    "id": "Kanan",
-                    "cn": "右"
-                },
-                {
-                    "id": "Kantin",
-                    "cn": "食堂"
-                },
-                {
-                    "id": "Kantor",
-                    "cn": "办公室"
-                },
-                {
-                    "id": "Kapan",
-                    "cn": "什么时候"
-                },
-                {
-                    "id": "Karena",
-                    "cn": "因为"
-                },
-                {
-                    "id": "Kawasan",
-                    "cn": "园区"
-                },
-                {
-                    "id": "Keselamatan",
-                    "cn": "安全"
-                },
-                {
-                    "id": "Kebersihan",
-                    "cn": "清洁"
-                },
-                {
-                    "id": "Kegiatan",
-                    "cn": "活动"
-                },
-                {
-                    "id": "keluar",
-                    "cn": "出去"
-                },
-                {
-                    "id": "shampoo",
-                    "cn": "洗发水"
-                },
-                {
-                    "id": "siap",
-                    "cn": "准备/好的"
-                },
-                {
-                    "id": "sibuk",
-                    "cn": "忙"
-                },
-                {
-                    "id": "sikat",
-                    "cn": "刷"
-                },
-                {
-                    "id": "sikat gigi",
-                    "cn": "牙刷"
-                },
-                {
-                    "id": "silakan",
-                    "cn": "请"
-                },
-                {
-                    "id": "soda",
-                    "cn": "汽水"
-                },
-                {
-                    "id": "sosis",
-                    "cn": "香肠"
-                },
-                {
-                    "id": "struk",
-                    "cn": "小票"
-                },
-                {
-                    "id": "sudah",
-                    "cn": "已经"
-                },
-                {
-                    "id": "sudah lama",
-                    "cn": "好久"
-                },
-                {
-                    "id": "sukses",
-                    "cn": "成功"
-                },
-                {
-                    "id": "sup ayam",
-                    "cn": "鸡汤"
-                },
-                {
-                    "id": "kuah ayam",
-                    "cn": "鸡汤"
-                },
-                {
-                    "id": "supir",
-                    "cn": "司机"
-                },
-                {
-                    "id": "sks",
-                    "cn": "病假单"
-                },
-                {
-                    "id": "susu",
-                    "cn": "牛奶"
-                },
-                {
-                    "id": "tahun baru",
-                    "cn": "新年"
-                },
-                {
-                    "id": "taman",
-                    "cn": "公园"
-                },
-                {
-                    "id": "tanda tangan",
-                    "cn": "签字"
-                },
-                {
-                    "id": "tangan kiri",
-                    "cn": "左手"
-                },
-                {
-                    "id": "tangga",
-                    "cn": "楼梯"
-                },
-                {
-                    "id": "tebal",
-                    "cn": "厚"
-                },
-                {
-                    "id": "teh",
-                    "cn": "茶"
-                },
-                {
-                    "id": "telur",
-                    "cn": "蛋"
-                },
-                {
-                    "id": "teman mess",
-                    "cn": "室友"
-                },
-                {
-                    "id": "teman kerja",
-                    "cn": "同事"
-                },
-                {
-                    "id": "teman",
-                    "cn": "朋友"
-                },
-                {
-                    "id": "tempat tujuan",
-                    "cn": "目的地"
-                },
-                {
-                    "id": "tepat waktu",
-                    "cn": "按时/准时"
-                },
-                {
-                    "id": "kemarin",
-                    "cn": "昨天"
-                },
-                {
-                    "id": "kemerdekaan",
-                    "cn": "国庆"
-                },
-                {
-                    "id": "keranjang",
-                    "cn": "篮子"
-                },
-                {
-                    "id": "keras",
-                    "cn": "硬"
-                },
-                {
-                    "id": "kesehatan",
-                    "cn": "健康"
-                },
-                {
-                    "id": "kemari",
-                    "cn": "过来"
-                },
-                {
-                    "id": "kesini",
-                    "cn": "过来"
-                },
-                {
-                    "id": "keuangan",
-                    "cn": "财务"
-                },
-                {
-                    "id": "khusus",
-                    "cn": "特别"
-                },
-                {
-                    "id": "kiri",
-                    "cn": "左"
-                },
-                {
-                    "id": "klinik",
-                    "cn": "诊所"
-                },
-                {
-                    "id": "komunikasi",
-                    "cn": "沟通"
-                },
-                {
-                    "id": "kondisi",
-                    "cn": "状态/情况"
-                },
-                {
-                    "id": "kontrak",
-                    "cn": "合同"
-                },
-                {
-                    "id": "kopi",
-                    "cn": "咖啡"
-                },
-                {
-                    "id": "kosong",
-                    "cn": "空"
-                },
-                {
-                    "id": "kotak",
-                    "cn": "盒"
-                },
-                {
-                    "id": "kue",
-                    "cn": "蛋糕"
-                },
-                {
-                    "id": "kurang baik",
-                    "cn": "不太好"
-                },
-                {
-                    "id": "kurus",
-                    "cn": "瘦"
-                },
-                {
-                    "id": "lambat",
-                    "cn": "慢/迟"
-                },
-                {
-                    "id": "lancar",
-                    "cn": "顺利"
-                },
-                {
-                    "id": "lantai",
-                    "cn": "层楼/地面"
-                },
-                {
-                    "id": "lapar",
-                    "cn": "饿"
-                },
-                {
-                    "id": "laporan",
-                    "cn": "报告"
-                },
-                {
-                    "id": "larangan",
-                    "cn": "禁忌"
-                },
-                {
-                    "id": "lebar",
-                    "cn": "宽"
-                },
-                {
-                    "id": "lebih",
-                    "cn": "比较"
-                },
-                {
-                    "id": "lelah",
-                    "cn": "疲倦/累"
-                },
-                {
-                    "id": "lemari berkas",
-                    "cn": "文件柜"
-                },
-                {
-                    "id": "lemari peralatan",
-                    "cn": "工具柜"
-                },
-                {
-                    "id": "lepas sepatu",
-                    "cn": "脱鞋"
-                },
-                {
-                    "id": "letak",
-                    "cn": "放"
-                },
-                {
-                    "id": "trima kasih",
-                    "cn": "谢谢"
-                },
-                {
-                    "id": "terus",
-                    "cn": "一直"
-                },
-                {
-                    "id": "tidak ada",
-                    "cn": "没有"
-                },
-                {
-                    "id": "Tidak apa-apa",
-                    "cn": "没关系"
-                },
-                {
-                    "id": "Tidak enak badan",
-                    "cn": "身体不舒服"
-                },
-                {
-                    "id": "Tiga",
-                    "cn": "三"
-                },
-                {
-                    "id": "Timur",
-                    "cn": "东"
-                },
-                {
-                    "id": "Tinggal",
-                    "cn": "住"
-                },
-                {
-                    "id": "Tinggi",
-                    "cn": "高"
-                },
-                {
-                    "id": "Tiongkok",
-                    "cn": "中国"
-                },
-                {
-                    "id": "Tipis",
-                    "cn": "薄"
-                },
-                {
-                    "id": "Tisu",
-                    "cn": "纸巾"
-                },
-                {
-                    "id": "Tisu basah",
-                    "cn": "湿纸巾"
-                },
-                {
-                    "id": "Topi",
-                    "cn": "帽子"
-                },
-                {
-                    "id": "Transportasi",
-                    "cn": "交通"
-                },
-                {
-                    "id": "Tua",
-                    "cn": "老"
-                },
-                {
-                    "id": "Tujuh",
-                    "cn": "七"
-                },
-                {
-                    "id": "Tunda",
-                    "cn": "延迟"
-                },
-                {
-                    "id": "Turun",
-                    "cn": "下"
-                },
-                {
-                    "id": "Turun hujan",
-                    "cn": "下雨"
-                },
-                {
-                    "id": "Turun salju",
-                    "cn": "下雪"
-                },
-                {
-                    "id": "Semua",
-                    "cn": "所有"
-                },
-                {
-                    "id": "Semuanya",
-                    "cn": "大家"
-                },
-                {
-                    "id": "UGD",
-                    "cn": "急诊室"
-                },
-                {
-                    "id": "Ulang tahun",
-                    "cn": "生日"
-                },
-                {
-                    "id": "Utara",
-                    "cn": "北"
-                },
-                {
-                    "id": "Waktu",
-                    "cn": "时间"
-                },
-                {
-                    "id": "Wangi",
-                    "cn": "香"
-                },
-                {
-                    "id": "Warna",
-                    "cn": "颜色"
-                },
-                {
-                    "id": "Warna abu-abu",
-                    "cn": "灰色"
-                },
-                {
-                    "id": "Warna biru",
-                    "cn": "蓝色"
-                },
-                {
-                    "id": "Warna coklat",
-                    "cn": "棕色"
-                },
-                {
-                    "id": "Warna emas",
-                    "cn": "金色"
-                },
-                {
-                    "id": "Warna hijau",
-                    "cn": "绿色"
-                },
-                {
-                    "id": "Warna hitam",
-                    "cn": "黑色"
-                },
-                {
-                    "id": "Warna kuning",
-                    "cn": "黄色"
-                },
-                {
-                    "id": "Warna merah",
-                    "cn": "红色"
-                },
-                {
-                    "id": "Warna pink",
-                    "cn": "粉色"
-                },
-                {
-                    "id": "Warna oren",
-                    "cn": "橙色"
-                },
-                {
-                    "id": "Warna putih",
-                    "cn": "白色"
-                }
-            ],
-            "2": [
-                {
-                    "id": "Hari ini saya baik baik saja.",
-                    "cn": "我今天挺好的"
-                },
-                {
-                    "id": "Kita sudah lama tidak bertemu.",
-                    "cn": "我们好久不见"
-                },
-                {
-                    "id": "Selamat pagi semuanya！",
-                    "cn": "大家早上好"
-                },
-                {
-                    "id": "Apa kabar semuanya？",
-                    "cn": "大家好"
-                },
-                {
-                    "id": "Selamat malam teman-teman！",
-                    "cn": "朋友们晚上好"
-                },
-                {
-                    "id": "Hati - hati di jalan！",
-                    "cn": "路上小心"
-                },
-                {
-                    "id": "Jaga diri baik - baik !",
-                    "cn": "好好照顾自己"
-                },
-                {
-                    "id": "Badan kamu sehat-sehat saja?",
-                    "cn": "你身体怎么样"
-                },
-                {
-                    "id": "Apakah kalian bisa membantu saya?",
-                    "cn": "你们会帮我吗"
-                },
-                {
-                    "id": "Apakah kamu sibuk?",
-                    "cn": "你忙吗？"
-                },
-                {
-                    "id": "Kamu pulang kerja jam brapa?",
-                    "cn": "你几点下班？"
-                },
-                {
-                    "id": "Silakan duduk di sebelah kiri saya.",
-                    "cn": "请坐在我的左边。"
-                },
-                {
-                    "id": "Silakan tunggu sebentar.",
-                    "cn": "请稍等一下。"
-                },
-                {
-                    "id": "Numpang tanya kantin dimana?",
-                    "cn": "请问食堂在哪里？"
-                },
-                {
-                    "id": "Silakan berbaris/antri.",
-                    "cn": "请排队。"
-                },
-                {
-                    "id": "Saya pamit dulu.",
-                    "cn": "我先告辞了。"
-                },
-                {
-                    "id": "Terima kasih atas bantuanya.",
-                    "cn": "感谢您的帮忙。"
-                },
-                {
-                    "id": "Selamat datang.",
-                    "cn": "欢迎光临。"
-                },
-                {
-                    "id": "Maaf saya tidak ingin makan.",
-                    "cn": "抱歉，我不想吃。"
-                },
-                {
-                    "id": "Maaf sudah merepotkanmu.",
-                    "cn": "抱歉，给您添麻烦了。"
-                },
-                {
-                    "id": "Terima kasih atas dukungannya.",
-                    "cn": "感谢你的支持"
-                },
-                {
-                    "id": "Semoga cepat sembuh！",
-                    "cn": "祝你早日康复"
-                },
-                {
-                    "id": "Kamu harus banyak istirahat！",
-                    "cn": "你要多休息"
-                },
-                {
-                    "id": "Kamu harus jaga diri baik-baik！",
-                    "cn": "你要好好照顾自己"
-                },
-                {
-                    "id": "Jangan lupa makan obat！",
-                    "cn": "别忘记吃药"
-                },
-                {
-                    "id": "Begadang tidak baik bagi kesehatan.",
-                    "cn": "熬夜对身体不好"
-                },
-                {
-                    "id": "Kamu harus tidur tepat waktu!",
-                    "cn": "你要按时睡觉"
-                },
-                {
-                    "id": "Kamu harus banyak olah raga！",
-                    "cn": "你要多运动"
-                },
-                {
-                    "id": "Kamu kelihatan sangat lelah.",
-                    "cn": "你看起来很累"
-                },
-                {
-                    "id": "Selamat tahun baru",
-                    "cn": "新年快乐！"
-                },
-                {
-                    "id": "Selamat tahun baru imlek",
-                    "cn": "春节快乐！"
-                },
-                {
-                    "id": "selamat hari kemerdekaan",
-                    "cn": "国庆节快乐!"
-                },
-                {
-                    "id": "selamat hari natal",
-                    "cn": "圣诞节快乐！"
-                },
-                {
-                    "id": "Selamat hari ibu",
-                    "cn": "母亲节快乐！"
-                },
-                {
-                    "id": "Selamat hari ayah",
-                    "cn": "父亲节快乐！"
-                },
-                {
-                    "id": "Semoga semuanya lancar",
-                    "cn": "祝你一切顺利！"
-                },
-                {
-                    "id": "Semoga kamu sukses",
-                    "cn": "祝你成功！"
-                },
-                {
-                    "id": "Saya setiap jumat pakai baju batik.",
-                    "cn": "我每星期五穿巴迪克的衣服。"
-                },
-                {
-                    "id": "Saya mau pergi ke restoran halal.",
-                    "cn": "我要去清真餐厅。"
-                },
-                {
-                    "id": "Masuk tempat ibadah harus lepas sepatu.",
-                    "cn": "进入祷告场所需要脱鞋"
-                },
-                {
-                    "id": "Bersalaman menggunakan tangan kanan.",
-                    "cn": "握手使用右手"
-                },
-                {
-                    "id": "Tidak boleh memégang kepala orang lain.",
-                    "cn": "不可以摸别人的头"
-                },
-                {
-                    "id": "Datang ke Indonesia perlu mengenal budaya Indonesia",
-                    "cn": "来到印尼需要了解印尼的文化"
-                },
-                {
-                    "id": "Nama kamu siapa?",
-                    "cn": "你叫什么名字"
-                },
-                {
-                    "id": "Nama bapak siapa?",
-                    "cn": "先生叫什么名字"
-                },
-                {
-                    "id": "Kamu berasal dari mana?",
-                    "cn": "你来自哪里"
-                },
-                {
-                    "id": "Saya dari Indonesia.",
-                    "cn": "我来自印尼"
-                },
-                {
-                    "id": "Saya dari Tiongkok.",
-                    "cn": "我来自中国"
-                },
-                {
-                    "id": "Itu siapa?",
-                    "cn": "那是谁"
-                },
-                {
-                    "id": "Dia adalah teman kerja saya.",
-                    "cn": "他是我的同事"
-                },
-                {
-                    "id": "Kamu tinggal di mana?",
-                    "cn": "你住在哪里"
-                },
-                {
-                    "id": "Kamu tinggal di area mana?",
-                    "cn": "你住在哪个区域"
-                },
-                {
-                    "id": "Kamu tinggal di lantai berapa?",
-                    "cn": "你住在几楼？"
-                },
-                {
-                    "id": "Kamar nomor berapa?",
-                    "cn": "几号房"
-                },
-                {
-                    "id": "Saya tinggal di asrama.",
-                    "cn": "我住在宿舍"
-                },
-                {
-                    "id": "Ini adalah teman kerja baru saya, namanya Lia.",
-                    "cn": "这是我的新同事，他叫LIA"
-                },
-                {
-                    "id": "Selamat datang ke tim kami.",
-                    "cn": "欢迎来到我们的团队"
-                },
-                {
-                    "id": "Tidak disangka, sekarang kamu juga menjadi teman kerja saya.",
-                    "cn": "没想到你现在变成我们的同事"
-                },
-                {
-                    "id": "Dia adalah admin baru di departemen kami.",
-                    "cn": "他是我们部门的新文员"
-                },
-                {
-                    "id": "Siapa nama teman kerja barumu?",
-                    "cn": "你新同事叫什么名字？"
-                },
-                {
-                    "id": "Apakah dia teman kerja barumu?",
-                    "cn": "他是你的新同事吗"
-                },
-                {
-                    "id": "Ini adalah lemari berkas, itu adalah lemari peralatan.",
-                    "cn": "这是文件柜，那是工具柜"
-                },
-                {
-                    "id": "Sebelah sini adalah ruang rapat, disana adalah kantor manajer.",
-                    "cn": "这里是会议室，那边是经理办公室"
-                },
-                {
-                    "id": "Apakah kamu hari ini kerja?",
-                    "cn": "你今天上班吗？"
-                },
-                {
-                    "id": "Kapan kamu cuti?",
-                    "cn": "你何时休假？"
-                },
-                {
-                    "id": "Saya besok masuk kerja.",
-                    "cn": "我明天上班。"
-                },
-                {
-                    "id": "Saya hari ini cuti.",
-                    "cn": "我今天休假。"
-                },
-                {
-                    "id": "Apakah kamu sudah sarapan/makan pagi?",
-                    "cn": "你吃早餐了吗？"
-                },
-                {
-                    "id": "Sudah lama tidak bertemu, apa kabar?",
-                    "cn": "好久不见了，你好吗？"
-                },
-                {
-                    "id": "Kamu sekarang kelihatan sangat kurus.",
-                    "cn": "你现在看起来很瘦了。"
-                },
-                {
-                    "id": "Hari ini atasan kami yang traktir.",
-                    "cn": "今天我们领导请客。"
-                },
-                {
-                    "id": "Saya setiap pagi minum kopi.",
-                    "cn": "我每天早上都喝咖啡。"
-                },
-                {
-                    "id": "Soda dingin cocok diminum saat cuaca panas.",
-                    "cn": "冰汽水最适合热的天气喝。"
-                },
-                {
-                    "id": "Saya sangat suka minum jus buah.",
-                    "cn": "我很喜欢喝果汁。"
-                },
-                {
-                    "id": "Kamu ingin minum minuman apa?",
-                    "cn": "你想喝什么饮料？"
-                },
-                {
-                    "id": "Apakah ada salad?",
-                    "cn": "有沙拉吗？"
-                },
-                {
-                    "id": "Saya mau pesan sup ayam.",
-                    "cn": "我要订鸡汤。"
-                },
-                {
-                    "id": "Bubur pagi ini sangat enak.",
-                    "cn": "今天早上的粥很好吃。"
-                },
-                {
-                    "id": "Saya sangat suka makan pedas.",
-                    "cn": "我很喜欢吃辣。"
-                },
-                {
-                    "id": "Makanan di menu kelihatan sangat enak.",
-                    "cn": "菜单上的食物看起来很好吃。"
-                },
-                {
-                    "id": "Bebek goreng di restoran ini sangat enak.",
-                    "cn": "这家餐厅的炸鸭很好吃。"
-                },
-                {
-                    "id": "Tinggi badan anto seratus tujuh puluh sentimeter.",
-                    "cn": "anto的身高170公分。"
-                },
-                {
-                    "id": "Berat badan anto adalah delapan puluh kilo.",
-                    "cn": "anto的体重80公斤。"
-                },
-                {
-                    "id": "Dia sudah beli 1 pasang sepatu, harganya 1.777.999 rupiah.",
-                    "cn": "他买了一双鞋子，价格一百七十七万七千九百九十九印尼盾。"
-                },
-                {
-                    "id": "Anto membeli satu botol selai coklat, dua botol selai kacang.",
-                    "cn": "Anto买了一瓶巧克力酱和2瓶花生酱"
-                },
-                {
-                    "id": "Saya mau beli satu kotak coklat.",
-                    "cn": "我要买一盒巧克力"
-                },
-                {
-                    "id": "Dia telah membeli satu dus mie instan.",
-                    "cn": "他买了一箱方便面"
-                },
-                {
-                    "id": "Boleh minta struknya?",
-                    "cn": "可以给我小票吗？"
-                },
-                {
-                    "id": "Transportasi apa yang sering kamu gunakan?",
-                    "cn": "你经常使用哪些交通工具？"
-                },
-                {
-                    "id": "Halte bus disebelah sana.",
-                    "cn": "公交站在那边"
-                },
-                {
-                    "id": "Dari sini ke sana naik apa?",
-                    "cn": "从这里到那里坐什么"
-                },
-                {
-                    "id": "Kapan kita tiba di tujuan?",
-                    "cn": "我们什么时候到达目的地？"
-                },
-                {
-                    "id": "Apakah kamu bisa antar saya ke area selatan?",
-                    "cn": "你能送我去南区吗？"
-                },
-                {
-                    "id": "Sudah berapa lama Bapak jadi supir?",
-                    "cn": "先生你当司机多久了？"
-                },
-                {
-                    "id": "Apakah anda adalah supir yang antar saya?",
-                    "cn": "你是送我的司机吗？"
-                },
-                {
-                    "id": "ATM ada di samping gedung GA.",
-                    "cn": "提款机在综合楼旁边"
-                },
-                {
-                    "id": "Kantor Manajer di lantai dua nomor dua dua tiga.",
-                    "cn": "经理办公室在2楼223号"
-                },
-                {
-                    "id": "Depan adalah simpang empat，kecepatan harus diperlambat.",
-                    "cn": "前面是十字路口，速度要放慢"
-                },
-                {
-                    "id": "Kamu kerja di departemen apa?",
-                    "cn": "你在哪个部门工作"
-                },
-                {
-                    "id": "Saya kerja di pt imip.",
-                    "cn": "我在IMIP园区上班。"
-                },
-                {
-                    "id": "Saya kerja di GA.",
-                    "cn": "我在综合部工作。"
-                },
-                {
-                    "id": "Besok jam berapa Rapat?",
-                    "cn": "明天几点开会？"
-                },
-                {
-                    "id": "Rapat hari ini batal.",
-                    "cn": "今天的会议取消。"
-                },
-                {
-                    "id": "Rapat kita ditunda sampai minggu depan.",
-                    "cn": "我们的会议延迟到下个星期。"
-                },
-                {
-                    "id": "Semuanya sudah tiba, ayo kita mulai rapat.",
-                    "cn": "大家都到了，我们开始开会吧。"
-                },
-                {
-                    "id": "Ini adalah laporan harian kerja saya.",
-                    "cn": "这是我的工作日志。"
-                },
-                {
-                    "id": "Sore kita ada 1 rapat penting.",
-                    "cn": "下午我们有一个重要的会议。"
-                },
-                {
-                    "id": "Selamat datang di pt imip!",
-                    "cn": "欢迎来到IMIP公司！"
-                },
-                {
-                    "id": "Sebelum masuk kerja kalian akan ada pelatihan.",
-                    "cn": "入职之前你们会有培训。"
-                },
-                {
-                    "id": "Dilarang pakai tangan kiri menyerahkan barang.",
-                    "cn": "忌讳用左手传递东西。"
-                },
-                {
-                    "id": "Harus sopan terhadap teman kerja.",
-                    "cn": "对待同事要有礼貌。"
-                },
-                {
-                    "id": "Indonesia ada 2 musim. Musim hujan dan musim kemarau.",
-                    "cn": "印尼有两个季节：雨季和旱季。"
-                },
-                {
-                    "id": "Tiongkok ada 4 musim; musim semi, panas, gugur, dingin.",
-                    "cn": "中国有四个季节：春、夏、秋、冬。"
-                },
-                {
-                    "id": "Akhir-akhir ini selalu hujan.",
-                    "cn": "最近一直下雨。"
-                },
-                {
-                    "id": "Dari mess kamu ke tempat kerja berapa lama?",
-                    "cn": "从你宿舍去到工作地点多长时间呀？"
-                },
-                {
-                    "id": "Kapan kamu ulang tahun?",
-                    "cn": "你什么时候生日?"
-                },
-                {
-                    "id": "Ulang tahun kamu mendapat hadiah apa?",
-                    "cn": "生日你收到了什么礼物？"
-                },
-                {
-                    "id": "Kamu terlihat tidak enak badan hari ini. Ada apa?",
-                    "cn": "你今天看起来身体不舒服。怎么了吗？"
-                },
-                {
-                    "id": "Apakah kamu ingin istirahat sebentar?",
-                    "cn": "你要先休息一下吗？"
-                },
-                {
-                    "id": "Apakah Kamu sudah lama kerja disini?",
-                    "cn": "您在这里工作很久了吗？"
-                },
-                {
-                    "id": "Bagaimana pekerjaan disini?",
-                    "cn": "在这里工作怎么样？"
-                },
-                {
-                    "id": "Apakah ada rapat sebelum pulang kerja?",
-                    "cn": "下班之前会开会吗？"
-                },
-                {
-                    "id": "jam berapa rapat?",
-                    "cn": "几点开会？"
-                },
-                {
-                    "id": "Di luar sedang hujan, apakah kamu membawa payung?",
-                    "cn": "外面在下雨，你有带伞吗？"
-                },
-                {
-                    "id": "Bolehkah saya nebeng payung dengan kamu?",
-                    "cn": "我可以和你共用一把伞吗？"
-                },
-                {
-                    "id": "Hari ini muka kamu kelihatan sangat pucat, apakah kamu sakit?",
-                    "cn": "你今天脸色看起来很苍白，你是不是生病了？"
-                },
-                {
-                    "id": "Kamu suka buah apa?",
-                    "cn": "你喜欢什么水果？"
-                },
-                {
-                    "id": "Apakah manis?",
-                    "cn": "甜吗？"
-                },
-                {
-                    "id": "Menurut kamu makanan kantin gimana?",
-                    "cn": "你觉得食堂的食物怎样？"
-                },
-                {
-                    "id": "Apakah enak?",
-                    "cn": "好吃吗？"
-                },
-                {
-                    "id": "Bagaimana kondisi kamu hari ini?",
-                    "cn": "你今天身体怎么样？"
-                },
-                {
-                    "id": "kamu siang ini kemana?",
-                    "cn": "你今天中午去哪里？"
-                },
-                {
-                    "id": "Kamu punya berapa saudara?",
-                    "cn": "你有几个兄弟妹？"
-                },
-                {
-                    "id": "Kamu anak yang keberapa?",
-                    "cn": "你是第几个孩子？"
-                },
-                {
-                    "id": "Baju apa yang kamu pakai?",
-                    "cn": "你穿的是什么衣服？"
-                },
-                {
-                    "id": "Apa warna baju kamu?",
-                    "cn": "你穿的衣服是什么颜色的？"
-                },
-                {
-                    "id": "Apa warna helm yang ada di perusahaan ini?",
-                    "cn": "我们公司安全帽的颜色有那些？"
-                },
-                {
-                    "id": "Apa warna helm kamu？",
-                    "cn": "你的安全帽是什么颜色的？"
-                },
-                {
-                    "id": "Kamu suka belanja apa di market?",
-                    "cn": "你在超市喜欢买什么？"
-                },
-                {
-                    "id": "Mengapa suka beli barang itu?",
-                    "cn": "为什么喜欢买那个？"
-                },
-                {
-                    "id": "Kamu suka makan cemilan apa?",
-                    "cn": "你喜欢吃什么零食？"
-                },
-                {
-                    "id": "Berapa harganya?",
-                    "cn": "多少钱？"
-                },
-                {
-                    "id": "Apakah jauh dari sini?",
-                    "cn": "离这里远吗？"
-                },
-                {
-                    "id": "Setelah pulang kerja kamu ada hobi apa?",
-                    "cn": "下班后你有什么爱好吗？"
-                },
-                {
-                    "id": "Bagaimana kamu pergi ke kantor?",
-                    "cn": "你怎么去办公室？"
-                },
-                {
-                    "id": "Jadi jam berapa kamu pulang kerja?",
-                    "cn": "那你几点下班呢？"
-                },
-                {
-                    "id": "Apakah Kamu sering Lembur?",
-                    "cn": "你经常加班吗？"
-                },
-                {
-                    "id": "Biasanya Lembur berapa jam?",
-                    "cn": "平时加班几个小时？"
-                },
-                {
-                    "id": "Sudah berapa lama bekerja disini?",
-                    "cn": "在这里工作了多长时间？"
-                },
-                {
-                    "id": "harga sayurnya berapa?",
-                    "cn": "这个菜多少钱？"
-                },
-                {
-                    "id": "Bisa kurang harganya？",
-                    "cn": "可以便宜点吗？"
-                },
-                {
-                    "id": "Kamu siang istirahat jam berapa？",
-                    "cn": "你中午几点休息？"
-                }
-            ]
+            "1": {
+                "words": [
+                    {
+                        "indonesian": "Halo",
+                        "chinese": "你好"
+                    },
+                    {
+                        "indonesian": "Terima kasih",
+                        "chinese": "谢谢"
+                    },
+                    {
+                        "indonesian": "Maaf",
+                        "chinese": "对不起"
+                    },
+                    {
+                        "indonesian": "Selamat pagi",
+                        "chinese": "早上好"
+                    },
+                    {
+                        "indonesian": "Selamat siang",
+                        "chinese": "中午好"
+                    },
+                    {
+                        "indonesian": "Selamat malam",
+                        "chinese": "晚上好"
+                    },
+                    {
+                        "indonesian": "Sampai jumpa",
+                        "chinese": "再见"
+                    },
+                    {
+                        "indonesian": "Ya",
+                        "chinese": "是"
+                    },
+                    {
+                        "indonesian": "Tidak",
+                        "chinese": "不是"
+                    },
+                    {
+                        "indonesian": "Permisi",
+                        "chinese": "打扰一下"
+                    }
+                ]
+            }
+        }
+    },
+    "2": {
+        "name": "日常用语",
+        "lessons": {
+            "1": {
+                "words": [
+                    {
+                        "indonesian": "Makan",
+                        "chinese": "吃"
+                    },
+                    {
+                        "indonesian": "Minum",
+                        "chinese": "喝"
+                    },
+                    {
+                        "indonesian": "Tidur",
+                        "chinese": "睡觉"
+                    },
+                    {
+                        "indonesian": "Beli",
+                        "chinese": "买"
+                    },
+                    {
+                        "indonesian": "Jalan",
+                        "chinese": "走"
+                    },
+                    {
+                        "indonesian": "Duduk",
+                        "chinese": "坐"
+                    },
+                    {
+                        "indonesian": "Berdiri",
+                        "chinese": "站"
+                    },
+                    {
+                        "indonesian": "Pulang",
+                        "chinese": "回家"
+                    },
+                    {
+                        "indonesian": "Kerja",
+                        "chinese": "工作"
+                    },
+                    {
+                        "indonesian": "Belajar",
+                        "chinese": "学习"
+                    }
+                ]
+            }
+        }
+    },
+    "3": {
+        "name": "考试题库",
+        "lessons": {
+            "1": {
+                "words": [
+                    {
+                        "indonesian": "Admin",
+                        "chinese": "文员"
+                    },
+                    {
+                        "indonesian": "Air",
+                        "chinese": "水"
+                    },
+                    {
+                        "indonesian": "Air Dingin",
+                        "chinese": "冷水"
+                    },
+                    {
+                        "indonesian": "Air Hangat",
+                        "chinese": "温水"
+                    },
+                    {
+                        "indonesian": "Apa kabar",
+                        "chinese": "你好"
+                    },
+                    {
+                        "indonesian": "Apotek",
+                        "chinese": "药店"
+                    },
+                    {
+                        "indonesian": "Area",
+                        "chinese": "区域"
+                    },
+                    {
+                        "indonesian": "Asrama",
+                        "chinese": "宿舍"
+                    },
+                    {
+                        "indonesian": "Atas",
+                        "chinese": "上面"
+                    },
+                    {
+                        "indonesian": "ATM",
+                        "chinese": "提款机"
+                    },
+                    {
+                        "indonesian": "Bagaimana",
+                        "chinese": "如何"
+                    },
+                    {
+                        "indonesian": "Bahaya",
+                        "chinese": "危险"
+                    },
+                    {
+                        "indonesian": "Baik hati",
+                        "chinese": "善良"
+                    },
+                    {
+                        "indonesian": "Baik-baik saja",
+                        "chinese": "挺好的"
+                    },
+                    {
+                        "indonesian": "Bakso",
+                        "chinese": "肉丸"
+                    },
+                    {
+                        "indonesian": "bank",
+                        "chinese": "银行"
+                    },
+                    {
+                        "indonesian": "bantu",
+                        "chinese": "帮"
+                    },
+                    {
+                        "indonesian": "tolong",
+                        "chinese": "帮"
+                    },
+                    {
+                        "indonesian": "banyak",
+                        "chinese": "多"
+                    },
+                    {
+                        "indonesian": "pak",
+                        "chinese": "先生"
+                    },
+                    {
+                        "indonesian": "barang",
+                        "chinese": "东西/物品"
+                    },
+                    {
+                        "indonesian": "barat",
+                        "chinese": "西"
+                    },
+                    {
+                        "indonesian": "baru",
+                        "chinese": "新"
+                    },
+                    {
+                        "indonesian": "batal",
+                        "chinese": "取消"
+                    },
+                    {
+                        "indonesian": "merepotkan",
+                        "chinese": "麻烦"
+                    },
+                    {
+                        "indonesian": "merokok",
+                        "chinese": "吸烟"
+                    },
+                    {
+                        "indonesian": "mi",
+                        "chinese": "面"
+                    },
+                    {
+                        "indonesian": "mi instan",
+                        "chinese": "方便面"
+                    },
+                    {
+                        "indonesian": "minggu",
+                        "chinese": "星期天"
+                    },
+                    {
+                        "indonesian": "minum",
+                        "chinese": "喝"
+                    },
+                    {
+                        "indonesian": "makan obat",
+                        "chinese": "吃药"
+                    },
+                    {
+                        "indonesian": "Mobil",
+                        "chinese": "车"
+                    },
+                    {
+                        "indonesian": "Mohon Maaf",
+                        "chinese": "抱歉"
+                    },
+                    {
+                        "indonesian": "Maaf",
+                        "chinese": "对不起/抱歉"
+                    },
+                    {
+                        "indonesian": "Muda",
+                        "chinese": "年轻"
+                    },
+                    {
+                        "indonesian": "Mudah",
+                        "chinese": "容易"
+                    },
+                    {
+                        "indonesian": "Murah",
+                        "chinese": "便宜"
+                    },
+                    {
+                        "indonesian": "Musim dingin",
+                        "chinese": "冬天"
+                    },
+                    {
+                        "indonesian": "Musim gugur",
+                        "chinese": "秋天"
+                    },
+                    {
+                        "indonesian": "Musim hujan",
+                        "chinese": "雨季"
+                    },
+                    {
+                        "indonesian": "Musim kemarau",
+                        "chinese": "旱季"
+                    },
+                    {
+                        "indonesian": "Musim panas",
+                        "chinese": "夏天"
+                    },
+                    {
+                        "indonesian": "Musim semi",
+                        "chinese": "春天"
+                    },
+                    {
+                        "indonesian": "Naik",
+                        "chinese": "上"
+                    },
+                    {
+                        "indonesian": "Nasi",
+                        "chinese": "米饭"
+                    },
+                    {
+                        "indonesian": "Natal",
+                        "chinese": "圣诞"
+                    },
+                    {
+                        "indonesian": "Negara",
+                        "chinese": "国家"
+                    },
+                    {
+                        "indonesian": "nikah",
+                        "chinese": "结婚"
+                    },
+                    {
+                        "indonesian": "nol",
+                        "chinese": "零"
+                    },
+                    {
+                        "indonesian": "nomor",
+                        "chinese": "号码"
+                    },
+                    {
+                        "indonesian": "nyanyi",
+                        "chinese": "唱歌"
+                    },
+                    {
+                        "indonesian": "Memperkenalkan diri",
+                        "chinese": "自我介绍"
+                    },
+                    {
+                        "indonesian": "perkenalkan diri",
+                        "chinese": "自我介绍"
+                    },
+                    {
+                        "indonesian": "Batuk",
+                        "chinese": "咳嗽"
+                    },
+                    {
+                        "indonesian": "Bawa",
+                        "chinese": "拿"
+                    },
+                    {
+                        "indonesian": "Ambil",
+                        "chinese": "拿"
+                    },
+                    {
+                        "indonesian": "Bawah",
+                        "chinese": "下"
+                    },
+                    {
+                        "indonesian": "Begadang",
+                        "chinese": "熬夜"
+                    },
+                    {
+                        "indonesian": "Belakang",
+                        "chinese": "后面"
+                    },
+                    {
+                        "indonesian": "Belanja",
+                        "chinese": "购物"
+                    },
+                    {
+                        "indonesian": "Belok",
+                        "chinese": "拐"
+                    },
+                    {
+                        "indonesian": "Benar",
+                        "chinese": "对"
+                    },
+                    {
+                        "indonesian": "Berat",
+                        "chinese": "重"
+                    },
+                    {
+                        "indonesian": "Berawan",
+                        "chinese": "多云"
+                    },
+                    {
+                        "indonesian": "Berdasarkan",
+                        "chinese": "根据"
+                    },
+                    {
+                        "indonesian": "berhenti",
+                        "chinese": "停"
+                    },
+                    {
+                        "indonesian": "berkas",
+                        "chinese": "资料"
+                    },
+                    {
+                        "indonesian": "bertemu",
+                        "chinese": "见面"
+                    },
+                    {
+                        "indonesian": "besok",
+                        "chinese": "明天"
+                    },
+                    {
+                        "indonesian": "biskuit",
+                        "chinese": "饼干"
+                    },
+                    {
+                        "indonesian": "botol",
+                        "chinese": "瓶子"
+                    },
+                    {
+                        "indonesian": "botol air",
+                        "chinese": "水瓶"
+                    },
+                    {
+                        "indonesian": "buah",
+                        "chinese": "水果"
+                    },
+                    {
+                        "indonesian": "bubur",
+                        "chinese": "粥"
+                    },
+                    {
+                        "indonesian": "budaya",
+                        "chinese": "文化"
+                    },
+                    {
+                        "indonesian": "tidak",
+                        "chinese": "不"
+                    },
+                    {
+                        "indonesian": "Bulan",
+                        "chinese": "月"
+                    },
+                    {
+                        "indonesian": "Olahraga",
+                        "chinese": "运动"
+                    },
+                    {
+                        "indonesian": "Orang",
+                        "chinese": "人"
+                    },
+                    {
+                        "indonesian": "Paham",
+                        "chinese": "懂"
+                    },
+                    {
+                        "indonesian": "Pahit",
+                        "chinese": "苦"
+                    },
+                    {
+                        "indonesian": "Pakai",
+                        "chinese": "用"
+                    },
+                    {
+                        "indonesian": "Pakai masker",
+                        "chinese": "戴口罩"
+                    },
+                    {
+                        "indonesian": "Pamit",
+                        "chinese": "告辞"
+                    },
+                    {
+                        "indonesian": "Panas",
+                        "chinese": "热"
+                    },
+                    {
+                        "indonesian": "Panggil",
+                        "chinese": "叫"
+                    },
+                    {
+                        "indonesian": "Pasta gigi",
+                        "chinese": "牙膏"
+                    },
+                    {
+                        "indonesian": "pedas",
+                        "chinese": "辣"
+                    },
+                    {
+                        "indonesian": "kerja",
+                        "chinese": "工作"
+                    },
+                    {
+                        "indonesian": "pelatihan",
+                        "chinese": "培训"
+                    },
+                    {
+                        "indonesian": "pendek",
+                        "chinese": "矮"
+                    },
+                    {
+                        "indonesian": "penting",
+                        "chinese": "重要"
+                    },
+                    {
+                        "indonesian": "peraturan",
+                        "chinese": "制度/规定"
+                    },
+                    {
+                        "indonesian": "pergi",
+                        "chinese": "去"
+                    },
+                    {
+                        "indonesian": "perhatikan",
+                        "chinese": "注意"
+                    },
+                    {
+                        "indonesian": "perkenalkan",
+                        "chinese": "介绍"
+                    },
+                    {
+                        "indonesian": "perut",
+                        "chinese": "肚子"
+                    },
+                    {
+                        "indonesian": "Bunga",
+                        "chinese": "花"
+                    },
+                    {
+                        "indonesian": "Bungkus",
+                        "chinese": "包"
+                    },
+                    {
+                        "indonesian": "Bunyi",
+                        "chinese": "声音"
+                    },
+                    {
+                        "indonesian": "Bus",
+                        "chinese": "公交车"
+                    },
+                    {
+                        "indonesian": "Cantik",
+                        "chinese": "漂亮"
+                    },
+                    {
+                        "indonesian": "Cemilan",
+                        "chinese": "零食"
+                    },
+                    {
+                        "indonesian": "Cepat",
+                        "chinese": "快"
+                    },
+                    {
+                        "indonesian": "Coklat",
+                        "chinese": "巧克力"
+                    },
+                    {
+                        "indonesian": "Cuaca",
+                        "chinese": "天气"
+                    },
+                    {
+                        "indonesian": "Cuti",
+                        "chinese": "休假"
+                    },
+                    {
+                        "indonesian": "Cuti kunjungan keluarga",
+                        "chinese": "探亲假"
+                    },
+                    {
+                        "indonesian": "Cuti Melahirkan",
+                        "chinese": "产假"
+                    },
+                    {
+                        "indonesian": "Cuti Nikah",
+                        "chinese": "婚假"
+                    },
+                    {
+                        "indonesian": "Cuti tahunan",
+                        "chinese": "年假"
+                    },
+                    {
+                        "indonesian": "Daging",
+                        "chinese": "肉"
+                    },
+                    {
+                        "indonesian": "Dari",
+                        "chinese": "来自"
+                    },
+                    {
+                        "indonesian": "Berasal",
+                        "chinese": "来自"
+                    },
+                    {
+                        "indonesian": "Dekat",
+                        "chinese": "近"
+                    },
+                    {
+                        "indonesian": "Delapan",
+                        "chinese": "八"
+                    },
+                    {
+                        "indonesian": "Depan",
+                        "chinese": "前面"
+                    },
+                    {
+                        "indonesian": "Di",
+                        "chinese": "在"
+                    },
+                    {
+                        "indonesian": "Dia",
+                        "chinese": "他"
+                    },
+                    {
+                        "indonesian": "Dilarang",
+                        "chinese": "禁止"
+                    },
+                    {
+                        "indonesian": "Dimana",
+                        "chinese": "在哪里"
+                    }
+                ]
+            }
         }
     }
 }
