@@ -15,6 +15,7 @@
             --bg-primary: #0a0f1a;
             --bg-secondary: #0f172a;
             --bg-card: rgba(15, 23, 42, 0.8);
+            --bg-card-item: rgba(30, 41, 59, 0.6);
             --accent-primary: #6366f1;
             --accent-secondary: #8b5cf6;
             --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
@@ -28,8 +29,13 @@
             --danger: #ef4444;
             --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.3);
             --shadow-accent: 0 4px 24px rgba(99, 102, 241, 0.3);
+            --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 16px;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
@@ -59,10 +65,12 @@
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
+            position: relative;
         }
 
+        /* 卡片通用样式 */
         .card {
             background: var(--bg-card);
             backdrop-filter: blur(24px) saturate(140%);
@@ -88,6 +96,8 @@
             margin-bottom: 16px;
             padding-bottom: 12px;
             border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .card-title {
@@ -103,7 +113,7 @@
             width: 28px;
             height: 28px;
             background: var(--accent-gradient-soft);
-            border-radius: 8px;
+            border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -111,6 +121,7 @@
             font-weight: 700;
         }
 
+        /* 按钮样式 */
         .btn-group {
             display: flex;
             flex-wrap: wrap;
@@ -162,53 +173,84 @@
             border: none;
         }
 
-        .word-list {
-            display: grid;
-            gap: 8px;
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
         }
 
-        .word-item {
-            background: rgba(15, 23, 42, 0.6);
+        .btn-success {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* 单词卡片网格布局 */
+        .word-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .word-card {
+            background: var(--bg-card-item);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
-            padding: 12px 16px;
+            padding: 16px;
             cursor: pointer;
             transition: all 0.25s ease;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
         }
 
-        .word-item:hover {
-            background: var(--accent-gradient-soft);
+        .word-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-primary);
+            transform: scaleY(0);
+            transition: transform 0.25s ease;
+        }
+
+        .word-card:hover {
             border-color: var(--accent-primary);
-            transform: translateX(4px);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
         }
 
-        .word-item.active {
+        .word-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .word-card.active {
             background: var(--accent-gradient-soft);
             border-color: var(--accent-primary);
             box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
         }
 
-        .word-content {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .word-indonesian {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--accent-primary);
-        }
-
-        .word-chinese {
-            font-size: 14px;
-            color: var(--text-muted);
+        .word-card.active::before {
+            transform: scaleY(1);
         }
 
         .word-index {
+            position: absolute;
+            top: 10px;
+            right: 10px;
             width: 24px;
             height: 24px;
             background: rgba(99, 102, 241, 0.1);
@@ -221,6 +263,95 @@
             color: var(--accent-primary);
         }
 
+        .word-indonesian {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 6px;
+        }
+
+        .word-chinese {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .word-letter {
+            font-size: 12px;
+            color: var(--text-muted);
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        /* 分页控制 */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pagination .btn {
+            min-width: 40px;
+            padding: 8px 12px;
+            text-align: center;
+        }
+
+        .pagination-info {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin: 0 10px;
+        }
+
+        /* 字母索引侧边栏 */
+        .alphabet-index {
+            position: fixed;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            z-index: 100;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 10px 6px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .alphabet-index .letter-btn {
+            width: 24px;
+            height: 24px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alphabet-index .letter-btn:hover {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .alphabet-index .letter-btn.active {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        /* 状态提示 */
         .status-tip {
             margin-top: 12px;
             font-size: 13px;
@@ -243,6 +374,7 @@
             font-weight: 500;
         }
 
+        /* 控制面板 */
         .control-panel {
             background: rgba(15, 23, 42, 0.6);
             border-radius: var(--radius-md);
@@ -322,6 +454,181 @@
             font-size: 13px;
         }
 
+        /* 后台管理样式 */
+        .admin-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .admin-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-accent);
+        }
+
+        .admin-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            z-index: 10;
+        }
+
+        .admin-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .admin-body {
+            padding: 20px;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .admin-tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: var(--radius-sm);
+            transition: all 0.3s ease;
+        }
+
+        .admin-tab:hover {
+            color: var(--text-primary);
+            background: rgba(30, 41, 59, 0.6);
+        }
+
+        .admin-tab.active {
+            color: var(--accent-primary);
+            background: var(--accent-gradient-soft);
+            font-weight: 600;
+        }
+
+        .admin-tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .course-manage-item {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .course-manage-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .course-manage-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .lesson-manage-list {
+            margin-left: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 8px;
+        }
+
+        .lesson-manage-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: var(--radius-sm);
+        }
+
+        .lesson-manage-item label {
+            flex: 1;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* 底部固定按钮 */
         .admin-toggle {
             position: fixed;
             bottom: 20px;
@@ -350,6 +657,7 @@
             font-weight: 600;
         }
 
+        /* 加载遮罩 */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -386,12 +694,34 @@
             font-size: 14px;
         }
 
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            .word-grid {
+                grid-template-columns: 1fr;
+            }
+            .alphabet-index {
+                right: 5px;
+                padding: 8px 4px;
+            }
+            .alphabet-index .letter-btn {
+                width: 20px;
+                height: 20px;
+                font-size: 10px;
+            }
+            .admin-box {
+                max-height: 95vh;
+            }
+        }
+
         @media (max-width: 640px) {
             body {
                 padding: 16px 12px 90px;
             }
             .card {
                 padding: 16px;
+            }
+            .alphabet-index {
+                display: none;
             }
         }
     </style>
@@ -430,17 +760,20 @@
                 <div class="btn-group" id="lessonBtns"></div>
             </div>
 
-            <!-- 学习内容 -->
+            <!-- 学习内容卡片区 -->
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">
                         <div class="card-title-icon">✏️</div>
                         学习内容
                     </div>
+                    <span class="status-tip" id="contentCountTip"></span>
                 </div>
-                <div class="word-list" id="contentBox">
-                    <p style="color: var(--text-muted); font-size: 14px; padding: 12px;">请先选择单元和课程</p>
+                <div class="word-grid" id="contentBox">
+                    <p style="color: var(--text-muted); font-size: 14px; padding: 12px; grid-column: 1/-1;">请先选择单元和课程</p>
                 </div>
+                <!-- 分页控件 -->
+                <div class="pagination" id="pagination"></div>
             </div>
 
             <!-- 快捷操作 -->
@@ -454,7 +787,7 @@
                 <div class="btn-group">
                     <button class="btn btn-primary" id="readAllBtn">全文朗读</button>
                     <button class="btn btn-warning" id="stopReadBtn">停止朗读</button>
-                    <button class="btn" id="clearBtn">清空内容</button>
+                    <button class="btn" id="clearBtn">清空选中</button>
                 </div>
                 
                 <!-- 语速调节 -->
@@ -477,12 +810,15 @@
                         <button class="btn btn-primary read-times-btn" data-times="10">读10次</button>
                         <button class="btn btn-warning read-times-btn" data-times="0">无限循环</button>
                     </div>
-                    <p class="status-tip" id="readStatusTip">请点击单词选中，再选择朗读次数</p>
+                    <p class="status-tip" id="readStatusTip">请点击单词卡片选中，再选择朗读次数</p>
                 </div>
                 
                 <p class="status-tip" id="statusTip"></p>
             </div>
         </div>
+
+        <!-- 字母索引侧边栏 -->
+        <div class="alphabet-index" id="alphabetIndex"></div>
     </div>
 
     <!-- 后台管理开关 -->
@@ -492,63 +828,328 @@
 
     <!-- 版本号底部显示 -->
     <div class="version-footer">
-        印尼语学习系统 | 版本 <span id="footerVersion">V3.0.0</span> | 静态数据模式
+        印尼语学习系统 | 版本 <span id="footerVersion">V3.5.0</span> | 静态数据模式
     </div>
 
     <!-- 后台管理弹窗 -->
-    <div class="modal" id="adminModal" style="display: none;">
-        <div class="modal-box" style="max-width: 600px;">
-            <h3>后台管理</h3>
-            <p style="margin-bottom: 16px; color: var(--text-secondary); font-size: 14px;">
-                <strong>当前模式：</strong>静态文件托管<br>
-                <strong>数据来源：</strong><code style="background: rgba(99,102,241,0.1); padding: 2px 6px; border-radius: 4px;">indonesian_learning_data.json</code><br><br>
-                <strong>更新课程方法：</strong><br>
-                1. 修改仓库里的 <code style="background: rgba(99,102,241,0.1); padding: 2px 6px; border-radius: 4px;">indonesian_learning_data.json</code><br>
-                2. 提交并推送到仓库<br>
-                3. 用户刷新网页自动加载新课程
-            </p>
-            <div class="btn-group" style="justify-content: flex-end;">
-                <button class="btn btn-primary" id="closeAdminModal">关闭</button>
+    <div class="admin-modal" id="adminModal">
+        <div class="admin-box">
+            <div class="admin-header">
+                <h2>后台管理系统</h2>
+                <button class="btn btn-primary" id="closeAdminBtn">关闭</button>
+            </div>
+            <div class="admin-body">
+                <!-- 后台标签页 -->
+                <div class="admin-tabs">
+                    <button class="admin-tab active" data-tab="course-manage">课程管理</button>
+                    <button class="admin-tab" data-tab="system-setting">系统设置</button>
+                    <button class="admin-tab" data-tab="data-maintain">数据维护</button>
+                </div>
+
+                <!-- 课程管理标签页 -->
+                <div id="course-manageTab" class="admin-tab-content" style="display: block;">
+                    <div class="form-group">
+                        <label>课程启用/禁用管理（前台仅显示启用的内容）</label>
+                        <div id="courseManageList"></div>
+                    </div>
+                    <hr style="border-color: var(--border-color); margin: 20px 0;">
+                    <div class="form-group">
+                        <label>课程清空管理</label>
+                        <div class="btn-group">
+                            <select id="clearUnitSelect" style="width: auto; max-width: 300px;"></select>
+                            <select id="clearLessonSelect" style="width: auto; max-width: 200px;">
+                                <option value="all">全部课程</option>
+                            </select>
+                            <button class="btn btn-danger" id="clearCourseBtn">清空选中内容</button>
+                        </div>
+                        <p class="status-tip warning">⚠️ 此操作仅清空本地缓存，不会修改源JSON文件，刷新页面可恢复</p>
+                    </div>
+                </div>
+
+                <!-- 系统设置标签页 -->
+                <div id="system-settingTab" class="admin-tab-content">
+                    <div class="form-group">
+                        <label>版本号管理</label>
+                        <input type="text" id="versionInput" placeholder="例如：3.5.0" value="3.5.0">
+                        <button class="btn btn-success btn-sm" id="saveVersionBtn" style="margin-top:8px;">保存版本号</button>
+                    </div>
+                    <hr style="border-color: var(--border-color); margin: 20px 0;">
+                    <div class="form-group">
+                        <label>前台显示设置</label>
+                        <div class="btn-group">
+                            <label style="display: flex; align-items: center; gap: 8px; margin: 0;">
+                                <input type="checkbox" id="showLetterIndex" checked>
+                                <span>显示字母索引栏</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>每页显示数量</label>
+                        <input type="number" id="pageSizeInput" min="5" max="100" value="20">
+                        <p class="status-tip">设置单词卡片每页显示的数量，默认20个</p>
+                    </div>
+                </div>
+
+                <!-- 数据维护标签页 -->
+                <div id="data-maintainTab" class="admin-tab-content">
+                    <div class="form-group">
+                        <label>强制刷新数据</label>
+                        <button class="btn btn-warning" id="forceRefreshBtn">🔄 从源文件重新加载课程数据</button>
+                        <p class="status-tip">当你更新了仓库里的JSON文件后，点击此按钮强制刷新</p>
+                    </div>
+                    <hr style="border-color: var(--border-color); margin: 20px 0;">
+                    <div class="form-group">
+                        <label>导出当前课程数据</label>
+                        <button class="btn btn-success" id="exportBtn">导出为 JSON 文件</button>
+                    </div>
+                    <hr style="border-color: var(--border-color); margin: 20px 0;">
+                    <div class="form-group">
+                        <label>重置所有数据</label>
+                        <button class="btn btn-danger" id="resetBtn">重置为源文件默认数据</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         // ==================== 全局配置 ====================
-        let VERSION = "3.0.0";
+        let VERSION = "3.5.0";
         const ADMIN_PASSWORD = "admin123";
         const DEFAULT_SPEECH_RATE = 0.75;
-        const DATA_FILE_URL = "./indonesian_learning_data.json"; // 静态数据文件路径
+        const DATA_FILE_URL = "./indonesian_learning_data.json";
+        const STORAGE_KEY_CONFIG = "indonesianLearningConfig";
+        const STORAGE_KEY_COURSE_ENABLE = "indonesianCourseEnable";
 
         // ==================== 全局状态 ====================
-        let learningData = {};
+        let sourceData = {}; // 源数据，不修改
+        let learningData = {}; // 显示用数据
         let currentUnit = null;
         let currentLesson = null;
         let currentSelectedWord = null;
-        let currentSelectedWordIndex = null;
-        let isAdminOpen = false;
+        let currentSelectedWordElement = null;
         let speechRate = DEFAULT_SPEECH_RATE;
         let isLoopReading = false;
         let currentReadTimes = 0;
         let currentReadMaxTimes = 0;
         let isReading = false;
+        let currentPage = 1;
+        let pageSize = 20;
+        let currentWordList = [];
+        let courseEnableConfig = {};
+        let systemConfig = {
+            showLetterIndex: true,
+            pageSize: 20
+        };
 
-        // ==================== 从静态文件加载数据（核心修改） ====================
-        async function loadDataFromFile() {
+        // ==================== 字母表 ====================
+        const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+        // ==================== 语音合成核心功能 ====================
+        const synth = window.speechSynthesis;
+        let utterance = null;
+
+        // 停止所有朗读
+        function stopAllRead() {
+            isReading = false;
+            isLoopReading = false;
+            currentReadTimes = 0;
+            currentReadMaxTimes = 0;
+            
+            if (synth.speaking) {
+                synth.cancel();
+            }
+            
+            if (utterance) {
+                utterance = null;
+            }
+            
+            document.getElementById('readStatusTip').textContent = "已停止朗读";
+            document.getElementById('readStatusTip').className = "status-tip";
+        }
+
+        // 朗读单个单词/文本
+        function speakText(text, rate = speechRate, lang = 'id-ID') {
+            return new Promise((resolve, reject) => {
+                if (!text || text.trim() === '') {
+                    reject(new Error('朗读文本不能为空'));
+                    return;
+                }
+                
+                // 停止现有朗读
+                stopAllRead();
+                isReading = true;
+                
+                // 创建语音实例
+                utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang; // 印尼语：id-ID，中文：zh-CN
+                utterance.rate = rate; // 语速
+                utterance.volume = 1; // 音量（0-1）
+                utterance.pitch = 1; // 音调（0-2）
+                
+                // 朗读完成回调
+                utterance.onend = () => {
+                    isReading = false;
+                    resolve();
+                };
+                
+                // 朗读错误回调
+                utterance.onerror = (e) => {
+                    isReading = false;
+                    reject(e);
+                };
+                
+                // 开始朗读
+                synth.speak(utterance);
+            });
+        }
+
+        // 循环朗读选中的单词
+        async function loopReadSelectedWord() {
+            if (!currentSelectedWord) {
+                document.getElementById('readStatusTip').textContent = "请先选中一个单词卡片";
+                document.getElementById('readStatusTip').className = "status-tip warning";
+                return;
+            }
+            
+            isLoopReading = true;
+            currentReadTimes = 0;
+            
+            while (isLoopReading && (currentReadMaxTimes === 0 || currentReadTimes < currentReadMaxTimes)) {
+                if (!isReading) {
+                    try {
+                        currentReadTimes++;
+                        const readText = currentSelectedWord.indonesian; // 朗读印尼语
+                        document.getElementById('readStatusTip').textContent = 
+                            `正在朗读：${readText}（第${currentReadTimes}次）`;
+                        document.getElementById('readStatusTip').className = "status-tip success";
+                        
+                        await speakText(readText, speechRate);
+                        
+                        // 非无限循环时，更新状态
+                        if (currentReadMaxTimes > 0 && currentReadTimes >= currentReadMaxTimes) {
+                            isLoopReading = false;
+                            document.getElementById('readStatusTip').textContent = 
+                                `朗读完成：${readText}（共${currentReadTimes}次）`;
+                        }
+                    } catch (error) {
+                        document.getElementById('readStatusTip').textContent = `朗读失败：${error.message}`;
+                        document.getElementById('readStatusTip').className = "status-tip error";
+                        isLoopReading = false;
+                        break;
+                    }
+                }
+                // 短暂延迟，避免循环过快
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+        }
+
+        // 全文朗读当前课程
+        async function readAllContent() {
+            if (!currentUnit || !currentLesson || currentWordList.length === 0) {
+                document.getElementById('statusTip').textContent = "暂无可朗读的内容";
+                document.getElementById('statusTip').className = "status-tip warning";
+                return;
+            }
+            
+            stopAllRead();
+            isReading = true;
+            document.getElementById('statusTip').textContent = "开始全文朗读...";
+            document.getElementById('statusTip').className = "status-tip success";
+            
             try {
+                // 遍历当前页所有单词，依次朗读
+                for (let i = 0; i < currentWordList.length; i++) {
+                    if (!isReading) break; // 如果已停止，退出循环
+                    
+                    const word = currentWordList[i];
+                    const readText = word.indonesian;
+                    document.getElementById('statusTip').textContent = `正在朗读：${readText}`;
+                    
+                    await speakText(readText, speechRate);
+                    // 单词间停顿500ms
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+                
+                if (isReading) {
+                    document.getElementById('statusTip').textContent = "全文朗读完成！";
+                }
+            } catch (error) {
+                document.getElementById('statusTip').textContent = `全文朗读失败：${error.message}`;
+                document.getElementById('statusTip').className = "status-tip error";
+            } finally {
+                isReading = false;
+            }
+        }
+
+        // ==================== 配置加载与保存 ====================
+        function loadConfig() {
+            try {
+                const savedConfig = localStorage.getItem(STORAGE_KEY_CONFIG);
+                if (savedConfig) {
+                    systemConfig = JSON.parse(savedConfig);
+                    pageSize = systemConfig.pageSize || 20;
+                    document.getElementById('pageSizeInput').value = pageSize;
+                    document.getElementById('showLetterIndex').checked = systemConfig.showLetterIndex;
+                }
+                const savedEnable = localStorage.getItem(STORAGE_KEY_COURSE_ENABLE);
+                if (savedEnable) {
+                    courseEnableConfig = JSON.parse(savedEnable);
+                }
+            } catch (e) {
+                console.error("配置加载失败", e);
+            }
+        }
+
+        function saveConfig() {
+            localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(systemConfig));
+            localStorage.setItem(STORAGE_KEY_COURSE_ENABLE, JSON.stringify(courseEnableConfig));
+        }
+
+        // ==================== 从静态文件加载数据 ====================
+        async function loadDataFromFile(forceRefresh = false) {
+            try {
+                // 兼容性检测
+                if (!window.speechSynthesis) {
+                    document.getElementById('statusTip').textContent = "当前浏览器不支持语音合成功能，请更换Chrome/Edge浏览器";
+                    document.getElementById('statusTip').className = "status-tip error";
+                    // 禁用朗读按钮
+                    document.getElementById('readAllBtn').disabled = true;
+                    document.getElementById('stopReadBtn').disabled = true;
+                    document.querySelectorAll('.read-times-btn').forEach(btn => btn.disabled = true);
+                }
+
                 console.log("正在从静态文件加载课程数据...");
-                const response = await fetch(DATA_FILE_URL);
+                document.getElementById('loadingOverlay').style.display = 'flex';
+                
+                const response = await fetch(DATA_FILE_URL + (forceRefresh ? "?t=" + Date.now() : ""));
                 if (!response.ok) {
                     throw new Error("无法加载数据文件，HTTP状态: " + response.status);
                 }
-                learningData = await response.json();
+                sourceData = await response.json();
+                // 过滤启用的课程
+                filterEnabledCourse();
+                
                 console.log("✅ 课程数据加载成功", learningData);
+                document.getElementById('loadingOverlay').style.display = 'none';
                 
                 // 初始化UI
-                document.getElementById('loadingOverlay').style.display = 'none';
                 renderUnitButtons();
+                renderAdminCourseManage();
+                updateClearSelect();
                 document.getElementById('statusTip').textContent = "课程数据加载成功！请选择单元开始学习";
                 document.getElementById('statusTip').className = "status-tip success";
+
+                // 初始化语音列表
+                synth.onvoiceschanged = function() {
+                    const voices = synth.getVoices();
+                    console.log("可用语音列表：", voices);
+                    // 筛选印尼语语音
+                    const indonesianVoices = voices.filter(voice => voice.lang.includes('id'));
+                    if (indonesianVoices.length === 0) {
+                        console.warn("未找到印尼语语音包，将使用默认语音");
+                    }
+                };
             } catch (error) {
                 console.error("❌ 数据加载失败", error);
                 document.getElementById('loadingOverlay').querySelector('.loading-text').textContent = 
@@ -558,11 +1159,40 @@
             }
         }
 
-        // ==================== UI渲染函数 ====================
+        // 过滤启用的课程
+        function filterEnabledCourse() {
+            learningData = {};
+            Object.keys(sourceData).forEach(unitId => {
+                const unit = sourceData[unitId];
+                // 单元默认启用
+                const unitEnabled = courseEnableConfig[unitId]?.enabled !== false;
+                if (!unitEnabled) return;
+
+                learningData[unitId] = {
+                    name: unit.name,
+                    lessons: {}
+                };
+
+                // 过滤启用的课程
+                Object.keys(unit.lessons).forEach(lessonId => {
+                    const lessonEnabled = courseEnableConfig[unitId]?.lessons?.[lessonId] !== false;
+                    if (lessonEnabled) {
+                        learningData[unitId].lessons[lessonId] = unit.lessons[lessonId];
+                    }
+                });
+            });
+        }
+
+        // ==================== 单元/课程渲染 ====================
         function renderUnitButtons() {
             const unitBtns = document.getElementById('unitBtns');
             unitBtns.innerHTML = '';
             const unitIds = Object.keys(learningData).sort((a,b) => Number(a) - Number(b));
+
+            if (unitIds.length === 0) {
+                unitBtns.innerHTML = '<p style="color: var(--text-muted);">暂无启用的单元，请在后台管理中启用</p>';
+                return;
+            }
 
             unitIds.forEach(unitId => {
                 const unitData = learningData[unitId];
@@ -575,6 +1205,7 @@
                     document.querySelectorAll('#unitBtns .btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     currentUnit = parseInt(unitId);
+                    currentPage = 1;
                     renderLessonButtons();
                     stopAllRead();
                 };
@@ -588,6 +1219,11 @@
             if (!currentUnit || !learningData[currentUnit]) return;
 
             const lessonIds = Object.keys(learningData[currentUnit].lessons).sort((a,b) => Number(a) - Number(b));
+            if (lessonIds.length === 0) {
+                lessonBtns.innerHTML = '<p style="color: var(--text-muted);">该单元暂无启用的课程，请在后台管理中启用</p>';
+                return;
+            }
+
             lessonIds.forEach(lessonId => {
                 const btn = document.createElement('button');
                 btn.className = 'btn';
@@ -598,6 +1234,7 @@
                     document.querySelectorAll('#lessonBtns .btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     currentLesson = parseInt(lessonId);
+                    currentPage = 1;
                     updateContent();
                     stopAllRead();
                 };
@@ -605,235 +1242,502 @@
             });
         }
 
+        // ==================== 内容渲染（卡片+分页） ====================
         function updateContent() {
             const contentBox = document.getElementById('contentBox');
             const statusTip = document.getElementById('statusTip');
+            const countTip = document.getElementById('contentCountTip');
             
             if (!currentUnit || !currentLesson) {
-                contentBox.innerHTML = '<p style="color: var(--text-muted); font-size: 14px; padding: 12px;">请先选择单元和课程</p>';
+                contentBox.innerHTML = '<p style="color: var(--text-muted); font-size: 14px; padding: 12px; grid-column: 1/-1;">请先选择单元和课程</p>';
+                countTip.textContent = '';
                 return;
             }
 
-            const data = learningData[currentUnit]?.lessons?.[currentLesson];
-            if (!data) {
-                contentBox.innerHTML = '<p style="color: var(--text-muted); font-size: 14px; padding: 12px;">暂无内容</p>';
+            // 获取当前课程的单词列表
+            const lessonData = learningData[currentUnit].lessons[currentLesson];
+            if (!lessonData || !lessonData.words || lessonData.words.length === 0) {
+                contentBox.innerHTML = '<p style="color: var(--text-muted); font-size: 14px; padding: 12px; grid-column: 1/-1;">该课程暂无单词数据</p>';
+                countTip.textContent = '';
                 return;
             }
 
-            let html = '';
-            data.forEach((item, index) => {
-                html += `
-                    <div class="word-item" data-index="${index}" data-text="${item.id}">
-                        <div class="word-content">
-                            <div class="word-index">${index + 1}</div>
-                            <div>
-                                <div class="word-indonesian">${item.id}</div>
-                                <div class="word-chinese">${item.cn}</div>
-                            </div>
-                        </div>
-                    </div>
+            currentWordList = lessonData.words;
+            const totalItems = currentWordList.length;
+            const totalPages = Math.ceil(totalItems / pageSize);
+            
+            // 分页处理
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, totalItems);
+            const currentPageWords = currentWordList.slice(startIndex, endIndex);
+
+            // 更新计数提示
+            countTip.textContent = `共 ${totalItems} 个单词 | 当前第 ${currentPage}/${totalPages} 页`;
+
+            // 渲染单词卡片
+            contentBox.innerHTML = '';
+            currentPageWords.forEach((word, index) => {
+                const firstLetter = word.indonesian.charAt(0).toUpperCase();
+                const wordCard = document.createElement('div');
+                wordCard.className = 'word-card';
+                wordCard.innerHTML = `
+                    <div class="word-index">${startIndex + index + 1}</div>
+                    <div class="word-indonesian">${word.indonesian}</div>
+                    <div class="word-chinese">${word.chinese}</div>
+                    <div class="word-letter">${firstLetter}</div>
                 `;
+
+                // 单词卡片点击事件（选中+预览朗读）
+                wordCard.addEventListener('click', function() {
+                    // 移除其他卡片的选中状态
+                    document.querySelectorAll('.word-card').forEach(card => {
+                        card.classList.remove('active');
+                    });
+                    // 选中当前卡片
+                    this.classList.add('active');
+                    currentSelectedWord = word;
+                    currentSelectedWordElement = this;
+                    
+                    // 预览朗读
+                    speakText(word.indonesian, speechRate);
+                    
+                    document.getElementById('readStatusTip').textContent = `已选中：${word.indonesian}，可选择朗读次数`;
+                    document.getElementById('readStatusTip').className = "status-tip success";
+                });
+
+                contentBox.appendChild(wordCard);
             });
 
-            contentBox.innerHTML = html;
-            bindWordClickEvent();
-            statusTip.textContent = "内容已加载，点击单词可选中朗读";
-            statusTip.className = "status-tip success";
+            // 渲染分页控件
+            renderPagination(totalPages);
+
+            // 渲染字母索引
+            renderAlphabetIndex();
+
+            statusTip.textContent = '';
         }
 
-        function bindWordClickEvent() {
-            document.querySelectorAll('.word-item').forEach(item => {
-                item.onclick = () => {
-                    const index = parseInt(item.dataset.index);
-                    const text = item.dataset.text;
+        // 渲染分页控件
+        function renderPagination(totalPages) {
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            // 上一页按钮
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'btn';
+            prevBtn.innerText = '上一页';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updateContent();
+                }
+            };
+            pagination.appendChild(prevBtn);
+
+            // 页码信息
+            const info = document.createElement('span');
+            info.className = 'pagination-info';
+            info.innerText = `第 ${currentPage}/${totalPages} 页`;
+            pagination.appendChild(info);
+
+            // 下一页按钮
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'btn';
+            nextBtn.innerText = '下一页';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    updateContent();
+                }
+            };
+            pagination.appendChild(nextBtn);
+        }
+
+        // 渲染字母索引
+        function renderAlphabetIndex() {
+            const alphabetIndex = document.getElementById('alphabetIndex');
+            alphabetIndex.innerHTML = '';
+
+            if (!systemConfig.showLetterIndex || !currentWordList || currentWordList.length === 0) {
+                alphabetIndex.style.display = 'none';
+                return;
+            }
+            alphabetIndex.style.display = 'flex';
+
+            ALPHABET.forEach(letter => {
+                const letterBtn = document.createElement('button');
+                letterBtn.className = 'letter-btn';
+                letterBtn.innerText = letter;
+                
+                // 检查当前字母是否有单词
+                const hasWords = currentWordList.some(word => 
+                    word.indonesian.charAt(0).toUpperCase() === letter
+                );
+                
+                if (hasWords) {
+                    letterBtn.onclick = () => {
+                        // 找到第一个匹配字母的单词
+                        const targetIndex = currentWordList.findIndex(word => 
+                            word.indonesian.charAt(0).toUpperCase() === letter
+                        );
+                        
+                        if (targetIndex !== -1) {
+                            // 计算目标页码
+                            currentPage = Math.ceil((targetIndex + 1) / pageSize);
+                            updateContent();
+                            
+                            // 高亮当前字母
+                            document.querySelectorAll('.letter-btn').forEach(btn => btn.classList.remove('active'));
+                            letterBtn.classList.add('active');
+                            
+                            // 滚动到第一个匹配的卡片
+                            setTimeout(() => {
+                                const cards = document.querySelectorAll('.word-card');
+                                const cardIndex = targetIndex % pageSize;
+                                if (cards[cardIndex]) {
+                                    cards[cardIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    cards[cardIndex].classList.add('active');
+                                    currentSelectedWord = currentWordList[targetIndex];
+                                    currentSelectedWordElement = cards[cardIndex];
+                                }
+                            }, 100);
+                        }
+                    };
+                } else {
+                    letterBtn.style.opacity = '0.3';
+                    letterBtn.disabled = true;
+                }
+                
+                alphabetIndex.appendChild(letterBtn);
+            });
+        }
+
+        // ==================== 后台管理相关 ====================
+        function renderAdminCourseManage() {
+            const courseManageList = document.getElementById('courseManageList');
+            courseManageList.innerHTML = '';
+
+            const unitIds = Object.keys(sourceData).sort((a,b) => Number(a) - Number(b));
+            if (unitIds.length === 0) {
+                courseManageList.innerHTML = '<p style="color: var(--text-muted);">暂无课程数据</p>';
+                return;
+            }
+
+            unitIds.forEach(unitId => {
+                const unit = sourceData[unitId];
+                const unitEnabled = courseEnableConfig[unitId]?.enabled !== false;
+
+                // 创建单元管理项
+                const unitItem = document.createElement('div');
+                unitItem.className = 'course-manage-item';
+                
+                // 单元头部
+                const unitHeader = document.createElement('div');
+                unitHeader.className = 'course-manage-header';
+                unitHeader.innerHTML = `
+                    <div class="course-manage-title">${unit.name}（单元 ${unitId}）</div>
+                    <label style="display: flex; align-items: center; gap: 8px; margin: 0;">
+                        <input type="checkbox" class="unit-enable-checkbox" data-unit="${unitId}" ${unitEnabled ? 'checked' : ''}>
+                        <span style="font-size: 13px; color: var(--text-secondary);">启用单元</span>
+                    </label>
+                `;
+                unitItem.appendChild(unitHeader);
+
+                // 课程列表
+                const lessonList = document.createElement('div');
+                lessonList.className = 'lesson-manage-list';
+                
+                const lessonIds = Object.keys(unit.lessons).sort((a,b) => Number(a) - Number(b));
+                lessonIds.forEach(lessonId => {
+                    const lessonEnabled = courseEnableConfig[unitId]?.lessons?.[lessonId] !== false;
                     
-                    document.querySelectorAll('.word-item').forEach(i => i.classList.remove('active'));
-                    item.classList.add('active');
-                    currentSelectedWord = text;
-                    currentSelectedWordIndex = index;
+                    const lessonItem = document.createElement('div');
+                    lessonItem.className = 'lesson-manage-item';
+                    lessonItem.innerHTML = `
+                        <input type="checkbox" class="lesson-enable-checkbox" data-unit="${unitId}" data-lesson="${lessonId}" ${lessonEnabled ? 'checked' : ''}>
+                        <label>课程 ${lessonId}</label>
+                    `;
+                    lessonList.appendChild(lessonItem);
+                });
+                
+                unitItem.appendChild(lessonList);
+                courseManageList.appendChild(unitItem);
+            });
+
+            // 绑定单元启用/禁用事件
+            document.querySelectorAll('.unit-enable-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const unitId = this.dataset.unit;
+                    courseEnableConfig[unitId] = courseEnableConfig[unitId] || {};
+                    courseEnableConfig[unitId].enabled = this.checked;
+                    saveConfig();
+                    filterEnabledCourse();
+                    renderUnitButtons();
+                    renderAdminCourseManage();
+                });
+            });
+
+            // 绑定课程启用/禁用事件
+            document.querySelectorAll('.lesson-enable-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const unitId = this.dataset.unit;
+                    const lessonId = this.dataset.lesson;
                     
-                    document.getElementById('readStatusTip').textContent = "已选中：" + currentSelectedWord;
-                    document.getElementById('readStatusTip').className = "status-tip success";
+                    courseEnableConfig[unitId] = courseEnableConfig[unitId] || {};
+                    courseEnableConfig[unitId].lessons = courseEnableConfig[unitId].lessons || {};
+                    courseEnableConfig[unitId].lessons[lessonId] = this.checked;
                     
-                    if (isReading || isLoopReading) {
-                        stopAllRead();
-                        if (currentReadMaxTimes === 0) {
-                            readWord(currentSelectedWord, 0, true);
-                        } else {
-                            readWord(currentSelectedWord, currentReadMaxTimes, false);
+                    saveConfig();
+                    filterEnabledCourse();
+                    if (currentUnit === parseInt(unitId)) {
+                        renderLessonButtons();
+                        if (currentLesson === parseInt(lessonId)) {
+                            updateContent();
                         }
                     }
-                };
+                });
             });
         }
 
-        // ==================== 朗读控制 ====================
-        function stopAllRead() {
-            window.speechSynthesis.cancel();
-            isLoopReading = false;
-            isReading = false;
-            currentReadTimes = 0;
-            document.getElementById('readStatusTip').textContent = currentSelectedWord ? "已选中：" + currentSelectedWord : "请点击单词选中，再选择朗读次数";
-            document.getElementById('readStatusTip').className = "status-tip warning";
-        }
+        // 更新清空课程的下拉选择框
+        function updateClearSelect() {
+            const clearUnitSelect = document.getElementById('clearUnitSelect');
+            clearUnitSelect.innerHTML = '';
 
-        function readWord(text, times, isLoop = false) {
-            stopAllRead();
-            if (!text) {
-                document.getElementById('readStatusTip').textContent = "请先选中要朗读的单词";
-                document.getElementById('readStatusTip').className = "status-tip error";
+            const unitIds = Object.keys(sourceData).sort((a,b) => Number(a) - Number(b));
+            if (unitIds.length === 0) {
+                clearUnitSelect.innerHTML = '<option value="">暂无单元</option>';
                 return;
             }
 
-            currentReadMaxTimes = times;
-            currentReadTimes = 0;
-            isReading = true;
-            
-            document.getElementById('readStatusTip').textContent = `正在朗读：${text}，${isLoop ? '无限循环中' : `共${times}次`}`;
-            document.getElementById('readStatusTip').className = "status-tip success";
+            unitIds.forEach(unitId => {
+                const unit = sourceData[unitId];
+                const option = document.createElement('option');
+                option.value = unitId;
+                option.innerText = unit.name;
+                clearUnitSelect.appendChild(option);
+            });
 
-            function speakOnce() {
-                if (!isReading && !isLoopReading) return;
-                
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = "id-ID";
-                utterance.rate = speechRate;
-                utterance.pitch = 1;
-                utterance.volume = 1;
+            // 绑定单元选择事件
+            clearUnitSelect.addEventListener('change', function() {
+                const unitId = this.value;
+                const clearLessonSelect = document.getElementById('clearLessonSelect');
+                clearLessonSelect.innerHTML = '<option value="all">全部课程</option>';
 
-                utterance.onend = () => {
-                    currentReadTimes++;
-                    if (isLoop) {
-                        isLoopReading = true;
-                        window.speechSynthesis.speak(utterance);
-                    } else if (currentReadTimes < times) {
-                        window.speechSynthesis.speak(utterance);
-                    } else {
-                        isReading = false;
-                        document.getElementById('readStatusTip').textContent = `朗读完成：${text}，共${times}次`;
-                        document.getElementById('readStatusTip').className = "status-tip success";
-                    }
-                };
-
-                utterance.onerror = (e) => {
-                    console.error("朗读报错", e);
-                    isReading = false;
-                    isLoopReading = false;
-                    document.getElementById('readStatusTip').textContent = "朗读失败，请重试";
-                    document.getElementById('readStatusTip').className = "status-tip error";
-                };
-
-                window.speechSynthesis.speak(utterance);
-            }
-
-            if (isLoop) {
-                isLoopReading = true;
-                speakOnce();
-            } else {
-                speakOnce();
-            }
-        }
-
-        function readAllContent() {
-            stopAllRead();
-            if (!currentUnit || !currentLesson) {
-                document.getElementById('statusTip').textContent = "请先选择单元和课程";
-                document.getElementById('statusTip').className = "status-tip error";
-                return;
-            }
-
-            const data = learningData[currentUnit]?.lessons?.[currentLesson];
-            if (!data || data.length === 0) {
-                document.getElementById('statusTip').textContent = "暂无内容可朗读";
-                document.getElementById('statusTip').className = "status-tip error";
-                return;
-            }
-
-            const textToRead = data.map(item => item.id).join(". ");
-            document.getElementById('statusTip').textContent = "正在播放全文发音...";
-            document.getElementById('statusTip').className = "status-tip";
-
-            const utterance = new SpeechSynthesisUtterance(textToRead);
-            utterance.lang = "id-ID";
-            utterance.rate = speechRate;
-
-            utterance.onend = () => {
-                document.getElementById('statusTip').textContent = "全文播放完成";
-                document.getElementById('statusTip').className = "status-tip success";
-            };
-            utterance.onerror = (e) => {
-                console.error("播放报错", e);
-                document.getElementById('statusTip').textContent = "播放失败，请刷新重试";
-                document.getElementById('statusTip').className = "status-tip error";
-            };
-
-            window.speechSynthesis.speak(utterance);
-        }
-
-        function initSpeedControl() {
-            const speedSlider = document.getElementById('speedSlider');
-            const speedValue = document.getElementById('speedValue');
-            speedSlider.value = speechRate;
-            speedValue.textContent = speechRate.toFixed(2) + 'x';
-
-            speedSlider.oninput = (e) => {
-                speechRate = parseFloat(e.target.value);
-                speedValue.textContent = speechRate.toFixed(2) + 'x';
-            };
+                if (unitId && sourceData[unitId]) {
+                    const lessonIds = Object.keys(sourceData[unitId].lessons).sort((a,b) => Number(a) - Number(b));
+                    lessonIds.forEach(lessonId => {
+                        const option = document.createElement('option');
+                        option.value = lessonId;
+                        option.innerText = '课程 ' + lessonId;
+                        clearLessonSelect.appendChild(option);
+                    });
+                }
+            });
         }
 
         // ==================== 事件绑定 ====================
-        function setupAllEvents() {
-            document.getElementById('readAllBtn').onclick = readAllContent;
-            document.getElementById('stopReadBtn').onclick = stopAllRead;
-            document.getElementById('clearBtn').onclick = () => {
+        function bindEvents() {
+            // 语速滑块事件
+            const speedSlider = document.getElementById('speedSlider');
+            const speedValue = document.getElementById('speedValue');
+            
+            speedSlider.addEventListener('input', function() {
+                speechRate = parseFloat(this.value);
+                speedValue.textContent = `${speechRate.toFixed(2)}x`;
+            });
+            
+            // 全文朗读按钮
+            document.getElementById('readAllBtn').addEventListener('click', readAllContent);
+            
+            // 停止朗读按钮
+            document.getElementById('stopReadBtn').addEventListener('click', function() {
                 stopAllRead();
-                document.getElementById('contentBox').innerHTML = '<p style="color: var(--text-muted); font-size: 14px; padding: 12px;">请先选择单元和课程</p>';
-                document.getElementById('statusTip').textContent = "";
-                document.querySelectorAll('#unitBtns .btn, #lessonBtns .btn').forEach(b => b.classList.remove('active'));
-                currentUnit = null;
-                currentLesson = null;
+                document.getElementById('statusTip').textContent = "已停止朗读";
+                document.getElementById('statusTip').className = "status-tip";
+            });
+            
+            // 清空选中按钮
+            document.getElementById('clearBtn').addEventListener('click', function() {
+                if (currentSelectedWordElement) {
+                    currentSelectedWordElement.classList.remove('active');
+                }
                 currentSelectedWord = null;
-                currentSelectedWordIndex = null;
-            };
-
+                currentSelectedWordElement = null;
+                document.getElementById('readStatusTip').textContent = "已清空选中的单词";
+                document.getElementById('readStatusTip').className = "status-tip";
+            });
+            
+            // 朗读次数按钮事件
             document.querySelectorAll('.read-times-btn').forEach(btn => {
-                btn.onclick = () => {
-                    const times = parseInt(btn.dataset.times);
+                btn.addEventListener('click', function() {
+                    const times = parseInt(this.dataset.times);
+                    currentReadMaxTimes = times;
+                    
                     if (times === 0) {
-                        readWord(currentSelectedWord, 0, true);
+                        document.getElementById('readStatusTip').textContent = "即将无限循环朗读选中单词（点击停止朗读可终止）";
                     } else {
-                        readWord(currentSelectedWord, times, false);
+                        document.getElementById('readStatusTip').textContent = `即将朗读选中单词${times}次`;
                     }
-                };
+                    document.getElementById('readStatusTip').className = "status-tip success";
+                    
+                    loopReadSelectedWord();
+                });
             });
 
-            // 后台管理（简化版，只显示说明）
-            document.getElementById('adminToggleBtn').onclick = () => {
-                const password = prompt("请输入后台管理密码：");
+            // 后台管理开关
+            document.getElementById('adminToggleBtn').addEventListener('click', function() {
+                const password = prompt("请输入管理员密码：");
                 if (password === ADMIN_PASSWORD) {
                     document.getElementById('adminModal').style.display = 'flex';
                 } else if (password !== null) {
                     alert("密码错误！");
                 }
-            };
+            });
 
-            document.getElementById('closeAdminModal').onclick = () => {
+            // 关闭后台管理
+            document.getElementById('closeAdminBtn').addEventListener('click', function() {
                 document.getElementById('adminModal').style.display = 'none';
-            };
+            });
 
-            console.log("✅ 所有事件绑定完成");
+            // 后台标签页切换
+            document.querySelectorAll('.admin-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const tabId = this.dataset.tab;
+                    document.querySelectorAll('.admin-tab-content').forEach(content => {
+                        content.style.display = 'none';
+                    });
+                    document.getElementById(`${tabId}Tab`).style.display = 'block';
+                });
+            });
+
+            // 保存版本号
+            document.getElementById('saveVersionBtn').addEventListener('click', function() {
+                const newVersion = document.getElementById('versionInput').value.trim();
+                if (newVersion) {
+                    VERSION = newVersion;
+                    document.getElementById('footerVersion').textContent = `V${VERSION}`;
+                    alert(`版本号已更新为：V${VERSION}`);
+                } else {
+                    alert("版本号不能为空！");
+                }
+            });
+
+            // 显示字母索引设置
+            document.getElementById('showLetterIndex').addEventListener('change', function() {
+                systemConfig.showLetterIndex = this.checked;
+                saveConfig();
+                renderAlphabetIndex();
+            });
+
+            // 每页显示数量设置
+            document.getElementById('pageSizeInput').addEventListener('change', function() {
+                const newSize = parseInt(this.value);
+                if (newSize >= 5 && newSize <= 100) {
+                    pageSize = newSize;
+                    systemConfig.pageSize = pageSize;
+                    saveConfig();
+                    currentPage = 1;
+                    if (currentUnit && currentLesson) {
+                        updateContent();
+                    }
+                } else {
+                    alert("请输入5-100之间的数值！");
+                    this.value = pageSize;
+                }
+            });
+
+            // 强制刷新数据
+            document.getElementById('forceRefreshBtn').addEventListener('click', function() {
+                loadDataFromFile(true);
+                alert("正在重新加载数据，请稍候...");
+            });
+
+            // 导出数据
+            document.getElementById('exportBtn').addEventListener('click', function() {
+                const dataStr = JSON.stringify(sourceData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `indonesian_learning_data_${new Date().getTime()}.json`;
+                a.click();
+                
+                URL.revokeObjectURL(url);
+                alert("数据导出成功！");
+            });
+
+            // 重置数据
+            document.getElementById('resetBtn').addEventListener('click', function() {
+                if (confirm("确定要重置所有数据为源文件默认值吗？此操作不可撤销！")) {
+                    localStorage.removeItem(STORAGE_KEY_COURSE_ENABLE);
+                    localStorage.removeItem(STORAGE_KEY_CONFIG);
+                    courseEnableConfig = {};
+                    systemConfig = {
+                        showLetterIndex: true,
+                        pageSize: 20
+                    };
+                    loadConfig();
+                    loadDataFromFile(true);
+                    alert("数据已重置为默认值！");
+                }
+            });
+
+            // 清空课程内容
+            document.getElementById('clearCourseBtn').addEventListener('click', function() {
+                const unitId = document.getElementById('clearUnitSelect').value;
+                const lessonId = document.getElementById('clearLessonSelect').value;
+                
+                if (!unitId) {
+                    alert("请先选择单元！");
+                    return;
+                }
+
+                if (confirm("确定要清空选中的课程内容吗？此操作仅清空本地缓存，刷新页面可恢复！")) {
+                    if (lessonId === 'all') {
+                        // 清空整个单元
+                        if (learningData[unitId]) {
+                            learningData[unitId].lessons = {};
+                        }
+                    } else {
+                        // 清空指定课程
+                        if (learningData[unitId]?.lessons[lessonId]) {
+                            learningData[unitId].lessons[lessonId].words = [];
+                        }
+                    }
+                    
+                    // 更新UI
+                    if (currentUnit === parseInt(unitId)) {
+                        renderLessonButtons();
+                        if (lessonId === 'all' || currentLesson === parseInt(lessonId)) {
+                            updateContent();
+                        }
+                    }
+                    
+                    alert("课程内容已清空！");
+                }
+            });
         }
 
-        // ==================== 页面初始化 ====================
-        window.onload = function() {
-            console.log("印尼语学习系统 版本" + VERSION + " - 静态数据模式");
-            document.getElementById('footerVersion').textContent = 'V' + VERSION;
+        // ==================== 初始化 ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadConfig();
+            loadDataFromFile();
+            bindEvents();
             
-            initSpeedControl();
-            setupAllEvents();
-            loadDataFromFile(); // 从静态文件加载数据
-        };
+            // 初始化版本号显示
+            document.getElementById('footerVersion').textContent = `V${VERSION}`;
+            document.getElementById('versionInput').value = VERSION;
+
+            // 初始化语速显示
+            document.getElementById('speedValue').textContent = `${DEFAULT_SPEECH_RATE.toFixed(2)}x`;
+        });
     </script>
 </body>
 </html>
