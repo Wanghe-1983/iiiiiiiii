@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>印尼语学习助手 - FMI 内部版</title>
+    <title>印尼语学习助手 - 完整修复版</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;800&family=Lexend:wght@700&family=JetBrains+Mono:ital,wght@1,800&display=swap');
@@ -28,50 +28,36 @@
             height: 100vh; display: flex; overflow: hidden;
         }
 
-        /* --- 登录首页 --- */
-        #login-screen {
-            position: fixed; inset: 0; background: var(--bg); z-index: 9999;
-            display: flex; justify-content: center; align-items: center;
-            backdrop-filter: blur(25px); transition: 0.6s;
-        }
-        .login-card {
-            background: var(--glass); padding: 50px; border-radius: 40px; 
-            border: 1px solid rgba(255,255,255,0.1); width: 400px; text-align: center;
-        }
+        /* --- 登录层 --- */
+        #login-screen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(25px); transition: 0.6s; }
+        .login-card { background: var(--glass); padding: 50px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); width: 400px; text-align: center; }
         .login-input { width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; outline: none; }
-        .login-btn { width: 100%; padding: 15px; border-radius: 15px; border: none; background: var(--accent); color: white; font-weight: 800; cursor: pointer; box-shadow: 0 10px 20px var(--accent-glow); }
+        .login-btn { width: 100%; padding: 15px; border-radius: 15px; border: none; background: var(--accent); color: white; font-weight: 800; cursor: pointer; }
 
-        /* --- 侧边栏及修正后的展开按钮 --- */
+        /* --- 侧边栏及修正后的按钮 --- */
         .sidebar { width: var(--sidebar-w); height: 100%; background: var(--glass); backdrop-filter: blur(25px); border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; transition: 0.5s ease; position: relative; z-index: 1000; }
         .sidebar.collapsed { margin-left: calc(var(--sidebar-w) * -1); }
-        .toggle-tab { 
-            position: absolute; right: -32px; top: 30px; width: 32px; height: 60px; 
-            background: var(--accent); color: white; cursor: pointer; 
-            border-radius: 0 12px 12px 0; display: flex; align-items: center; justify-content: center;
-            box-shadow: 5px 0 15px var(--accent-glow);
-        }
+        .toggle-tab { position: absolute; right: -32px; top: 30px; width: 32px; height: 60px; background: var(--accent); color: white; cursor: pointer; border-radius: 0 12px 12px 0; display: flex; align-items: center; justify-content: center; box-shadow: 5px 0 15px var(--accent-glow); }
 
         /* --- 主界面 --- */
         .main-container { flex: 1; display: flex; flex-direction: column; padding: 40px; position: relative; }
-        .main-title { text-align: center; font-size: 3.2rem; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; letter-spacing: -2px; background: linear-gradient(180deg, #fff 0%, #a5b4fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.4)); }
+        .main-title { text-align: center; font-size: 3.2rem; font-weight: 800; margin-bottom: 20px; background: linear-gradient(180deg, #fff 0%, #a5b4fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        .study-card { background: rgba(30, 41, 59, 0.3); border-radius: 60px; border: 1px solid rgba(255,255,255,0.08); flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; padding: 40px; box-shadow: 0 50px 100px rgba(0,0,0,0.5); backdrop-filter: blur(15px); }
+        .study-card { background: rgba(30, 41, 59, 0.3); border-radius: 60px; border: 1px solid rgba(255,255,255,0.08); flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; padding: 40px; }
+        .fav-btn { position: absolute; top: 45px; right: 55px; font-size: 2.2rem; cursor: pointer; transition: 0.3s; color: #334155; }
+        .fav-btn.active { color: #fbbf24; filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.6)); }
         .word-badge { background: var(--accent); color: white; padding: 5px 22px; border-radius: 12px; font-family: 'JetBrains Mono'; font-size: 1.3rem; font-style: italic; font-weight: 800; }
         .indo-box { font-size: 6rem; font-weight: 900; text-align: center; background: linear-gradient(to bottom, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .zh-box { font-size: 2.6rem; color: var(--text-muted); font-weight: 300; letter-spacing: 5px; }
 
-        /* --- 控制面板 --- */
         .control-panel { width: 100%; max-width: 800px; margin: 30px auto 0; background: var(--glass); padding: 25px 40px; border-radius: 35px; border: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column; gap: 20px; }
         .ctrl-row { display: flex; align-items: center; justify-content: space-between; }
-        .ctrl-value { min-width: 70px; text-align: right; font-family: 'Lexend'; color: var(--accent); font-weight: 700; font-size: 1.2rem; text-shadow: 0 0 10px var(--accent-glow); }
+        .ctrl-value { min-width: 70px; text-align: right; font-family: 'Lexend'; color: var(--accent); font-weight: 700; font-size: 1.2rem; }
 
-        /* --- 底部声明 --- */
         .copyright { font-size: 0.9rem; text-align: center; color: #4b5563; margin-top: 25px; }
-        .clickable { color: var(--accent); cursor: pointer; font-weight: 700; text-decoration: underline; }
-
-        /* 弹窗 */
+        .clickable { color: var(--accent); cursor: pointer; font-weight: 700; }
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(15px); }
-        #admin-link-btn { position: fixed; bottom: 80px; right: 25px; background: var(--accent); color: white; border: none; padding: 12px 20px; border-radius: 50px; cursor: pointer; display: none; box-shadow: 0 5px 20px var(--accent-glow); }
+        #admin-link-btn { position: fixed; bottom: 85px; right: 25px; background: var(--accent); color: white; border: none; padding: 12px 20px; border-radius: 50px; cursor: pointer; display: none; box-shadow: 0 5px 20px var(--accent-glow); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -90,7 +76,10 @@
 
     <aside class="sidebar" id="sidebar">
         <div class="toggle-tab" onclick="document.getElementById('sidebar').classList.toggle('collapsed')"><i class="fas fa-bars"></i></div>
-        <div id="menu-box" style="padding: 25px 15px; overflow-y:auto; height: 100%;"></div>
+        <div id="menu-box" style="padding: 25px 15px; overflow-y:auto; height: 100%;">
+            <div id="fav-menu-section"></div>
+            <div id="db-menu-section"></div>
+        </div>
     </aside>
 
     <main class="main-container">
@@ -98,6 +87,7 @@
         
         <section class="study-card" id="main-card">
             <div style="position:absolute; top:40px; left:55px;"><div class="word-badge" id="word-idx">01</div></div>
+            <i class="fas fa-star fav-btn" id="fav-star" onclick="toggleFav()"></i>
             <div class="indo-box" id="disp-indo">Loading</div>
             <div class="zh-box" id="disp-zh">请稍等</div>
             <div style="display:flex; gap:40px; margin-top:50px;">
@@ -108,20 +98,9 @@
         </section>
 
         <footer class="control-panel">
-            <div class="ctrl-row">
-                <span style="color:#cbd5e1">语音语速</span>
-                <input type="range" id="inp-rate" min="0.4" max="1.5" step="0.1" value="0.8" oninput="document.getElementById('val-rate').innerText=this.value" style="flex:1; margin:0 20px;">
-                <span class="ctrl-value"><span id="val-rate">0.8</span>X</span>
-            </div>
-            <div class="ctrl-row">
-                <span style="color:#cbd5e1">循环次数</span>
-                <input type="range" id="inp-loop" min="1" max="10" step="1" value="1" oninput="document.getElementById('val-loop').innerText=this.value" style="flex:1; margin:0 20px;">
-                <span class="ctrl-value"><span id="val-loop">1</span>次</span>
-            </div>
-            <div class="ctrl-row">
-                <span style="color:#cbd5e1">隐藏答案</span>
-                <input type="checkbox" id="hide-toggle" onchange="renderCurrent()" style="width:20px; height:20px;">
-            </div>
+            <div class="ctrl-row"><span style="color:#cbd5e1">语音语速</span><input type="range" id="inp-rate" min="0.4" max="1.5" step="0.1" value="0.8" oninput="document.getElementById('val-rate').innerText=this.value" style="flex:1; margin:0 20px;"><span class="ctrl-value"><span id="val-rate">0.8</span>X</span></div>
+            <div class="ctrl-row"><span style="color:#cbd5e1">循环次数</span><input type="range" id="inp-loop" min="1" max="10" step="1" value="1" oninput="document.getElementById('val-loop').innerText=this.value" style="flex:1; margin:0 20px;"><span class="ctrl-value"><span id="val-loop">1</span>次</span></div>
+            <div class="ctrl-row"><span style="color:#cbd5e1">隐藏答案</span><input type="checkbox" id="hide-toggle" onchange="renderCurrent()" style="width:20px; height:20px;"></div>
         </footer>
 
         <div class="copyright">
@@ -143,10 +122,7 @@
 
         async function initApp() {
             const sessionData = localStorage.getItem('fmi_session');
-            if (!sessionData) {
-                document.getElementById('login-screen').style.display = 'flex';
-                return;
-            }
+            if (!sessionData) { document.getElementById('login-screen').style.display = 'flex'; return; }
             
             const session = JSON.parse(sessionData);
             document.getElementById('login-screen').style.display = 'none';
@@ -164,12 +140,10 @@
             const id = document.getElementById('login-id').value;
             const pw = document.getElementById('login-pw').value;
             const tips = document.getElementById('login-tips');
-
             if (id === "admin" && pw === "fmi2026") {
                 localStorage.setItem('fmi_session', JSON.stringify({ name: "Admin", role: "admin" }));
                 location.reload(); return;
             }
-
             try {
                 const r = await fetch('./whitelist.json?t=' + Date.now());
                 const list = await r.json();
@@ -177,34 +151,96 @@
                 if (user && user.status === 'active') {
                     localStorage.setItem('fmi_session', JSON.stringify(user));
                     location.reload();
-                } else {
-                    tips.innerText = "账号或密码错误"; tips.style.display = 'block';
-                }
+                } else { tips.innerText = "账号或密码错误"; tips.style.display = 'block'; }
             } catch(e) { tips.innerText = "白名单未配置"; tips.style.display = 'block'; }
+        }
+
+        // --- 核心业务逻辑 (收藏/渲染/播放) ---
+        function toggleFav() {
+            const list = curCat === 'fav' ? favs : db[curCat].lessons["1"].words;
+            const word = list[curIdx];
+            const foundIdx = favs.findIndex(f => f.indonesian === word.indonesian);
+            if (foundIdx > -1) {
+                favs.splice(foundIdx, 1);
+                if(curCat === 'fav') { curIdx = Math.max(0, curIdx - 1); if(favs.length === 0) curCat = "1"; }
+            } else {
+                favs.push({...word});
+            }
+            localStorage.setItem('fmi_favs', JSON.stringify(favs));
+            renderCurrent();
+            buildMenu();
+        }
+
+        function renderCurrent() {
+            const list = curCat === 'fav' ? favs : db[curCat]?.lessons["1"]?.words;
+            if(!list || list.length === 0) {
+                document.getElementById('disp-indo').innerText = "收藏夹为空";
+                document.getElementById('disp-zh').innerText = "";
+                document.getElementById('fav-star').style.display = 'none';
+                return;
+            }
+            const word = list[curIdx];
+            const isHidden = document.getElementById('hide-toggle').checked;
+            document.getElementById('disp-indo').innerText = word.indonesian;
+            document.getElementById('disp-zh').innerText = isHidden ? '••••' : word.chinese;
+            document.getElementById('word-idx').innerText = (curIdx + 1).toString().padStart(2, '0');
+            
+            // 星星状态
+            const isFav = favs.some(f => f.indonesian === word.indonesian);
+            document.getElementById('fav-star').className = isFav ? 'fas fa-star fav-btn active' : 'fas fa-star fav-btn';
+            document.getElementById('fav-star').style.display = 'block';
+        }
+
+        function buildMenu() {
+            // 收藏夹部分
+            const favSection = document.getElementById('fav-menu-section');
+            let favHtml = `<div style="color:#fbbf24; font-weight:800; margin-bottom:10px;"><i class="fas fa-star"></i> 我的收藏 (${favs.length})</div>`;
+            if(favs.length > 0) {
+                favHtml += `<div onclick="switchCat('fav')" style="padding:10px; cursor:pointer; color:${curCat=='fav'?'#fbbf24':'#64748b'}">进入收藏本</div>`;
+            }
+            favSection.innerHTML = favHtml + `<div style="height:1px; background:rgba(255,255,255,0.05); margin:15px 0;"></div>`;
+
+            // 普通目录
+            const dbSection = document.getElementById('db-menu-section');
+            let dbHtml = "";
+            for(let id in db) {
+                dbHtml += `<div style="color:#94a3b8; font-weight:800; margin-bottom:5px;">${db[id].name}</div>`;
+                db[id].lessons["1"].words.forEach((w, i) => {
+                    dbHtml += `<div onclick="showWord('${id}',${i})" style="padding:8px 10px; cursor:pointer; font-size:14px; color:${curCat==id&&curIdx==i?'var(--accent)':'#64748b'}">${i+1}. ${w.indonesian}</div>`;
+                });
+            }
+            dbSection.innerHTML = dbHtml;
+        }
+
+        function switchCat(cat) { curCat = cat; curIdx = 0; stopVoice(); renderCurrent(); buildMenu(); }
+        function showWord(cat, idx) { curCat = cat; curIdx = idx; stopVoice(); renderCurrent(); buildMenu(); }
+        function navWord(dir) { 
+            stopVoice(); 
+            const list = curCat === 'fav' ? favs : db[curCat].lessons["1"].words;
+            if(list.length === 0) return;
+            curIdx = (curIdx + dir + list.length) % list.length; 
+            renderCurrent(); 
+            buildMenu(); 
         }
 
         function toggleSpeech() { isLive ? stopVoice() : startVoice(); }
         function startVoice() {
-            const list = db[curCat].lessons["1"].words;
+            const list = curCat === 'fav' ? favs : db[curCat].lessons["1"].words;
+            if(!list[curIdx]) return;
             const word = list[curIdx];
             const rate = parseFloat(document.getElementById('inp-rate').value);
             const loops = parseInt(document.getElementById('inp-loop').value);
             isLive = true;
             document.getElementById('play-ico').className = 'fas fa-stop';
-            
             let c = 0;
             const run = () => {
                 if(!isLive || c >= loops) { stopVoice(); return; }
-                
-                // 语速映射：Google接口 tl=id&ttsspeed= 0.24左右是慢速，默认是1
                 const googleSpeed = rate < 0.8 ? '&ttsspeed=0.24' : ''; 
                 const audio = new Audio(`https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(word.indonesian)}&tl=id&client=tw-ob${googleSpeed}`);
-                
                 audio.onended = () => { c++; if(isLive) setTimeout(run, 600); };
                 audio.onerror = () => {
                     const u = new SpeechSynthesisUtterance(word.indonesian);
-                    u.lang = 'id-ID'; u.rate = rate; 
-                    u.onend = () => { c++; run(); };
+                    u.lang = 'id-ID'; u.rate = rate; u.onend = () => { c++; run(); };
                     window.speechSynthesis.speak(u);
                 };
                 audio.play().catch(() => audio.onerror());
@@ -212,29 +248,6 @@
             run();
         }
         function stopVoice() { isLive = false; window.speechSynthesis.cancel(); document.getElementById('play-ico').className = 'fas fa-play'; }
-
-        function renderCurrent() {
-            const word = db[curCat].lessons["1"].words[curIdx];
-            const isHidden = document.getElementById('hide-toggle').checked;
-            document.getElementById('disp-indo').innerText = word.indonesian;
-            document.getElementById('disp-zh').innerText = isHidden ? '••••' : word.chinese;
-            document.getElementById('word-idx').innerText = (curIdx + 1).toString().padStart(2, '0');
-        }
-
-        function buildMenu() {
-            const box = document.getElementById('menu-box');
-            let html = "";
-            for(let id in db) {
-                html += `<div style="color:#94a3b8; font-weight:800; margin:15px 0 5px; border-bottom:1px solid rgba(255,255,255,0.05);">${db[id].name}</div>`;
-                db[id].lessons["1"].words.forEach((w, i) => {
-                    html += `<div onclick="showWord('${id}',${i})" style="padding:8px; cursor:pointer; color:${curCat==id&&curIdx==i?'var(--accent)':'#64748b'}">${i+1}. ${w.indonesian}</div>`;
-                });
-            }
-            box.innerHTML = html;
-        }
-
-        function showWord(cat, idx) { stopVoice(); curCat = cat; curIdx = idx; renderCurrent(); buildMenu(); }
-        function navWord(dir) { stopVoice(); const list = db[curCat].lessons["1"].words; curIdx = (curIdx + dir + list.length) % list.length; renderCurrent(); buildMenu(); }
         function showQR() { document.getElementById('qr-modal').style.display='flex'; }
 
         initApp();
