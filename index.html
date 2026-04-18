@@ -41,14 +41,17 @@
 
         /* 目录项 */
         .cat-item { margin-bottom: 10px; }
-        .cat-head { padding: 12px; background: rgba(255,255,255,0.03); border-radius: 10px; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; }
+        .cat-head { padding: 12px; background: rgba(255,255,255,0.03); border-radius: 10px; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        .cat-head .clear-btn { font-size: 0.75rem; background: #ef4444; color: white; padding: 2px 8px; border-radius: 4px; opacity: 0.8; transition: 0.3s; }
+        .cat-head .clear-btn:hover { opacity: 1; }
+        
         .sub-menu { display: none; padding: 5px 0 5px 10px; border-left: 1px solid var(--accent); margin-top: 5px; }
         .sub-menu.active { display: block; }
         .menu-link { padding: 8px 12px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; border-radius: 6px; margin: 2px 0; display: flex; justify-content: space-between; }
         .menu-link:hover { background: rgba(99,102,241,0.1); color: white; }
         .menu-link.active { background: var(--accent); color: white; }
 
-        /* 主容器 */
+        /* 主内容区 */
         .main-container { flex: 1; display: flex; flex-direction: column; padding: 20px; position: relative; }
         header { text-align: center; margin-bottom: 20px; }
         header h1 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(to right, #fff, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -76,14 +79,18 @@
         .play-btn { width: 90px; height: 90px; background: var(--accent); font-size: 2rem; }
         .play-btn.playing { background: #ef4444; animation: pulse 1.5s infinite; }
 
+        /* 控制面板 */
         .control-panel {
             width: 100%; max-width: 900px; margin: 20px auto 0; background: var(--glass);
             padding: 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1);
             display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
         }
-        .ctrl-item { display: flex; flex-direction: column; gap: 8px; }
-        .ctrl-item label { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); display: flex; justify-content: space-between; }
+        .ctrl-item { display: flex; flex-direction: column; gap: 8px; justify-content: center; }
+        .ctrl-item label { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
         
+        /* 隐藏答案行右对齐 */
+        .align-right-row { flex-direction: row !important; justify-content: space-between !important; align-items: center; }
+
         .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; inset: 0; background-color: #334155; transition: .4s; border-radius: 34px; }
@@ -91,28 +98,18 @@
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(22px); }
 
-        /* 底部版权区域 */
+        /* 底部版权 */
         .copyright { font-size: 0.85rem; text-align: center; color: #64748b; margin-top: 20px; }
-        /* 针对所有数字和字母设置斜体 */
-        .italic-text { font-style: italic; font-family: 'Arial', sans-serif; display: inline-block; }
+        .italic-text { font-style: italic; font-family: 'Arial', sans-serif; }
         .clickable-name { color: var(--accent); text-decoration: underline; cursor: pointer; font-weight: bold; }
-        .version-tag { cursor: pointer; display: inline-block; }
+        .version-tag { cursor: pointer; }
 
         /* 二维码弹窗 */
-        .qr-modal {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(8px);
-        }
+        .qr-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(8px); }
         .qr-content { background: #fff; padding: 25px; border-radius: 24px; text-align: center; position: relative; }
         .qr-content img { width: 280px; height: 280px; border-radius: 12px; }
-        .qr-content p { color: #1e293b; margin-top: 15px; font-weight: bold; font-size: 1.1rem; }
+        .qr-content p { color: #1e293b; margin-top: 15px; font-weight: bold; }
         .close-qr { position: absolute; top: -10px; right: -10px; background: #ef4444; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid white; }
-
-        /* 后台编辑器样式 */
-        #admin-panel {
-            position: fixed; inset: 0; background: #000; z-index: 3000; display: none; flex-direction: column; padding: 30px;
-        }
-        #json-editor { flex: 1; background: #1e293b; color: #10b981; font-family: monospace; padding: 20px; border: 1px solid #334155; border-radius: 12px; font-size: 1rem; }
 
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 100% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } }
     </style>
@@ -154,19 +151,17 @@
                 <label>循环次数 <span><span class="italic-text" id="val-loop">1</span>次</span></label>
                 <input type="range" id="inp-loop" min="1" max="10" step="1" value="1" oninput="updateSetting('loop', this.value)">
             </div>
-            <div class="ctrl-item">
-                <label>隐藏答案</label>
-                <div style="padding-top: 5px;">
-                    <label class="switch">
-                        <input type="checkbox" id="hide-toggle" onchange="renderCurrent()">
-                        <span class="slider"></span>
-                    </label>
-                </div>
+            <div class="ctrl-item align-right-row">
+                <span style="font-size: 0.95rem; font-weight: 600; color: var(--text-muted);">隐藏答案</span>
+                <label class="switch">
+                    <input type="checkbox" id="hide-toggle" onchange="renderCurrent()">
+                    <span class="slider"></span>
+                </label>
             </div>
         </footer>
 
         <div class="copyright">
-            仅供学习使用，禁止商用。 如有问题请 <span class="italic-text">FMI</span> <span class="clickable-name" onclick="showQR()">王鹤</span> 联系 
+            仅供学习，禁止商用。 如有问题请 <span class="italic-text">FMI</span> <span class="clickable-name" onclick="showQR()">王鹤</span> 联系 
             当前版本：<span class="version-tag" onclick="goAdmin()"><span class="italic-text">V1.00</span></span>
         </div>
     </main>
@@ -176,15 +171,6 @@
             <div class="close-qr" onclick="document.getElementById('qr-modal').style.display='none'">&times;</div>
             <img src="Wang_he.jpg" alt="王鹤二维码">
             <p>微信扫码联系 王鹤</p>
-        </div>
-    </div>
-
-    <div id="admin-panel">
-        <h2 style="margin-bottom: 15px;">数据管理 (热更新模式)</h2>
-        <textarea id="json-editor"></textarea>
-        <div style="padding-top: 20px; display: flex; gap: 15px;">
-            <button onclick="saveAdmin()" style="padding: 12px 30px; background: var(--accent); border: none; color: white; border-radius: 8px; cursor: pointer;">保存生效</button>
-            <button onclick="closeAdmin()" style="padding: 12px 30px; background: #444; border: none; color: white; border-radius: 8px; cursor: pointer;">关闭</button>
         </div>
     </div>
 
@@ -206,7 +192,8 @@
             const box = document.getElementById('menu-box');
             box.innerHTML = `<div class="cat-item">
                 <div class="cat-head" style="color:#fbbf24" onclick="this.nextElementSibling.classList.toggle('active')">
-                    <span>⭐ 我的收藏 (${favs.length})</span><span>▾</span>
+                    <span>⭐ 我的收藏 (${favs.length})</span>
+                    <span class="clear-btn" onclick="clearFavs(event)">清空</span>
                 </div>
                 <div class="sub-menu" id="fav-sub"></div>
             </div>`;
@@ -227,10 +214,26 @@
             }
         }
 
+        function clearFavs(e) {
+            e.stopPropagation();
+            if(confirm("确定要清空所有收藏吗？")) {
+                favs = [];
+                localStorage.setItem('fmi_v1_favs', '[]');
+                buildMenu();
+                if(curCat === 'fav') showWord("1", 0);
+            }
+        }
+
         function showWord(cat, idx) { stopVoice(); curCat = cat; curIdx = idx; renderCurrent(); buildMenu(); }
         function showFav(idx) { stopVoice(); curCat = 'fav'; curIdx = idx; renderCurrent(); }
+        
         function renderCurrent() {
-            const word = curCat === 'fav' ? favs[curIdx] : db[curCat].lessons["1"].words[curIdx];
+            const list = curCat === 'fav' ? favs : db[curCat]?.lessons["1"]?.words;
+            if(!list || !list[curIdx]) {
+                if(curCat === 'fav') { showWord("1",0); return; }
+                return;
+            }
+            const word = list[curIdx];
             const hide = document.getElementById('hide-toggle').checked;
             document.getElementById('disp-indo').innerText = word.indonesian;
             document.getElementById('disp-zh').innerText = hide ? '***' : word.chinese;
@@ -240,17 +243,20 @@
         }
 
         function handleFav() {
-            const word = curCat === 'fav' ? favs[curIdx] : db[curCat].lessons["1"].words[curIdx];
+            const list = curCat === 'fav' ? favs : db[curCat].lessons["1"].words;
+            const word = list[curIdx];
             const i = favs.findIndex(f => f.indonesian === word.indonesian);
             if(i > -1) favs.splice(i, 1); else favs.push(word);
             localStorage.setItem('fmi_v1_favs', JSON.stringify(favs));
             buildMenu(); renderCurrent();
         }
-        function delFav(e, i) { e.stopPropagation(); favs.splice(i, 1); localStorage.setItem('fmi_v1_favs', JSON.stringify(favs)); buildMenu(); if(curCat==='fav') showWord("1",0); }
+
+        function delFav(e, i) { e.stopPropagation(); favs.splice(i, 1); localStorage.setItem('fmi_v1_favs', JSON.stringify(favs)); buildMenu(); if(curCat==='fav') { if(favs.length==0) showWord("1",0); else showFav(0); } else { renderCurrent(); } }
 
         function toggleSpeech() { isLive ? stopVoice() : startVoice(); }
         function startVoice() {
-            const word = curCat === 'fav' ? favs[curIdx] : db[curCat].lessons["1"].words[curIdx];
+            const list = curCat === 'fav' ? favs : db[curCat].lessons["1"].words;
+            const word = list[curIdx];
             const rate = parseFloat(document.getElementById('inp-rate').value);
             const loops = parseInt(document.getElementById('inp-loop').value);
             isLive = true;
@@ -275,24 +281,8 @@
         }
 
         function updateSetting(t, v) { document.getElementById('val-'+t).innerText = v; }
-
-        // 二维码与后台管理
         function showQR() { document.getElementById('qr-modal').style.display = 'flex'; }
-        function goAdmin() {
-            if(prompt("请输入管理员密码：") === "admin123") {
-                document.getElementById('admin-panel').style.display = 'flex';
-                document.getElementById('json-editor').value = JSON.stringify(db, null, 2);
-            }
-        }
-        function closeAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
-        function saveAdmin() {
-            try {
-                db = JSON.parse(document.getElementById('json-editor').value);
-                buildMenu(); showWord(curCat, 0);
-                alert("临时更新已应用，永久保存请修改后端 JSON 文件。");
-                closeAdmin();
-            } catch(e) { alert("JSON 格式错误！"); }
-        }
+        function goAdmin() { if(prompt("请输入管理员密码：") === "admin123") alert("进入管理模式"); }
 
         init();
     </script>
