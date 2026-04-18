@@ -3,326 +3,267 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>印尼语智能学习系统</title>
+    <title>印尼语智能学习助手 v3.5</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --bg-deep: #0a0e17;
-            --sidebar-bg: rgba(15, 23, 42, 0.8);
+            --sidebar-bg: rgba(15, 23, 42, 0.98);
             --panel-bg: rgba(30, 41, 59, 0.6);
             --accent: #6366f1;
-            --accent-glow: rgba(99, 102, 241, 0.4);
             --text-main: #f8fafc;
             --text-dim: #94a3b8;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            font-family: 'Inter', 'HarmonyOS Sans', sans-serif;
-            height: 100vh; display: flex; overflow: hidden;
+        body { background: var(--bg-deep); color: var(--text-main); font-family: 'Inter', system-ui; height: 100vh; display: flex; overflow: hidden; }
+
+        /* --- 顶部固定导航 --- */
+        .top-nav { 
+            position: fixed; top: 0; left: 0; right: 0; height: 60px; 
+            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px);
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 0 25px; z-index: 2000; border-bottom: 1px solid rgba(255,255,255,0.05);
         }
+        .live-meta { display: flex; gap: 20px; align-items: center; font-size: 13px; color: var(--text-dim); }
+        .top-btns { display: flex; gap: 15px; }
+        .top-btn { cursor: pointer; padding: 8px 15px; border-radius: 8px; transition: 0.3s; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+        .top-btn:hover { background: rgba(255,255,255,0.05); color: var(--accent); }
 
-        /* --- 动态背景层 --- */
-        .bg-glow {
-            position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.1) 0%, transparent 40%),
-                        radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+        /* --- 侧边栏 --- */
+        .sidebar { width: 300px; height: 100%; background: var(--sidebar-bg); border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; padding-top: 60px; transition: 0.4s; }
+        .sidebar.collapsed { margin-left: -300px; }
+        .menu-scroll { flex: 1; overflow-y: auto; padding: 20px 0; }
+        .section-label { padding: 15px 25px 5px; font-size: 11px; color: #475569; letter-spacing: 2px; font-weight: 800; }
+        .nav-item { padding: 12px 25px; margin: 4px 15px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; color: var(--text-dim); }
+        .nav-item:hover, .nav-item.active { background: rgba(99, 102, 241, 0.1); color: var(--accent); }
+
+        /* --- 主内容区 --- */
+        .main-content { flex: 1; display: flex; flex-direction: column; padding-top: 60px; }
+        .layout-grid { flex: 1; display: grid; grid-template-columns: 1fr 300px; gap: 20px; padding: 20px; }
+
+        .study-card { 
+            background: var(--panel-bg); border-radius: 35px; border: 1px solid rgba(255,255,255,0.08);
+            display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.5);
         }
+        .nav-arrow { position: absolute; top: 0; bottom: 0; width: 80px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.05); transition: 0.3s; font-size: 40px; }
+        .nav-arrow:hover { color: var(--accent); background: rgba(99, 102, 241, 0.03); }
 
-        /* --- 登录界面 (保持之前的逻辑) --- */
-        #login-screen { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; justify-content: center; align-items: center; }
-        .login-card { background: #1e293b; padding: 50px 40px; border-radius: 30px; width: 400px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        .login-input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; background: #f1f5f9; border: none; font-size: 16px; outline: none; }
-        .login-btn { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--accent); color: white; font-weight: 600; cursor: pointer; }
+        .word-box { text-align: center; }
+        .word-id { position: absolute; top: 40px; left: 50px; font-size: 24px; font-weight: 900; color: var(--accent); }
+        .main-indo { font-size: clamp(3rem, 6vw, 5rem); font-weight: 900; }
+        .main-zh { font-size: 28px; color: var(--text-dim); margin-top: 15px; }
 
-        /* --- 侧边栏：多功能化 --- */
-        .sidebar { 
-            width: 320px; height: 100%; background: var(--sidebar-bg); backdrop-filter: blur(20px); 
-            border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column;
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .sidebar.collapsed { margin-left: -320px; }
-        
-        /* 统计卡片 */
-        .stats-box { padding: 30px 25px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .stats-card { background: rgba(255,255,255,0.03); border-radius: 20px; padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .stat-item { text-align: left; }
-        .stat-val { display: block; font-size: 20px; font-weight: 800; color: var(--accent); }
-        .stat-label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; }
+        /* --- 工具面板 --- */
+        .side-panel { display: flex; flex-direction: column; gap: 20px; }
+        .widget { background: rgba(255,255,255,0.03); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); }
+        .widget-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: 800; font-size: 13px; color: var(--accent); }
 
-        /* --- 主学习区 --- */
-        .app-main { flex: 1; display: flex; flex-direction: column; position: relative; }
-        
-        /* 顶部导航 */
-        .top-header { padding: 25px 40px; display: flex; justify-content: space-between; align-items: center; }
-        .logo-area { display: flex; align-items: center; gap: 15px; cursor: pointer; }
-        .logo-area h1 { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
+        /* --- 底部控制 --- */
+        .bottom-shelf { margin: 0 20px 20px; background: rgba(15, 23, 42, 0.6); border-radius: 25px; padding: 15px 30px; display: flex; align-items: center; gap: 30px; }
+        .control-item { flex: 1; display: flex; align-items: center; gap: 15px; font-size: 13px; color: var(--text-dim); }
+        input[type=range] { flex: 1; accent-color: var(--accent); }
 
-        /* 核心内容区：更丰富的布局 */
-        .content-body { flex: 1; padding: 0 40px 20px; display: grid; grid-template-columns: 1fr 300px; gap: 30px; }
-
-        /* 学习主舞台 */
-        .study-stage { 
-            background: var(--panel-bg); border-radius: 40px; border: 1px solid rgba(255,255,255,0.08);
-            display: flex; flex-direction: column; position: relative; overflow: hidden;
-            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5);
-        }
-
-        /* 左右导航箭头 - 更大气、半透明 */
-        .nav-zone { position: absolute; top: 0; bottom: 0; width: 100px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.05); transition: 0.3s; z-index: 5; }
-        .nav-zone:hover { color: var(--accent); background: linear-gradient(to right, rgba(99,102,241,0.05), transparent); }
-        .nav-right:hover { background: linear-gradient(to left, rgba(99,102,241,0.05), transparent); }
-        .nav-zone i { font-size: 40px; }
-
-        .word-display { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; }
-        .main-word { font-size: 96px; font-weight: 900; line-height: 1; margin-bottom: 20px; text-align: center; }
-        .main-trans { font-size: 32px; color: var(--text-dim); font-weight: 400; }
-
-        /* 控制按钮 */
-        .play-btn { 
-            width: 100px; height: 100px; border-radius: 50%; border: none; background: var(--accent); 
-            color: white; font-size: 36px; cursor: pointer; transition: 0.4s;
-            box-shadow: 0 20px 40px var(--accent-glow); margin-bottom: 60px;
-        }
-        .play-btn:hover { transform: scale(1.1); box-shadow: 0 25px 50px var(--accent); }
-
-        /* 右侧快捷工具栏 */
-        .tool-panel { display: flex; flex-direction: column; gap: 20px; }
-        .tool-card { background: var(--panel-bg); border-radius: 24px; padding: 25px; border: 1px solid rgba(255,255,255,0.05); }
-        .tool-title { font-size: 14px; font-weight: 700; color: var(--text-dim); margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-
-        /* 进度条美化 */
-        .control-strip { padding: 20px 40px; background: var(--sidebar-bg); border-radius: 30px; margin: 0 40px 20px; display: flex; align-items: center; gap: 30px; }
-        .slider-item { flex: 1; display: flex; align-items: center; gap: 15px; font-size: 13px; color: var(--text-dim); }
-        input[type=range] { flex: 1; accent-color: var(--accent); height: 5px; cursor: pointer; }
-
-        /* 底部信息 */
-        .footer { padding: 10px 40px 25px; text-align: center; font-size: 12px; color: #475569; }
-        .secret-key { cursor: pointer; }
-
-        @media (max-width: 1200px) { .tool-panel { display: none; } .content-body { grid-template-columns: 1fr; } }
+        /* 分享弹窗 */
+        #share-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 5000; display: none; justify-content: center; align-items: center; }
+        .share-content { background: #1e293b; padding: 30px; border-radius: 25px; width: 400px; }
+        textarea { width: 100%; height: 200px; background: #0f172a; color: #fff; border: 1px solid #334155; border-radius: 12px; padding: 15px; margin: 15px 0; font-size: 14px; }
     </style>
 </head>
 <body>
-    <div class="bg-glow"></div>
 
-    <div id="login-screen" style="display:none">
-        <div class="login-card">
-            <h2 style="font-size:32px; margin-bottom:10px;">智能学习助手</h2>
-            <p style="color:var(--text-dim); margin-bottom:30px;">请输入凭证以开始学习之旅</p>
-            <input type="text" id="login-id" class="login-input" placeholder="请输入工号">
-            <input type="password" id="login-pw" class="login-input" placeholder="请输入密码">
-            <button class="login-btn" onclick="handleLogin()">开始学习</button>
-            <p id="login-tips" style="color:#f87171; margin-top:15px; font-size:14px; display:none;"></p>
+    <nav class="top-nav">
+        <div class="live-meta">
+            <span id="txt-time">载入中...</span>
+            <span id="txt-weather"><i class="fas fa-location-arrow"></i> 正在定位...</span>
         </div>
-    </div>
+        <div class="top-btns">
+            <div class="top-btn" onclick="shareBox()"><i class="fas fa-share-alt"></i> 一键分享</div>
+            <div class="top-btn" onclick="enterAdmin()"><i class="fas fa-shield-alt"></i> 后台</div>
+            <div class="top-btn" onclick="logout()" style="color:#f87171"><i class="fas fa-power-off"></i> 安全退出</div>
+        </div>
+    </nav>
 
     <aside class="sidebar" id="sidebar">
-        <div class="stats-box">
-            <div class="stats-card">
-                <div class="stat-item"><span class="stat-val" id="total-learned">0</span><span class="stat-label">已学单词</span></div>
-                <div class="stat-item"><span class="stat-val" id="total-fav">0</span><span class="stat-label">我的收藏</span></div>
+        <div class="menu-scroll">
+            <div class="section-label">FAVORITES</div>
+            <div class="nav-item" onclick="switchCat('fav')" id="nav-fav">
+                <span><i class="fas fa-heart" style="color:#f87171; margin-right:8px;"></i> 收藏夹</span>
+                <span id="count-fav">0</span>
             </div>
-        </div>
-        <div id="menu-box" style="flex:1; overflow-y:auto; padding: 15px 0;"></div>
-        <div style="padding: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
-            <button onclick="logout()" style="width:100%; padding:12px; background:rgba(248,113,113,0.1); color:#f87171; border:none; border-radius:10px; cursor:pointer; font-weight:600;">安全退出</button>
+            
+            <div class="section-label" style="margin-top:20px;">CATEGORY</div>
+            <div id="course-menu"></div>
         </div>
     </aside>
 
-    <main class="app-main">
-        <header class="top-header">
-            <div class="logo-area" onclick="document.getElementById('sidebar').classList.toggle('collapsed')">
-                <i class="fas fa-bars-staggered" style="font-size:20px; color:var(--accent);"></i>
-                <h1>印尼语学习</h1>
-            </div>
-            <div style="display:flex; align-items:center; gap:20px;">
-                <div style="font-size:14px; color:var(--text-dim);" id="user-display">Hi, 学习者</div>
-                <div style="width:40px; height:40px; background:var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:bold;">A</div>
-            </div>
-        </header>
-
-        <div class="content-body">
-            <div class="study-stage">
-                <div style="position:absolute; top:40px; left:45px; font-size:20px; font-weight:900; color:var(--accent);" id="word-idx">01</div>
-                <i class="fas fa-heart" id="fav-star" style="position:absolute; top:40px; right:45px; font-size:28px; cursor:pointer; color:#334155;" onclick="toggleFav()"></i>
+    <main class="main-content">
+        <div class="layout-grid">
+            <div class="study-card">
+                <div class="nav-arrow" style="left:0" onclick="nav(-1)"><i class="fas fa-angle-left"></i></div>
+                <div class="nav-arrow" style="right:0" onclick="nav(1)"><i class="fas fa-angle-right"></i></div>
                 
-                <div class="nav-zone nav-left" style="left:0;" onclick="navWord(-1)"><i class="fas fa-chevron-left"></i></div>
-                <div class="nav-zone nav-right" style="right:0;" onclick="navWord(1)"><i class="fas fa-chevron-right"></i></div>
+                <div class="word-id" id="word-idx">01</div>
+                <i class="fas fa-star" id="fav-btn" style="position:absolute; top:40px; right:50px; font-size:30px; cursor:pointer;" onclick="toggleFav()"></i>
 
-                <div class="word-display">
-                    <div class="main-word" id="disp-indo">TERIMA KASIH</div>
-                    <div class="main-trans" id="disp-zh">谢谢</div>
+                <div class="word-box">
+                    <div class="main-indo" id="disp-indo">---</div>
+                    <div class="main-zh" id="disp-zh">---</div>
                 </div>
 
-                <div style="display:flex; justify-content:center;">
-                    <button class="play-btn" onclick="toggleSpeech()"><i class="fas fa-play" id="play-ico" style="margin-left:8px;"></i></button>
-                </div>
+                <button onclick="playVoice()" style="margin-top:50px; width:80px; height:80px; border-radius:50%; border:none; background:var(--accent); color:white; font-size:30px; cursor:pointer; box-shadow:0 20px 40px var(--accent-glow)">
+                    <i class="fas fa-play" id="play-ico"></i>
+                </button>
             </div>
 
-            <div class="tool-panel">
-                <div class="tool-card">
-                    <div class="tool-title"><i class="fas fa-lightbulb"></i>今日小贴士</div>
-                    <p style="font-size:13px; color:var(--text-dim); line-height:1.6;">印尼语中的 R 音通常是颤音，多练习大舌音可以发得更地道。</p>
+            <div class="side-panel">
+                <div class="widget">
+                    <div class="widget-head"><span><i class="fas fa-magic"></i> 自动贴士</span><i class="fas fa-sync" onclick="fetchTip()" style="cursor:pointer"></i></div>
+                    <p id="tip-content" style="font-size:14px; line-height:1.6; color:var(--text-main);">获取中...</p>
                 </div>
-                <div class="tool-card" style="flex:1">
-                    <div class="tool-title"><i class="fas fa-history"></i>最近学习记录</div>
-                    <div id="recent-list" style="font-size:13px; color:var(--text-dim); display:flex; flex-direction:column; gap:12px;">
-                        </div>
+                <div class="widget" style="flex:1; display:flex; flex-direction:column;">
+                    <div class="widget-head">
+                        <span><i class="fas fa-history"></i> 最近记录</span>
+                        <span onclick="clearHistory()" style="font-size:11px; cursor:pointer; opacity:0.6">清空</span>
+                    </div>
+                    <div id="history-box" style="flex:1; overflow-y:auto;"></div>
                 </div>
             </div>
         </div>
 
-        <div class="control-strip">
-            <div class="slider-item">
-                <i class="fas fa-tachometer-alt"></i>
-                <input type="range" id="inp-rate" min="0.5" max="1.5" step="0.1" value="0.8">
-                <span style="width:30px;"><span id="val-rate">0.8</span>x</span>
-            </div>
-            <div class="slider-item">
-                <i class="fas fa-redo"></i>
-                <input type="range" id="inp-loop" min="1" max="10" step="1" value="1">
-                <span style="width:30px;"><span id="val-loop">1</span>次</span>
-            </div>
-            <div style="padding-left:20px; border-left:1px solid rgba(255,255,255,0.1);">
-                <label style="font-size:13px; color:var(--text-dim); cursor:pointer;">
-                    <input type="checkbox" id="hide-toggle" onchange="renderCurrent()"> 隐藏中文答案
-                </label>
-            </div>
+        <div class="bottom-shelf">
+            <div class="control-item"><i class="fas fa-tachometer-alt"></i> <input type="range" id="rate" min="0.5" max="1.5" step="0.1" value="0.8"> <span id="val-rate">0.8x</span></div>
+            <div class="control-item"><i class="fas fa-redo"></i> <input type="range" id="loop" min="1" max="10" step="1" value="1"> <span id="val-loop">1次</span></div>
+            <label style="cursor:pointer;"><input type="checkbox" id="hide-zh" onchange="render()"> 隐藏中文</label>
         </div>
-
-        <footer class="footer">
-            FMI 智慧教育系统 ｜ <span class="secret-key" onclick="enterAdmin()">©</span> 2026 ｜ 作者：<span style="color:var(--accent); cursor:pointer;" onclick="showQR()">王鹤</span>
-        </footer>
     </main>
 
-    <div id="qr-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:10000; justify-content:center; align-items:center;" onclick="this.style.display='none'"><img src="Wang_he.jpg" style="width:300px; border-radius:20px;"></div>
+    <div id="share-modal" onclick="this.style.display='none'">
+        <div class="share-content" onclick="event.stopPropagation()">
+            <h3>朋友圈打卡生成</h3>
+            <textarea id="share-text"></textarea>
+            <button onclick="copyShare()" style="width:100%; padding:15px; background:var(--accent); border:none; color:white; border-radius:10px; font-weight:700; cursor:pointer;">复制文案</button>
+        </div>
+    </div>
 
     <script>
         let db = {}, favs = JSON.parse(localStorage.getItem('fmi_favs') || '[]');
-        let recent = JSON.parse(localStorage.getItem('fmi_recent') || '[]');
-        let curCat = "1", curIdx = 0, isLive = false;
-        let menuState = { fav: true };
+        let history = JSON.parse(localStorage.getItem('fmi_history') || '[]');
+        let curCat = "1", curIdx = 0;
 
-        // 管理入口
-        function enterAdmin() {
-            const pw = prompt("请输入超级管理密码：");
-            if (pw === "admin123") location.href = 'admin.html';
+        // --- 智能定位与天气 ---
+        function initLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(async (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    try {
+                        const r = await fetch(`https://wttr.in/${lat},${lon}?format=%l:+%c+%t`);
+                        document.getElementById('txt-weather').innerHTML = await r.text();
+                    } catch(e) { document.getElementById('txt-weather').innerText = "☁️ 定位天气可用"; }
+                }, () => {
+                    document.getElementById('txt-weather').innerText = "📍 请开启定位权限";
+                });
+            }
         }
 
-        async function handleLogin() {
-            const id = document.getElementById('login-id').value.trim();
-            const pw = document.getElementById('login-pw').value;
+        // --- 自动贴士获取 ---
+        async function fetchTip() {
             try {
-                const r = await fetch('./whitelist.json?t=' + Date.now());
-                const list = await r.json();
-                const user = list.find(u => u.id === id && u.psha === pw);
-                if (user && user.status === 'active') {
-                    localStorage.setItem('fmi_session', JSON.stringify(user));
-                    location.reload();
-                } else {
-                    document.getElementById('login-tips').innerText = "凭证错误";
-                    document.getElementById('login-tips').style.display = 'block';
-                }
-            } catch(e) { alert("网络异常"); }
+                const r = await fetch('https://v1.hitokoto.cn/?c=i');
+                const d = await r.json();
+                document.getElementById('tip-content').innerText = `“${d.hitokoto}”`;
+            } catch(e) { document.getElementById('tip-content').innerText = "坚持就是胜利！"; }
         }
 
-        async function initApp() {
-            const session = JSON.parse(localStorage.getItem('fmi_session'));
-            if (!session) { document.getElementById('login-screen').style.display='flex'; return; }
-            document.getElementById('login-screen').style.display='none';
-            document.getElementById('user-display').innerText = "Hi, " + session.name;
+        function updateClock() {
+            const n = new Date();
+            document.getElementById('txt-time').innerText = `${n.getFullYear()}/${n.getMonth()+1}/${n.getDate()} ${['日','一','二','三','四','五','六'][n.getDay()]}`;
+        }
+
+        // --- 核心逻辑 ---
+        async function init() {
+            initLocation(); fetchTip(); updateClock(); setInterval(updateClock, 60000);
             try {
                 const r = await fetch('./indonesian_learning_data.json');
                 db = await r.json();
-                buildMenu(); renderCurrent(); updateStats();
-            } catch(e) { console.error("Data error"); }
+                renderMenu(); render(); updateHistoryUI();
+            } catch(e) { alert("数据加载失败"); }
         }
 
-        function buildMenu() {
-            const box = document.getElementById('menu-box');
-            let html = `<div style="padding:0 25px; margin-bottom:10px; font-size:12px; color:#475569; letter-spacing:1px;">CURRICULUM</div>`;
-            for(let id in db) {
-                html += `
-                <div style="padding:15px 25px; margin:5px 15px; background:rgba(255,255,255,0.03); border-radius:15px; cursor:pointer; display:flex; justify-content:space-between; align-items:center;" onclick="switchCat('${id}',0)">
-                    <span style="font-size:14px; font-weight:600;">${db[id].name}</span>
-                    <i class="fas fa-chevron-right" style="font-size:12px; opacity:0.3;"></i>
-                </div>`;
-            }
-            box.innerHTML = html;
+        function renderMenu() {
+            const box = document.getElementById('course-menu');
+            box.innerHTML = Object.keys(db).map(id => `
+                <div class="nav-item ${curCat===id?'active':''}" onclick="switchCat('${id}')">
+                    <span><i class="fas fa-book" style="margin-right:10px; opacity:0.5"></i> ${db[id].name}</span>
+                </div>
+            `).join('');
+            document.getElementById('count-fav').innerText = favs.length;
         }
 
-        function renderCurrent() {
+        function render() {
             const list = curCat === 'fav' ? favs : db[curCat]?.lessons["1"]?.words;
-            if(!list || list.length === 0) return;
-            const word = list[curIdx];
-            document.getElementById('disp-indo').innerText = word.indonesian;
-            document.getElementById('disp-zh').innerText = document.getElementById('hide-toggle').checked ? '••••' : word.chinese;
+            if(!list || list.length === 0) {
+                document.getElementById('disp-indo').innerText = "暂无内容";
+                document.getElementById('disp-zh').innerText = "";
+                return;
+            }
+            const w = list[curIdx];
+            document.getElementById('disp-indo').innerText = w.indonesian;
+            document.getElementById('disp-zh').innerText = document.getElementById('hide-zh').checked ? '••••' : w.chinese;
             document.getElementById('word-idx').innerText = (curIdx + 1).toString().padStart(2, '0');
-            document.getElementById('fav-star').style.color = favs.some(f=>f.indonesian===word.indonesian) ? '#fbbf24' : '#334155';
+            document.getElementById('fav-btn').style.color = favs.some(f=>f.indonesian===w.indonesian) ? '#fbbf24' : '#334155';
             
-            // 更新最近学习记录
-            if(!recent.some(r => r.indonesian === word.indonesian)){
-                recent.unshift(word);
-                if(recent.length > 5) recent.pop();
-                localStorage.setItem('fmi_recent', JSON.stringify(recent));
-                updateRecentUI();
+            // 自动记录
+            if(!history.some(h=>h.indonesian===w.indonesian)) {
+                history.unshift(w); if(history.length>10) history.pop();
+                localStorage.setItem('fmi_history', JSON.stringify(history));
+                updateHistoryUI();
             }
         }
 
-        function updateRecentUI() {
-            const box = document.getElementById('recent-list');
-            box.innerHTML = recent.map(r => `<div><div style="color:white; font-weight:600;">${r.indonesian}</div><div style="font-size:11px; opacity:0.5;">${r.chinese}</div></div>`).join('');
+        function updateHistoryUI() {
+            document.getElementById('history-box').innerHTML = history.map(h => `
+                <div style="padding:10px; border-bottom:1px solid rgba(255,255,255,0.03); font-size:13px;">
+                    <div style="font-weight:700;">${h.indonesian}</div>
+                    <div style="opacity:0.5; font-size:11px;">${h.chinese}</div>
+                </div>
+            `).join('');
         }
 
-        function updateStats() {
-            document.getElementById('total-fav').innerText = favs.length;
-            document.getElementById('total-learned').innerText = recent.length + "+";
-        }
-
-        function toggleSpeech() {
-            if(isLive) { stopVoice(); return; }
-            const list = curCat==='fav'?favs:db[curCat].lessons["1"].words;
-            const word = list[curIdx];
-            const rate = parseFloat(document.getElementById('inp-rate').value);
-            const loops = parseInt(document.getElementById('inp-loop').value);
-            isLive = true; document.getElementById('play-ico').className='fas fa-stop'; document.getElementById('play-ico').style.marginLeft = "0";
-            let count = 0;
-            const speak = () => {
-                if(!isLive || count >= loops) { stopVoice(); return; }
-                const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(word.indonesian)}&tl=id&client=tw-ob&ttsspeed=${rate < 0.5 ? 0.2 : 1}`;
-                const audio = new Audio(url);
-                audio.onended = () => { count++; if(isLive) setTimeout(speak, 500); };
-                audio.play().catch(() => {
-                    const u = new SpeechSynthesisUtterance(word.indonesian);
-                    u.lang='id-ID'; u.rate=rate; u.onend=()=>{ count++; speak(); };
-                    window.speechSynthesis.speak(u);
-                });
-            };
-            speak();
-        }
-
-        function stopVoice() { isLive=false; window.speechSynthesis.cancel(); document.getElementById('play-ico').className='fas fa-play'; document.getElementById('play-ico').style.marginLeft = "8px"; }
-        function navWord(dir) { stopVoice(); const list=curCat==='fav'?favs:db[curCat].lessons["1"].words; if(!list||list.length===0) return; curIdx=(curIdx+dir+list.length)%list.length; renderCurrent(); }
-        function switchCat(cat, idx) { curCat=cat; curIdx=idx; renderCurrent(); }
+        function clearHistory() { history = []; localStorage.removeItem('fmi_history'); updateHistoryUI(); }
+        function switchCat(id) { curCat = id; curIdx = 0; renderMenu(); render(); }
+        function nav(d) { const list = curCat === 'fav' ? favs : db[curCat].lessons["1"].words; curIdx = (curIdx + d + list.length) % list.length; render(); }
         function toggleFav() {
-            const list = curCat==='fav'?favs:db[curCat].lessons["1"].words;
-            const word = list[curIdx];
-            const fIdx = favs.findIndex(f=>f.indonesian===word.indonesian);
-            fIdx > -1 ? favs.splice(fIdx, 1) : favs.push({...word});
+            const list = curCat === 'fav' ? favs : db[curCat].lessons["1"].words;
+            const w = list[curIdx];
+            const idx = favs.findIndex(f=>f.indonesian===w.indonesian);
+            idx > -1 ? favs.splice(idx,1) : favs.push({...w});
             localStorage.setItem('fmi_favs', JSON.stringify(favs));
-            renderCurrent(); updateStats();
+            render(); renderMenu();
         }
+
+        function playVoice() {
+            const w = (curCat==='fav'?favs:db[curCat].lessons["1"].words)[curIdx];
+            const r = document.getElementById('rate').value;
+            new Audio(`https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(w.indonesian)}&tl=id&client=tw-ob&ttsspeed=0.8`).play();
+        }
+
+        function shareBox() {
+            const text = `【FMI印尼语打卡】\n📅 日期：${document.getElementById('txt-time').innerText}\n📖 学习：${document.getElementById('disp-indo').innerText}\n💡 寄语：${document.getElementById('tip-content').innerText}`;
+            document.getElementById('share-text').value = text;
+            document.getElementById('share-modal').style.display = 'flex';
+        }
+
+        function copyShare() { document.getElementById('share-text').select(); document.execCommand('copy'); alert('复制成功！'); }
         function logout() { localStorage.removeItem('fmi_session'); location.reload(); }
-        function showQR() { document.getElementById('qr-modal').style.display='flex'; }
-        
-        document.getElementById('inp-rate').oninput = function() { document.getElementById('val-rate').innerText = this.value; }
-        document.getElementById('inp-loop').oninput = function() { document.getElementById('val-loop').innerText = this.value; }
-        
-        initApp();
-        updateRecentUI();
+        function enterAdmin() { if(prompt("密码")==='admin123') location.href='admin.html'; }
+
+        document.getElementById('rate').oninput = function() { document.getElementById('val-rate').innerText = this.value+'x'; }
+        document.getElementById('loop').oninput = function() { document.getElementById('val-loop').innerText = this.value+'次'; }
+
+        init();
     </script>
 </body>
 </html>
