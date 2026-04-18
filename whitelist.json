@@ -1,8 +1,14 @@
 [
   {
-    "id": "001",
-    "name": "张三",
-    "psha": "123",
+    "id": "admin",
+    "name": "管理员",
+    "psha": "fmi2026",
+    "status": "active"
+  },
+  {
+    "id": "A001",
+    "name": "测试员",
+    "psha": "123456",
     "status": "active"
   }
 ]
