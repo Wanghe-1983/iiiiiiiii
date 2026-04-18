@@ -10,185 +10,151 @@
             --bg-deep: #0f172a;
             --panel-bg: rgba(30, 41, 59, 0.7);
             --accent-primary: #6366f1;
-            --accent-glow: rgba(99, 102, 241, 0.5);
             --text-bright: #f8fafc;
             --text-dim: #94a3b8;
             --sidebar-width: 320px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
         body {
             background: var(--bg-deep);
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+            background-image: radial-gradient(at 50% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%);
             color: var(--text-bright);
-            font-family: 'Inter', 'Segoe UI', 'PingFang SC', sans-serif;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
             height: 100vh; display: flex; overflow: hidden;
         }
 
-        /* --- 身份验证界面美化 --- */
+        /* --- 登录界面 --- */
         #login-screen { position: fixed; inset: 0; background: var(--bg-deep); z-index: 9999; display: flex; justify-content: center; align-items: center; }
-        .login-card { 
-            background: #1e293b; padding: 50px 40px; border-radius: 24px; 
-            width: 100%; max-width: 420px; text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .login-title { font-size: 32px; font-weight: 700; margin-bottom: 12px; letter-spacing: 1px; }
-        .login-subtitle { color: var(--text-dim); font-size: 15px; margin-bottom: 40px; }
-        .login-input { 
-            width: 100%; padding: 16px 20px; margin-bottom: 20px; border-radius: 14px; 
-            background: #f1f5f9; border: none; color: #1e293b; font-size: 16px; outline: none;
-            transition: 0.3s;
-        }
-        .login-btn { 
-            width: 100%; padding: 16px; border-radius: 14px; border: none; 
-            background: var(--accent-primary); color: white; font-size: 18px; font-weight: 600; 
-            cursor: pointer; transition: 0.3s; box-shadow: 0 10px 20px var(--accent-glow);
-        }
-        .login-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .login-card { background: #1e293b; padding: 50px 40px; border-radius: 24px; width: 100%; max-width: 420px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .login-input { width: 100%; padding: 16px 20px; margin-bottom: 20px; border-radius: 14px; background: #f1f5f9; border: none; color: #1e293b; font-size: 16px; outline: none; }
+        .login-btn { width: 100%; padding: 16px; border-radius: 14px; border: none; background: var(--accent-primary); color: white; font-size: 18px; font-weight: 600; cursor: pointer; transition: 0.3s; }
 
         /* --- 侧边栏 --- */
-        .sidebar { width: var(--sidebar-width); height: 100%; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border-right: 1px solid rgba(255,255,255,0.05); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; z-index: 1000; }
+        .sidebar { width: var(--sidebar-width); height: 100%; background: rgba(15, 23, 42, 0.98); border-right: 1px solid rgba(255,255,255,0.05); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; z-index: 1000; }
         .sidebar.collapsed { margin-left: calc(var(--sidebar-width) * -1); }
-        .toggle-btn { position: absolute; right: -40px; top: 30px; width: 40px; height: 50px; background: var(--accent-primary); color: white; cursor: pointer; border-radius: 0 12px 12px 0; display: flex; align-items: center; justify-content: center; box-shadow: 5px 0 15px rgba(0,0,0,0.3); }
+        .toggle-btn { position: absolute; right: -40px; top: 30px; width: 40px; height: 50px; background: var(--accent-primary); color: white; cursor: pointer; border-radius: 0 12px 12px 0; display: flex; align-items: center; justify-content: center; }
 
-        /* --- 主视口 --- */
+        /* --- 主内容区 --- */
         .main-container { flex: 1; display: flex; flex-direction: column; padding: 40px; height: 100vh; position: relative; }
-        
-        .top-nav { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 30px; }
         .app-title { font-size: 28px; font-weight: 800; background: linear-gradient(to right, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .user-info { display: flex; align-items: center; gap: 12px; background: var(--panel-bg); padding: 8px 18px; border-radius: 30px; font-size: 14px; border: 1px solid rgba(255,255,255,0.05); }
 
-        /* --- 学习核心卡片：全屏居中 --- */
+        /* --- 学习核心卡片 --- */
         .study-core { 
             flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; 
             background: var(--panel-bg); border-radius: 40px; border: 1px solid rgba(255,255,255,0.08);
             position: relative; padding: 60px; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.5);
         }
         
-        .counter-badge { position: absolute; top: 40px; left: 50px; font-size: 24px; font-weight: 900; color: var(--accent-primary); opacity: 0.8; }
-        .fav-action { position: absolute; top: 40px; right: 50px; font-size: 32px; cursor: pointer; color: #334155; transition: 0.3s; }
-        .fav-action.active { color: #fbbf24; transform: scale(1.1); }
-        
-        .text-indo { font-size: 84px; font-weight: 800; text-align: center; line-height: 1.1; margin-bottom: 15px; letter-spacing: -2px; }
-        .text-zh { font-size: 36px; color: var(--text-dim); font-weight: 400; transition: 0.3s; }
+        .text-indo { font-size: clamp(3rem, 10vw, 5.5rem); font-weight: 800; text-align: center; line-height: 1.1; margin-bottom: 15px; letter-spacing: -2px; }
+        .text-zh { font-size: clamp(1.5rem, 5vw, 2.5rem); color: var(--text-dim); }
 
-        /* --- 交互控制区 --- */
-        .control-group { display: flex; gap: 50px; margin-top: 60px; align-items: center; }
-        .nav-icon-btn { 
-            width: 70px; height: 70px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.02); color: white; cursor: pointer; transition: 0.3s;
-            display: flex; align-items: center; justify-content: center; font-size: 20px;
+        /* --- 箭头交互优化 --- */
+        .nav-trigger {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 80px; height: 120px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: rgba(255,255,255,0.1); transition: 0.4s; z-index: 10;
         }
-        .nav-icon-btn:hover { background: rgba(255,255,255,0.1); transform: scale(1.1); border-color: var(--accent-primary); }
-        
+        .nav-trigger:hover { color: var(--accent-primary); background: rgba(99, 102, 241, 0.05); }
+        .nav-left { left: 0; border-radius: 0 40px 40px 0; }
+        .nav-right { right: 0; border-radius: 40px 0 0 40px; }
+        .nav-trigger i { font-size: 40px; transition: 0.3s; }
+        .nav-left:hover i { transform: translateX(-10px); }
+        .nav-right:hover i { transform: translateX(10px); }
+
+        /* --- 播放按钮 --- */
         .play-master-btn { 
             width: 100px; height: 100px; border-radius: 50%; border: none; 
             background: var(--accent-primary); color: white; cursor: pointer; font-size: 36px;
-            box-shadow: 0 0 30px var(--accent-glow); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.4); transition: 0.4s;
+            display: flex; align-items: center; justify-content: center; margin-top: 50px;
         }
-        .play-master-btn:hover { transform: scale(1.15); box-shadow: 0 0 50px var(--accent-primary); }
+        .play-master-btn:hover { transform: scale(1.1); box-shadow: 0 0 50px var(--accent-primary); }
 
-        /* --- 底部调节栏 --- */
-        .config-bar { 
-            margin-top: 30px; padding: 25px 40px; border-radius: 25px; 
-            background: var(--panel-bg); display: flex; justify-content: space-around; align-items: center;
-            border: 1px solid rgba(255,255,255,0.05); gap: 40px;
-        }
+        /* --- 调节栏 --- */
+        .config-bar { margin-top: 30px; padding: 25px 40px; border-radius: 25px; background: var(--panel-bg); display: flex; justify-content: space-around; gap: 40px; border: 1px solid rgba(255,255,255,0.05); }
         .slider-box { flex: 1; display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-dim); }
         input[type=range] { flex: 1; accent-color: var(--accent-primary); cursor: pointer; }
 
-        .footer-links { margin-top: 25px; text-align: center; font-size: 13px; color: #475569; }
-        .link-btn { color: var(--accent-primary); cursor: pointer; font-weight: 600; transition: 0.2s; }
-        .link-btn:hover { text-decoration: underline; }
+        .footer { margin-top: 25px; text-align: center; font-size: 13px; color: #475569; }
+        /* 隐藏入口样式 */
+        .secret-trigger { cursor: pointer; transition: 0.2s; user-select: none; }
+        .secret-trigger:active { color: var(--accent-primary); }
 
-        /* --- 列表菜单 --- */
-        .menu-cat { padding: 15px 25px; margin: 8px 15px; background: rgba(255,255,255,0.03); border-radius: 12px; cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; transition: 0.3s; }
-        .menu-cat:hover { background: rgba(255,255,255,0.06); }
-        .word-item { padding: 12px 35px; font-size: 14px; color: var(--text-dim); cursor: pointer; transition: 0.2s; border-radius: 8px; margin: 2px 15px; }
-        .word-item:hover { color: white; background: rgba(99, 102, 241, 0.1); }
-        .word-item.active { color: var(--accent-primary); font-weight: 700; background: rgba(99, 102, 241, 0.15); }
+        /* 菜单样式 */
+        .menu-cat { padding: 15px 25px; margin: 8px 15px; background: rgba(255,255,255,0.03); border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; font-weight: 600; }
+        .word-item { padding: 12px 35px; font-size: 14px; color: var(--text-dim); cursor: pointer; border-radius: 8px; margin: 2px 15px; }
+        .word-item.active { color: var(--accent-primary); background: rgba(99, 102, 241, 0.1); font-weight: 700; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="login-card">
-            <h2 class="login-title">身份验证</h2>
-            <p class="login-subtitle">请输入工号和密码进入学习系统</p>
-            <input type="text" id="login-id" class="login-input" placeholder="请输入工号">
-            <input type="password" id="login-pw" class="login-input" placeholder="请输入访问密码">
+            <h2 style="font-size:32px; margin-bottom:10px;">身份验证</h2>
+            <p style="color:var(--text-dim); margin-bottom:40px;">请输入工号和密码进入学习系统</p>
+            <input type="text" id="login-id" class="login-input" placeholder="工号">
+            <input type="password" id="login-pw" class="login-input" placeholder="访问密码">
             <button class="login-btn" onclick="handleLogin()">登 录</button>
-            <p id="login-tips" style="color:#f87171; margin-top:20px; display:none; font-size:14px;"></p>
+            <p id="login-tips" style="color:#f87171; margin-top:20px; display:none;"></p>
         </div>
     </div>
 
     <aside class="sidebar" id="sidebar">
         <div class="toggle-btn" onclick="document.getElementById('sidebar').classList.toggle('collapsed')"><i class="fas fa-bars-staggered"></i></div>
-        <div style="padding: 40px 25px 15px;"><span style="color:var(--text-dim); font-size:12px; font-weight:800; letter-spacing:2px; text-transform:uppercase;">Content Menu</span></div>
+        <div style="padding: 40px 25px 15px;"><span style="color:var(--text-dim); font-size:12px; font-weight:800; letter-spacing:2px;">LISTS</span></div>
         <div id="menu-box" style="overflow-y:auto; height: calc(100% - 100px);"></div>
     </aside>
 
     <main class="main-container">
-        <header class="top-nav">
+        <header style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
             <h1 class="app-title">印尼语学习助手</h1>
-            <div class="user-info">
-                <i class="fas fa-user-circle"></i>
-                <span id="user-display">未登录</span>
-            </div>
+            <div style="background:var(--panel-bg); padding:8px 18px; border-radius:30px; font-size:14px;" id="user-display">加载中...</div>
         </header>
         
         <section class="study-core">
-            <div class="counter-badge" id="word-idx">01</div>
-            <i class="fas fa-bookmark fav-action" id="fav-star" onclick="toggleFav()"></i>
+            <div style="position:absolute; top:40px; left:50px; font-size:24px; font-weight:900; color:var(--accent-primary);" id="word-idx">01</div>
+            <i class="fas fa-bookmark" id="fav-star" style="position:absolute; top:40px; right:50px; font-size:32px; cursor:pointer; color:#334155;" onclick="toggleFav()"></i>
             
+            <div class="nav-trigger nav-left" onclick="navWord(-1)"><i class="fas fa-angle-left"></i></div>
+            <div class="nav-trigger nav-right" onclick="navWord(1)"><i class="fas fa-angle-right"></i></div>
+
             <div class="text-indo" id="disp-indo">TERIMA KASIH</div>
             <div class="text-zh" id="disp-zh">谢谢</div>
 
-            <div class="control-group">
-                <button class="nav-icon-btn" onclick="navWord(-1)"><i class="fas fa-chevron-left"></i></button>
-                <button class="play-master-btn" onclick="toggleSpeech()"><i class="fas fa-play" id="play-ico" style="margin-left: 6px;"></i></button>
-                <button class="nav-icon-btn" onclick="navWord(1)"><i class="fas fa-chevron-right"></i></button>
-            </div>
+            <button class="play-master-btn" onclick="toggleSpeech()"><i class="fas fa-play" id="play-ico" style="margin-left:6px;"></i></button>
         </section>
 
         <div class="config-bar">
-            <div class="slider-box">
-                <i class="fas fa-bolt"></i>
-                <input type="range" id="inp-rate" min="0.1" max="1.5" step="0.1" value="0.8" oninput="document.getElementById('val-rate').innerText=this.value">
-                <span style="min-width:40px;"><span id="val-rate">0.8</span>x</span>
-            </div>
-            <div class="slider-box">
-                <i class="fas fa-redo-alt"></i>
-                <input type="range" id="inp-loop" min="1" max="10" step="1" value="1" oninput="document.getElementById('val-loop').innerText=this.value">
-                <span style="min-width:40px;"><span id="val-loop">1</span>次</span>
-            </div>
-            <div class="slider-box" style="flex:0.5; justify-content: flex-end;">
-                <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
-                    <input type="checkbox" id="hide-toggle" onchange="renderCurrent()" style="width:18px; height:18px;"> 隐藏中文答案
-                </label>
-            </div>
+            <div class="slider-box"><i class="fas fa-bolt"></i><input type="range" id="inp-rate" min="0.1" max="1.5" step="0.1" value="0.8"><span><span id="val-rate">0.8</span>x</span></div>
+            <div class="slider-box"><i class="fas fa-redo"></i><input type="range" id="inp-loop" min="1" max="10" step="1" value="1"><span><span id="val-loop">1</span>次</span></div>
+            <div class="slider-box" style="flex:0.5; justify-content: flex-end;"><label style="cursor:pointer;"><input type="checkbox" id="hide-toggle" onchange="renderCurrent()"> 隐藏中文</label></div>
         </div>
 
-        <footer class="footer-links">
-            FMI 内部学习工具 © 2026｜作者：<span class="link-btn" onclick="showQR()">王鹤</span>｜
-            <span class="link-btn" onclick="checkAdminAccess()">管理控制台</span>｜
-            <span class="link-btn" style="color:#f87171;" onclick="logout()">安全退出</span>
+        <footer class="footer">
+            仅供内部学习｜禁止商用 <span class="secret-trigger" onclick="enterAdmin()">©</span> 2026｜作者：<span style="color:var(--accent-primary); cursor:pointer;" onclick="showQR()">王鹤</span>｜
+            <span style="color:#f87171; cursor:pointer;" onclick="logout()">安全退出</span>
         </footer>
     </main>
 
-    <div id="qr-modal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.9); z-index:10000; justify-content:center; align-items:center;" onclick="this.style.display='none'"><img src="Wang_he.jpg" style="width:300px; border-radius:30px; box-shadow:0 0 60px rgba(0,0,0,0.5);"></div>
+    <div id="qr-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:10000; justify-content:center; align-items:center;" onclick="this.style.display='none'"><img src="Wang_he.jpg" style="width:300px; border-radius:30px;"></div>
 
     <script>
         let db = {}, favs = JSON.parse(localStorage.getItem('fmi_favs') || '[]');
         let curCat = "1", curIdx = 0, isLive = false;
         let menuState = { fav: true };
 
-        // 核心安全逻辑：不再硬编码管理员账号
+        // 隐藏的后台入口
+        function enterAdmin() {
+            const pw = prompt("请输入超级管理密码：");
+            if (pw === "admin123") {
+                location.href = 'admin.html';
+            } else if (pw !== null) {
+                alert("密码错误，访问拒绝。");
+            }
+        }
+
         async function handleLogin() {
             const id = document.getElementById('login-id').value.trim();
             const pw = document.getElementById('login-pw').value;
@@ -196,47 +162,35 @@
                 const r = await fetch('./whitelist.json?t=' + Date.now());
                 const list = await r.json();
                 const user = list.find(u => u.id === id && u.psha === pw);
-                
                 if (user && user.status === 'active') {
-                    // role 属性根据 JSON 中的 id 是否为 admin 来判断，或者在 JSON 中额外定义
-                    localStorage.setItem('fmi_session', JSON.stringify({
-                        id: user.id,
-                        name: user.name,
-                        role: user.id === 'admin' ? 'admin' : 'user'
-                    }));
+                    localStorage.setItem('fmi_session', JSON.stringify({ id: user.id, name: user.name }));
                     location.reload();
                 } else {
-                    document.getElementById('login-tips').innerText = "凭证无效或账号已被禁用";
+                    document.getElementById('login-tips').innerText = "凭证错误";
                     document.getElementById('login-tips').style.display = 'block';
                 }
-            } catch(e) { alert("身份验证服务异常"); }
+            } catch(e) { alert("验证失败"); }
         }
 
         async function initApp() {
             const session = JSON.parse(localStorage.getItem('fmi_session'));
             if (!session) { document.getElementById('login-screen').style.display='flex'; return; }
             document.getElementById('login-screen').style.display='none';
-            document.getElementById('user-display').innerText = session.name;
-
+            document.getElementById('user-display').innerText = "Hi, " + session.name;
             try {
                 const r = await fetch('./indonesian_learning_data.json');
                 db = await r.json();
                 buildMenu(); renderCurrent();
-            } catch(e) { console.error("Data load failed"); }
+            } catch(e) { console.error("Data error"); }
         }
 
         function buildMenu() {
             const box = document.getElementById('menu-box');
-            let html = `<div class="menu-cat" onclick="toggleMenu('fav')"><span><i class="fas fa-heart" style="color:#f87171; margin-right:10px;"></i>收藏夹 (${favs.length})</span><i class="fas fa-chevron-${menuState.fav?'down':'right'}"></i></div>
-            <div class="${menuState.fav?'':'hidden'}" style="overflow:hidden">
-                ${favs.map((w,i)=>`<div class="word-item ${curCat=='fav'&&curIdx==i?'active':''}" onclick="switchCat('fav',${i})">${i+1}. ${w.indonesian}</div>`).join('')}
-            </div>`;
-
+            let html = `<div class="menu-cat" onclick="toggleMenu('fav')"><span>我的收藏</span><i class="fas fa-chevron-${menuState.fav?'down':'right'}"></i></div>
+            <div class="${menuState.fav?'':'hidden'}">${favs.map((w,i)=>`<div class="word-item ${curCat=='fav'&&curIdx==i?'active':''}" onclick="switchCat('fav',${i})">${w.indonesian}</div>`).join('')}</div>`;
             for(let id in db) {
-                html += `<div class="menu-cat" onclick="toggleMenu('${id}')"><span><i class="fas fa-folder-open" style="color:var(--accent-primary); margin-right:10px;"></i>${db[id].name}</span><i class="fas fa-chevron-${menuState[id]?'down':'right'}"></i></div>
-                <div class="${menuState[id]?'':'hidden'}" style="overflow:hidden">
-                    ${db[id].lessons["1"].words.map((w,i)=>`<div class="word-item ${curCat==id&&curIdx==i?'active':''}" onclick="switchCat('${id}',${i})">${i+1}. ${w.indonesian}</div>`).join('')}
-                </div>`;
+                html += `<div class="menu-cat" onclick="toggleMenu('${id}')"><span>${db[id].name}</span><i class="fas fa-chevron-${menuState[id]?'down':'right'}"></i></div>
+                <div class="${menuState[id]?'':'hidden'}">${db[id].lessons["1"].words.map((w,i)=>`<div class="word-item ${curCat==id&&curIdx==i?'active':''}" onclick="switchCat('${id}',${i})">${w.indonesian}</div>`).join('')}</div>`;
             }
             box.innerHTML = html;
         }
@@ -248,7 +202,7 @@
             document.getElementById('disp-indo').innerText = word.indonesian;
             document.getElementById('disp-zh').innerText = document.getElementById('hide-toggle').checked ? '••••' : word.chinese;
             document.getElementById('word-idx').innerText = (curIdx + 1).toString().padStart(2, '0');
-            document.getElementById('fav-star').className = favs.some(f=>f.indonesian===word.indonesian) ? 'fas fa-bookmark fav-action active' : 'fas fa-bookmark fav-action';
+            document.getElementById('fav-star').style.color = favs.some(f=>f.indonesian===word.indonesian) ? '#fbbf24' : '#334155';
         }
 
         function toggleSpeech() {
@@ -257,11 +211,7 @@
             const word = list[curIdx];
             const rate = parseFloat(document.getElementById('inp-rate').value);
             const loops = parseInt(document.getElementById('inp-loop').value);
-            
-            isLive = true; 
-            document.getElementById('play-ico').className='fas fa-stop';
-            document.getElementById('play-ico').style.marginLeft = "0px";
-            
+            isLive = true; document.getElementById('play-ico').className='fas fa-stop'; document.getElementById('play-ico').style.marginLeft = "0";
             let count = 0;
             const speak = () => {
                 if(!isLive || count >= loops) { stopVoice(); return; }
@@ -277,12 +227,7 @@
             speak();
         }
 
-        function stopVoice() { 
-            isLive=false; window.speechSynthesis.cancel(); 
-            document.getElementById('play-ico').className='fas fa-play'; 
-            document.getElementById('play-ico').style.marginLeft = "6px";
-        }
-
+        function stopVoice() { isLive=false; window.speechSynthesis.cancel(); document.getElementById('play-ico').className='fas fa-play'; document.getElementById('play-ico').style.marginLeft = "6px"; }
         function navWord(dir) { stopVoice(); const list=curCat==='fav'?favs:db[curCat].lessons["1"].words; if(!list||list.length===0) return; curIdx=(curIdx+dir+list.length)%list.length; renderCurrent(); buildMenu(); }
         function toggleMenu(id) { menuState[id] = !menuState[id]; buildMenu(); }
         function switchCat(cat, idx) { curCat=cat; curIdx=idx; stopVoice(); renderCurrent(); buildMenu(); }
@@ -296,11 +241,10 @@
         }
         function showQR() { document.getElementById('qr-modal').style.display='flex'; }
         function logout() { localStorage.removeItem('fmi_session'); location.reload(); }
-        function checkAdminAccess() { 
-            const s = JSON.parse(localStorage.getItem('fmi_session'));
-            if(s?.role === 'admin') location.href='admin.html';
-            else alert("抱歉，此区域仅限管理员访问");
-        }
+        
+        document.getElementById('inp-rate').oninput = function() { document.getElementById('val-rate').innerText = this.value; }
+        document.getElementById('inp-loop').oninput = function() { document.getElementById('val-loop').innerText = this.value; }
+        
         initApp();
     </script>
 </body>
