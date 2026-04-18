@@ -8,9 +8,9 @@
     <style>
         :root {
             --bg: #030712;
-            --glass: rgba(17, 24, 39, 0.8);
+            --glass: rgba(17, 24, 39, 0.85);
             --accent: #6366f1;
-            --accent-glow: rgba(99, 102, 241, 0.3);
+            --accent-glow: rgba(99, 102, 241, 0.4);
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --sidebar-w: 300px;
@@ -26,26 +26,38 @@
             height: 100vh; display: flex; overflow: hidden;
         }
 
-        /* 侧边栏：修复收起后找不到开关的问题 */
+        /* --- 侧边栏修复重点 --- */
         .sidebar {
-            width: var(--sidebar-w); background: var(--glass); backdrop-filter: blur(25px);
-            border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; z-index: 1000;
+            width: var(--sidebar-w); height: 100%;
+            background: var(--glass); backdrop-filter: blur(25px);
+            border-right: 1px solid rgba(255,255,255,0.1);
+            display: flex; flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative; z-index: 1000;
+            /* 关键修复：防止折叠后内容溢出显示 */
+            overflow: visible; 
         }
-        .sidebar.collapsed { width: 0; transform: translateX(-100%); }
         
-        .sidebar-content { flex: 1; overflow-y: auto; padding: 25px 15px; min-width: var(--sidebar-w); }
+        /* 折叠状态 */
+        .sidebar.collapsed { width: 0; transform: translateX(calc(var(--sidebar-w) * -1)); }
 
-        /* 开关按钮：始终固定在侧边栏右侧边缘 */
+        .sidebar-inner {
+            width: var(--sidebar-w); height: 100%;
+            overflow-y: auto; overflow-x: hidden;
+            padding: 25px 15px;
+            /* 确保内容在侧边栏宽度为0时不可见 */
+            transition: opacity 0.3s;
+        }
+        .sidebar.collapsed .sidebar-inner { opacity: 0; pointer-events: none; }
+
+        /* 始终显示的开关按钮 */
         .toggle-sidebar {
             position: absolute; right: -40px; top: 30px; width: 40px; height: 50px;
             background: var(--accent); border: none; color: white; cursor: pointer;
             border-radius: 0 12px 12px 0; display: flex; align-items: center; justify-content: center;
             box-shadow: 4px 0 15px var(--accent-glow); transition: 0.3s; z-index: 1001;
-            transform: translateX(0);
         }
-        /* 当侧边栏收起时，按钮固定在屏幕左侧，图标反转 */
-        .sidebar.collapsed .toggle-sidebar { transform: translateX(100%); }
+        .sidebar.collapsed .toggle-sidebar { transform: translateX(var(--sidebar-w)); }
         .sidebar.collapsed .toggle-sidebar i { transform: rotate(180deg); }
 
         /* 目录美化 */
@@ -53,74 +65,66 @@
         .cat-head { padding: 12px 15px; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
         .cat-head:hover { background: rgba(255,255,255,0.06); }
         .sub-menu { display: none; padding: 5px 10px 10px 10px; border-top: 1px solid rgba(255,255,255,0.05); }
-        .sub-menu.active { display: block; animation: slideDown 0.3s ease; }
+        .sub-menu.active { display: block; animation: slideIn 0.3s ease; }
         
         .menu-link { padding: 8px 12px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; border-radius: 8px; margin: 3px 0; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
-        .menu-link:hover { background: rgba(99,102,241,0.15); color: white; padding-left: 16px; }
+        .menu-link:hover { background: rgba(99,102,241,0.15); color: white; transform: translateX(5px); }
         .menu-link.active { background: var(--accent); color: white; box-shadow: 0 4px 12px var(--accent-glow); }
 
-        .clear-fav-area { padding-top: 10px; text-align: center; }
+        .clear-fav-area { padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 10px; text-align: center; }
         .btn-clear { background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.75rem; cursor: pointer; transition: 0.3s; }
         .btn-clear:hover { background: #ef4444; color: white; }
 
-        /* 主容器 & 卡片美化 */
-        .main-container { flex: 1; display: flex; flex-direction: column; padding: 30px; position: relative; transition: 0.4s; }
+        /* 主界面 */
+        .main-container { flex: 1; display: flex; flex-direction: column; padding: 30px; position: relative; overflow: hidden; }
         
         .study-card {
             background: rgba(30, 41, 59, 0.4); border-radius: 50px; border: 1px solid rgba(255,255,255,0.1);
             flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
             position: relative; padding: 40px; box-shadow: 0 40px 80px rgba(0,0,0,0.5);
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            backdrop-filter: blur(10px); transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
         
-        /* 切换动画：轻微缩放+淡入 */
-        .card-anim { transform: scale(0.98); opacity: 0.6; }
+        /* 切换动画 */
+        .card-anim { transform: scale(0.97) translateY(10px); opacity: 0; }
 
         .top-meta { position: absolute; top: 40px; left: 50px; right: 50px; display: flex; justify-content: space-between; align-items: center; }
         .word-badge { background: var(--accent); color: white; padding: 5px 18px; border-radius: 12px; font-weight: bold; font-size: 1.2rem; font-style: italic; box-shadow: 0 4px 15px var(--accent-glow); }
-        .star-btn { font-size: 2.2rem; cursor: pointer; color: rgba(255,255,255,0.15); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .star-btn.active { color: #fbbf24; transform: scale(1.1); text-shadow: 0 0 20px rgba(251, 191, 36, 0.4); }
+        .star-btn { font-size: 2.2rem; cursor: pointer; color: rgba(255,255,255,0.1); transition: 0.3s; }
+        .star-btn.active { color: #fbbf24; text-shadow: 0 0 20px rgba(251, 191, 36, 0.4); }
 
-        .indo-box { font-size: 5rem; font-weight: 900; margin-bottom: 15px; text-align: center; line-height: 1.1; letter-spacing: -1px; }
+        .indo-box { font-size: 5rem; font-weight: 900; margin-bottom: 15px; text-align: center; line-height: 1.1; }
         .zh-box { font-size: 2.2rem; color: var(--text-muted); font-weight: 300; }
 
         .nav-row { display: flex; align-items: center; gap: 40px; margin-top: 50px; }
         .circle-btn {
-            width: 80px; height: 80px; border-radius: 50%; border: none; background: rgba(255,255,255,0.05);
+            width: 75px; height: 75px; border-radius: 50%; border: none; background: rgba(255,255,255,0.05);
             color: white; font-size: 1.8rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center;
         }
-        .circle-btn:hover { background: var(--accent); transform: translateY(-5px) scale(1.05); box-shadow: 0 10px 20px var(--accent-glow); }
-        .circle-btn:active { transform: scale(0.95); }
-        .play-btn { width: 100px; height: 100px; background: var(--accent); font-size: 2.2rem; }
+        .circle-btn:hover { background: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 20px var(--accent-glow); }
+        
+        .play-btn { width: 95px; height: 95px; background: var(--accent); font-size: 2.2rem; }
         .playing { background: #ef4444 !important; animation: pulse 1.5s infinite; }
 
-        /* 控制栏对齐优化 */
         .control-panel {
             width: 100%; max-width: 900px; margin: 30px auto 0; background: var(--glass);
-            padding: 25px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1);
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px;
+            padding: 25px; border-radius: 30px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; border: 1px solid rgba(255,255,255,0.1);
         }
-        .ctrl-item { display: flex; flex-direction: column; gap: 10px; }
-        .ctrl-item label { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
+        .ctrl-item label { font-size: 0.9rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         
-        .switch { position: relative; display: inline-block; width: 48px; height: 24px; }
+        .switch { position: relative; width: 48px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #334155; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--accent); }
+        .slider { position: absolute; cursor: pointer; inset: 0; background: #334155; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background: var(--accent); }
         input:checked + .slider:before { transform: translateX(24px); }
 
-        .copyright { font-size: 0.85rem; text-align: center; color: #4b5563; margin-top: 25px; }
-        .italic-text { font-style: italic; font-family: 'Arial', sans-serif; }
+        .copyright { font-size: 0.8rem; text-align: center; color: #4b5563; margin-top: 25px; }
+        .italic-text { font-style: italic; }
         .clickable-name { color: var(--accent); text-decoration: underline; cursor: pointer; font-weight: bold; }
 
-        /* 二维码弹窗 */
-        .qr-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(8px); }
-        .qr-content { background: #fff; padding: 30px; border-radius: 30px; text-align: center; position: relative; }
-        .qr-content img { width: 260px; height: 260px; border-radius: 15px; }
-
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 100% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); } }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -129,40 +133,37 @@
         <button class="toggle-sidebar" onclick="document.getElementById('sidebar').classList.toggle('collapsed')">
             <i class="fas fa-chevron-left"></i>
         </button>
-        <div class="sidebar-content" id="menu-box"></div>
+        <div class="sidebar-inner" id="menu-box"></div>
     </aside>
 
     <main class="main-container">
-        <header>
-            <h1 style="font-size: 2.8rem; font-weight: 900; text-align: center; background: linear-gradient(to bottom, #fff, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">印尼语学习小助手</h1>
-        </header>
+        <header><h1 style="font-size: 2.5rem; font-weight: 900; text-align: center; margin-bottom: 20px;">印尼语学习小助手</h1></header>
 
         <section class="study-card" id="main-card">
             <div class="top-meta">
                 <div class="word-badge" id="word-idx">01</div>
                 <div class="star-btn" id="fav-trigger" onclick="handleFav()"><i class="fas fa-star"></i></div>
             </div>
-            <div class="indo-box" id="disp-indo">正在载入</div>
+            <div class="indo-box" id="disp-indo">Loading</div>
             <div class="zh-box" id="disp-zh">请稍等</div>
             <div class="nav-row">
-                <button class="circle-btn" onclick="navWord(-1)"><i class="fas fa-arrow-left"></i></button>
+                <button class="circle-btn" onclick="navWord(-1)"><i class="fas fa-chevron-left"></i></button>
                 <button id="main-play" class="circle-btn play-btn" onclick="toggleSpeech()"><i class="fas fa-play" id="play-ico"></i></button>
-                <button class="circle-btn" onclick="navWord(1)"><i class="fas fa-arrow-right"></i></button>
+                <button class="circle-btn" onclick="navWord(1)"><i class="fas fa-chevron-right"></i></button>
             </div>
         </section>
 
         <footer class="control-panel">
             <div class="ctrl-item">
-                <label>语音语速 <span><span class="italic-text" id="val-rate">0.8</span>x</span></label>
+                <label>语速 <span class="italic-text"><span id="val-rate">0.8</span>x</span></label>
                 <input type="range" id="inp-rate" min="0.1" max="1.5" step="0.1" value="0.8" oninput="updateSetting('rate', this.value)">
             </div>
             <div class="ctrl-item">
-                <label>循环播放 <span><span class="italic-text" id="val-loop">1</span>次</span></label>
+                <label>循环 <span class="italic-text"><span id="val-loop">1</span>次</span></label>
                 <input type="range" id="inp-loop" min="1" max="10" step="1" value="1" oninput="updateSetting('loop', this.value)">
             </div>
             <div class="ctrl-item">
-                <label>
-                    <span>隐藏答案</span>
+                <label><span>隐藏答案</span>
                     <div class="switch">
                         <input type="checkbox" id="hide-toggle" onchange="renderCurrent()">
                         <span class="slider"></span>
@@ -173,16 +174,9 @@
 
         <div class="copyright">
             仅供学习，禁止商用。 如有问题请 <span class="italic-text">FMI</span> <span class="clickable-name" onclick="showQR()">王鹤</span> 联系 
-            当前版本：<span class="version-tag" onclick="goAdmin()"><span class="italic-text">V1.00</span></span>
+            当前版本：<span class="italic-text">V1.00</span>
         </div>
     </main>
-
-    <div id="qr-modal" class="qr-modal" onclick="this.style.display='none'">
-        <div class="qr-content" onclick="event.stopPropagation()">
-            <img src="Wang_he.jpg" alt="王鹤二维码">
-            <p style="margin-top:15px; color:#1e293b; font-weight:bold;">微信扫码联系 王鹤</p>
-        </div>
-    </div>
 
     <script>
         let db = {};
@@ -202,7 +196,7 @@
             const box = document.getElementById('menu-box');
             let favHtml = `<div class="cat-item">
                 <div class="cat-head" style="color:#fbbf24" onclick="this.nextElementSibling.classList.toggle('active')">
-                    <span>⭐ 我的收藏 (${favs.length})</span><i class="fas fa-chevron-down" style="font-size:0.7rem"></i>
+                    <span>⭐ 我的收藏 (${favs.length})</span><i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="sub-menu">
                     ${favs.map((w, i) => `<div class="menu-link" onclick="showFav(${i})">
@@ -217,7 +211,7 @@
             for(let id in db) {
                 const words = db[id].lessons["1"].words;
                 dbHtml += `<div class="cat-item">
-                    <div class="cat-head" onclick="this.nextElementSibling.classList.toggle('active')"><span>${db[id].name}</span><i class="fas fa-chevron-down" style="font-size:0.7rem"></i></div>
+                    <div class="cat-head" onclick="this.nextElementSibling.classList.toggle('active')"><span>${db[id].name}</span><i class="fas fa-chevron-down"></i></div>
                     <div class="sub-menu ${id==curCat?'active':''}">
                         ${words.map((w,i)=>`<div class="menu-link ${id==curCat && i==curIdx?'active':''}" onclick="showWord('${id}',${i})">${i+1}. ${w.indonesian}</div>`).join('')}
                     </div>
@@ -228,7 +222,7 @@
 
         function renderCurrent() {
             const card = document.getElementById('main-card');
-            card.classList.add('card-anim'); // 触发切换动画
+            card.classList.add('card-anim');
 
             setTimeout(() => {
                 const list = curCat === 'fav' ? favs : db[curCat]?.lessons["1"]?.words;
@@ -246,7 +240,7 @@
                 document.getElementById('fav-trigger').className = 'star-btn' + (isF ? ' active' : '');
                 
                 card.classList.remove('card-anim');
-            }, 150);
+            }, 200);
         }
 
         function handleFav() {
@@ -260,16 +254,9 @@
 
         function delFav(e, i) { e.stopPropagation(); favs.splice(i, 1); localStorage.setItem('fmi_v1_favs', JSON.stringify(favs)); buildMenu(); renderCurrent(); if(curCat==='fav' && favs.length===0) showWord("1",0); }
         function clearAllFav(e) { e.stopPropagation(); if(confirm("确定清空？")) { favs = []; localStorage.setItem('fmi_v1_favs', '[]'); buildMenu(); renderCurrent(); if(curCat==='fav') showWord("1",0); } }
-
         function showWord(cat, idx) { stopVoice(); curCat = cat; curIdx = idx; renderCurrent(); buildMenu(); }
         function showFav(idx) { stopVoice(); curCat = 'fav'; curIdx = idx; renderCurrent(); }
-        
-        function navWord(dir) {
-            const list = curCat === 'fav' ? favs : db[curCat].lessons["1"].words;
-            curIdx = (curIdx + dir + list.length) % list.length;
-            renderCurrent();
-        }
-
+        function navWord(dir) { const list = curCat === 'fav' ? favs : db[curCat].lessons["1"].words; curIdx = (curIdx + dir + list.length) % list.length; renderCurrent(); }
         function toggleSpeech() { isLive ? stopVoice() : startVoice(); }
         function startVoice() {
             const list = curCat === 'fav' ? favs : db[curCat].lessons["1"].words;
@@ -290,11 +277,8 @@
             run();
         }
         function stopVoice() { isLive = false; window.speechSynthesis.cancel(); document.getElementById('play-ico').className = 'fas fa-play'; document.getElementById('main-play').classList.remove('playing'); }
-
         function updateSetting(t, v) { document.getElementById('val-'+t).innerText = v; }
-        function showQR() { document.getElementById('qr-modal').style.display = 'flex'; }
-        function goAdmin() { if(prompt("管理密码：") === "admin123") alert("管理后台已锁定"); }
-
+        
         init();
     </script>
 </body>
