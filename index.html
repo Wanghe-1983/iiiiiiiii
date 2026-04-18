@@ -54,28 +54,33 @@
         .ctrl-row { display: flex; align-items: center; justify-content: space-between; }
         .ctrl-value { min-width: 70px; text-align: right; font-family: 'Lexend'; color: var(--accent); font-weight: 700; font-size: 1.2rem; }
 
-        .copyright { font-size: 0.9rem; text-align: center; color: #4b5563; margin-top: 25px; }
+        .copyright { font-size: 0.9rem; text-align: center; color: #4b5563; margin-top: 25px; line-height: 1.8; }
         .clickable { color: var(--accent); cursor: pointer; font-weight: 700; }
         .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(15px); }
         
-        /* 目录折叠样式 */
+        /* 侧边栏列表样式 */
         .menu-group { margin-bottom: 15px; }
-        .menu-head { padding: 10px; color: #94a3b8; font-weight: 800; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); border-radius: 10px; }
+        .menu-head { padding: 12px; color: #94a3b8; font-weight: 800; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); border-radius: 12px; cursor: pointer; }
         .menu-list { overflow: hidden; transition: 0.3s; }
         .menu-list.hidden { height: 0; }
-        .trash-icon { color: #ef4444; cursor: pointer; opacity: 0.7; transition: 0.2s; }
-        .trash-icon:hover { opacity: 1; transform: scale(1.1); }
+        
+        /* 收藏夹内部按钮样式 */
+        .clear-area { padding: 10px 25px; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 5px; text-align: right; }
+        .clear-btn-text { color: #ef4444; font-size: 12px; cursor: pointer; opacity: 0.8; transition: 0.2s; }
+        .clear-btn-text:hover { opacity: 1; text-decoration: underline; }
+        .trash-item { color: #ef4444; cursor: pointer; opacity: 0.5; font-size: 12px; padding: 5px; }
+        .trash-item:hover { opacity: 1; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="login-card">
-            <h2 style="color:white; margin-bottom:25px;">身份验证</h2>
-            <input type="text" id="login-id" class="login-input" placeholder="请输入工号">
+            <h2 style="color:white; margin-bottom:25px; letter-spacing: 2px;">身份验证</h2>
+            <input type="text" id="login-id" class="login-input" placeholder="请输入工号 (如: A01)">
             <input type="password" id="login-pw" class="login-input" placeholder="请输入密码">
-            <button class="login-btn" onclick="handleLogin()">验证登录</button>
-            <p id="login-tips" style="color:#ef4444; margin-top:10px; display:none;"></p>
+            <button class="login-btn" onclick="handleLogin()">进入系统</button>
+            <p id="login-tips" style="color:#ef4444; margin-top:10px; display:none; font-size: 14px;"></p>
         </div>
     </div>
 
@@ -86,11 +91,16 @@
 
     <main class="main-container">
         <h1 class="main-title">印尼语学习助手</h1>
+        
         <section class="study-card">
-            <div style="position:absolute; top:40px; left:55px;"><div style="background:var(--accent); color:white; padding:5px 22px; border-radius:12px; font-family:'JetBrains Mono'; font-weight:800;" id="word-idx">01</div></div>
+            <div style="position:absolute; top:40px; left:55px;">
+                <div style="background:var(--accent); color:white; padding:5px 22px; border-radius:12px; font-family:'JetBrains Mono'; font-weight:800;" id="word-idx">01</div>
+            </div>
             <i class="fas fa-star fav-btn" id="fav-star" onclick="toggleFav()"></i>
-            <div class="indo-box" id="disp-indo">Loading</div>
-            <div class="zh-box" id="disp-zh">请稍等</div>
+            
+            <div class="indo-box" id="disp-indo">加载中...</div>
+            <div class="zh-box" id="disp-zh">...</div>
+
             <div style="display:flex; gap:40px; margin-top:50px;">
                 <button onclick="navWord(-1)" style="width:70px; height:70px; border-radius:50%; border:1px solid rgba(255,255,255,0.1); background:none; color:white; cursor:pointer;"><i class="fas fa-chevron-left"></i></button>
                 <button onclick="toggleSpeech()" style="width:90px; height:90px; border-radius:50%; border:none; background:var(--accent); color:white; cursor:pointer; font-size:2rem; box-shadow:0 0 30px var(--accent-glow);"><i class="fas fa-play" id="play-ico"></i></button>
@@ -99,23 +109,35 @@
         </section>
 
         <footer class="control-panel">
-            <div class="ctrl-row"><span>语音语速</span><input type="range" id="inp-rate" min="0.4" max="1.5" step="0.1" value="0.8" oninput="document.getElementById('val-rate').innerText=this.value" style="flex:1; margin:0 20px;"><span class="ctrl-value"><span id="val-rate">0.8</span>X</span></div>
-            <div class="ctrl-row"><span>循环次数</span><input type="range" id="inp-loop" min="1" max="10" step="1" value="1" oninput="document.getElementById('val-loop').innerText=this.value" style="flex:1; margin:0 20px;"><span class="ctrl-value"><span id="val-loop">1</span>次</span></div>
-            <div class="ctrl-row"><span>隐藏答案</span><input type="checkbox" id="hide-toggle" onchange="renderCurrent()" style="width:20px; height:20px;"></div>
+            <div class="ctrl-row">
+                <span>语速调节</span>
+                <input type="range" id="inp-rate" min="0.1" max="1.5" step="0.1" value="0.8" oninput="document.getElementById('val-rate').innerText=this.value" style="flex:1; margin:0 20px;">
+                <span class="ctrl-value"><span id="val-rate">0.8</span>X</span>
+            </div>
+            <div class="ctrl-row">
+                <span>循环播放</span>
+                <input type="range" id="inp-loop" min="1" max="10" step="1" value="1" oninput="document.getElementById('val-loop').innerText=this.value" style="flex:1; margin:0 20px;">
+                <span class="ctrl-value"><span id="val-loop">1</span>次</span>
+            </div>
+            <div class="ctrl-row">
+                <span>隐藏中文答案</span>
+                <input type="checkbox" id="hide-toggle" onchange="renderCurrent()" style="width:20px; height:20px; cursor:pointer;">
+            </div>
         </footer>
 
         <div class="copyright">
-            仅供学习｜禁止商用 © 2026｜如有疑问联系：FMI <span class="clickable" onclick="showQR()">王鹤</span> <br><br>
-            Ver <span class="clickable" onclick="checkAdminAccess()">1.0</span> | <span class="clickable" style="color:#ef4444;" onclick="logout()">注销退出</span>
+            仅供内部学习｜禁止商用 © 2026｜联系作者： <span class="clickable" onclick="showQR()">王鹤</span><br>
+            Ver <span class="clickable" onclick="checkAdminAccess()">1.0</span> | 
+            <span class="clickable" style="color:#ef4444;" onclick="logout()">安全退出</span>
         </div>
     </main>
 
-    <div id="qr-modal" class="modal-overlay" onclick="this.style.display='none'"><img src="Wang_he.jpg" style="width:250px; border-radius:20px;"></div>
+    <div id="qr-modal" class="modal-overlay" onclick="this.style.display='none'"><img src="Wang_he.jpg" style="width:250px; border-radius:20px; border: 5px solid white;"></div>
 
     <script>
         let db = {}, favs = JSON.parse(localStorage.getItem('fmi_favs') || '[]');
         let curCat = "1", curIdx = 0, isLive = false;
-        let menuState = { fav: true }; // 默认展开收藏夹
+        let menuState = { fav: true }; 
 
         async function initApp() {
             const session = localStorage.getItem('fmi_session');
@@ -126,58 +148,66 @@
                 db = await r.json();
                 for(let id in db) menuState[id] = false; 
                 buildMenu(); renderCurrent();
-            } catch(e) { alert("数据加载失败"); }
+            } catch(e) { alert("核心数据加载失败，请检查网络或文件。"); }
         }
 
         async function handleLogin() {
-            const id = document.getElementById('login-id').value;
+            const id = document.getElementById('login-id').value.trim();
             const pw = document.getElementById('login-pw').value;
             if (id === "admin" && pw === "fmi2026") {
-                localStorage.setItem('fmi_session', JSON.stringify({ role: "admin" }));
+                localStorage.setItem('fmi_session', JSON.stringify({ role: "admin", id: "admin" }));
                 location.reload(); return;
             }
             try {
                 const r = await fetch('./whitelist.json?t='+Date.now());
                 const list = await r.json();
                 const user = list.find(u => u.id === id && u.psha === pw);
-                if (user && user.status === 'active') { localStorage.setItem('fmi_session', JSON.stringify(user)); location.reload(); }
-                else { document.getElementById('login-tips').innerText="账号错误或已禁用"; document.getElementById('login-tips').style.display='block'; }
-            } catch(e) { alert("白名单缺失"); }
+                if (user && user.status === 'active') { 
+                    localStorage.setItem('fmi_session', JSON.stringify(user)); 
+                    location.reload(); 
+                } else { 
+                    const tips = document.getElementById('login-tips');
+                    tips.innerText = user ? "该账号已被禁用" : "工号或密码错误";
+                    tips.style.display = 'block'; 
+                }
+            } catch(e) { alert("无法获取白名单，请联系管理员。"); }
         }
 
-        function logout() {
-            localStorage.removeItem('fmi_session');
-            location.reload();
-        }
+        function logout() { localStorage.removeItem('fmi_session'); location.reload(); }
 
         function buildMenu() {
             const box = document.getElementById('menu-box');
             
-            // 收藏夹区域 (带一键清空和单条删除)
+            // 收藏夹
             let html = `<div class="menu-group">
-                <div class="menu-head">
-                    <span style="cursor:pointer;" onclick="toggleMenu('fav')"><i class="fas fa-star" style="color:#fbbf24"></i> 我的收藏 (${favs.length})</span>
-                    <div>
-                        ${favs.length > 0 ? `<i class="fas fa-trash-alt trash-icon" style="margin-right:15px;" title="清空全部" onclick="clearAllFavs()"></i>` : ''}
-                        <i class="fas fa-chevron-${menuState.fav?'down':'right'}" style="cursor:pointer;" onclick="toggleMenu('fav')"></i>
-                    </div>
+                <div class="menu-head" onclick="toggleMenu('fav')">
+                    <span><i class="fas fa-star" style="color:#fbbf24"></i> 我的收藏 (${favs.length})</span>
+                    <i class="fas fa-chevron-${menuState.fav?'down':'right'}"></i>
                 </div>
                 <div class="menu-list ${menuState.fav?'':'hidden'}">
                     ${favs.map((w,i)=>`
-                        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 15px; color:${curCat=='fav'&&curIdx==i?'#fbbf24':'#64748b'}">
-                            <div onclick="switchCat('fav',${i})" style="cursor:pointer; flex:1; font-size:14px;">${i+1}. ${w.indonesian}</div>
-                            <i class="fas fa-trash trash-icon" style="font-size:12px; padding:5px;" onclick="removeSingleFav(${i}, event)"></i>
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 20px; color:${curCat=='fav'&&curIdx==i?'#fbbf24':'#64748b'}">
+                            <span onclick="switchCat('fav',${i})" style="cursor:pointer; font-size:14px; flex:1;">${i+1}. ${w.indonesian}</span>
+                            <i class="fas fa-times trash-item" onclick="removeSingleFav(${i}, event)"></i>
                         </div>
                     `).join('')}
+                    ${favs.length > 0 ? `<div class="clear-area"><span class="clear-btn-text" onclick="clearAllFavs()">清空全部收藏</span></div>` : ''}
                 </div>
             </div>`;
 
-            // 普通课文区域
+            // 课文列表
             for(let id in db) {
                 html += `<div class="menu-group">
-                    <div class="menu-head" style="cursor:pointer;" onclick="toggleMenu('${id}')"><span>${db[id].name}</span><i class="fas fa-chevron-${menuState[id]?'down':'right'}"></i></div>
+                    <div class="menu-head" onclick="toggleMenu('${id}')">
+                        <span>${db[id].name}</span>
+                        <i class="fas fa-chevron-${menuState[id]?'down':'right'}"></i>
+                    </div>
                     <div class="menu-list ${menuState[id]?'':'hidden'}">
-                        ${db[id].lessons["1"].words.map((w,i)=>`<div onclick="switchCat('${id}',${i})" style="padding:8px 25px; cursor:pointer; font-size:14px; color:${curCat==id&&curIdx==i?'var(--accent)':'#64748b'}">${i+1}. ${w.indonesian}</div>`).join('')}
+                        ${db[id].lessons["1"].words.map((w,i)=>`
+                            <div onclick="switchCat('${id}',${i})" style="padding:8px 25px; cursor:pointer; font-size:14px; color:${curCat==id&&curIdx==i?'var(--accent)':'#64748b'}">
+                                ${i+1}. ${w.indonesian}
+                            </div>
+                        `).join('')}
                     </div>
                 </div>`;
             }
@@ -187,19 +217,16 @@
         function toggleMenu(id) { menuState[id] = !menuState[id]; buildMenu(); }
         function switchCat(cat, idx) { curCat=cat; curIdx=idx; stopVoice(); renderCurrent(); buildMenu(); }
 
-        // 清空全部收藏
         function clearAllFavs() {
-            if(confirm("确定要清空所有收藏的单词吗？")) {
-                favs = [];
-                localStorage.setItem('fmi_favs', '[]');
+            if(confirm("确定清空收藏本吗？此操作不可撤销。")) {
+                favs = []; localStorage.setItem('fmi_favs', '[]');
                 if(curCat === 'fav') { curCat = "1"; curIdx = 0; }
                 buildMenu(); renderCurrent();
             }
         }
 
-        // 删除单条收藏
         function removeSingleFav(index, event) {
-            event.stopPropagation(); // 阻止触发点击跳转
+            event.stopPropagation();
             favs.splice(index, 1);
             localStorage.setItem('fmi_favs', JSON.stringify(favs));
             if(curCat === 'fav') {
@@ -212,12 +239,10 @@
         function renderCurrent() {
             const list = curCat === 'fav' ? favs : db[curCat]?.lessons["1"]?.words;
             if(!list || list.length === 0) { 
-                document.getElementById('disp-indo').innerText="空"; 
-                document.getElementById('disp-zh').innerText="暂无单词";
-                document.getElementById('fav-star').style.display='none';
+                document.getElementById('disp-indo').innerText="暂无数据"; 
+                document.getElementById('disp-zh').innerText="请从侧边栏选择";
                 return; 
             }
-            document.getElementById('fav-star').style.display='block';
             const word = list[curIdx];
             document.getElementById('disp-indo').innerText = word.indonesian;
             document.getElementById('disp-zh').innerText = document.getElementById('hide-toggle').checked ? '••••' : word.chinese;
@@ -226,48 +251,52 @@
         }
 
         function toggleFav() {
-            const word = (curCat==='fav'?favs:db[curCat].lessons["1"].words)[curIdx];
+            const list = curCat==='fav' ? favs : db[curCat].lessons["1"].words;
+            if(list.length === 0) return;
+            const word = list[curIdx];
             const fIdx = favs.findIndex(f=>f.indonesian===word.indonesian);
             if(fIdx > -1) { 
-                favs.splice(fIdx, 1); 
+                favs.splice(fIdx, 1);
                 if(curCat==='fav') {
-                    if(favs.length === 0) { curCat = "1"; curIdx = 0; }
-                    else if(curIdx >= favs.length) { curIdx = Math.max(0, favs.length - 1); }
+                    if(favs.length === 0) { curCat="1"; curIdx=0; }
+                    else if(curIdx >= favs.length) curIdx = favs.length - 1;
                 }
             } else favs.push({...word});
-            localStorage.setItem('fmi_favs', JSON.stringify(favs)); 
+            localStorage.setItem('fmi_favs', JSON.stringify(favs));
             buildMenu(); renderCurrent();
         }
 
         function toggleSpeech() { isLive ? stopVoice() : startVoice(); }
         function startVoice() {
             const list = curCat==='fav'?favs:db[curCat].lessons["1"].words;
-            if(list.length === 0) return;
+            if(!list[curIdx]) return;
             const word = list[curIdx];
             const rate = parseFloat(document.getElementById('inp-rate').value);
             const loops = parseInt(document.getElementById('inp-loop').value);
             isLive = true; document.getElementById('play-ico').className='fas fa-stop';
-            let c = 0;
+            let count = 0;
             const run = () => {
-                if(!isLive || c >= loops) { stopVoice(); return; }
-                const audio = new Audio(`https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(word.indonesian)}&tl=id&client=tw-ob${rate<0.8?'&ttsspeed=0.24':''}`);
-                audio.onended = () => { c++; if(isLive) setTimeout(run, 600); };
+                if(!isLive || count >= loops) { stopVoice(); return; }
+                const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(word.indonesian)}&tl=id&client=tw-ob${rate < 0.5 ? '&ttsspeed=0.15' : ''}`;
+                const audio = new Audio(ttsUrl);
+                audio.onended = () => { count++; if(isLive) setTimeout(run, 600); };
                 audio.onerror = () => {
                     const u = new SpeechSynthesisUtterance(word.indonesian);
-                    u.lang='id-ID'; u.rate=rate; u.onend=()=> { c++; run(); };
+                    u.lang='id-ID'; u.rate=rate; u.onend=()=> { count++; run(); };
                     window.speechSynthesis.speak(u);
                 };
                 audio.play().catch(()=>audio.onerror());
             };
             run();
         }
+
         function stopVoice() { isLive=false; window.speechSynthesis.cancel(); document.getElementById('play-ico').className='fas fa-play'; }
         function navWord(dir) { stopVoice(); const list=curCat==='fav'?favs:db[curCat].lessons["1"].words; if(list.length===0) return; curIdx=(curIdx+dir+list.length)%list.length; renderCurrent(); buildMenu(); }
         function showQR() { document.getElementById('qr-modal').style.display='flex'; }
         function checkAdminAccess() { 
             const session = JSON.parse(localStorage.getItem('fmi_session'));
             if(session?.role === 'admin') location.href='admin.html';
-            else alert("您没有管理权限");
+            else alert("您的账号没有管理权限。");
         }
         
         initApp();
