@@ -2,85 +2,282 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>后台管理 - 导入导出增强版</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>印尼语智能学习系统 v3.2</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background: #0f172a; color: white; font-family: sans-serif; padding: 40px; }
-        .container { max-width: 1000px; margin: auto; background: #1e293b; padding: 30px; border-radius: 20px; }
-        .box { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; margin-bottom: 25px; }
-        textarea { width: 100%; height: 120px; background: #000; color: #10b981; border: 1px solid #334155; padding: 10px; font-family: monospace; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #334155; }
-        input { background: transparent; border: 1px solid #475569; color: white; padding: 8px; border-radius: 4px; width: 90%; }
-        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; transition: 0.2s; }
-        .btn-green { background: #10b981; color: white; }
-        .btn-blue { background: #3b82f6; color: white; margin-top: 10px; }
-        .btn-red { background: #ef4444; color: white; }
+        :root {
+            --bg-deep: #0a0e17;
+            --sidebar-bg: rgba(15, 23, 42, 0.98);
+            --panel-bg: rgba(30, 41, 59, 0.6);
+            --accent: #6366f1;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg-deep); color: var(--text-main); font-family: 'Inter', 'Segoe UI', system-ui; height: 100vh; display: flex; overflow: hidden; }
+
+        /* --- 顶部信息栏 (永久固定) --- */
+        .top-info-bar { 
+            position: fixed; top: 0; right: 0; left: 0; height: 50px; 
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(15px);
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 0 25px; z-index: 2000; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .weather-time { display: flex; gap: 20px; align-items: center; }
+        .user-actions { display: flex; gap: 20px; align-items: center; }
+        .action-btn { cursor: pointer; color: var(--text-dim); transition: 0.3s; display: flex; align-items: center; gap: 6px; }
+        .action-btn:hover { color: var(--accent); }
+
+        /* --- 侧边栏 --- */
+        .sidebar { width: 320px; height: 100%; background: var(--sidebar-bg); border-right: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; transition: 0.4s; z-index: 1002; padding-top: 50px; }
+        .sidebar.collapsed { margin-left: -320px; }
+        .menu-section { flex: 1; overflow-y: auto; padding: 20px 0; }
+        .menu-title { padding: 10px 25px; font-size: 11px; color: #475569; letter-spacing: 2px; text-transform: uppercase; font-weight: 800; }
+        .menu-item { padding: 14px 25px; margin: 4px 15px; border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; font-size: 14px; transition: 0.2s; color: var(--text-dim); }
+        .menu-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .menu-item.active { background: rgba(99, 102, 241, 0.15); color: var(--accent); font-weight: 700; }
+
+        /* --- 主显示区 --- */
+        .app-main { flex: 1; display: flex; flex-direction: column; padding-top: 50px; }
+        .content-layout { flex: 1; display: grid; grid-template-columns: 1fr 320px; gap: 25px; padding: 25px; overflow: hidden; }
+
+        .study-stage { 
+            background: var(--panel-bg); border-radius: 40px; border: 1px solid rgba(255,255,255,0.08);
+            display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative;
+            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.6);
+        }
+        .main-word { font-size: clamp(3rem, 7vw, 6rem); font-weight: 900; letter-spacing: -2px; text-align: center; }
+        .main-trans { font-size: 30px; color: var(--text-dim); margin-top: 10px; }
+
+        .nav-btn { position: absolute; top: 0; bottom: 0; width: 100px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: rgba(255,255,255,0.05); transition: 0.4s; font-size: 40px; }
+        .nav-btn:hover { color: var(--accent); background: linear-gradient(to right, rgba(99, 102, 241, 0.05), transparent); }
+
+        /* 右侧工具面板 */
+        .tool-panel { display: flex; flex-direction: column; gap: 20px; }
+        .glass-card { background: rgba(255,255,255,0.03); border-radius: 25px; padding: 25px; border: 1px solid rgba(255,255,255,0.05); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: 800; font-size: 14px; color: var(--accent); }
+
+        .bottom-bar { padding: 20px 30px; background: rgba(15, 23, 42, 0.6); display: flex; align-items: center; gap: 40px; margin: 0 25px 25px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.03); }
+        .slider-box { flex: 1; display: flex; align-items: center; gap: 15px; font-size: 13px; color: var(--text-dim); }
+        input[type=range] { flex: 1; accent-color: var(--accent); cursor: pointer; }
+
+        /* 分享覆盖层 */
+        #share-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 5000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(10px); }
+        .share-box { background: #1e293b; padding: 40px; border-radius: 30px; width: 450px; text-align: left; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
+        textarea { width: 100%; height: 220px; background: #0f172a; color: #e2e8f0; border: 1px solid #334155; border-radius: 15px; padding: 20px; margin: 20px 0; line-height: 1.6; font-size: 15px; resize: none; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>👥 白名单名单库管理</h2>
 
-        <div class="box">
-            <p style="margin-bottom:10px; color:#94a3b8; font-size:14px;">📦 批量导入 (从 whitelist.json 复制内容粘贴至此):</p>
-            <textarea id="import-json" placeholder='[{"id":"A01", "name":"张三", "psha":"123", "status":"active"}]'></textarea>
-            <button class="btn btn-blue" onclick="doImport()">解析并载入表格</button>
+    <div class="top-info-bar">
+        <div class="weather-time">
+            <span id="live-date">正在加载日期...</span>
+            <span id="live-weather" style="background: rgba(99, 102, 241, 0.1); padding: 4px 12px; border-radius: 20px; color: white;">
+                <i class="fas fa-spinner fa-spin"></i> 正在定位天气...
+            </span>
+        </div>
+        <div class="user-actions">
+            <div class="action-btn" onclick="shareToday()"><i class="fas fa-paper-plane"></i> 一键分享打卡</div>
+            <div class="action-btn" onclick="enterAdmin()"><i class="fas fa-cog"></i> 管理</div>
+            <div class="action-btn" onclick="logout()" style="color:#f87171"><i class="fas fa-sign-out-alt"></i> 安全退出</div>
+        </div>
+    </div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="menu-section">
+            <div class="menu-title">Collection</div>
+            <div class="menu-item" onclick="switchCat('fav', 0)" id="cat-fav">
+                <span><i class="fas fa-heart" style="color:#f87171; margin-right:10px;"></i> 我的收藏</span>
+                <span id="fav-count">0</span>
+            </div>
+            <div class="menu-title" style="margin-top:25px;">Learning Path</div>
+            <div id="course-list"></div>
+        </div>
+    </aside>
+
+    <main class="app-main">
+        <div class="content-layout">
+            <div class="study-stage">
+                <div class="nav-btn" style="left:0" onclick="navWord(-1)"><i class="fas fa-chevron-left"></i></div>
+                <div class="nav-btn" style="right:0" onclick="navWord(1)"><i class="fas fa-chevron-right"></i></div>
+                
+                <div style="position:absolute; top:35px; left:45px; font-size:24px; font-weight:900; color:var(--accent)" id="word-idx">01</div>
+                <i class="fas fa-bookmark" id="fav-star" style="position:absolute; top:35px; right:45px; font-size:30px; cursor:pointer;" onclick="toggleFav()"></i>
+
+                <div class="main-word" id="disp-indo">Loding...</div>
+                <div class="main-trans" id="disp-zh">---</div>
+
+                <button onclick="toggleSpeech()" style="margin-top:60px; width:100px; height:100px; border-radius:50%; border:none; background:var(--accent); color:white; font-size:36px; cursor:pointer; box-shadow:0 25px 50px var(--accent-glow)">
+                    <i class="fas fa-play" id="play-ico" style="margin-left:5px"></i>
+                </button>
+            </div>
+
+            <div class="tool-panel">
+                <div class="glass-card">
+                    <div class="card-header"><span><i class="fas fa-comment-dots"></i> 公网学习贴士</span><i class="fas fa-sync-alt" style="cursor:pointer; opacity:0.5;" onclick="fetchTip()"></i></div>
+                    <p id="dynamic-tip" style="font-size:14px; color:var(--text-main); line-height:1.7; font-style: italic;">正在同步互联网金句...</p>
+                </div>
+                <div class="glass-card" style="flex:1; display:flex; flex-direction:column;">
+                    <div class="card-header">
+                        <span><i class="fas fa-history"></i> 学习足迹</span>
+                        <span style="font-size:11px; cursor:pointer; opacity:0.6" onclick="clearRecent()">清空记录</span>
+                    </div>
+                    <div id="recent-box" style="flex:1; overflow-y:auto; font-size:13px;"></div>
+                </div>
+            </div>
         </div>
 
-        <button class="btn btn-green" onclick="addRow()">+ 新增人员</button>
-        <table id="main-table">
-            <thead><tr><th>工号(ID)</th><th>姓名</th><th>密码</th><th>状态</th><th>操作</th></tr></thead>
-            <tbody id="tbody"></tbody>
-        </table>
+        <div class="bottom-bar">
+            <div class="slider-box"><i class="fas fa-wind"></i> <input type="range" id="inp-rate" min="0.5" max="1.5" step="0.1" value="0.8"> <span><span id="val-rate">0.8</span>x</span></div>
+            <div class="slider-box"><i class="fas fa-redo-alt"></i> <input type="range" id="inp-loop" min="1" max="10" step="1" value="1"> <span><span id="val-loop">1</span>次</span></div>
+            <label style="cursor:pointer; font-size:14px;"><input type="checkbox" id="hide-toggle" onchange="renderCurrent()"> 隐藏翻译</label>
+        </div>
+    </main>
 
-        <div style="margin-top:30px; border-top:1px solid #334155; padding-top:20px; text-align:right;">
-            <button class="btn btn-green" style="font-size:1.2rem; padding:15px 40px;" onclick="exportJson()">生成并复制新 JSON</button>
-            <button class="btn" onclick="location.href='index.html'">返回主页</button>
+    <div id="share-overlay" onclick="this.style.display='none'">
+        <div class="share-box" onclick="event.stopPropagation()">
+            <h2 style="color:var(--accent); margin-bottom:10px;">朋友圈学习卡片</h2>
+            <p style="font-size:13px; color:var(--text-dim);">文字已整合，点击下方按钮一键复制</p>
+            <textarea id="share-text" readonly></textarea>
+            <button onclick="copyShareText()" style="width:100%; padding:18px; background:var(--accent); border:none; color:white; border-radius:15px; font-weight:800; cursor:pointer; font-size:16px;">复制文案并去分享</button>
         </div>
     </div>
 
     <script>
-        let users = [];
+        let db = {}, favs = JSON.parse(localStorage.getItem('fmi_favs') || '[]');
+        let recent = JSON.parse(localStorage.getItem('fmi_recent') || '[]');
+        let curCat = "1", curIdx = 0, isLive = false;
 
-        function doImport() {
+        // --- 1. 真实天气获取 (wttr.in) ---
+        async function fetchWeather() {
             try {
-                const val = document.getElementById('import-json').value;
-                if(!val) return;
-                users = JSON.parse(val);
-                render();
-                alert("加载成功！共有 " + users.length + " 个账号。");
-            } catch(e) { alert("JSON 格式有误，请检查。"); }
+                // 使用 Jakarta 作为默认定位，你也可以改为本地自动定位
+                const res = await fetch('https://wttr.in/Jakarta?format=%c+%t');
+                if(res.ok) {
+                    const text = await res.text();
+                    document.getElementById('live-weather').innerHTML = text;
+                }
+            } catch(e) { 
+                document.getElementById('live-weather').innerText = "☁️ 雅加达 28°C"; 
+            }
         }
 
-        function addRow() {
-            users.push({ id: "", name: "", psha: "", status: "active" });
-            render();
+        // --- 2. 公网贴士获取 (hitokoto API) ---
+        async function fetchTip() {
+            const tipEl = document.getElementById('dynamic-tip');
+            tipEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 同步中...';
+            try {
+                const res = await fetch('https://v1.hitokoto.cn/?c=i&c=k'); // 获取励志、哲学类
+                const data = await res.json();
+                tipEl.innerText = `“ ${data.hitokoto} ” —— 《${data.from}》`;
+            } catch(e) {
+                tipEl.innerText = "持之以恒，是学习印尼语的唯一捷径。";
+            }
         }
 
-        function render() {
-            const html = users.map((u, i) => `
-                <tr>
-                    <td><input value="${u.id}" onchange="users[${i}].id=this.value"></td>
-                    <td><input value="${u.name}" onchange="users[${i}].name=this.value"></td>
-                    <td><input value="${u.psha}" onchange="users[${i}].psha=this.value"></td>
-                    <td>
-                        <select onchange="users[${i}].status=this.value" style="background:#0f172a; color:white;">
-                            <option value="active" ${u.status=='active'?'selected':''}>启用</option>
-                            <option value="disabled" ${u.status=='disabled'?'selected':''}>停用</option>
-                        </select>
-                    </td>
-                    <td><button class="btn-red" onclick="users.splice(${i},1);render()">删除</button></td>
-                </tr>
+        function updateTime() {
+            const now = new Date();
+            const weeks = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
+            document.getElementById('live-date').innerText = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()} ${weeks[now.getDay()]}`;
+        }
+
+        // --- 3. 一键分享朋友圈整合 ---
+        function shareToday() {
+            const word = document.getElementById('disp-indo').innerText;
+            const trans = document.getElementById('disp-zh').innerText;
+            const tip = document.getElementById('dynamic-tip').innerText;
+            const date = document.getElementById('live-date').innerText;
+            
+            const content = `🌟 【FMI 印尼语学习打卡】\n\n📅 日期：${date}\n📖 今日核心：${word}\n🇮🇩 翻译：${trans}\n\n💡 每日寄语：\n${tip}\n\n#印尼语学习 #每日进步一点点`;
+            document.getElementById('share-text').value = content;
+            document.getElementById('share-overlay').style.display = 'flex';
+        }
+
+        function copyShareText() {
+            document.getElementById('share-text').select();
+            document.execCommand('copy');
+            alert('文案已复制到剪贴板，快去朋友圈打卡吧！');
+            document.getElementById('share-overlay').style.display = 'none';
+        }
+
+        // --- 核心逻辑 ---
+        async function init() {
+            updateTime(); fetchWeather(); fetchTip();
+            setInterval(updateTime, 60000);
+            
+            try {
+                const r = await fetch('./indonesian_learning_data.json');
+                db = await r.json();
+                renderMenu(); renderCurrent(); updateRecentUI();
+            } catch(e) { console.error("Data error"); }
+        }
+
+        function renderMenu() {
+            const box = document.getElementById('course-list');
+            box.innerHTML = Object.keys(db).map(id => `
+                <div class="menu-item ${curCat===id?'active':''}" onclick="switchCat('${id}', 0)">
+                    <span>${db[id].name}</span>
+                </div>
             `).join('');
-            document.getElementById('tbody').innerHTML = html;
+            document.getElementById('fav-count').innerText = favs.length;
         }
 
-        function exportJson() {
-            const json = JSON.stringify(users, null, 2);
-            navigator.clipboard.writeText(json).then(() => {
-                alert("新白名单已复制！请前往 GitHub 覆盖 whitelist.json。");
-            });
+        function renderCurrent() {
+            const list = curCat === 'fav' ? favs : db[curCat]?.lessons["1"]?.words;
+            if(!list || list.length === 0) return;
+            const word = list[curIdx];
+            document.getElementById('disp-indo').innerText = word.indonesian;
+            document.getElementById('disp-zh').innerText = document.getElementById('hide-toggle').checked ? '••••' : word.chinese;
+            document.getElementById('word-idx').innerText = (curIdx + 1).toString().padStart(2, '0');
+            document.getElementById('fav-star').style.color = favs.some(f=>f.indonesian===word.indonesian) ? '#fbbf24' : '#334155';
+            
+            if(!recent.some(r=>r.indonesian===word.indonesian)) {
+                recent.unshift(word); if(recent.length>10) recent.pop();
+                localStorage.setItem('fmi_recent', JSON.stringify(recent));
+                updateRecentUI();
+            }
         }
+
+        function updateRecentUI() {
+            document.getElementById('recent-box').innerHTML = recent.map(r => `
+                <div style="padding:12px; border-bottom:1px solid rgba(255,255,255,0.03);">
+                    <div style="font-weight:700; color:white;">${r.indonesian}</div>
+                    <div style="font-size:12px; opacity:0.5;">${r.chinese}</div>
+                </div>
+            `).join('');
+        }
+
+        function clearRecent() { recent=[]; localStorage.removeItem('fmi_recent'); updateRecentUI(); }
+        function toggleSpeech() {
+            if(isLive) { isLive=false; document.getElementById('play-ico').className='fas fa-play'; return; }
+            const list = curCat==='fav'?favs:db[curCat].lessons["1"].words;
+            const word = list[curIdx];
+            isLive = true; document.getElementById('play-ico').className='fas fa-stop';
+            const speak = () => {
+                const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(word.indonesian)}&tl=id&client=tw-ob&ttsspeed=0.8`;
+                const audio = new Audio(url);
+                audio.onended = () => { isLive=false; document.getElementById('play-ico').className='fas fa-play'; };
+                audio.play();
+            };
+            speak();
+        }
+
+        function navWord(dir) { const list=curCat==='fav'?favs:db[curCat].lessons["1"].words; curIdx=(curIdx+dir+list.length)%list.length; renderCurrent(); }
+        function switchCat(cat, idx) { curCat=cat; curIdx=idx; renderMenu(); renderCurrent(); }
+        function toggleFav() {
+            const list = curCat==='fav'?favs:db[curCat].lessons["1"].words;
+            const word = list[curIdx];
+            const fIdx = favs.findIndex(f=>f.indonesian===word.indonesian);
+            fIdx > -1 ? favs.splice(fIdx, 1) : favs.push({...word});
+            localStorage.setItem('fmi_favs', JSON.stringify(favs));
+            renderCurrent(); renderMenu();
+        }
+        function logout() { localStorage.removeItem('fmi_session'); location.reload(); }
+        function enterAdmin() { if(prompt("管理密码")==='admin123') location.href='admin.html'; }
+
+        init();
     </script>
 </body>
 </html>
