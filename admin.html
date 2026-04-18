@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 印尼语学习助手</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-wrap {
+            max-width: 900px;
+            margin: 60px auto;
+            padding: 30px;
+            background: rgba(17,24,39,0.9);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .admin-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+        .tool-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .admin-btn {
+            padding: 10px 18px;
+            background: #6366f1;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .admin-btn.danger {
+            background: #ef4444;
+        }
+        .record-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .record-item {
+            padding: 12px;
+            background: rgba(30,41,59,0.6);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            color: #cbd5e1;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-wrap">
+        <h2 class="admin-title">📊 管理员后台</h2>
+
+        <div class="tool-bar">
+            <button class="admin-btn" onclick="location.href='index.html'">返回学习</button>
+            <button class="admin-btn" onclick="clearAllRecord()">清空所有学习记录</button>
+            <button class="admin-btn danger" onclick="logout()">退出登录</button>
+        </div>
+
+        <h3 style="margin-bottom:15px;color:#fff;">今日学习记录</h3>
+        <div class="record-list" id="record-box"></div>
+    </div>
+
+    <script>
+        function checkAdmin() {
+            const s = JSON.parse(localStorage.getItem('fmi_login_status') || '{}');
+            if (!s.isLogin || s.user?.id !== 'admin') {
+                alert('无权限');
+                location.href = 'login.html';
+            }
+        }
+
+        function loadRecord() {
+            const box = document.getElementById('record-box');
+            const list = JSON.parse(localStorage.getItem('fmi_today_record') || '[]');
+            if (list.length === 0) {
+                box.innerHTML = '<div class="record-item">暂无记录</div>';
+                return;
+            }
+            box.innerHTML = list.map((item, i) => `
+                <div class="record-item">
+                    ${i+1}. ${item.indonesian} <br>
+                    中文：${item.chinese}
+                </div>
+            `).join('');
+        }
+
+        function clearAllRecord() {
+            if (confirm('确定清空所有学习记录？不可恢复！')) {
+                localStorage.setItem('fmi_today_record', '[]');
+                loadRecord();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('fmi_login_status');
+            location.href = 'login.html';
+        }
+
+        window.onload = () => {
+            checkAdmin();
+            loadRecord();
+        };
+    </script>
+</body>
+</html>

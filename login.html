@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 印尼语学习助手</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .login-box {
+            max-width: 420px;
+            margin: 100px auto;
+            background: rgba(17,24,39,0.9);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .login-box h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+        .form-item {
+            margin-bottom: 20px;
+        }
+        .form-item label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+        }
+        .form-item input {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(30,41,59,0.8);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 16px;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #6366f1;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .login-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>登录系统</h2>
+        <div class="form-item">
+            <label>用户名</label>
+            <input type="text" id="username" placeholder="请输入账号">
+        </div>
+        <div class="form-item">
+            <label>密码</label>
+            <input type="password" id="password" placeholder="请输入密码">
+        </div>
+        <button class="login-btn" onclick="userLogin()">登录</button>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        function userLogin() {
+            const user = document.getElementById('username').value.trim();
+            const pwd = document.getElementById('password').value.trim();
+
+            if (!user || !pwd) {
+                alert('请输入账号密码');
+                return;
+            }
+
+            // 内置账号（可在 config.js 扩展）
+            const users = {
+                "admin": "admin123",
+                "user": "123456"
+            };
+
+            if (users[user] && users[user] === pwd) {
+                localStorage.setItem('fmi_login_status', JSON.stringify({
+                    isLogin: true,
+                    user: { id: user, name: user === 'admin' ? '管理员' : '学员' }
+                }));
+                location.href = 'index.html';
+            } else {
+                alert('账号或密码错误');
+            }
+        }
+    </script>
+</body>
+</html>
