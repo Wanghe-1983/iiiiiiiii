@@ -8,8 +8,9 @@
     <style>
         :root {
             --bg: #030712;
-            --glass: rgba(17, 24, 39, 0.7);
+            --glass: rgba(17, 24, 39, 0.75);
             --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.4);
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --sidebar-w: 300px;
@@ -18,141 +19,151 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: var(--bg);
-            background-image: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%), 
-                              radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%), 
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
             color: var(--text-main);
-            font-family: 'PingFang SC', system-ui, sans-serif;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
             height: 100vh; display: flex; overflow: hidden;
         }
 
-        /* 侧边栏 */
+        /* 侧边栏层级感 */
         .sidebar {
-            width: var(--sidebar-w); background: var(--glass); backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; z-index: 100;
+            width: var(--sidebar-w); background: var(--glass); backdrop-filter: blur(25px);
+            border-right: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; z-index: 100;
         }
         .sidebar.collapsed { transform: translateX(calc(var(--sidebar-w) * -1)); width: 0; }
-        .sidebar-content { flex: 1; overflow-y: auto; padding: 20px; }
+        .sidebar-content { flex: 1; overflow-y: auto; padding: 25px 15px; }
+        
         .toggle-sidebar {
-            position: absolute; right: -45px; top: 20px; width: 45px; height: 45px;
+            position: absolute; right: -40px; top: 30px; width: 40px; height: 50px;
             background: var(--accent); border: none; color: white; cursor: pointer;
-            border-radius: 0 12px 12px 0; font-size: 1.2rem;
+            border-radius: 0 15px 15px 0; display: flex; align-items: center; justify-content: center;
+            box-shadow: 5px 0 15px var(--accent-glow);
         }
 
-        /* 目录项 */
-        .cat-item { margin-bottom: 10px; }
-        .cat-head { padding: 12px; background: rgba(255,255,255,0.03); border-radius: 10px; cursor: pointer; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
-        .cat-head .clear-btn { font-size: 0.75rem; background: #ef4444; color: white; padding: 2px 8px; border-radius: 4px; opacity: 0.8; transition: 0.3s; }
-        .cat-head .clear-btn:hover { opacity: 1; }
+        /* 目录美化 */
+        .cat-item { margin-bottom: 15px; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.03); }
+        .cat-head { padding: 14px; cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .cat-head:hover { background: rgba(255,255,255,0.06); }
         
-        .sub-menu { display: none; padding: 5px 0 5px 10px; border-left: 1px solid var(--accent); margin-top: 5px; }
-        .sub-menu.active { display: block; }
-        .menu-link { padding: 8px 12px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; border-radius: 6px; margin: 2px 0; display: flex; justify-content: space-between; }
-        .menu-link:hover { background: rgba(99,102,241,0.1); color: white; }
-        .menu-link.active { background: var(--accent); color: white; }
+        .sub-menu { display: none; padding: 5px 10px 10px 10px; }
+        .sub-menu.active { display: block; animation: slideIn 0.3s ease-out; }
+        
+        .menu-link { 
+            padding: 10px 12px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; 
+            border-radius: 8px; margin: 4px 0; display: flex; justify-content: space-between; align-items: center;
+            transition: all 0.2s;
+        }
+        .menu-link:hover { background: rgba(255,255,255,0.05); color: white; transform: translateX(5px); }
+        .menu-link.active { background: var(--accent); color: white; box-shadow: 0 4px 12px var(--accent-glow); }
 
-        /* 主内容区 */
-        .main-container { flex: 1; display: flex; flex-direction: column; padding: 20px; position: relative; }
-        header { text-align: center; margin-bottom: 20px; }
-        header h1 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(to right, #fff, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* 清空按钮放在列表底部 */
+        .clear-box { padding: 10px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 10px; text-align: center; }
+        .btn-clear-all { 
+            background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2);
+            padding: 6px 20px; border-radius: 20px; font-size: 0.75rem; cursor: pointer; transition: 0.3s;
+        }
+        .btn-clear-all:hover { background: #ef4444; color: white; }
 
+        /* 主学习卡片动画 */
+        .main-container { flex: 1; display: flex; flex-direction: column; padding: 30px; position: relative; }
         .study-card {
-            background: rgba(30, 41, 59, 0.4); border-radius: 40px; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(30, 41, 59, 0.4); border-radius: 50px; border: 1px solid rgba(255,255,255,0.08);
             flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            position: relative; padding: 40px; box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            position: relative; padding: 40px; backdrop-filter: blur(10px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
         }
-
-        .top-meta { position: absolute; top: 30px; left: 40px; right: 40px; display: flex; justify-content: space-between; align-items: center; }
-        .word-badge { background: var(--accent); color: white; padding: 4px 12px; border-radius: 8px; font-weight: bold; font-size: 1.1rem; font-style: italic; }
-        .star-btn { font-size: 1.8rem; cursor: pointer; color: var(--text-muted); transition: 0.3s; }
-        .star-btn.active { color: #fbbf24; transform: scale(1.1); }
-
-        .indo-box { font-size: 4.5rem; font-weight: 900; margin-bottom: 10px; text-align: center; line-height: 1.1; }
-        .zh-box { font-size: 2rem; color: var(--text-muted); }
-
-        .nav-row { display: flex; align-items: center; gap: 30px; margin-top: 40px; }
-        .circle-btn {
-            width: 70px; height: 70px; border-radius: 50%; border: none; background: rgba(255,255,255,0.05);
-            color: white; font-size: 1.5rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center;
-        }
-        .circle-btn:hover { background: var(--accent); transform: translateY(-3px); }
-        .play-btn { width: 90px; height: 90px; background: var(--accent); font-size: 2rem; }
-        .play-btn.playing { background: #ef4444; animation: pulse 1.5s infinite; }
-
-        /* 控制面板 */
-        .control-panel {
-            width: 100%; max-width: 900px; margin: 20px auto 0; background: var(--glass);
-            padding: 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1);
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
-        }
-        .ctrl-item { display: flex; flex-direction: column; gap: 8px; justify-content: center; }
-        .ctrl-item label { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
         
-        /* 隐藏答案行右对齐 */
-        .align-right-row { flex-direction: row !important; justify-content: space-between !important; align-items: center; }
+        /* 切换单词时的动画类 */
+        .fade-card { animation: cardSwap 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+        @keyframes cardSwap {
+            0% { opacity: 0; transform: scale(0.95) translateY(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .word-badge { background: var(--accent); color: white; padding: 5px 15px; border-radius: 10px; font-weight: 800; font-style: italic; box-shadow: 0 0 20px var(--accent-glow); }
+        .star-btn { font-size: 2rem; cursor: pointer; color: rgba(255,255,255,0.2); transition: 0.3s; }
+        .star-btn.active { color: #fbbf24; text-shadow: 0 0 15px rgba(251, 191, 36, 0.5); }
+
+        .indo-box { font-size: 4.8rem; font-weight: 900; margin: 20px 0; text-align: center; letter-spacing: -1px; }
+        .zh-box { font-size: 2.2rem; color: var(--text-muted); font-weight: 300; }
+
+        .circle-btn {
+            width: 75px; height: 75px; border-radius: 50%; border: none; background: rgba(255,255,255,0.05);
+            color: white; font-size: 1.6rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .circle-btn:hover { background: var(--accent); transform: scale(1.1) translateY(-5px); box-shadow: 0 10px 20px var(--accent-glow); }
+        .circle-btn:active { transform: scale(0.9); }
+        .play-btn { width: 95px; height: 95px; background: var(--accent); font-size: 2.2rem; }
+
+        /* 控制面板右对齐优化 */
+        .control-panel {
+            width: 100%; max-width: 900px; margin: 30px auto 0; background: var(--glass);
+            padding: 25px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.08);
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px;
+        }
+        .ctrl-item { display: flex; flex-direction: column; gap: 10px; }
+        .flex-between { flex-direction: row !important; justify-content: space-between !important; align-items: center; }
+
+        .switch { position: relative; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; inset: 0; background-color: #334155; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--accent); }
-        input:checked + .slider:before { transform: translateX(22px); }
+        input:checked + .slider:before { transform: translateX(24px); }
 
-        /* 底部版权 */
-        .copyright { font-size: 0.85rem; text-align: center; color: #64748b; margin-top: 20px; }
+        .copyright { font-size: 0.8rem; text-align: center; color: #4b5563; margin-top: 25px; letter-spacing: 0.5px; }
         .italic-text { font-style: italic; font-family: 'Arial', sans-serif; }
         .clickable-name { color: var(--accent); text-decoration: underline; cursor: pointer; font-weight: bold; }
-        .version-tag { cursor: pointer; }
 
-        /* 二维码弹窗 */
-        .qr-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(8px); }
-        .qr-content { background: #fff; padding: 25px; border-radius: 24px; text-align: center; position: relative; }
-        .qr-content img { width: 280px; height: 280px; border-radius: 12px; }
-        .qr-content p { color: #1e293b; margin-top: 15px; font-weight: bold; }
-        .close-qr { position: absolute; top: -10px; right: -10px; background: #ef4444; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid white; }
-
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 100% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); } 100% { box-shadow: 0 0 0 20px rgba(99, 102, 241, 0); } }
+        .playing { animation: pulse 1.5s infinite !important; background: #ef4444 !important; }
     </style>
 </head>
 <body>
 
     <aside class="sidebar" id="sidebar">
         <button class="toggle-sidebar" onclick="document.getElementById('sidebar').classList.toggle('collapsed')">
-            <i class="fas fa-bars"></i>
+            <i class="fas fa-chevron-left"></i>
         </button>
         <div class="sidebar-content" id="menu-box"></div>
     </aside>
 
     <main class="main-container">
-        <header>
-            <h1>印尼语学习小助手</h1>
+        <header style="margin-bottom: 30px; text-align: center;">
+            <h1 style="font-size: 2.8rem; font-weight: 900; background: linear-gradient(to bottom, #fff, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">印尼语学习小助手</h1>
         </header>
 
-        <section class="study-card">
+        <section class="study-card" id="main-card">
             <div class="top-meta">
                 <div class="word-badge" id="word-idx">01</div>
                 <div class="star-btn" id="fav-trigger" onclick="handleFav()"><i class="fas fa-star"></i></div>
             </div>
-            <div class="indo-box" id="disp-indo">Loading...</div>
-            <div class="zh-box" id="disp-zh">请稍后</div>
-            <div class="nav-row">
-                <button class="circle-btn" onclick="navWord(-1)"><i class="fas fa-arrow-left"></i></button>
-                <button id="main-play" class="circle-btn play-btn" onclick="toggleSpeech()"><i class="fas fa-play" id="play-ico"></i></button>
-                <button class="circle-btn" onclick="navWord(1)"><i class="fas fa-arrow-right"></i></button>
+            <div class="indo-box" id="disp-indo">正在加载</div>
+            <div class="zh-box" id="disp-zh">请稍后...</div>
+            <div class="nav-row" style="display: flex; align-items: center; gap: 40px; margin-top: 50px;">
+                <button class="circle-btn" onclick="navWord(-1)"><i class="fas fa-chevron-left"></i></button>
+                <button id="main-play" class="circle-btn play-btn" onclick="toggleSpeech()"><i class="fas fa-play" id="play-ico" style="margin-left: 5px;"></i></button>
+                <button class="circle-btn" onclick="navWord(1)"><i class="fas fa-chevron-right"></i></button>
             </div>
         </section>
 
         <footer class="control-panel">
             <div class="ctrl-item">
-                <label>语音语速 <span><span class="italic-text" id="val-rate">0.8</span>x</span></label>
+                <label style="font-size: 0.9rem; color: var(--text-muted);">语音语速 <span class="italic-text" id="val-rate" style="color: var(--accent);">0.8</span>x</label>
                 <input type="range" id="inp-rate" min="0.1" max="1.5" step="0.1" value="0.8" oninput="updateSetting('rate', this.value)">
             </div>
             <div class="ctrl-item">
-                <label>循环次数 <span><span class="italic-text" id="val-loop">1</span>次</span></label>
+                <label style="font-size: 0.9rem; color: var(--text-muted);">循环播放 <span class="italic-text" id="val-loop" style="color: var(--accent);">1</span>次</label>
                 <input type="range" id="inp-loop" min="1" max="10" step="1" value="1" oninput="updateSetting('loop', this.value)">
             </div>
-            <div class="ctrl-item align-right-row">
-                <span style="font-size: 0.95rem; font-weight: 600; color: var(--text-muted);">隐藏答案</span>
+            <div class="ctrl-item flex-between">
+                <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-muted);">隐藏答案</span>
                 <label class="switch">
                     <input type="checkbox" id="hide-toggle" onchange="renderCurrent()">
                     <span class="slider"></span>
@@ -169,8 +180,8 @@
     <div id="qr-modal" class="qr-modal" onclick="this.style.display='none'">
         <div class="qr-content" onclick="event.stopPropagation()">
             <div class="close-qr" onclick="document.getElementById('qr-modal').style.display='none'">&times;</div>
-            <img src="Wang_he.jpg" alt="王鹤二维码">
-            <p>微信扫码联系 王鹤</p>
+            <img src="Wang_he.jpg" alt="王鹤" style="width: 280px; height: 280px; border-radius: 15px;">
+            <p style="margin-top: 15px; color: #1e293b; font-weight: bold;">微信扫码联系 王鹤</p>
         </div>
     </div>
 
@@ -190,28 +201,40 @@
 
         function buildMenu() {
             const box = document.getElementById('menu-box');
-            box.innerHTML = `<div class="cat-item">
-                <div class="cat-head" style="color:#fbbf24" onclick="this.nextElementSibling.classList.toggle('active')">
-                    <span>⭐ 我的收藏 (${favs.length})</span>
-                    <span class="clear-btn" onclick="clearFavs(event)">清空</span>
-                </div>
-                <div class="sub-menu" id="fav-sub"></div>
-            </div>`;
-            favs.forEach((w, i) => {
-                const d = document.createElement('div'); d.className = "menu-link";
-                d.innerHTML = `<span>${i+1}. ${w.indonesian}</span><i class="fas fa-trash" onclick="delFav(event, ${i})" style="font-size:10px; opacity:0.5"></i>`;
-                d.onclick = () => showFav(i);
-                document.getElementById('fav-sub').appendChild(d);
-            });
-            for(let id in db) {
-                const g = document.createElement('div'); g.className = "cat-item";
-                const words = db[id].lessons["1"].words;
-                g.innerHTML = `<div class="cat-head" onclick="this.nextElementSibling.classList.toggle('active')"><span>${db[id].name}</span><span>▾</span></div>
-                <div class="sub-menu ${id==curCat?'active':''}">
-                    ${words.map((w,i)=>`<div class="menu-link ${id==curCat && i==curIdx?'active':''}" onclick="showWord('${id}',${i})">${i+1}. ${w.indonesian}</div>`).join('')}
+            let favHtml = `
+                <div class="cat-item">
+                    <div class="cat-head" style="color:#fbbf24" onclick="this.nextElementSibling.classList.toggle('active')">
+                        <span>⭐ 我的收藏 (${favs.length})</span><i class="fas fa-chevron-down" style="font-size:0.7rem"></i>
+                    </div>
+                    <div class="sub-menu" id="fav-sub">
+                        ${favs.map((w, i) => `
+                            <div class="menu-link" onclick="showFav(${i})">
+                                <span>${i+1}. ${w.indonesian}</span>
+                                <i class="fas fa-times-circle" onclick="delFav(event, ${i})" style="color:#ef4444; opacity:0.6"></i>
+                            </div>
+                        `).join('')}
+                        ${favs.length > 0 ? `
+                            <div class="clear-box">
+                                <button class="btn-clear-all" onclick="clearFavs(event)">一键清空收藏</button>
+                            </div>
+                        ` : '<div style="text-align:center; padding:10px; font-size:0.8rem; color:#4b5563;">暂无收藏</div>'}
+                    </div>
                 </div>`;
-                box.appendChild(g);
+            
+            let catsHtml = "";
+            for(let id in db) {
+                const words = db[id].lessons["1"].words;
+                catsHtml += `
+                    <div class="cat-item">
+                        <div class="cat-head" onclick="this.nextElementSibling.classList.toggle('active')">
+                            <span>${db[id].name}</span><i class="fas fa-chevron-down" style="font-size:0.7rem"></i>
+                        </div>
+                        <div class="sub-menu ${id==curCat?'active':''}">
+                            ${words.map((w,i)=>`<div class="menu-link ${id==curCat && i==curIdx?'active':''}" onclick="showWord('${id}',${i})">${i+1}. ${w.indonesian}</div>`).join('')}
+                        </div>
+                    </div>`;
             }
+            box.innerHTML = favHtml + catsHtml;
         }
 
         function clearFavs(e) {
@@ -220,24 +243,29 @@
                 favs = [];
                 localStorage.setItem('fmi_v1_favs', '[]');
                 buildMenu();
-                if(curCat === 'fav') showWord("1", 0);
+                renderCurrent(); // 联动更新主界面五角星
             }
         }
 
-        function showWord(cat, idx) { stopVoice(); curCat = cat; curIdx = idx; renderCurrent(); buildMenu(); }
-        function showFav(idx) { stopVoice(); curCat = 'fav'; curIdx = idx; renderCurrent(); }
-        
         function renderCurrent() {
+            const card = document.getElementById('main-card');
+            card.classList.remove('fade-card');
+            void card.offsetWidth; 
+            card.classList.add('fade-card');
+
             const list = curCat === 'fav' ? favs : db[curCat]?.lessons["1"]?.words;
             if(!list || !list[curIdx]) {
-                if(curCat === 'fav') { showWord("1",0); return; }
+                if(curCat === 'fav' && favs.length === 0) { showWord("1",0); return; }
                 return;
             }
             const word = list[curIdx];
             const hide = document.getElementById('hide-toggle').checked;
+            
             document.getElementById('disp-indo').innerText = word.indonesian;
-            document.getElementById('disp-zh').innerText = hide ? '***' : word.chinese;
+            document.getElementById('disp-zh').innerText = hide ? '••••••' : word.chinese;
             document.getElementById('word-idx').innerText = (curIdx + 1).toString().padStart(2, '0');
+            
+            // 核心联动：检查当前显示的单词是否还在收藏夹中
             const isF = favs.some(f => f.indonesian === word.indonesian);
             document.getElementById('fav-trigger').className = 'star-btn' + (isF?' active':'');
         }
@@ -248,10 +276,28 @@
             const i = favs.findIndex(f => f.indonesian === word.indonesian);
             if(i > -1) favs.splice(i, 1); else favs.push(word);
             localStorage.setItem('fmi_v1_favs', JSON.stringify(favs));
-            buildMenu(); renderCurrent();
+            buildMenu(); 
+            renderCurrent();
         }
 
-        function delFav(e, i) { e.stopPropagation(); favs.splice(i, 1); localStorage.setItem('fmi_v1_favs', JSON.stringify(favs)); buildMenu(); if(curCat==='fav') { if(favs.length==0) showWord("1",0); else showFav(0); } else { renderCurrent(); } }
+        function delFav(e, i) { 
+            e.stopPropagation(); 
+            favs.splice(i, 1); 
+            localStorage.setItem('fmi_v1_favs', JSON.stringify(favs)); 
+            buildMenu(); 
+            renderCurrent(); // 确保五角星状态联动
+        }
+
+        function showWord(cat, idx) { stopVoice(); curCat = cat; curIdx = idx; renderCurrent(); buildMenu(); }
+        function showFav(idx) { stopVoice(); curCat = 'fav'; curIdx = idx; renderCurrent(); }
+        
+        function navWord(dir) {
+            const list = curCat === 'fav' ? favs : db[curCat].lessons["1"].words;
+            if(list.length === 0) return;
+            curIdx = (curIdx + dir + list.length) % list.length;
+            renderCurrent();
+            buildMenu();
+        }
 
         function toggleSpeech() { isLive ? stopVoice() : startVoice(); }
         function startVoice() {
@@ -267,22 +313,16 @@
                 if(!isLive || c >= loops) { stopVoice(); return; }
                 const u = new SpeechSynthesisUtterance(word.indonesian);
                 u.lang = 'id-ID'; u.rate = rate;
-                u.onend = () => { c++; if(isLive) setTimeout(run, 400); };
+                u.onend = () => { c++; if(isLive) setTimeout(run, 500); };
                 window.speechSynthesis.speak(u);
             };
             run();
         }
         function stopVoice() { isLive = false; window.speechSynthesis.cancel(); document.getElementById('play-ico').className = 'fas fa-play'; document.getElementById('main-play').classList.remove('playing'); }
 
-        function navWord(dir) {
-            const list = curCat === 'fav' ? favs : db[curCat].lessons["1"].words;
-            let ni = (curIdx + dir + list.length) % list.length;
-            curCat === 'fav' ? showFav(ni) : showWord(curCat, ni);
-        }
-
         function updateSetting(t, v) { document.getElementById('val-'+t).innerText = v; }
         function showQR() { document.getElementById('qr-modal').style.display = 'flex'; }
-        function goAdmin() { if(prompt("请输入管理员密码：") === "admin123") alert("进入管理模式"); }
+        function goAdmin() { if(prompt("管理密码：") === "admin123") alert("进入管理模式"); }
 
         init();
     </script>
