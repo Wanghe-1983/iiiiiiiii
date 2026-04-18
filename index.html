@@ -2,138 +2,187 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>印尼语学习助手</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* 极致简约的系统级字体栈 */
         :root {
-            --bg: #030712;
-            --glass: rgba(17, 24, 39, 0.9);
-            --accent: #6366f1;
-            --text-main: #f9fafb;
-            --text-muted: #94a3b8;
-            --sidebar-w: 300px;
+            --bg: #0a0f1e;
+            --card-bg: rgba(30, 41, 59, 0.4);
+            --accent: #4f46e5;
+            --accent-glow: rgba(79, 70, 229, 0.4);
+            --text-main: #f8fafc;
+            --text-muted: #64748b;
+            --sidebar-w: 280px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body {
-            background: var(--bg);
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% -20%, #1e1b4b, var(--bg));
             color: var(--text-main);
-            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             height: 100vh; display: flex; overflow: hidden;
         }
 
-        /* 登录屏 */
-        #login-screen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; justify-content: center; align-items: center; }
-        .login-card { background: var(--glass); padding: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); width: 360px; text-align: center; }
-        .login-input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; outline: none; }
-        .login-btn { width: 100%; padding: 12px; border-radius: 8px; border: none; background: var(--accent); color: white; font-weight: bold; cursor: pointer; }
+        /* --- 登录界面 --- */
+        #login-screen { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .login-card { background: var(--card-bg); padding: 40px 30px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 360px; text-align: center; backdrop-filter: blur(20px); }
+        .login-input { width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white; outline: none; font-size: 16px; }
+        .login-btn { width: 100%; padding: 14px; border-radius: 12px; border: none; background: var(--accent); color: white; font-weight: 600; cursor: pointer; font-size: 16px; }
 
-        /* 侧边栏 */
-        .sidebar { width: var(--sidebar-w); height: 100%; background: var(--glass); border-right: 1px solid rgba(255,255,255,0.05); transition: 0.3s; position: relative; z-index: 1000; }
-        .sidebar.collapsed { margin-left: calc(var(--sidebar-w) * -1); }
-        .toggle-tab { position: absolute; right: -30px; top: 20px; width: 30px; height: 50px; background: var(--accent); color: white; cursor: pointer; border-radius: 0 8px 8px 0; display: flex; align-items: center; justify-content: center; }
+        /* --- 侧边栏 --- */
+        .sidebar { width: var(--sidebar-w); height: 100%; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-right: 1px solid rgba(255,255,255,0.05); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; z-index: 1000; }
+        .sidebar.collapsed { transform: translateX(calc(var(--sidebar-w) * -1)); }
+        .toggle-tab { position: absolute; right: -35px; top: 30px; width: 35px; height: 60px; background: var(--accent); color: white; cursor: pointer; border-radius: 0 12px 12px 0; display: flex; align-items: center; justify-content: center; box-shadow: 4px 0 10px rgba(0,0,0,0.3); }
 
-        /* 主内容 */
-        .main-container { flex: 1; display: flex; flex-direction: column; padding: 30px; align-items: center; position: relative; }
-        .main-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 20px; color: #fff; }
+        /* --- 主显示区 --- */
+        .main-container { flex: 1; display: flex; flex-direction: column; padding: 20px; position: relative; height: 100%; }
         
+        /* 顶部状态栏：包含标题和姓名 */
+        .header-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 1000px; margin: 0 auto 20px; }
+        .main-title { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; }
+        .user-tag { font-size: 14px; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 6px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+
+        /* 学习卡片：全屏适配 */
         .study-card { 
-            background: rgba(30, 41, 59, 0.5); border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); 
-            width: 100%; max-width: 800px; flex: 1; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; position: relative; padding: 40px;
+            flex: 1; width: 100%; max-width: 1000px; margin: 0 auto;
+            background: var(--card-bg); border-radius: 40px; border: 1px solid rgba(255,255,255,0.08); 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            position: relative; padding: 40px; backdrop-filter: blur(10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
         }
-        .fav-btn { position: absolute; top: 30px; right: 40px; font-size: 2rem; cursor: pointer; color: #334155; }
-        .fav-btn.active { color: #fbbf24; }
         
-        .indo-box { font-size: 5rem; font-weight: bold; text-align: center; color: #fff; margin-bottom: 10px; }
-        .zh-box { font-size: 2.2rem; color: var(--text-muted); }
+        .word-counter { position: absolute; top: 35px; left: 45px; font-weight: 700; color: var(--accent); font-family: 'Monaco', monospace; }
+        .fav-star { position: absolute; top: 30px; right: 45px; font-size: 1.8rem; cursor: pointer; color: #1e293b; transition: 0.2s; }
+        .fav-star.active { color: #fbbf24; text-shadow: 0 0 15px rgba(251,191,36,0.4); }
+        
+        .indo-box { font-size: clamp(2.5rem, 8vw, 5rem); font-weight: 800; text-align: center; margin-bottom: 10px; letter-spacing: -1px; }
+        .zh-box { font-size: clamp(1.2rem, 4vw, 2.2rem); color: var(--text-muted); font-weight: 400; }
 
-        /* 导航 */
-        .nav-group { display: flex; gap: 30px; margin-top: 40px; align-items: center; }
-        .nav-btn { width: 60px; height: 60px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); background: none; color: white; cursor: pointer; font-size: 1.2rem; }
-        .play-btn { width: 80px; height: 80px; border-radius: 50%; border: none; background: var(--accent); color: white; cursor: pointer; font-size: 2rem; }
+        /* 控制按钮 */
+        .nav-wrap { display: flex; gap: 40px; margin-top: 50px; align-items: center; }
+        .btn-circle { 
+            width: 64px; height: 64px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.03); color: white; cursor: pointer; 
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.2s;
+        }
+        .btn-circle:hover { background: rgba(255,255,255,0.1); transform: scale(1.05); }
+        .btn-play { 
+            width: 88px; height: 88px; border-radius: 50%; border: none; 
+            background: var(--accent); color: white; cursor: pointer; font-size: 2rem;
+            box-shadow: 0 10px 25px var(--accent-glow); transition: 0.3s;
+        }
+        .btn-play:active { transform: scale(0.95); }
 
         /* 控制面板 */
-        .control-panel { width: 100%; max-width: 800px; margin-top: 20px; background: var(--glass); padding: 20px; border-radius: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; font-size: 14px; }
-        .ctrl-row { display: flex; flex-direction: column; gap: 5px; }
+        .settings-bar { 
+            width: 100%; max-width: 1000px; margin: 20px auto 0; 
+            background: rgba(15, 23, 42, 0.6); padding: 20px 30px; border-radius: 24px; 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;
+        }
+        .setting-item { display: flex; align-items: center; gap: 15px; font-size: 14px; color: var(--text-muted); }
+        input[type=range] { flex: 1; accent-color: var(--accent); height: 4px; }
 
-        .footer { font-size: 12px; color: #4b5563; margin-top: 20px; text-align: center; line-height: 1.6; }
-        .clickable { color: var(--accent); cursor: pointer; }
+        /* 底部信息 */
+        .footer { padding: 20px; text-align: center; font-size: 12px; color: #475569; line-height: 1.8; }
+        .clickable { color: var(--accent); cursor: pointer; font-weight: 600; text-decoration: none; }
 
-        /* 目录样式 */
-        .menu-group { margin-bottom: 10px; padding: 0 10px; }
-        .menu-head { padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; }
+        /* 列表菜单 */
+        .menu-group { margin-bottom: 10px; padding: 0 15px; }
+        .menu-head { padding: 12px 18px; background: rgba(255,255,255,0.03); border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; font-weight: 600; font-size: 14px; }
         .menu-list { overflow: hidden; transition: 0.2s; }
         .menu-list.hidden { height: 0; }
-        .clear-area { padding: 5px 10px; text-align: right; }
+        .item-row { padding: 10px 20px; font-size: 13px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; margin: 2px 0; }
+        .item-row.active { background: rgba(79, 70, 229, 0.1); color: var(--accent); }
+
+        @media (max-width: 768px) {
+            .main-title { font-size: 1.4rem; }
+            .study-card { padding: 20px; border-radius: 30px; }
+            .nav-wrap { gap: 20px; }
+            .btn-circle { width: 50px; height: 50px; }
+            .btn-play { width: 70px; height: 70px; font-size: 1.5rem; }
+            .settings-bar { grid-template-columns: 1fr; padding: 15px; }
+        }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <div class="login-card">
-            <h2 style="color:white; margin-bottom:20px;">身份验证</h2>
-            <input type="text" id="login-id" class="login-input" placeholder="请输入工号">
-            <input type="password" id="login-pw" class="login-input" placeholder="请输入密码">
-            <button class="login-btn" onclick="handleLogin()">登录</button>
-            <p id="login-tips" style="color:#ef4444; margin-top:10px; display:none;"></p>
+            <h2 style="margin-bottom:10px; letter-spacing:-0.5px;">身份验证</h2>
+            <p style="color:var(--text-muted); font-size:14px; margin-bottom:25px;">请输入工号和密码进入学习系统</p>
+            <input type="text" id="login-id" class="login-input" placeholder="工号 (例: A01)">
+            <input type="password" id="login-pw" class="login-input" placeholder="访问密码">
+            <button class="login-btn" onclick="handleLogin()">登录学习助手</button>
+            <p id="login-tips" style="color:#f87171; margin-top:15px; display:none; font-size:13px;"></p>
         </div>
     </div>
 
     <aside class="sidebar" id="sidebar">
-        <div class="toggle-tab" onclick="document.getElementById('sidebar').classList.toggle('collapsed')"><i class="fas fa-bars"></i></div>
-        <div id="menu-box" style="padding: 20px 10px; overflow-y:auto; height: 100%;"></div>
+        <div class="toggle-tab" onclick="document.getElementById('sidebar').classList.toggle('collapsed')"><i class="fas fa-bars-staggered"></i></div>
+        <div style="padding: 30px 25px 10px;"><h4 style="color:var(--text-muted); letter-spacing:1px; font-size:12px; text-transform:uppercase;">学习目录</h4></div>
+        <div id="menu-box" style="padding: 10px 0; overflow-y:auto; height: calc(100% - 80px);"></div>
     </aside>
 
     <main class="main-container">
-        <h1 class="main-title">印尼语学习助手</h1>
+        <div class="header-bar">
+            <h1 class="main-title">印尼语学习助手</h1>
+            <div class="user-tag" id="user-display">未登录</div>
+        </div>
+        
         <section class="study-card">
-            <div style="position:absolute; top:30px; left:40px; font-weight:bold; color:var(--accent);" id="word-idx">01</div>
-            <i class="fas fa-star fav-btn" id="fav-star" onclick="toggleFav()"></i>
-            <div class="indo-box" id="disp-indo">加载中...</div>
-            <div class="zh-box" id="disp-zh">...</div>
-            <div class="nav-group">
-                <button class="nav-btn" onclick="navWord(-1)"><i class="fas fa-chevron-left"></i></button>
-                <button class="play-btn" onclick="toggleSpeech()"><i class="fas fa-play" id="play-ico"></i></button>
-                <button class="nav-btn" onclick="navWord(1)"><i class="fas fa-chevron-right"></i></button>
+            <div class="word-counter" id="word-idx">ITEM 01</div>
+            <i class="fas fa-star fav-star" id="fav-star" onclick="toggleFav()"></i>
+            
+            <div class="indo-box" id="disp-indo">TERIMA KASIH</div>
+            <div class="zh-box" id="disp-zh">谢谢</div>
+
+            <div class="nav-wrap">
+                <button class="btn-circle" onclick="navWord(-1)"><i class="fas fa-arrow-left"></i></button>
+                <button class="btn-play" onclick="toggleSpeech()"><i class="fas fa-play" id="play-ico" style="margin-left: 5px;"></i></button>
+                <button class="btn-circle" onclick="navWord(1)"><i class="fas fa-arrow-right"></i></button>
             </div>
         </section>
 
-        <footer class="control-panel">
-            <div class="ctrl-row">
-                <span>语速: <span id="val-rate">0.8</span>x</span>
+        <div class="settings-bar">
+            <div class="setting-item">
+                <i class="fas fa-gauge-high"></i>
                 <input type="range" id="inp-rate" min="0.1" max="1.5" step="0.1" value="0.8" oninput="document.getElementById('val-rate').innerText=this.value">
+                <span style="width:35px; text-align:right;"><span id="val-rate">0.8</span>x</span>
             </div>
-            <div class="ctrl-row">
-                <span>循环: <span id="val-loop">1</span>次</span>
+            <div class="setting-item">
+                <i class="fas fa-rotate"></i>
                 <input type="range" id="inp-loop" min="1" max="10" step="1" value="1" oninput="document.getElementById('val-loop').innerText=this.value">
+                <span style="width:35px; text-align:right;"><span id="val-loop">1</span>次</span>
             </div>
-            <div class="ctrl-row" style="align-items: center; justify-content: center;">
-                <label><input type="checkbox" id="hide-toggle" onchange="renderCurrent()"> 隐藏中文答案</label>
+            <div class="setting-item" style="justify-content: flex-end;">
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                    <input type="checkbox" id="hide-toggle" onchange="renderCurrent()" style="width:16px; height:16px;"> 隐藏中文
+                </label>
             </div>
-        </footer>
+        </div>
 
         <div class="footer">
             仅供内部学习｜禁止商用 © 2026｜联系作者：<span class="clickable" onclick="showQR()">王鹤</span><br>
-            Ver <span class="clickable" onclick="checkAdminAccess()">1.0</span> | <span class="clickable" style="color:#ef4444;" onclick="logout()">退出登录</span>
+            <span class="clickable" onclick="checkAdminAccess()">后台管理</span> | <span class="clickable" style="color:#f87171;" onclick="logout()">安全退出登录</span>
         </div>
     </main>
 
-    <div id="qr-modal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:2000; justify-content:center; align-items:center;" onclick="this.style.display='none'"><img src="Wang_he.jpg" style="width:250px; border-radius:15px;"></div>
+    <div id="qr-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:2000; justify-content:center; align-items:center;" onclick="this.style.display='none'"><img src="Wang_he.jpg" style="width:280px; border-radius:24px; box-shadow:0 0 40px rgba(0,0,0,0.5);"></div>
 
     <script>
         let db = {}, favs = JSON.parse(localStorage.getItem('fmi_favs') || '[]');
         let curCat = "1", curIdx = 0, isLive = false;
         let menuState = { fav: true };
 
-        // 核心逻辑：管理员账号硬编码
         async function handleLogin() {
             const id = document.getElementById('login-id').value.trim();
             const pw = document.getElementById('login-pw').value;
-            // 管理员判定
             if (id === "admin" && pw === "fmi2026") {
-                localStorage.setItem('fmi_session', JSON.stringify({ role: "admin", id: "admin" }));
+                localStorage.setItem('fmi_session', JSON.stringify({ role: "admin", name: "系统管理员", id: "admin" }));
                 location.reload(); return;
             }
             try {
@@ -144,39 +193,45 @@
                     localStorage.setItem('fmi_session', JSON.stringify(user));
                     location.reload();
                 } else {
-                    document.getElementById('login-tips').innerText = "工号或密码错误";
-                    document.getElementById('login-tips').style.display = 'block';
+                    const tips = document.getElementById('login-tips');
+                    tips.innerText = "工号或密码错误"; tips.style.display = 'block';
                 }
-            } catch(e) { alert("白名单验证失败"); }
+            } catch(e) { alert("网络异常，无法验证身份"); }
         }
 
         async function initApp() {
-            if (!localStorage.getItem('fmi_session')) { document.getElementById('login-screen').style.display='flex'; return; }
+            const session = JSON.parse(localStorage.getItem('fmi_session'));
+            if (!session) { document.getElementById('login-screen').style.display='flex'; return; }
             document.getElementById('login-screen').style.display='none';
+            document.getElementById('user-display').innerText = "欢迎您，" + session.name;
+
             try {
                 const r = await fetch('./indonesian_learning_data.json');
                 db = await r.json();
+                for(let key in db) menuState[key] = false;
                 buildMenu(); renderCurrent();
-            } catch(e) { console.log("Data error"); }
+            } catch(e) { console.error("Data load fail"); }
         }
 
         function buildMenu() {
             const box = document.getElementById('menu-box');
             let html = `<div class="menu-group">
-                <div class="menu-head" onclick="toggleMenu('fav')"><span>我的收藏 (${favs.length})</span></div>
+                <div class="menu-head" onclick="toggleMenu('fav')"><span><i class="fas fa-heart" style="color:#f87171; margin-right:8px;"></i>我的收藏</span><i class="fas fa-chevron-${menuState.fav?'down':'right'}"></i></div>
                 <div class="menu-list ${menuState.fav?'':'hidden'}">
-                    ${favs.map((w,i)=>`<div style="padding:5px 15px; font-size:13px; display:flex; justify-content:space-between;">
-                        <span onclick="switchCat('fav',${i})" style="cursor:pointer; color:${curCat=='fav'&&curIdx==i?'#6366f1':''}">${w.indonesian}</span>
-                        <i class="fas fa-times" onclick="removeFav(${i},event)" style="cursor:pointer; opacity:0.5;"></i>
-                    </div>`).join('')}
-                    ${favs.length>0?`<div class="clear-area"><span class="clickable" style="color:#ef4444; font-size:12px;" onclick="clearAllFavs()">清空全部</span></div>`:''}
+                    ${favs.map((w,i)=>`
+                        <div class="item-row ${curCat=='fav'&&curIdx==i?'active':''}">
+                            <span onclick="switchCat('fav',${i})" style="flex:1; cursor:pointer;">${i+1}. ${w.indonesian}</span>
+                            <i class="fas fa-xmark" onclick="removeFav(${i},event)" style="cursor:pointer; opacity:0.3; padding:5px;"></i>
+                        </div>`).join('')}
+                    ${favs.length>0?`<div style="text-align:right; padding:10px 20px;"><span class="clickable" style="color:#f87171; font-size:12px;" onclick="clearAllFavs()">清空全部</span></div>`:''}
                 </div>
             </div>`;
+
             for(let id in db) {
                 html += `<div class="menu-group">
-                    <div class="menu-head" onclick="toggleMenu('${id}')"><span>${db[id].name}</span></div>
+                    <div class="menu-head" onclick="toggleMenu('${id}')"><span><i class="fas fa-book" style="margin-right:8px; opacity:0.5;"></i>${db[id].name}</span><i class="fas fa-chevron-${menuState[id]?'down':'right'}"></i></div>
                     <div class="menu-list ${menuState[id]?'':'hidden'}">
-                        ${db[id].lessons["1"].words.map((w,i)=>`<div onclick="switchCat('${id}',${i})" style="padding:5px 15px; cursor:pointer; font-size:13px; color:${curCat==id&&curIdx==i?'#6366f1':''}">${w.indonesian}</div>`).join('')}
+                        ${db[id].lessons["1"].words.map((w,i)=>`<div class="item-row ${curCat==id&&curIdx==i?'active':''}" onclick="switchCat('${id}',${i})" style="cursor:pointer;">${i+1}. ${w.indonesian}</div>`).join('')}
                     </div>
                 </div>`;
             }
@@ -185,12 +240,16 @@
 
         function renderCurrent() {
             const list = curCat === 'fav' ? favs : db[curCat]?.lessons["1"]?.words;
-            if(!list || list.length === 0) return;
+            if(!list || list.length === 0) {
+                document.getElementById('disp-indo').innerText = "暂无内容";
+                document.getElementById('disp-zh').innerText = "请从目录选择单词";
+                return;
+            }
             const word = list[curIdx];
             document.getElementById('disp-indo').innerText = word.indonesian;
             document.getElementById('disp-zh').innerText = document.getElementById('hide-toggle').checked ? '••••' : word.chinese;
-            document.getElementById('word-idx').innerText = (curIdx + 1).toString().padStart(2, '0');
-            document.getElementById('fav-star').className = favs.some(f=>f.indonesian===word.indonesian) ? 'fas fa-star fav-btn active' : 'fas fa-star fav-btn';
+            document.getElementById('word-idx').innerText = "ITEM " + (curIdx + 1).toString().padStart(2, '0');
+            document.getElementById('fav-star').className = favs.some(f=>f.indonesian===word.indonesian) ? 'fas fa-star fav-star active' : 'fas fa-star fav-star';
         }
 
         function toggleSpeech() {
@@ -199,14 +258,18 @@
             const word = list[curIdx];
             const rate = parseFloat(document.getElementById('inp-rate').value);
             const loops = parseInt(document.getElementById('inp-loop').value);
-            isLive = true; document.getElementById('play-ico').className='fas fa-stop';
+            
+            isLive = true; 
+            document.getElementById('play-ico').className='fas fa-stop';
+            document.getElementById('play-ico').style.marginLeft = "0px";
+            
             let count = 0;
             const speak = () => {
                 if(!isLive || count >= loops) { stopVoice(); return; }
                 const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(word.indonesian)}&tl=id&client=tw-ob&ttsspeed=${rate < 0.5 ? 0.2 : 1}`;
                 const audio = new Audio(url);
                 audio.onended = () => { count++; if(isLive) setTimeout(speak, 600); };
-                audio.play().catch(() => { // 备选方案
+                audio.play().catch(() => {
                     const u = new SpeechSynthesisUtterance(word.indonesian);
                     u.lang='id-ID'; u.rate=rate; u.onend=()=>{ count++; speak(); };
                     window.speechSynthesis.speak(u);
@@ -215,8 +278,13 @@
             speak();
         }
 
-        function stopVoice() { isLive=false; window.speechSynthesis.cancel(); document.getElementById('play-ico').className='fas fa-play'; }
-        function navWord(dir) { stopVoice(); const list=curCat==='fav'?favs:db[curCat].lessons["1"].words; if(!list) return; curIdx=(curIdx+dir+list.length)%list.length; renderCurrent(); }
+        function stopVoice() { 
+            isLive=false; window.speechSynthesis.cancel(); 
+            document.getElementById('play-ico').className='fas fa-play'; 
+            document.getElementById('play-ico').style.marginLeft = "5px";
+        }
+
+        function navWord(dir) { stopVoice(); const list=curCat==='fav'?favs:db[curCat].lessons["1"].words; if(!list||list.length===0) return; curIdx=(curIdx+dir+list.length)%list.length; renderCurrent(); buildMenu(); }
         function toggleMenu(id) { menuState[id] = !menuState[id]; buildMenu(); }
         function switchCat(cat, idx) { curCat=cat; curIdx=idx; stopVoice(); renderCurrent(); buildMenu(); }
         function toggleFav() {
@@ -233,7 +301,7 @@
         function logout() { localStorage.removeItem('fmi_session'); location.reload(); }
         function checkAdminAccess() { 
             const s = JSON.parse(localStorage.getItem('fmi_session'));
-            if(s?.id === 'admin') location.href='admin.html';
+            if(s?.role === 'admin') location.href='admin.html';
             else alert("无管理权限");
         }
         initApp();
