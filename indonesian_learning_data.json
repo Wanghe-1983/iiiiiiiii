@@ -1,494 +1,133 @@
- "1": {
-        "name": "考试题库",
-        "lessons": {
-            "1": {
-                "words": [
-                    {
-                        "indonesian": "Admin",
-                        "chinese": "文员"
-                    },
-                    {
-                        "indonesian": "Air",
-                        "chinese": "水"
-                    },
-                    {
-                        "indonesian": "Air Dingin",
-                        "chinese": "冷水"
-                    },
-                    {
-                        "indonesian": "Air Hangat",
-                        "chinese": "温水"
-                    },
-                    {
-                        "indonesian": "Apa kabar",
-                        "chinese": "你好"
-                    },
-                    {
-                        "indonesian": "Apotek",
-                        "chinese": "药店"
-                    },
-                    {
-                        "indonesian": "Area",
-                        "chinese": "区域"
-                    },
-                    {
-                        "indonesian": "Asrama",
-                        "chinese": "宿舍"
-                    },
-                    {
-                        "indonesian": "Atas",
-                        "chinese": "上面"
-                    },
-                    {
-                        "indonesian": "ATM",
-                        "chinese": "提款机"
-                    },
-                    {
-                        "indonesian": "Bagaimana",
-                        "chinese": "如何"
-                    },
-                    {
-                        "indonesian": "Bahaya",
-                        "chinese": "危险"
-                    },
-                    {
-                        "indonesian": "Baik hati",
-                        "chinese": "善良"
-                    },
-                    {
-                        "indonesian": "Baik-baik saja",
-                        "chinese": "挺好的"
-                    },
-                    {
-                        "indonesian": "Bakso",
-                        "chinese": "肉丸"
-                    },
-                    {
-                        "indonesian": "bank",
-                        "chinese": "银行"
-                    },
-                    {
-                        "indonesian": "bantu",
-                        "chinese": "帮"
-                    },
-                    {
-                        "indonesian": "tolong",
-                        "chinese": "帮"
-                    },
-                    {
-                        "indonesian": "banyak",
-                        "chinese": "多"
-                    },
-                    {
-                        "indonesian": "pak",
-                        "chinese": "先生"
-                    },
-                    {
-                        "indonesian": "barang",
-                        "chinese": "东西/物品"
-                    },
-                    {
-                        "indonesian": "barat",
-                        "chinese": "西"
-                    },
-                    {
-                        "indonesian": "baru",
-                        "chinese": "新"
-                    },
-                    {
-                        "indonesian": "batal",
-                        "chinese": "取消"
-                    },
-                    {
-                        "indonesian": "merepotkan",
-                        "chinese": "麻烦"
-                    },
-                    {
-                        "indonesian": "merokok",
-                        "chinese": "吸烟"
-                    },
-                    {
-                        "indonesian": "mi",
-                        "chinese": "面"
-                    },
-                    {
-                        "indonesian": "mi instan",
-                        "chinese": "方便面"
-                    },
-                    {
-                        "indonesian": "minggu",
-                        "chinese": "星期天"
-                    },
-                    {
-                        "indonesian": "minum",
-                        "chinese": "喝"
-                    },
-                    {
-                        "indonesian": "makan obat",
-                        "chinese": "吃药"
-                    },
-                    {
-                        "indonesian": "Mobil",
-                        "chinese": "车"
-                    },
-                    {
-                        "indonesian": "Mohon Maaf",
-                        "chinese": "抱歉"
-                    },
-                    {
-                        "indonesian": "Maaf",
-                        "chinese": "对不起/抱歉"
-                    },
-                    {
-                        "indonesian": "Muda",
-                        "chinese": "年轻"
-                    },
-                    {
-                        "indonesian": "Mudah",
-                        "chinese": "容易"
-                    },
-                    {
-                        "indonesian": "Murah",
-                        "chinese": "便宜"
-                    },
-                    {
-                        "indonesian": "Musim dingin",
-                        "chinese": "冬天"
-                    },
-                    {
-                        "indonesian": "Musim gugur",
-                        "chinese": "秋天"
-                    },
-                    {
-                        "indonesian": "Musim hujan",
-                        "chinese": "雨季"
-                    },
-                    {
-                        "indonesian": "Musim kemarau",
-                        "chinese": "旱季"
-                    },
-                    {
-                        "indonesian": "Musim panas",
-                        "chinese": "夏天"
-                    },
-                    {
-                        "indonesian": "Musim semi",
-                        "chinese": "春天"
-                    },
-                    {
-                        "indonesian": "Naik",
-                        "chinese": "上"
-                    },
-                    {
-                        "indonesian": "Nasi",
-                        "chinese": "米饭"
-                    },
-                    {
-                        "indonesian": "Natal",
-                        "chinese": "圣诞"
-                    },
-                    {
-                        "indonesian": "Negara",
-                        "chinese": "国家"
-                    },
-                    {
-                        "indonesian": "nikah",
-                        "chinese": "结婚"
-                    },
-                    {
-                        "indonesian": "nol",
-                        "chinese": "零"
-                    },
-                    {
-                        "indonesian": "nomor",
-                        "chinese": "号码"
-                    },
-                    {
-                        "indonesian": "nyanyi",
-                        "chinese": "唱歌"
-                    },
-                    {
-                        "indonesian": "Memperkenalkan diri",
-                        "chinese": "自我介绍"
-                    },
-                    {
-                        "indonesian": "perkenalkan diri",
-                        "chinese": "自我介绍"
-                    },
-                    {
-                        "indonesian": "Batuk",
-                        "chinese": "咳嗽"
-                    },
-                    {
-                        "indonesian": "Bawa",
-                        "chinese": "拿"
-                    },
-                    {
-                        "indonesian": "Ambil",
-                        "chinese": "拿"
-                    },
-                    {
-                        "indonesian": "Bawah",
-                        "chinese": "下"
-                    },
-                    {
-                        "indonesian": "Begadang",
-                        "chinese": "熬夜"
-                    },
-                    {
-                        "indonesian": "Belakang",
-                        "chinese": "后面"
-                    },
-                    {
-                        "indonesian": "Belanja",
-                        "chinese": "购物"
-                    },
-                    {
-                        "indonesian": "Belok",
-                        "chinese": "拐"
-                    },
-                    {
-                        "indonesian": "Benar",
-                        "chinese": "对"
-                    },
-                    {
-                        "indonesian": "Berat",
-                        "chinese": "重"
-                    },
-                    {
-                        "indonesian": "Berawan",
-                        "chinese": "多云"
-                    },
-                    {
-                        "indonesian": "Berdasarkan",
-                        "chinese": "根据"
-                    },
-                    {
-                        "indonesian": "berhenti",
-                        "chinese": "停"
-                    },
-                    {
-                        "indonesian": "berkas",
-                        "chinese": "资料"
-                    },
-                    {
-                        "indonesian": "bertemu",
-                        "chinese": "见面"
-                    },
-                    {
-                        "indonesian": "besok",
-                        "chinese": "明天"
-                    },
-                    {
-                        "indonesian": "biskuit",
-                        "chinese": "饼干"
-                    },
-                    {
-                        "indonesian": "botol",
-                        "chinese": "瓶子"
-                    },
-                    {
-                        "indonesian": "botol air",
-                        "chinese": "水瓶"
-                    },
-                    {
-                        "indonesian": "buah",
-                        "chinese": "水果"
-                    },
-                    {
-                        "indonesian": "bubur",
-                        "chinese": "粥"
-                    },
-                    {
-                        "indonesian": "budaya",
-                        "chinese": "文化"
-                    },
-                    {
-                        "indonesian": "tidak",
-                        "chinese": "不"
-                    },
-                    {
-                        "indonesian": "Bulan",
-                        "chinese": "月"
-                    },
-                    {
-                        "indonesian": "Olahraga",
-                        "chinese": "运动"
-                    },
-                    {
-                        "indonesian": "Orang",
-                        "chinese": "人"
-                    },
-                    {
-                        "indonesian": "Paham",
-                        "chinese": "懂"
-                    },
-                    {
-                        "indonesian": "Pahit",
-                        "chinese": "苦"
-                    },
-                    {
-                        "indonesian": "Pakai",
-                        "chinese": "用"
-                    },
-                    {
-                        "indonesian": "Pakai masker",
-                        "chinese": "戴口罩"
-                    },
-                    {
-                        "indonesian": "Pamit",
-                        "chinese": "告辞"
-                    },
-                    {
-                        "indonesian": "Panas",
-                        "chinese": "热"
-                    },
-                    {
-                        "indonesian": "Panggil",
-                        "chinese": "叫"
-                    },
-                    {
-                        "indonesian": "Pasta gigi",
-                        "chinese": "牙膏"
-                    },
-                    {
-                        "indonesian": "pedas",
-                        "chinese": "辣"
-                    },
-                    {
-                        "indonesian": "kerja",
-                        "chinese": "工作"
-                    },
-                    {
-                        "indonesian": "pelatihan",
-                        "chinese": "培训"
-                    },
-                    {
-                        "indonesian": "pendek",
-                        "chinese": "矮"
-                    },
-                    {
-                        "indonesian": "penting",
-                        "chinese": "重要"
-                    },
-                    {
-                        "indonesian": "peraturan",
-                        "chinese": "制度/规定"
-                    },
-                    {
-                        "indonesian": "pergi",
-                        "chinese": "去"
-                    },
-                    {
-                        "indonesian": "perhatikan",
-                        "chinese": "注意"
-                    },
-                    {
-                        "indonesian": "perkenalkan",
-                        "chinese": "介绍"
-                    },
-                    {
-                        "indonesian": "perut",
-                        "chinese": "肚子"
-                    },
-                    {
-                        "indonesian": "Bunga",
-                        "chinese": "花"
-                    },
-                    {
-                        "indonesian": "Bungkus",
-                        "chinese": "包"
-                    },
-                    {
-                        "indonesian": "Bunyi",
-                        "chinese": "声音"
-                    },
-                    {
-                        "indonesian": "Bus",
-                        "chinese": "公交车"
-                    },
-                    {
-                        "indonesian": "Cantik",
-                        "chinese": "漂亮"
-                    },
-                    {
-                        "indonesian": "Cemilan",
-                        "chinese": "零食"
-                    },
-                    {
-                        "indonesian": "Cepat",
-                        "chinese": "快"
-                    },
-                    {
-                        "indonesian": "Coklat",
-                        "chinese": "巧克力"
-                    },
-                    {
-                        "indonesian": "Cuaca",
-                        "chinese": "天气"
-                    },
-                    {
-                        "indonesian": "Cuti",
-                        "chinese": "休假"
-                    },
-                    {
-                        "indonesian": "Cuti kunjungan keluarga",
-                        "chinese": "探亲假"
-                    },
-                    {
-                        "indonesian": "Cuti Melahirkan",
-                        "chinese": "产假"
-                    },
-                    {
-                        "indonesian": "Cuti Nikah",
-                        "chinese": "婚假"
-                    },
-                    {
-                        "indonesian": "Cuti tahunan",
-                        "chinese": "年假"
-                    },
-                    {
-                        "indonesian": "Daging",
-                        "chinese": "肉"
-                    },
-                    {
-                        "indonesian": "Dari",
-                        "chinese": "来自"
-                    },
-                    {
-                        "indonesian": "Berasal",
-                        "chinese": "来自"
-                    },
-                    {
-                        "indonesian": "Dekat",
-                        "chinese": "近"
-                    },
-                    {
-                        "indonesian": "Delapan",
-                        "chinese": "八"
-                    },
-                    {
-                        "indonesian": "Depan",
-                        "chinese": "前面"
-                    },
-                    {
-                        "indonesian": "Di",
-                        "chinese": "在"
-                    },
-                    {
-                        "indonesian": "Dia",
-                        "chinese": "他"
-                    },
-                    {
-                        "indonesian": "Dilarang",
-                        "chinese": "禁止"
-                    },
-                    {
-                        "indonesian": "Dimana",
-                        "chinese": "在哪里"
-                    }
-                ]
-            }
-        }
+{
+  "1": {
+    "name": "生词 (Vocabulary)",
+    "lessons": {
+      "1": {
+        "words": [
+          { "indonesian": "Kata sapaan", "chinese": "问候语" },
+          { "indonesian": "Nama", "chinese": "名字" },
+          { "indonesian": "Umur", "chinese": "年龄" },
+          { "indonesian": "Tempat Tinggal", "chinese": "住处" },
+          { "indonesian": "Hobi/Kesukaan", "chinese": "兴趣爱好" },
+          { "indonesian": "Departemen", "chinese": "部门" },
+          { "indonesian": "Jabatan", "chinese": "岗位" },
+          { "indonesian": "Masa kerja", "chinese": "工龄" },
+          { "indonesian": "Admin", "chinese": "文员" },
+          { "indonesian": "Air Dingin", "chinese": "冷水" },
+          { "indonesian": "Air Hangat", "chinese": "温水" },
+          { "indonesian": "Apotek", "chinese": "药店" },
+          { "indonesian": "Area", "chinese": "区域" },
+          { "indonesian": "Asrama", "chinese": "宿舍" },
+          { "indonesian": "ATM", "chinese": "提款机" },
+          { "indonesian": "Bahaya", "chinese": "危险" },
+          { "indonesian": "Bakso", "chinese": "肉丸" },
+          { "indonesian": "Bank", "chinese": "银行" },
+          { "indonesian": "Bantu/Tolong", "chinese": "帮" },
+          { "indonesian": "Barang", "chinese": "物品" },
+          { "indonesian": "Batal", "chinese": "取消" },
+          { "indonesian": "Merokok", "chinese": "吸烟" },
+          { "indonesian": "Mi instan", "chinese": "方便面" },
+          { "indonesian": "Makan obat", "chinese": "吃药" },
+          { "indonesian": "Mobil", "chinese": "车" },
+          { "indonesian": "Muda", "chinese": "年轻" },
+          { "indonesian": "Mudah", "chinese": "容易" },
+          { "indonesian": "Murah", "chinese": "便宜" },
+          { "indonesian": "Batuk", "chinese": "咳嗽" },
+          { "indonesian": "Bawa/Ambil", "chinese": "拿" },
+          { "indonesian": "Begadang", "chinese": "熬夜" },
+          { "indonesian": "Belanja", "chinese": "购物" },
+          { "indonesian": "Berawan", "chinese": "多云" },
+          { "indonesian": "Berhenti", "chinese": "停" },
+          { "indonesian": "Berkas", "chinese": "资料" },
+          { "indonesian": "Biskuit", "chinese": "饼干" },
+          { "indonesian": "Bubur", "chinese": "粥" },
+          { "indonesian": "Budaya", "chinese": "文化" },
+          { "indonesian": "Olahraga", "chinese": "运动" },
+          { "indonesian": "Paham", "chinese": "懂" },
+          { "indonesian": "Pakai masker", "chinese": "戴口罩" },
+          { "indonesian": "Pasta gigi", "chinese": "牙膏" },
+          { "indonesian": "Pelatihan", "chinese": "培训" },
+          { "indonesian": "Peraturan", "chinese": "制度/规定" },
+          { "indonesian": "Bunga", "chinese": "花" },
+          { "indonesian": "Bungkus", "chinese": "包" },
+          { "indonesian": "Bunyi", "chinese": "声音" },
+          { "indonesian": "Bus", "chinese": "公交车" },
+          { "indonesian": "Cemilan", "chinese": "零食" },
+          { "indonesian": "Coklat", "chinese": "巧克力" },
+          { "indonesian": "Daging", "chinese": "肉" },
+          { "indonesian": "Dokter", "chinese": "医生" },
+          { "indonesian": "Produksi", "chinese": "生产" },
+          { "indonesian": "Rapat", "chinese": "开会" },
+          { "indonesian": "Rumah sakit", "chinese": "医院" },
+          { "indonesian": "Sakit gigi", "chinese": "牙痛" },
+          { "indonesian": "Sakit kepala", "chinese": "头痛" },
+          { "indonesian": "Makanan penutup", "chinese": "甜点" },
+          { "indonesian": "Meja kerja", "chinese": "办公桌" },
+          { "indonesian": "Mendung", "chinese": "阴天" },
+          { "indonesian": "Warna ungu", "chinese": "紫色" },
+          { "indonesian": "Jalan kaki", "chinese": "走路" },
+          { "indonesian": "Jus Lemon", "chinese": "柠檬汁" },
+          { "indonesian": "Keselamatan", "chinese": "安全" },
+          { "indonesian": "Kebersihan", "chinese": "清洁" },
+          { "indonesian": "Shampoo", "chinese": "洗发水" },
+          { "indonesian": "Sikat gigi", "chinese": "牙刷" },
+          { "indonesian": "Struk", "chinese": "小票" },
+          { "indonesian": "Sup ayam", "chinese": "鸡汤" },
+          { "indonesian": "SKS", "chinese": "病假单" },
+          { "indonesian": "Tanda tangan", "chinese": "签字" },
+          { "indonesian": "Teman mess", "chinese": "室友" },
+          { "indonesian": "Kesehatan", "chinese": "健康" },
+          { "indonesian": "Keuangan", "chinese": "财务" },
+          { "indonesian": "Klinik", "chinese": "诊所" },
+          { "indonesian": "Laporan", "chinese": "报告" },
+          { "indonesian": "Lemari berkas", "chinese": "文件柜" },
+          { "indonesian": "Lepas sepatu", "chinese": "脱鞋" },
+          { "indonesian": "Tisu basah", "chinese": "湿纸巾" }
+        ]
+      }
     }
+  },
+  "2": {
+    "name": "短语 (Phrases)",
+    "lessons": {
+      "1": {
+        "words": [
+          { "indonesian": "Hari ini saya baik baik saja.", "chinese": "我今天挺好的" },
+          { "indonesian": "Kita sudah lama tidak bertemu.", "chinese": "我们好久不见" },
+          { "indonesian": "Selamat pagi semuanya！", "chinese": "大家早上好" },
+          { "indonesian": "Hati - hati di jalan！", "chinese": "路上小心" },
+          { "indonesian": "Jaga diri baik - baik !", "chinese": "好好照顾自己" },
+          { "indonesian": "Apakah kamu sibuk?", "chinese": "你忙吗？" },
+          { "indonesian": "Kamu pulang kerja jam berapa?", "chinese": "你几点下班？" },
+          { "indonesian": "Silakan tunggu sebentar.", "chinese": "请稍等一下" },
+          { "indonesian": "Numpang tanya kantin dimana?", "chinese": "请问食堂在哪里？" },
+          { "indonesian": "Terima kasih atas bantuanya.", "chinese": "感谢您的帮忙" },
+          { "indonesian": "Semoga cepat sembuh！", "chinese": "祝你早日康复" },
+          { "indonesian": "Begadang tidak baik bagi kesehatan.", "chinese": "熬夜对身体不好" },
+          { "indonesian": "Selamat ulang tahun！", "chinese": "生日快乐" },
+          { "indonesian": "Selamat tahun baru imlek！", "chinese": "春节快乐" },
+          { "indonesian": "Semoga semuanya lancar.", "chinese": "祝你一切顺利" },
+          { "indonesian": "Nama kamu siapa?", "chinese": "你叫什么名字" },
+          { "indonesian": "Kamu berasal dari mana?", "chinese": "你来自哪里" },
+          { "indonesian": "Saya tinggal di asrama.", "chinese": "我住在宿舍" },
+          { "indonesian": "Selamat datang ke tim kami.", "chinese": "欢迎来到我们的团队" },
+          { "indonesian": "Ini adalah lemari berkas.", "chinese": "这是文件柜" },
+          { "indonesian": "Apakah kamu sudah sarapan?", "chinese": "你吃早餐了吗？" },
+          { "indonesian": "Hari ini atasan kami yang traktir.", "chinese": "今天我们领导请客" },
+          { "indonesian": "Saya mau pesan sup ayam.", "chinese": "我要订鸡汤" },
+          { "indonesian": "Boleh minta struknya?", "chinese": "可以给我小票吗？" },
+          { "indonesian": "Halte bus disebelah sana.", "chinese": "公交站在那边" },
+          { "indonesian": "Besok jam berapa Rapat?", "chinese": "明天几点开会？" },
+          { "indonesian": "Rapat hari ini batal.", "chinese": "今天的会议取消" },
+          { "indonesian": "Indonesia ada 2 musim.", "chinese": "印尼有两个季节" },
+          { "indonesian": "Di luar sedang hujan.", "chinese": "外面在下雨" },
+          { "indonesian": "Bolehkah saya nebeng payung?", "chinese": "我可以和你共用一把伞吗？" },
+          { "indonesian": "Apa warna baju kamu?", "chinese": "你穿的衣服是什么颜色的？" },
+          { "indonesian": "Apakah jauh dari sini?", "chinese": "离这里远吗？" },
+          { "indonesian": "Bisa kurang harganya？", "chinese": "可以便宜点吗？" },
+          { "indonesian": "Apakah Kamu sering Lembur?", "chinese": "你经常加班吗？" }
+        ]
+      }
+    }
+  }
 }
