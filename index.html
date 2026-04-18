@@ -3,336 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>印尼语智能词库 Pro</title>
+    <title>FMI印尼语学习小助手</title>
     <style>
         :root {
-            --bg: #0a0f1a;
-            --card: rgba(30, 41, 59, 0.7);
+            --bg: #0f172a;
+            --glass: rgba(30, 41, 59, 0.7);
             --accent: #6366f1;
-            --accent-hover: #818cf8;
-            --text-main: #f1f5f9;
+            --accent-glow: rgba(99, 102, 241, 0.5);
+            --text-main: #f8fafc;
             --text-muted: #94a3b8;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background-color: var(--bg);
-            background-image: radial-gradient(circle at top right, rgba(99, 102, 241, 0.1), transparent);
+            background: var(--bg);
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15), transparent),
+                radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.15), transparent);
             color: var(--text-main);
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            display: flex; justify-content: center; height: 100vh; overflow: hidden;
+            font-family: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
+
+        /* 顶部标题 */
+        header {
+            padding: 20px; text-align: center;
+            background: rgba(15, 23, 42, 0.8);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        header h1 { font-size: 1.5rem; letter-spacing: 2px; background: linear-gradient(to right, #fff, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         .app-container {
-            width: 100%;
-            max-width: 1200px;
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            gap: 20px;
-            padding: 20px;
-            height: 100%;
+            flex: 1; display: grid; grid-template-columns: 300px 1fr; gap: 20px; padding: 20px; overflow: hidden;
         }
 
-        /* 左侧目录样式 */
+        /* 侧边栏 */
         .sidebar {
-            background: var(--card);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            background: var(--glass); backdrop-filter: blur(12px);
+            border-radius: 24px; border: 1px solid rgba(255,255,255,0.1);
+            display: flex; flex-direction: column; overflow: hidden;
         }
-        .sidebar-header { padding: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .sidebar-content { flex: 1; overflow-y: auto; padding: 10px; }
-
-        .category-group { margin-bottom: 10px; }
+        .sidebar-content { flex: 1; overflow-y: auto; padding: 15px; }
+        .category-group { margin-bottom: 12px; }
         .category-title {
-            padding: 12px 15px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            display: flex; justify-content: space-between;
+            padding: 14px; background: rgba(255,255,255,0.05); border-radius: 12px;
+            cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; transition: 0.3s;
         }
-        .sub-menu { padding-left: 10px; margin-top: 5px; display: none; }
+        .category-title:hover { background: rgba(255,255,255,0.1); }
+        .sub-menu { padding-left: 8px; margin-top: 8px; display: none; border-left: 2px solid rgba(99, 102, 241, 0.3); }
         .sub-menu.active { display: block; }
         .menu-item {
-            padding: 8px 15px;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            cursor: pointer;
-            border-radius: 8px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            transition: 0.2s;
+            padding: 10px 15px; font-size: 0.85rem; color: var(--text-muted);
+            cursor: pointer; border-radius: 8px; margin: 2px 0; transition: 0.2s;
         }
-        .menu-item:hover { background: rgba(99, 102, 241, 0.1); color: var(--text-main); }
-        .menu-item.active { background: var(--accent); color: white; }
+        .menu-item:hover { color: var(--text-main); background: rgba(99, 102, 241, 0.1); }
+        .menu-item.active { background: var(--accent); color: white; box-shadow: 0 4px 12px var(--accent-glow); }
 
-        /* 主界面样式 */
-        .main-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        /* 主面板 */
+        .main-panel { display: flex; flex-direction: column; gap: 20px; }
+        .display-card {
+            background: var(--glass); backdrop-filter: blur(12px);
+            border-radius: 30px; border: 1px solid rgba(255,255,255,0.1);
+            flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 40px; position: relative;
         }
-        .card {
-            background: var(--card);
-            border-radius: 24px;
-            padding: 60px 40px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            flex: 1;
-            display: flex; flex-direction: column; justify-content: center;
-        }
-        .word-index { color: var(--accent); font-weight: bold; font-size: 1.2rem; margin-bottom: 10px; }
-        .word-display { font-size: 4rem; font-weight: 800; margin-bottom: 20px; letter-spacing: -1px; }
-        .zh-display { font-size: 1.8rem; color: var(--text-muted); margin-bottom: 40px; }
+        .word-num { color: var(--accent); font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; }
+        .indo-text { font-size: 3.8rem; font-weight: 800; margin-bottom: 15px; line-height: 1.2; }
+        .zh-text { font-size: 1.8rem; color: var(--text-muted); margin-bottom: 40px; }
 
-        /* 播放按钮特殊设计 */
-        .play-btn-container { margin: 20px 0; }
-        .action-btn {
-            width: 80px; height: 80px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            background: var(--accent);
-            color: white;
-            font-size: 1.5rem;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+        /* 按钮与控制 */
+        .play-btn {
+            width: 90px; height: 90px; border-radius: 50%; border: none;
+            background: var(--accent); color: white; font-size: 1.8rem; cursor: pointer;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 24px var(--accent-glow); margin-bottom: 30px;
         }
-        .action-btn.playing {
-            background: #ef4444;
-            transform: scale(1.1);
-            box-shadow: 0 0 30px rgba(239, 68, 68, 0.6);
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        .play-btn.playing { background: #f43f5e; transform: scale(1.1); animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(244, 63, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); } }
 
-        /* 控制面板 */
-        .controls-bar {
-            background: var(--card);
-            padding: 20px 30px;
-            border-radius: 20px;
-            display: flex; justify-content: space-around; align-items: center;
-            border: 1px solid rgba(255,255,255,0.1);
+        .nav-group { display: flex; gap: 20px; }
+        .btn-outline {
+            padding: 12px 30px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2);
+            background: transparent; color: white; cursor: pointer; transition: 0.3s;
         }
-        .control-item { display: flex; flex-direction: column; gap: 8px; }
-        .control-item label { font-size: 0.8rem; color: var(--text-muted); }
-        
-        select, input[type="range"] {
-            background: #1e293b; color: white; border: 1px solid #475569;
-            padding: 8px; border-radius: 8px;
-        }
+        .btn-outline:hover { background: rgba(255,255,255,0.1); border-color: white; }
 
-        .nav-btn {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: white; padding: 12px 25px; border-radius: 12px;
-            cursor: pointer; transition: 0.2s;
+        .control-panel {
+            background: var(--glass); padding: 20px 40px; border-radius: 24px;
+            display: flex; justify-content: space-around; border: 1px solid rgba(255,255,255,0.1);
         }
-        .nav-btn:hover { background: rgba(255,255,255,0.1); }
+        .control-item { display: flex; flex-direction: column; gap: 8px; min-width: 150px; }
+        .control-item label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); }
+        select, input[type="range"] { background: #1e293b; color: white; border: 1px solid #334155; padding: 8px; border-radius: 8px; }
+
+        /* 后台入口及弹窗 */
+        .footer-info { position: fixed; bottom: 10px; right: 20px; font-size: 0.7rem; color: #334155; cursor: pointer; }
+        #admin-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000;
+            display: none; padding: 40px; flex-direction: column;
+        }
+        #admin-modal textarea { width: 100%; flex: 1; background: #1e293b; color: #10b981; font-family: monospace; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
 
         @media (max-width: 900px) {
             .app-container { grid-template-columns: 1fr; }
-            .sidebar { height: 250px; }
+            .sidebar { height: 200px; }
+            .indo-text { font-size: 2.5rem; }
         }
     </style>
 </head>
 <body>
 
+    <header>
+        <h1>FMI印尼语学习小助手</h1>
+    </header>
+
     <div class="app-container">
         <div class="sidebar">
-            <div class="sidebar-header">
-                <h2>📚 目录</h2>
+            <div class="sidebar-content" id="menu-container">
+                <div style="padding: 20px; text-align: center; color: var(--text-muted);">正在加载词库...</div>
             </div>
-            <div class="sidebar-content" id="sidebar-menu">
-                </div>
         </div>
 
         <div class="main-panel">
-            <div class="card">
-                <div class="word-index" id="word-index"># 01</div>
-                <div class="word-display" id="indo-text">Loading...</div>
-                <div class="zh-display" id="zh-text">正在加载数据</div>
+            <div class="display-card">
+                <div class="word-num" id="current-id">01</div>
+                <div class="indo-text" id="target-indo">Memuat...</div>
+                <div class="zh-text" id="target-zh">加载中</div>
                 
-                <div class="play-btn-container">
-                    <button id="master-play-btn" class="action-btn" onclick="handlePlayToggle()">▶</button>
-                </div>
+                <button id="play-btn" class="play-btn" onclick="togglePlay()">▶</button>
 
-                <div style="display: flex; gap:15px; justify-content: center;">
-                    <button class="nav-btn" onclick="prevWord()">上一个</button>
-                    <button class="nav-btn" onclick="nextWord()">下一个</button>
+                <div class="nav-group">
+                    <button class="btn-outline" onclick="changeWord(-1)">← 上一个</button>
+                    <button class="btn-outline" onclick="changeWord(1)">下一个 →</button>
                 </div>
             </div>
 
-            <div class="controls-bar">
+            <div class="control-panel">
                 <div class="control-item">
-                    <label>播放语速 (0.1 - 2.0)</label>
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <input type="range" id="speech-rate" min="0.1" max="2" step="0.1" value="1" oninput="document.getElementById('rate-val').innerText = this.value + 'x'">
-                        <span id="rate-val" style="width:30px">1.0x</span>
-                    </div>
+                    <label>语音语速</label>
+                    <input type="range" id="rate" min="0.1" max="1.5" step="0.1" value="0.8" oninput="document.getElementById('rate-val').innerText = this.value">
+                    <div style="text-align: right; font-size: 0.8rem;"><span id="rate-val">0.8</span>x</div>
                 </div>
                 <div class="control-item">
-                    <label>循环次数</label>
-                    <select id="repeat-count">
-                        <option value="1">播放 1 次</option>
-                        <option value="3">播放 3 次</option>
-                        <option value="5">播放 5 次</option>
-                        <option value="999">无限播放</option>
+                    <label>重复次数</label>
+                    <select id="repeats">
+                        <option value="1">1次</option>
+                        <option value="3">3次</option>
+                        <option value="5">5次</option>
+                        <option value="999">无限循环</option>
                     </select>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        let learningData = null;
-        let currentCategory = "1";
-        let currentIndex = 0;
-        let isSpeaking = false;
-        let loopCount = 0;
+    <div class="footer-info" onclick="openAdmin()">Ver. 2.4.1</div>
+    <div id="admin-modal">
+        <h2 style="margin-bottom: 10px;">数据管理中心 (热更新模式)</h2>
+        <p style="color: var(--text-muted); margin-bottom: 15px;">修改下方的 JSON 数据后点击保存，页面将即时更新。</p>
+        <textarea id="json-editor"></textarea>
+        <div style="display:flex; gap: 10px;">
+            <button class="btn-outline" style="background: var(--accent);" onclick="saveAdmin()">保存并生效</button>
+            <button class="btn-outline" onclick="closeAdmin()">关闭</button>
+        </div>
+    </div>
 
-        // 初始化加载
-        async function init() {
+    <script>
+        let db = null;
+        let currentCat = "1";
+        let currentIndex = 0;
+        let isPlaying = false;
+
+        // 初始化
+        async function loadData() {
             try {
-                const res = await fetch('./indonesian_learning_data.json?v=' + Date.now());
-                learningData = await res.json();
+                const res = await fetch('./indonesian_learning_data.json?t=' + Date.now());
+                db = await res.json();
                 renderMenu();
-                loadCategory("1", 0);
+                selectWord("1", 0);
             } catch (e) {
-                document.getElementById('indo-text').innerText = "加载失败";
-                document.getElementById('zh-text').innerText = "请检查JSON文件是否存在";
+                console.error("Data load error");
             }
         }
 
-        // 生成二级目录
+        // 渲染目录（带二级序号）
         function renderMenu() {
-            const menuContainer = document.getElementById('sidebar-menu');
-            menuContainer.innerHTML = '';
-
-            for (let catId in learningData) {
+            const container = document.getElementById('menu-container');
+            container.innerHTML = "";
+            for (let catId in db) {
                 const group = document.createElement('div');
                 group.className = 'category-group';
                 
                 const title = document.createElement('div');
                 title.className = 'category-title';
-                title.innerHTML = `<span>${learningData[catId].name}</span> <span>▾</span>`;
-                title.onclick = () => {
-                    const sub = group.querySelector('.sub-menu');
-                    sub.classList.toggle('active');
-                };
+                title.innerHTML = `<span>${db[catId].name}</span> <span>▾</span>`;
+                title.onclick = () => group.querySelector('.sub-menu').classList.toggle('active');
 
-                const subMenu = document.createElement('div');
-                subMenu.className = 'sub-menu' + (catId === currentCategory ? ' active' : '');
+                const sub = document.createElement('div');
+                sub.className = 'sub-menu' + (catId === currentCat ? ' active' : '');
                 
-                // 二级：展示具体的单词/短句列表
-                const words = learningData[catId].lessons["1"].words;
-                words.forEach((item, index) => {
-                    const menuItem = document.createElement('div');
-                    menuItem.className = `menu-item ${catId === currentCategory && index === currentIndex ? 'active' : ''}`;
-                    menuItem.id = `menu-${catId}-${index}`;
-                    menuItem.innerText = `${index + 1}. ${item.indonesian}`;
-                    menuItem.onclick = (e) => {
-                        e.stopPropagation();
-                        loadCategory(catId, index);
-                    };
-                    subMenu.appendChild(menuItem);
+                db[catId].lessons["1"].words.forEach((w, i) => {
+                    const item = document.createElement('div');
+                    item.className = `menu-item ${catId===currentCat && i===currentIndex ? 'active':''}`;
+                    item.id = `m-${catId}-${i}`;
+                    item.innerText = `${i + 1}. ${w.indonesian}`;
+                    item.onclick = (e) => { e.stopPropagation(); selectWord(catId, i); };
+                    sub.appendChild(item);
                 });
 
                 group.appendChild(title);
-                group.appendChild(subMenu);
-                menuContainer.appendChild(group);
+                group.appendChild(sub);
+                container.appendChild(group);
             }
         }
 
-        // 加载选中内容
-        function loadCategory(catId, index) {
+        function selectWord(cat, idx) {
             stopAudio();
-            currentCategory = catId;
-            currentIndex = index;
+            currentCat = cat;
+            currentIndex = idx;
             
-            // 更新菜单高亮
+            // UI 更新
             document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
-            const activeMenu = document.getElementById(`menu-${catId}-${index}`);
-            if(activeMenu) activeMenu.classList.add('active');
-
-            updateUI();
+            document.getElementById(`m-${cat}-${idx}`)?.classList.add('active');
+            
+            const data = db[currentCat].lessons["1"].words[currentIndex];
+            document.getElementById('current-id').innerText = (currentIndex + 1).toString().padStart(2, '0');
+            document.getElementById('target-indo').innerText = data.indonesian;
+            document.getElementById('target-zh').innerText = data.chinese;
         }
 
-        function updateUI() {
-            const item = learningData[currentCategory].lessons["1"].words[currentIndex];
-            document.getElementById('word-index').innerText = `# ${String(currentIndex + 1).padStart(2, '0')}`;
-            document.getElementById('indo-text').innerText = item.indonesian;
-            document.getElementById('zh-text').innerText = item.chinese;
-        }
-
-        // 播放逻辑集成
-        function handlePlayToggle() {
-            if (isSpeaking) {
-                stopAudio();
-            } else {
-                startAudio();
-            }
+        // 播放控制
+        function togglePlay() {
+            isPlaying ? stopAudio() : startAudio();
         }
 
         function startAudio() {
-            const btn = document.getElementById('master-play-btn');
-            const item = learningData[currentCategory].lessons["1"].words[currentIndex];
-            const rate = parseFloat(document.getElementById('speech-rate').value);
-            const totalTarget = parseInt(document.getElementById('repeat-count').value);
+            const text = db[currentCat].lessons["1"].words[currentIndex].indonesian;
+            const rate = parseFloat(document.getElementById('rate').value);
+            const max = parseInt(document.getElementById('repeats').value);
+            const btn = document.getElementById('play-btn');
             
-            isSpeaking = true;
-            loopCount = 0;
-            btn.innerText = "◼";
+            isPlaying = true;
             btn.classList.add('playing');
+            btn.innerText = "◼";
 
-            function speak() {
-                if (!isSpeaking || loopCount >= totalTarget) {
-                    stopAudio();
-                    return;
-                }
-
-                const utterance = new SpeechSynthesisUtterance(item.indonesian);
-                utterance.lang = 'id-ID';
-                utterance.rate = rate;
-                
-                utterance.onend = () => {
-                    loopCount++;
-                    if (isSpeaking) setTimeout(speak, 600);
-                };
-
-                utterance.onerror = () => stopAudio();
-                
-                window.speechSynthesis.speak(utterance);
+            let count = 0;
+            function run() {
+                if (!isPlaying || count >= max) { stopAudio(); return; }
+                const msg = new SpeechSynthesisUtterance(text);
+                msg.lang = 'id-ID';
+                msg.rate = rate;
+                msg.onend = () => { count++; if(isPlaying) setTimeout(run, 600); };
+                window.speechSynthesis.speak(msg);
             }
-
-            speak();
+            run();
         }
 
         function stopAudio() {
-            isSpeaking = false;
+            isPlaying = false;
             window.speechSynthesis.cancel();
-            const btn = document.getElementById('master-play-btn');
-            btn.innerText = "▶";
+            const btn = document.getElementById('play-btn');
             btn.classList.remove('playing');
+            btn.innerText = "▶";
         }
 
-        function nextWord() {
-            const words = learningData[currentCategory].lessons["1"].words;
-            loadCategory(currentCategory, (currentIndex + 1) % words.length);
+        function changeWord(step) {
+            const list = db[currentCat].lessons["1"].words;
+            let newIdx = currentIndex + step;
+            if (newIdx < 0) newIdx = list.length - 1;
+            if (newIdx >= list.length) newIdx = 0;
+            selectWord(currentCat, newIdx);
         }
 
-        function prevWord() {
-            const words = learningData[currentCategory].lessons["1"].words;
-            loadCategory(currentCategory, (currentIndex - 1 + words.length) % words.length);
+        // 后台管理逻辑
+        function openAdmin() {
+            const pass = prompt("请输入管理密码：");
+            if (pass === "admin123") {
+                document.getElementById('admin-modal').style.display = 'flex';
+                document.getElementById('json-editor').value = JSON.stringify(db, null, 4);
+            } else {
+                alert("密码错误");
+            }
         }
 
-        // 初始化启动
-        init();
+        function saveAdmin() {
+            try {
+                const newData = JSON.parse(document.getElementById('json-editor').value);
+                db = newData;
+                renderMenu();
+                selectWord(currentCat, 0);
+                alert("更新成功！(注：此更新仅在当前页面有效，永久修改需替换服务器上的JSON文件)");
+                closeAdmin();
+            } catch (e) {
+                alert("JSON 格式有误，请检查！");
+            }
+        }
+
+        function closeAdmin() { document.getElementById('admin-modal').style.display = 'none'; }
+
+        loadData();
     </script>
 </body>
 </html>
