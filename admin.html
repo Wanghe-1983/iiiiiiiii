@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>后台管理 - 白名单填写</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; background: #0f172a; color: white; padding: 40px; }
+        .container { max-width: 1000px; margin: auto; background: #1e293b; padding: 30px; border-radius: 20px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px; border-bottom: 1px solid #334155; text-align: left; }
+        input, select { background: #0f172a; border: 1px solid #475569; color: white; padding: 8px; border-radius: 5px; width: 90%; }
+        .btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; margin-right: 10px; }
+        .btn-add { background: #6366f1; color: white; }
+        .btn-save { background: #10b981; color: white; width: 100%; margin-top: 20px; }
+        .btn-del { background: #ef4444; color: white; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>👥 白名单人员管理</h2>
+        <p style="font-size: 13px; color: #94a3b8; margin-bottom: 20px;">提示：修改后点击底部按钮复制 JSON，然后去 GitHub 覆盖 whitelist.json 文件。</p>
+        <button class="btn btn-add" onclick="addRow()">+ 新增人员</button>
+        <table id="list-table">
+            <thead>
+                <tr><th>工号</th><th>姓名</th><th>初始密码</th><th>状态</th><th>操作</th></tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+        </table>
+        <button class="btn btn-save" onclick="exportData()">复制 JSON 配置并保存</button>
+        <button class="btn" style="background:#475569; margin-top:10px; width:100%;" onclick="location.href='index.html'">返回主页</button>
+    </div>
+
+    <script>
+        let list = [{ id: "A001", name: "测试员", psha: "123456", status: "active" }];
+
+        async function loadExisting() {
+            try {
+                const r = await fetch('./whitelist.json?t='+Date.now());
+                list = await r.json();
+                render();
+            } catch(e) { render(); }
+        }
+
+        function render() {
+            const html = list.map((u, i) => `
+                <tr>
+                    <td><input value="${u.id}" onchange="list[${i}].id=this.value"></td>
+                    <td><input value="${u.name}" onchange="list[${i}].name=this.value"></td>
+                    <td><input value="${u.psha}" onchange="list[${i}].psha=this.value"></td>
+                    <td>
+                        <select onchange="list[${i}].status=this.value">
+                            <option value="active" ${u.status==='active'?'selected':''}>启用</option>
+                            <option value="disabled" ${u.status==='disabled'?'selected':''}>禁用</option>
+                        </select>
+                    </td>
+                    <td><button class="btn-del" onclick="list.splice(${i},1);render()">删除</button></td>
+                </tr>
+            `).join('');
+            document.getElementById('tbody').innerHTML = html;
+        }
+
+        function addRow() { list.push({id:"", name:"", psha:"", status:"active"}); render(); }
+        function exportData() {
+            const str = JSON.stringify(list, null, 2);
+            navigator.clipboard.writeText(str).then(() => {
+                alert("JSON 已复制到剪贴板！\n请前往 GitHub 粘贴并提交。");
+            });
+        }
+        loadExisting();
+    </script>
+</body>
+</html>
