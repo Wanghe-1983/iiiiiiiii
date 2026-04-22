@@ -89,7 +89,10 @@
             if (method === 'GET') return { employees: [] };
             return { success: true };
         }
-        if (path === 'changelog/list') {
+        if (path.startsWith('admin/leaderboard-config')) {
+            return JSON.parse(localStorage.getItem('fmi_lb_config') || '{}');
+        }
+        if (path.startsWith('changelog')) {
             return { versions: [] };
         }
 
@@ -685,9 +688,9 @@
 
         let result;
         if (editingUsername) {
-            result = await API.adminUpdateUser(editingUsername, { name, password, role });
+            result = await adminFetch('admin/users', { method: 'PUT', body: JSON.stringify({ action: 'update', username: editingUsername, data: editingUsername, { name, password, role });
         } else {
-            result = await API.adminCreateUser({ username, password, name: name || username, role });
+            result = await adminFetch('admin/users', { method: 'PUT', body: JSON.stringify({ action: 'add', user: { username, password, name: name || username, role });
         }
 
         if (result.error) { alert(result.error); return; }
@@ -700,20 +703,20 @@
 
     async function deleteUser(username) {
         if (!confirm('确定要删除用户 ' + username + ' 吗？该操作不可恢复。')) return;
-        const result = await API.adminDeleteUser(username);
+        const result = await adminFetch('admin/users', { method: 'PUT', body: JSON.stringify({ action: 'delete', username }) });
         if (result.success) { loadUsers(); loadOverview(); }
         else if (result.error) alert(result.error);
     }
 
     async function kickUser(username) {
         if (!confirm('确定要将 ' + username + ' 踢下线吗？')) return;
-        await API.adminKick(username);
+        await adminFetch('admin/users', { method: 'PUT', body: JSON.stringify({ action: 'kick', username }) });
         loadOverview();
         loadUsers();
     }
 
     async function toggleBan(username, ban) {
-        const result = await API.adminBan(username, ban);
+        const result = await adminFetch('admin/users', { method: 'PUT', body: JSON.stringify({ action: 'ban', username, ban }) });
         if (result.success) { loadUsers(); }
     }
 
@@ -742,7 +745,7 @@
             requireEmployeeVerify: document.getElementById('setRequireEmployeeVerify').checked,
             whitelistEnabled: document.getElementById('setWhitelistEnabled').checked,
         };
-        const result = await API.adminSetSettings(settings);
+        const result = await adminFetch('admin/settings', { method: 'PUT', body: JSON.stringify(settings) });
         if (result.success) alert('设置已保存');
         else if (result.error) alert(result.error);
     }
@@ -758,7 +761,7 @@
             sel.innerHTML = '<option value="all">全部</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
         } catch(e) {}
 
-        const config = await API.adminGetLeaderboardConfig();
+        const config = await adminFetch('admin/leaderboard-config', { method: 'GET' });
         if (!config || config.error) return;
         document.getElementById('lbEnabled').checked = config.enabled || false;
         document.getElementById('lbTitle').value = config.title || '';
@@ -775,7 +778,7 @@
             category: document.getElementById('lbCategory').value,
             type: document.getElementById('lbType').value,
         };
-        const result = await API.adminSetLeaderboardConfig(config);
+        const result = await adminFetch('admin/leaderboard-config', { method: 'PUT', body: JSON.stringify(config) });
         if (result.success) alert('打榜配置已保存');
         else if (result.error) alert(result.error);
     }
@@ -784,9 +787,9 @@
     let employeeList = [];
 
     async function loadEmployees() {
-        employeeList = await API.request('admin/whitelist?action=employees', { method: 'GET' });
+        employeeList = await adminFetch('admin/whitelist', { method: 'GET' });
         if (employeeList.error) { employeeList = []; return; }
-        const users = await API.adminGetUsers();
+        const users = await adminFetch('admin/users', { method: 'GET' });
         renderEmployeeTable(users || []);
     }
 
@@ -825,7 +828,7 @@
         const name = document.getElementById('emp-add-name').value.trim();
         const dept = document.getElementById('emp-add-dept').value.trim();
         if (!companyCode || !empNo || !name) { alert('公司缩写、工号和姓名不能为空'); return; }
-        const result = await API.request('admin/whitelist?action=employees', {
+        const result = await adminFetch('admin/whitelist', {
             method: 'PUT',
             body: JSON.stringify({ action: 'add', employee: { companyCode, empNo, name, dept } }),
         });
@@ -840,7 +843,7 @@
 
     async function removeEmployee(companyCode, empNo) {
         if (!confirm('确认删除该员工？')) return;
-        const result = await API.request('admin/whitelist?action=employees', {
+        const result = await adminFetch('admin/whitelist', {
             method: 'PUT',
             body: JSON.stringify({ action: 'delete', companyCode, empNo }),
         });
@@ -871,7 +874,7 @@
         } catch (e) { alert('文件解析失败：' + e.message); return; }
         if (imported.length === 0) { alert('未解析到有效数据'); return; }
         if (!confirm('确认导入 ' + imported.length + ' 名员工？')) return;
-        const result = await API.request('admin/whitelist?action=employees', {
+        const result = await adminFetch('admin/whitelist', {
             method: 'PUT',
             body: JSON.stringify({ action: 'import', list: imported }),
         });
@@ -1005,7 +1008,7 @@
     async function importParsedToKV() {
         if (parsedResult.length === 0) { alert('没有可导入的数据，请先解析文件'); return; }
         if (!confirm('确定要将 ' + parsedResult.length + ' 条记录导入到云端用户库吗？')) return;
-        const result = await API.adminInitUsers(parsedResult);
+        const result = await adminFetch('admin/users', { method: 'PUT', body: JSON.stringify({ action: 'batch_add', users: parsedResult }) });
         if (result.success) {
             alert('成功导入 ' + result.imported + ' 条记录');
             loadOverview();
@@ -1025,7 +1028,7 @@
 
     function logout() {
         if (confirm('确定退出登录吗？')) {
-            API.clearToken();
+            localStorage.removeItem('fmi_token');
             localStorage.removeItem('fmi_login_status');
             location.href = 'login.html';
         }

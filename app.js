@@ -6,6 +6,9 @@ let curCat = "1", curIdx = 0, curLesson = "1"; // 当前分类/单词索引
 let todayRecord = JSON.parse(localStorage.getItem('fmi_today_record') || '[]'); // 今日记录
 let studyStats = JSON.parse(localStorage.getItem('fmi_study_stats') || '{"totalWords":0,"studySeconds":0,"todayWords":0,"startTime":null}');
 let dailyGoal = parseInt(localStorage.getItem('fmi_daily_goal') || '20');
+let _rate = parseFloat(localStorage.getItem('fmi_rate') || '0.8');
+let _loop = parseInt(localStorage.getItem('fmi_loop') || '1');
+let _hideChinese = false;
 const today = new Date().toLocaleDateString();
 // 全局白名单变量
 let whitelist = [];
@@ -272,21 +275,32 @@ function initUI() {
         </div>
         <div class="indo-box" id="disp-indo">加载中...</div>
         <div class="zh-box" id="disp-zh">请稍候</div>
-        <div class="learn-controls" id="learn-controls" style="display:flex;align-items:center;justify-content:center;gap:20px;padding:10px 20px;margin:0 auto;max-width:360px;">
-            <div style="display:flex;align-items:center;gap:8px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.15);border-radius:12px;padding:6px 14px;">
-                <i class="fas fa-volume-up" style="color:#818cf8;font-size:0.85rem;"></i>
-                <input type="range" id="inp-rate" min="0.1" max="1.5" step="0.1" value="0.8" oninput="updateSetting('rate', this.value)" style="width:80px;height:4px;accent-color:#818cf8;cursor:pointer;">
-                <span id="val-rate" style="color:#818cf8;font-size:0.8rem;font-weight:600;min-width:28px;">0.8x</span>
+        <div class="learn-controls" id="learn-controls" style="display:flex;align-items:center;justify-content:center;gap:16px;padding:8px 0;margin:0 auto;">
+            <div style="position:relative;width:56px;height:56px;">
+                <svg viewBox="0 0 56 56" style="width:100%;height:100%;transform:rotate(-90deg);">
+                    <circle cx="28" cy="28" r="24" fill="none" stroke="rgba(99,102,241,0.12)" stroke-width="3"/>
+                    <circle id="rate-ring" cx="28" cy="28" r="24" fill="none" stroke="#818cf8" stroke-width="3" stroke-dasharray="150.8" stroke-dashoffset="45.24" stroke-linecap="round"/>
+                </svg>
+                <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+                    <input type="range" id="inp-rate" min="1" max="20" step="1" value="8" oninput="updateRateCircle(this.value)" style="width:44px;height:44px;transform:rotate(-90deg);opacity:0;position:absolute;cursor:pointer;">
+                    <span id="val-rate" style="color:#818cf8;font-size:0.85rem;font-weight:700;pointer-events:none;">0.8x</span>
+                    <span style="color:#475569;font-size:0.55rem;pointer-events:none;margin-top:-2px;">语速</span>
+                </div>
             </div>
-            <div style="display:flex;align-items:center;gap:8px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.15);border-radius:12px;padding:6px 14px;">
-                <i class="fas fa-redo-alt" style="color:#34d399;font-size:0.8rem;"></i>
-                <input type="range" id="inp-loop" min="1" max="10" step="1" value="1" oninput="updateSetting('loop', this.value)" style="width:60px;height:4px;accent-color:#34d399;cursor:pointer;">
-                <span id="val-loop" style="color:#34d399;font-size:0.8rem;font-weight:600;min-width:20px;">1次</span>
+            <div style="position:relative;width:56px;height:56px;">
+                <svg viewBox="0 0 56 56" style="width:100%;height:100%;transform:rotate(-90deg);">
+                    <circle cx="28" cy="28" r="24" fill="none" stroke="rgba(52,211,153,0.12)" stroke-width="3"/>
+                    <circle id="loop-ring" cx="28" cy="28" r="24" fill="none" stroke="#34d399" stroke-width="3" stroke-dasharray="150.8" stroke-dashoffset="120.64" stroke-linecap="round"/>
+                </svg>
+                <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+                    <input type="range" id="inp-loop" min="1" max="10" step="1" value="1" oninput="updateLoopCircle(this.value)" style="width:44px;height:44px;transform:rotate(-90deg);opacity:0;position:absolute;cursor:pointer;">
+                    <span id="val-loop" style="color:#34d399;font-size:0.85rem;font-weight:700;pointer-events:none;">1次</span>
+                    <span style="color:#475569;font-size:0.55rem;pointer-events:none;margin-top:-2px;">循环</span>
+                </div>
             </div>
-            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;background:rgba(148,163,184,0.08);border:1px solid rgba(148,163,184,0.15);border-radius:12px;padding:6px 14px;color:#94a3b8;font-size:0.8rem;" title="隐藏中文释义">
-                <i class="fas fa-eye-slash" style="font-size:0.75rem;"></i>
-                <input type="checkbox" id="hide-toggle" onchange="renderCurrent()" style="width:14px;height:14px;accent-color:#94a3b8;cursor:pointer;">
-            </label>
+            <div onclick="toggleHide()" id="hide-btn" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(148,163,184,0.08);border:1px solid rgba(148,163,184,0.15);transition:all 0.3s;" title="隐藏/显示中文释义">
+                <i id="hide-icon" class="fas fa-eye" style="color:#94a3b8;font-size:0.9rem;"></i>
+            </div>
         </div>
         <div class="nav-row">
             <button class="circle-btn" onclick="navWord(-1)"><i class="fas fa-chevron-left"></i></button>
@@ -695,13 +709,13 @@ function toggleSpeech() {
     // 优先使用谷歌翻译发音
     googleSpeech(word).catch(() => {
         // 兜底：本地合成
-        const currentRate = parseFloat(document.getElementById('inp-rate').value);
+        const currentRate = parseFloat(_rate || document.getElementById('inp-rate')?.value || 0.8);
         const utterThis = new SpeechSynthesisUtterance(word);
         utterThis.lang = 'id-ID';
         utterThis.rate = currentRate;
         synth.speak(utterThis);
         // 循环播放逻辑
-        const loopTimes = parseInt(document.getElementById('inp-loop').value);
+        const loopTimes = parseInt(_loop || document.getElementById('inp-loop')?.value || 1);
         let loopCount = 1;
         utterThis.onend = function() {
             if (loopCount < loopTimes) {
@@ -721,7 +735,7 @@ function toggleSpeech() {
 
 // 隐藏答案
 function renderCurrent() {
-    const hideToggle = document.getElementById('hide-toggle');
+    const hideToggle = { checked: _hideChinese };
     document.getElementById('disp-zh').style.display = hideToggle.checked ? 'none' : 'block';
 }
 
@@ -730,19 +744,78 @@ function updateSetting(k, v) {
     const el = document.getElementById('val-' + k);
     if (el) el.innerText = v + (k === 'rate' ? 'x' : '次');
 }
+
+// 圆环控件：语速 1-20 对应 0.1-2.0
+function updateRateCircle(val) {
+    const rate = (parseInt(val) / 10).toFixed(1);
+    localStorage.setItem('fmi_rate', rate);
+    document.getElementById('val-rate').innerText = rate + 'x';
+    const circumference = 150.8;
+    const progress = (parseInt(val) - 1) / 19;
+    document.getElementById('rate-ring').style.strokeDashoffset = circumference * (1 - progress);
+    _rate = rate;
+    // 同步练习区
+    const pVal = document.getElementById('p-val-rate');
+    if (pVal) pVal.innerText = rate + 'x';
+}
+
+// 圆环控件：循环 1-10
+function updateLoopCircle(val) {
+    localStorage.setItem('fmi_loop', val);
+    document.getElementById('val-loop').innerText = val + '次';
+    const circumference = 150.8;
+    const progress = (parseInt(val) - 1) / 9;
+    document.getElementById('loop-ring').style.strokeDashoffset = circumference * (1 - progress);
+    _loop = parseInt(val);
+    const pVal = document.getElementById('p-val-loop');
+    if (pVal) pVal.innerText = val + '次';
+}
+
+// 隐藏/显示中文释义
+let _hideChinese = false;
+function toggleHide() {
+    _hideChinese = !_hideChinese;
+    const btn = document.getElementById('hide-btn');
+    const icon = document.getElementById('hide-icon');
+    if (_hideChinese) {
+        btn.style.background = 'rgba(248,113,113,0.15)';
+        btn.style.borderColor = 'rgba(248,113,113,0.3)';
+        icon.className = 'fas fa-eye-slash';
+        icon.style.color = '#f87171';
+    } else {
+        btn.style.background = 'rgba(148,163,184,0.08)';
+        btn.style.borderColor = 'rgba(148,163,184,0.15)';
+        icon.className = 'fas fa-eye';
+        icon.style.color = '#94a3b8';
+    }
+    renderCurrent();
+}
+
+function updatePracticeRateRing(val) {
+    const circumference = 150.8;
+    const progress = (parseInt(val) - 1) / 19;
+    const ring = document.getElementById('p-rate-ring');
+    if (ring) ring.style.strokeDashoffset = circumference * (1 - progress);
+}
+function updatePracticeLoopRing(val) {
+    const circumference = 150.8;
+    const progress = (parseInt(val) - 1) / 9;
+    const ring = document.getElementById('p-loop-ring');
+    if (ring) ring.style.strokeDashoffset = circumference * (1 - progress);
+}
 function updatePracticeSetting(k, v) {
     if (k === 'rate') {
-        document.getElementById('p-val-rate').innerText = v + 'x';
+        const pVal = document.getElementById('p-val-rate');
+        if (pVal) pVal.innerText = (parseInt(v) / 10).toFixed(1) + 'x';
     } else if (k === 'loop') {
-        document.getElementById('p-val-loop').innerText = v + '次';
+        const pVal = document.getElementById('p-val-loop');
+        if (pVal) pVal.innerText = v + '次';
     }
-    // 同步全局设置
-    updateSetting(k, v);
 }
 
 // 打开管理员弹窗
 function openAdminModal() {
-    document.getElementById('admin-modal').style.display = 'flex';
+    window.open('admin.html', '_blank');
 }
 
 // 验证管理员密码
@@ -1546,16 +1619,14 @@ function initPracticePage() {
         const n = catId === "1" ? "生词 Vocabulary" : catId === "2" ? "短语 Phrases" : catId;
         catOpts += '<option value="' + catId + '">' + catId + '. ' + n + '</option>';
     }
-    c.innerHTML = `<header style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;"><h1 class="main-title" style="font-size:1.3rem;">印尼语学习助手</h1><div style="font-size:0.85rem;color:#94a3b8;">练习模式</div></header><div class="practice-container" style="max-width:100%;"><div id="practice-setup"><div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:25px;">
-                    <div style="display:flex;align-items:center;gap:8px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.15);border-radius:12px;padding:6px 14px;">
-                        <i class="fas fa-volume-up" style="color:#818cf8;font-size:0.85rem;"></i>
-                        <input type="range" id="p-rate" min="0.1" max="1.5" step="0.1" value="0.8" oninput="updatePracticeSetting('rate', this.value)" style="width:80px;height:4px;accent-color:#818cf8;cursor:pointer;">
-                        <span id="p-val-rate" style="color:#818cf8;font-size:0.8rem;font-weight:600;min-width:28px;">0.8x</span>
+    c.innerHTML = `<header style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;"><h1 class="main-title" style="font-size:1.3rem;">印尼语学习助手</h1><div style="font-size:0.85rem;color:#94a3b8;">练习模式</div></header><div class="practice-container" style="max-width:100%;"><div id="practice-setup"><div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:25px;">
+                    <div style="position:relative;width:52px;height:52px;">
+                        <svg viewBox="0 0 56 56" style="width:100%;height:100%;transform:rotate(-90deg);"><circle cx="28" cy="28" r="24" fill="none" stroke="rgba(99,102,241,0.12)" stroke-width="3"/><circle id="p-rate-ring" cx="28" cy="28" r="24" fill="none" stroke="#818cf8" stroke-width="3" stroke-dasharray="150.8" stroke-dashoffset="45.24" stroke-linecap="round"/></svg>
+                        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;"><input type="range" id="p-rate" min="1" max="20" step="1" value="8" oninput="updatePracticeSetting('rate', this.value);updatePracticeRateRing(this.value)" style="width:40px;height:40px;transform:rotate(-90deg);opacity:0;position:absolute;cursor:pointer;"><span id="p-val-rate" style="color:#818cf8;font-size:0.8rem;font-weight:700;pointer-events:none;">0.8x</span><span style="color:#475569;font-size:0.5rem;pointer-events:none;">语速</span></div>
                     </div>
-                    <div style="display:flex;align-items:center;gap:8px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.15);border-radius:12px;padding:6px 14px;">
-                        <i class="fas fa-redo-alt" style="color:#34d399;font-size:0.8rem;"></i>
-                        <input type="range" id="p-loop" min="1" max="10" step="1" value="1" oninput="updatePracticeSetting('loop', this.value)" style="width:60px;height:4px;accent-color:#34d399;cursor:pointer;">
-                        <span id="p-val-loop" style="color:#34d399;font-size:0.8rem;font-weight:600;min-width:20px;">1次</span>
+                    <div style="position:relative;width:52px;height:52px;">
+                        <svg viewBox="0 0 56 56" style="width:100%;height:100%;transform:rotate(-90deg);"><circle cx="28" cy="28" r="24" fill="none" stroke="rgba(52,211,153,0.12)" stroke-width="3"/><circle id="p-loop-ring" cx="28" cy="28" r="24" fill="none" stroke="#34d399" stroke-width="3" stroke-dasharray="150.8" stroke-dashoffset="120.64" stroke-linecap="round"/></svg>
+                        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;"><input type="range" id="p-loop" min="1" max="10" step="1" value="1" oninput="updatePracticeSetting('loop', this.value);updatePracticeLoopRing(this.value)" style="width:40px;height:40px;transform:rotate(-90deg);opacity:0;position:absolute;cursor:pointer;"><span id="p-val-loop" style="color:#34d399;font-size:0.8rem;font-weight:700;pointer-events:none;">1次</span><span style="color:#475569;font-size:0.5rem;pointer-events:none;">循环</span></div>
                     </div>
                 </div><div style="text-align:center;margin-bottom:25px;"><h2 style="font-size:1.5rem;font-weight:800;color:var(--text-main);"><i class="fas fa-pen-fancy" style="color:var(--accent);margin-right:8px;"></i>练习模式</h2></div><div style="margin-bottom:20px;"><div style="color:var(--text-muted);font-size:0.9rem;margin-bottom:10px;">选择词库分类</div><select id="practice-cat-select" style="width:100%;padding:12px;border-radius:10px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:0.95rem;outline:none;"><option value="all">全部词库</option>' + catOpts + '</select></div><div style="margin-bottom:20px;"><div style="color:var(--text-muted);font-size:0.9rem;margin-bottom:10px;">选择练习类型</div><div class="practice-type-selector"><button class="practice-type-btn active" onclick="selectPracticeType('choice',this)"><i class="fas fa-th-large"></i> 选择题</button><button class="practice-type-btn" onclick="selectPracticeType('fill',this)"><i class="fas fa-keyboard"></i> 填空题</button><button class="practice-type-btn" onclick="selectPracticeType('listen',this)"><i class="fas fa-headphones"></i> 听力题</button></div></div><div style="margin-bottom:20px;padding:14px 18px;border-radius:14px;border:1px dashed var(--border-subtle);background:var(--accent-subtle);display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;">
             <label style="display:flex;align-items:center;gap:12px;cursor:pointer;color:var(--text-main);font-size:1rem;font-weight:600;">
@@ -1708,17 +1779,24 @@ function submitFillAnswer() {
     document.getElementById('p-accuracy').textContent = Math.round((practiceState.score / t) * 100) + '%';
 }
 function nextQuestion() { practiceState.currentIndex++; showQuestion(); }
-function endPractice() { finishPractice(); }
+function endPractice() {
+    if (practiceState.currentIndex === 0 && !practiceState.answered) {
+        if (!confirm('还没答题，确定要结束吗？')) return;
+    }
+    finishPractice();
+}
 function finishPractice() {
     practiceState.isFinished = true;
     const s = practiceState;
-    const pct = s.total > 0 ? Math.round((s.score / s.total) * 100) : 0;
+    const answered = s.currentIndex; // 已答题数
+    const total = Math.max(answered, s.score + s.wrongWords.length);
+    const pct = total > 0 ? Math.round((s.score / total) * 100) : 0;
     document.getElementById('practice-quiz').style.display = 'none';
     document.getElementById('practice-result').style.display = 'block';
     document.getElementById('p-result-score').textContent = pct + '%';
     document.getElementById('p-r-correct').textContent = s.score;
-    document.getElementById('p-r-wrong').textContent = s.total - s.score;
-    document.getElementById('p-r-total').textContent = s.total;
+    document.getElementById('p-r-wrong').textContent = s.wrongWords.length;
+    document.getElementById('p-r-total').textContent = answered > 0 ? answered : '—';
     let txt = '继续加油！';
     if (pct >= 90) txt = '太棒了！几乎完美！';
     else if (pct >= 70) txt = '不错！再接再厉！';
@@ -1757,7 +1835,9 @@ async function submitToLeaderboard() {
         return;
     }
     const s = practiceState;
-    const pct = s.total > 0 ? Math.round((s.score / s.total) * 100) : 0;
+    const answered = s.currentIndex; // 已答题数
+    const total = Math.max(answered, s.score + s.wrongWords.length);
+    const pct = total > 0 ? Math.round((s.score / total) * 100) : 0;
     const btn = document.getElementById('lb-submit-btn');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 提交中...';
