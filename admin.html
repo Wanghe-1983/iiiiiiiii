@@ -170,6 +170,24 @@
             <button class="hdr-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button>
         
 
+        <!-- 学习统计管理面板 -->
+        <div id="tab-study" class="tab-panel">
+            <div class="section-header">
+                <h2><i class="fas fa-chart-bar"></i> 学习统计管理</h2>
+                <button class="btn-accent" onclick="loadStudyStats()"><i class="fas fa-sync-alt"></i> 刷新数据</button>
+            </div>
+            <div class="card">
+                <p style="color:#94a3b8;font-size:0.85rem;margin-bottom:15px;">查看所有用户的学习数据和累计统计</p>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead><tr><th>用户名</th><th>昵称</th><th>角色</th><th>今日学习</th><th>累计词汇</th><th>学习时长</th><th>操作</th></tr></thead>
+                        <tbody id="studyStatsList"></tbody>
+                    </table>
+                </div>
+                <div id="studyStatsEmpty" style="display:none;text-align:center;color:#64748b;padding:30px;">暂无学习数据</div>
+            </div>
+        </div>
+
         <!-- 版本说明面板 -->
         <div id="tab-changelog" class="tab-panel">
             <div class="section-header">
