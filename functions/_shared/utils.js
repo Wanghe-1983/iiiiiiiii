@@ -412,6 +412,11 @@ async function handleRequest(context) {
             return json({ success: true, message: '注册成功', username });
         }
 
+        // 公开：获取最新版本信息
+        if (path === 'changelog/latest' && method === 'GET') {
+            const data = await env.KV.get('changelog', 'json') || [];
+            return json({ latest: data[0] || null, count: data.length });
+        }
         if (path === 'system/info' && method === 'GET') {
             const online = await getOnlineCount(env);
             const settings = await getSystemSettings(env);
@@ -567,6 +572,34 @@ async function handleRequest(context) {
             const { users } = await request.json();
             for (const u of users) await createUser(u, env);
             return json({ success: true, imported: users.length });
+        }
+        // === 版本说明 ===
+        if (path === 'admin/changelog/list' && method === 'GET') {
+            const data = await env.KV.get('changelog', 'json') || [];
+            return json({ versions: data });
+        }
+        if (path === 'admin/changelog/save' && method === 'POST') {
+            const { version, title, content: verContent, idx } = await request.json();
+            if (!version || !verContent) return json({ error: '版本号和内容不能为空' }, 400);
+            const data = await env.KV.get('changelog', 'json') || [];
+            const today = new Date().toLocaleDateString('zh-CN');
+            if (idx >= 0 && idx < data.length) {
+                data[idx] = { ...data[idx], version, title, content: verContent, date: today };
+            } else {
+                data.unshift({ version, title, content: verContent, date: today });
+            }
+            await env.KV.put('changelog', JSON.stringify(data));
+            return json({ success: true, versions: data });
+        }
+        if (path === 'admin/changelog/delete' && method === 'POST') {
+            const { idx } = await request.json();
+            const data = await env.KV.get('changelog', 'json') || [];
+            if (idx >= 0 && idx < data.length) {
+                data.splice(idx, 1);
+                await env.KV.put('changelog', JSON.stringify(data));
+                return json({ success: true });
+            }
+            return json({ error: '索引无效' }, 400);
         }
 
         return json({ error: '接口不存在' }, 404);

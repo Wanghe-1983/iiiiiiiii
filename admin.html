@@ -127,6 +127,38 @@
         /* Leaderboard config */
         .lb-config-row { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
         .lb-config-row .form-group { flex: 1; min-width: 180px; }
+
+        .version-item {
+            background: rgba(30,41,59,0.4); border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px; padding: 20px; margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+        .version-item:hover { border-color: rgba(99,102,241,0.3); }
+        .version-item-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .version-badge {
+            display: inline-block; padding: 3px 10px; border-radius: 20px;
+            font-size: 0.8rem; font-weight: 700; background: rgba(99,102,241,0.15);
+            color: #818cf8; letter-spacing: 0.5px;
+        }
+        .version-date { font-size: 0.8rem; color: #64748b; }
+        .version-title { font-size: 1rem; font-weight: 600; margin-bottom: 10px; color: #e2e8f0; }
+        .version-content {
+            font-size: 0.88rem; color: #94a3b8; line-height: 1.7;
+            white-space: pre-line; padding-left: 12px;
+            border-left: 2px solid rgba(99,102,241,0.3);
+        }
+        .version-actions { display: flex; gap: 8px; margin-top: 12px; }
+        .version-actions button {
+            padding: 5px 12px; border-radius: 8px; border: none;
+            font-size: 0.78rem; cursor: pointer; transition: all 0.2s;
+        }
+        .version-actions .btn-edit { background: rgba(99,102,241,0.15); color: #818cf8; }
+        .version-actions .btn-edit:hover { background: rgba(99,102,241,0.25); }
+        .version-actions .btn-del { background: rgba(239,68,68,0.15); color: #f87171; }
+        .version-actions .btn-del:hover { background: rgba(239,68,68,0.25); }
     </style>
 </head>
 <body>
@@ -136,7 +168,47 @@
         <div class="header-actions">
             <button class="hdr-btn ghost" onclick="location.href='index.html'"><i class="fas fa-arrow-left"></i> 返回学习</button>
             <button class="hdr-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button>
+        
+
+        <!-- 版本说明面板 -->
+        <div id="tab-changelog" class="tab-panel">
+            <div class="section-header">
+                <h2><i class="fas fa-code-branch"></i> 版本说明</h2>
+                <button class="btn-accent" onclick="showVersionEditor()"><i class="fas fa-plus"></i> 新增版本</button>
+            </div>
+            <div id="changelog-list"></div>
+            <div id="changelog-empty" style="text-align:center;padding:40px 0;color:#64748b;">
+                <i class="fas fa-inbox" style="font-size:2rem;margin-bottom:12px;display:block;"></i>
+                暂无版本记录
+            </div>
         </div>
+        <!-- 版本编辑弹窗 -->
+        <div id="version-modal" class="modal-overlay" style="display:none;">
+            <div class="modal-card" style="width:540px;">
+                <div class="modal-header">
+                    <h3 id="version-modal-title">新增版本</h3>
+                    <button class="modal-close" onclick="closeVersionModal()">&times;</button>
+                </div>
+                <div class="modal-body" style="padding:20px;">
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block;font-size:0.85rem;color:#94a3b8;margin-bottom:6px;">版本号 <span style="color:#ef4444;">*</span></label>
+                        <input type="text" id="version-number" placeholder="例如: v2.1.0" style="width:100%;padding:10px 14px;background:rgba(30,41,59,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;font-size:0.95rem;outline:none;">
+                    </div>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block;font-size:0.85rem;color:#94a3b8;margin-bottom:6px;">更新标题</label>
+                        <input type="text" id="version-title" placeholder="一句话概括本次更新" style="width:100%;padding:10px 14px;background:rgba(30,41,59,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;font-size:0.95rem;outline:none;">
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.85rem;color:#94a3b8;margin-bottom:6px;">更新内容 <span style="color:#ef4444;">*</span></label>
+                        <textarea id="version-content" rows="8" placeholder="请输入详细的更新内容，每行一个条目&#10;例如:&#10;- 新增白名单登录控制功能&#10;- 优化注册页面布局&#10;- 修复密码显示问题" style="width:100%;padding:10px 14px;background:rgba(30,41,59,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;font-size:0.9rem;outline:none;resize:vertical;line-height:1.6;font-family:inherit;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer" style="padding:0 20px 20px;display:flex;gap:10px;justify-content:flex-end;">
+                    <button class="btn-cancel" onclick="closeVersionModal()">取消</button>
+                    <button class="btn-accent" onclick="saveVersion()">保存</button>
+                </div>
+            </div>
+        </div></div>
     </div>
 
     <div class="admin-body">
@@ -149,6 +221,8 @@
             <div class="nav-divider"></div>
             <div class="nav-item" onclick="switchTab('employees', this)"><i class="fas fa-id-card-clip"></i> 员工名单</div>
             <div class="nav-item" onclick="switchTab('whitelist', this)"><i class="fas fa-clipboard-list"></i> 白名单/导入</div>
+            <div class="nav-divider"></div>
+            <div class="nav-item" onclick="switchTab('changelog', this)"><i class="fas fa-code-branch"></i> 版本说明</div>
         </div>
 
         <!-- Content -->
@@ -823,6 +897,106 @@
             location.href = 'login.html';
         }
     }
+
+        // === 版本说明 ===
+        let editingVersionIdx = -1;
+
+        async function loadChangelog() {
+            const res = await adminFetch('changelog/list');
+            if (!res) return;
+            const list = res.versions || [];
+            const container = document.getElementById('changelog-list');
+            const empty = document.getElementById('changelog-empty');
+            if (list.length === 0) {
+                container.innerHTML = '';
+                empty.style.display = '';
+                return;
+            }
+            empty.style.display = 'none';
+            container.innerHTML = list.map((v, i) => `
+                <div class="version-item">
+                    <div class="version-item-header">
+                        <span class="version-badge">${escHtml(v.version)}</span>
+                        <span class="version-date">${v.date || ''}</span>
+                    </div>
+                    ${v.title ? '<div class="version-title">' + escHtml(v.title) + '</div>' : ''}
+                    <div class="version-content">${escHtml(v.content)}</div>
+                    <div class="version-actions">
+                        <button class="btn-edit" onclick="editVersion(${i})"><i class="fas fa-pen"></i> 编辑</button>
+                        <button class="btn-del" onclick="deleteVersion(${i})"><i class="fas fa-trash"></i> 删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function escHtml(s) {
+            const d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
+        }
+
+        function showVersionEditor(idx) {
+            editingVersionIdx = (idx !== undefined) ? idx : -1;
+            document.getElementById('version-modal-title').textContent = idx !== undefined ? '编辑版本' : '新增版本';
+            if (idx !== undefined) {
+                const items = document.querySelectorAll('.version-item');
+                // 从已加载的DOM中获取数据（需重新获取）
+                adminFetch('changelog/list').then(res => {
+                    if (!res) return;
+                    const v = res.versions[idx];
+                    document.getElementById('version-number').value = v.version;
+                    document.getElementById('version-title').value = v.title || '';
+                    document.getElementById('version-content').value = v.content;
+                });
+            } else {
+                document.getElementById('version-number').value = '';
+                document.getElementById('version-title').value = '';
+                document.getElementById('version-content').value = '';
+            }
+            document.getElementById('version-modal').style.display = '';
+        }
+
+        function closeVersionModal() {
+            document.getElementById('version-modal').style.display = 'none';
+        }
+
+        async function saveVersion() {
+            const version = document.getElementById('version-number').value.trim();
+            const title = document.getElementById('version-title').value.trim();
+            const content = document.getElementById('version-content').value.trim();
+            if (!version) { alert('请输入版本号'); return; }
+            if (!content) { alert('请输入更新内容'); return; }
+
+            const body = { version, title, content, idx: editingVersionIdx };
+            const res = await adminFetch('changelog/save', 'POST', body);
+            if (res && res.success) {
+                closeVersionModal();
+                loadChangelog();
+            } else {
+                alert(res?.error || '保存失败');
+            }
+        }
+
+        async function editVersion(idx) {
+            showVersionEditor(idx);
+        }
+
+        async function deleteVersion(idx) {
+            if (!confirm('确定删除此版本记录？')) return;
+            const res = await adminFetch('changelog/delete', 'POST', { idx });
+            if (res && res.success) {
+                loadChangelog();
+            } else {
+                alert(res?.error || '删除失败');
+            }
+        }
+
+        // switchTab 增加版本说明加载
+        const origSwitchTab = window.switchTab;
+        window.switchTab = function(tab, el) {
+            origSwitchTab(tab, el);
+            if (tab === 'changelog') loadChangelog();
+        };
     </script>
 </body>
 </html>

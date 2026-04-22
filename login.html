@@ -28,23 +28,23 @@
         }
         .login-card {
             background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            padding: 40px; border-radius: 30px; width: 100%; max-width: 460px;
+            padding: 28px 32px; border-radius: 30px; width: 100%; max-width: 460px;
             border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
             text-align: center; position: relative; z-index: 10; margin: 20px 0;
         }
-        .logo-area { margin-bottom: 30px; }
-        .logo-icon { font-size: 3rem; color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); margin-bottom: 15px; }
-        h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 8px; }
-        .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 35px; }
+        .logo-area { margin-bottom: 20px; }
+        .logo-icon { font-size: 2.4rem; color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); margin-bottom: 10px; }
+        h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 6px; }
+        .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; }
 
-        .input-group { margin-bottom: 16px; text-align: left; }
+        .input-group { margin-bottom: 12px; text-align: left; }
         .input-label { display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 6px; margin-left: 5px; }
         .input-label .req { color: var(--danger); }
         .input-label .hint { font-size: 0.75rem; color: #6b7280; margin-left: 4px; }
         .input-wrapper { position: relative; }
         .input-wrapper i.icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; }
         .login-input {
-            width: 100%; padding: 13px 15px 13px 42px;
+            width: 100%; padding: 11px 15px 11px 42px;
             background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 12px; color: #fff; font-size: 1rem; transition: all 0.3s ease; outline: none;
         }
@@ -55,7 +55,7 @@
         .login-input.uppercase { text-transform: uppercase; }
         .login-input.digitsonly { letter-spacing: 2px; }
 
-        .input-row { display: flex; gap: 10px; }
+        .input-row { display: flex; gap: 8px; }
         .input-row .input-group { flex: 1; }
         .input-row .company-code .login-input { text-transform: uppercase; }
         .input-row .emp-no .login-input { letter-spacing: 2px; }
@@ -63,7 +63,7 @@
         .btn-primary {
             width: 100%; padding: 14px; background: var(--accent); color: white;
             border: none; border-radius: 12px; font-size: 1rem; font-weight: 700;
-            cursor: pointer; transition: all 0.3s ease; margin-top: 8px;
+            cursor: pointer; transition: all 0.3s ease; margin-top: 4px;
             box-shadow: 0 10px 15px -3px rgba(99,102,241,0.3);
         }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(99,102,241,0.4); filter: brightness(1.1); }
@@ -77,22 +77,22 @@
         .online-badge {
             display: inline-flex; align-items: center; gap: 6px;
             padding: 5px 14px; border-radius: 20px; font-size: 0.8rem;
-            background: rgba(16,185,129,0.15); color: #10b981; margin-bottom: 15px;
+            background: rgba(16,185,129,0.15); color: #10b981; margin-bottom: 12px;
         }
         .online-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: pulse 2s infinite; }
         @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-        .footer-note { margin-top: 25px; font-size: 0.85rem; color: var(--text-muted); }
+        .footer-note { margin-top: 16px; font-size: 0.85rem; color: var(--text-muted); }
         .contact-link { color: var(--accent); text-decoration: none; font-weight: 600; cursor: pointer; }
         .contact-link:hover { text-decoration: underline; }
 
         /* Tab */
         .auth-tabs {
-            display: flex; gap: 0; margin-bottom: 25px; border-radius: 12px;
+            display: flex; gap: 0; margin-bottom: 16px; border-radius: 12px;
             background: rgba(30,41,59,0.5); padding: 4px; border: 1px solid rgba(255,255,255,0.05);
         }
         .auth-tab {
-            flex: 1; padding: 10px; text-align: center; border-radius: 10px;
+            flex: 1; padding: 8px; text-align: center; border-radius: 10px;
             cursor: pointer; font-size: 0.95rem; font-weight: 600;
             color: var(--text-muted); transition: all 0.3s;
         }
@@ -104,10 +104,10 @@
 
         /* 用户类型选择 */
         .type-selector {
-            display: flex; gap: 12px; margin-bottom: 20px;
+            display: flex; gap: 10px; margin-bottom: 14px;
         }
         .type-card {
-            flex: 1; padding: 16px 12px; border-radius: 14px; cursor: pointer;
+            flex: 1; padding: 12px 10px; border-radius: 12px; cursor: pointer;
             border: 2px solid rgba(255,255,255,0.08); background: rgba(30,41,59,0.4);
             transition: all 0.3s; text-align: center;
         }
