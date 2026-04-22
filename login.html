@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>印尼语学习助手</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #030712;
+            --glass: rgba(17, 24, 39, 0.85);
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.5);
+            --text-main: #f9fafb;
+            --text-muted: #94a3b8;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: var(--bg);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(99,102,241,0.15) 0%, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168,85,247,0.12) 0%, transparent 50%);
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        .login-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 30px;
+            width: 100%;
+            max-width: 420px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+        .logo-area { margin-bottom: 30px; }
+        .logo-icon { font-size: 3rem; color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); margin-bottom: 15px; }
+        h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 8px; }
+        .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 35px; }
+
+        .input-group { margin-bottom: 18px; text-align: left; }
+        .input-label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; margin-left: 5px; }
+        .input-wrapper { position: relative; }
+        .input-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .login-input {
+            width: 100%; padding: 14px 15px 14px 45px;
+            background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; color: #fff; font-size: 1rem; transition: all 0.3s ease; outline: none;
+        }
+        .login-input:focus { border-color: var(--accent); background: rgba(30,41,59,0.8); box-shadow: 0 0 0 4px rgba(99,102,241,0.1); }
+        .login-input::placeholder { color: #4b5563; }
+
+        .btn-primary {
+            width: 100%; padding: 15px; background: var(--accent); color: white;
+            border: none; border-radius: 12px; font-size: 1rem; font-weight: 700;
+            cursor: pointer; transition: all 0.3s ease; margin-top: 10px;
+            box-shadow: 0 10px 15px -3px rgba(99,102,241,0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(99,102,241,0.4); filter: brightness(1.1); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        #error-tip {
+            margin-top: 18px; padding: 10px; background: rgba(248,113,113,0.1);
+            border: 1px solid rgba(248,113,113,0.2); border-radius: 8px;
+            color: #f87171; font-size: 0.85rem; display: none;
+        }
+        #success-tip {
+            margin-top: 18px; padding: 10px; background: rgba(16,185,129,0.1);
+            border: 1px solid rgba(16,185,129,0.2); border-radius: 8px;
+            color: #10b981; font-size: 0.85rem; display: none;
+        }
+
+        .switch-mode {
+            margin-top: 22px; font-size: 0.9rem; color: var(--text-muted);
+        }
+        .switch-mode a {
+            color: var(--accent); text-decoration: none; font-weight: 600; cursor: pointer;
+        }
+        .switch-mode a:hover { text-decoration: underline; }
+
+        .online-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 14px; border-radius: 20px; font-size: 0.8rem;
+            background: rgba(16,185,129,0.15); color: #10b981; margin-bottom: 15px;
+        }
+        .online-badge .dot {
+            width: 8px; height: 8px; border-radius: 50%; background: #10b981;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%,100% { opacity: 1; } 50% { opacity: 0.4; }
+        }
+
+        .footer-note { margin-top: 25px; font-size: 0.85rem; color: var(--text-muted); }
+        .contact-link { color: var(--accent); text-decoration: none; font-weight: 600; cursor: pointer; }
+        .contact-link:hover { text-decoration: underline; }
+
+        /* Tab 切换 */
+        .auth-tabs {
+            display: flex; gap: 0; margin-bottom: 30px; border-radius: 12px;
+            background: rgba(30,41,59,0.5); padding: 4px; border: 1px solid rgba(255,255,255,0.05);
+        }
+        .auth-tab {
+            flex: 1; padding: 10px; text-align: center; border-radius: 10px;
+            cursor: pointer; font-size: 0.95rem; font-weight: 600;
+            color: var(--text-muted); transition: all 0.3s;
+        }
+        .auth-tab.active { background: var(--accent); color: white; }
+        .auth-tab:hover:not(.active) { color: var(--text-main); }
+
+        .form-panel { display: none; }
+        .form-panel.active { display: block; }
+
+        /* QR 弹窗 */
+        .qr-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            display: none; justify-content: center; align-items: center;
+            z-index: 1000; backdrop-filter: blur(10px);
+        }
+        .qr-card {
+            background: #1f2937; padding: 30px; border-radius: 25px;
+            border: 1px solid rgba(255,255,255,0.1); text-align: center;
+            transform: scale(0.9); animation: qrShow 0.3s forwards;
+        }
+        @keyframes qrShow { to { transform: scale(1); } }
+        .qr-img { width: 240px; height: 240px; border-radius: 15px; margin: 15px 0; border: 4px solid rgba(255,255,255,0.05); }
+
+        /* Light theme */
+        [data-theme="light"] { --bg:#f1f5f9; --glass:rgba(255,255,255,0.9); --accent:#4f46e5; --accent-glow:rgba(79,70,229,0.3); --text-main:#0f172a; --text-muted:#475569; }
+        [data-theme="light"] body { background:var(--bg); background-image: radial-gradient(at 0% 0%, rgba(99,102,241,0.08) 0%, transparent 50%), radial-gradient(at 100% 100%, rgba(168,85,247,0.06) 0%, transparent 50%); }
+        [data-theme="light"] .login-card { border-color:rgba(0,0,0,0.08); box-shadow:0 25px 50px -12px rgba(0,0,0,0.15); }
+        [data-theme="light"] .login-input { background:rgba(241,245,249,0.8); border-color:rgba(0,0,0,0.1); color:#0f172a; }
+        [data-theme="light"] .login-input:focus { border-color:var(--accent); background:#fff; }
+        [data-theme="light"] .login-input::placeholder { color:#94a3b8; }
+        [data-theme="light"] .auth-tabs { background:rgba(0,0,0,0.04); }
+        [data-theme="light"] .qr-card { background:#fff; border-color:rgba(0,0,0,0.08); }
+        [data-theme="light"] .input-wrapper i { color:var(--text-muted); }
+        [data-theme="light"] .online-badge { background:rgba(16,185,129,0.1); }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="login-card">
+        <div class="logo-area">
+            <div class="logo-icon"><i class="fas fa-book-reader"></i></div>
+            <h1>印尼语学习助手</h1>
+            <p class="subtitle">Selamat Belajar Bahasa Indonesia!</p>
+        </div>
+
+        <!-- 在线人数 -->
+        <div id="online-badge" class="online-badge" style="display:none;">
+            <span class="dot"></span>
+            <span id="online-text">在线 0 人</span>
+        </div>
+
+        <!-- Tab 切换 -->
+        <div class="auth-tabs">
+            <div class="auth-tab active" onclick="switchTab('login')">登录</div>
+            <div class="auth-tab" onclick="switchTab('register')">注册</div>
+        </div>
+
+        <!-- 登录面板 -->
+        <div id="panel-login" class="form-panel active">
+            <div class="input-group">
+                <span class="input-label">账号 / Username</span>
+                <div class="input-wrapper">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="login-username" class="login-input" placeholder="请输入用户名" autocomplete="off">
+                </div>
+            </div>
+            <div class="input-group">
+                <span class="input-label">密码 / Password</span>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="login-password" class="login-input" placeholder="请输入密码">
+                </div>
+            </div>
+            <button class="btn-primary" id="login-btn" onclick="handleLogin()">立即登录</button>
+            <div id="login-error" class="error-tip"></div>
+        </div>
+
+        <!-- 注册面板 -->
+        <div id="panel-register" class="form-panel">
+            <div class="input-group">
+                <span class="input-label">用户名 / Username <span style="color:var(--danger)">*</span></span>
+                <div class="input-wrapper">
+                    <i class="fas fa-user-plus"></i>
+                    <input type="text" id="reg-username" class="login-input" placeholder="2-20位字母或数字" autocomplete="off">
+                </div>
+            </div>
+            <div class="input-group">
+                <span class="input-label">昵称 / Name</span>
+                <div class="input-wrapper">
+                    <i class="fas fa-id-badge"></i>
+                    <input type="text" id="reg-name" class="login-input" placeholder="你的昵称（可选）" autocomplete="off">
+                </div>
+            </div>
+            <div class="input-group">
+                <span class="input-label">密码 / Password <span style="color:var(--danger)">*</span></span>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="reg-password" class="login-input" placeholder="至少4位">
+                </div>
+            </div>
+            <div class="input-group">
+                <span class="input-label">确认密码</span>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="reg-password2" class="login-input" placeholder="再次输入密码">
+                </div>
+            </div>
+            <button class="btn-primary" id="reg-btn" onclick="handleRegister()">注册账号</button>
+            <div id="reg-error" class="error-tip"></div>
+            <div id="reg-success" class="success-tip"></div>
+        </div>
+
+        <div class="footer-note">
+            遇到问题？请联系系统管理员 <span class="contact-link" onclick="showQR()">王鹤</span>
+        </div>
+    </div>
+
+    <!-- QR 弹窗 -->
+    <div id="qr-box" class="qr-overlay" onclick="hideQR()">
+        <div class="qr-card" onclick="event.stopPropagation()">
+            <h3 style="color:#fff;margin-bottom:5px;">联系开发者</h3>
+            <p style="color:var(--text-muted);font-size:0.8rem;">遇到登录问题或申请账号</p>
+            <img src="Wang_he.jpg" class="qr-img" alt="二维码">
+            <p style="color:var(--accent);font-size:0.85rem;cursor:pointer;" onclick="hideQR()">点击此处关闭</p>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+        function showQR() { document.getElementById('qr-box').style.display = 'flex'; }
+        function hideQR() { document.getElementById('qr-box').style.display = 'none'; }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach((el, i) => {
+                el.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1));
+            });
+            document.getElementById('panel-login').classList.toggle('active', tab === 'login');
+            document.getElementById('panel-register').classList.toggle('active', tab === 'register');
+            clearTips();
+        }
+
+        function clearTips() {
+            ['login-error','reg-error','reg-success'].forEach(id => {
+                const el = document.getElementById(id);
+                el.style.display = 'none';
+            });
+        }
+
+        function showTip(id, msg) {
+            const el = document.getElementById(id);
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+
+        // 登录
+        async function handleLogin() {
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value.trim();
+            clearTips();
+
+            if (!username || !password) { showTip('login-error', '请输入用户名和密码'); return; }
+
+            const btn = document.getElementById('login-btn');
+            btn.disabled = true;
+            btn.textContent = '登录中...';
+
+            try {
+                // 优先尝试后端登录
+                if (API.isLoggedIn === undefined) { API.init(); }
+                const result = await API.login(username, password);
+
+                if (result.token) {
+                    // 后端登录成功
+                    localStorage.setItem('fmi_login_status', JSON.stringify({
+                        isLogin: true, user: result.user, backend: true
+                    }));
+                    setTimeout(() => { window.location.href = 'index.html'; }, 100);
+                } else if (result.error === 'network') {
+                    // 后端不可用，降级到本地白名单登录
+                    fallbackLogin(username, password);
+                } else {
+                    showTip('login-error', result.error || '登录失败');
+                }
+            } catch (e) {
+                fallbackLogin(username, password);
+            }
+            btn.disabled = false;
+            btn.textContent = '立即登录';
+        }
+
+        // 本地白名单降级登录
+        function fallbackLogin(username, password) {
+            const whitelist = JSON.parse(localStorage.getItem('fmi_whitelist') || JSON.stringify([
+                { username: "admin", password: "admin123", name: "超级管理员" },
+                { username: "user01", password: "123456", name: "普通用户" }
+            ]));
+            const user = whitelist.find(item => item.username === username && item.password === password);
+            if (user) {
+                localStorage.setItem('fmi_login_status', JSON.stringify({
+                    isLogin: true, user, backend: false
+                }));
+                setTimeout(() => { window.location.href = 'index.html'; }, 100);
+            } else {
+                showTip('login-error', '用户名或密码错误');
+            }
+        }
+
+        // 注册
+        async function handleRegister() {
+            const username = document.getElementById('reg-username').value.trim();
+            const name = document.getElementById('reg-name').value.trim();
+            const password = document.getElementById('reg-password').value.trim();
+            const password2 = document.getElementById('reg-password2').value.trim();
+            clearTips();
+
+            if (!username || !password) { showTip('reg-error', '用户名和密码不能为空'); return; }
+            if (username.length < 2 || username.length > 20) { showTip('reg-error', '用户名长度 2-20 位'); return; }
+            if (password.length < 4) { showTip('reg-error', '密码至少 4 位'); return; }
+            if (password !== password2) { showTip('reg-error', '两次密码输入不一致'); return; }
+
+            const btn = document.getElementById('reg-btn');
+            btn.disabled = true;
+            btn.textContent = '注册中...';
+
+            const result = await API.register(username, password, name || username);
+            btn.disabled = false;
+            btn.textContent = '注册账号';
+
+            if (result.success) {
+                showTip('reg-success', '注册成功！请切换到登录页面登录');
+                document.getElementById('reg-username').value = '';
+                document.getElementById('reg-name').value = '';
+                document.getElementById('reg-password').value = '';
+                document.getElementById('reg-password2').value = '';
+            } else {
+                showTip('reg-error', result.error || '注册失败');
+            }
+        }
+
+        // 获取在线人数
+        async function loadOnlineCount() {
+            try {
+                const info = await API.getSystemInfo();
+                if (info.error === 'network') return;
+                const badge = document.getElementById('online-badge');
+                if (info.showOnlineLogin && info.onlineCount > 0) {
+                    badge.style.display = 'inline-flex';
+                    document.getElementById('online-text').textContent = `在线 ${info.onlineCount} 人`;
+                }
+                // 如果不允许注册，隐藏注册 tab
+                if (!info.allowRegister) {
+                    document.querySelectorAll('.auth-tab')[1].style.display = 'none';
+                }
+            } catch (e) {}
+        }
+
+        // 主题
+        document.body.setAttribute('data-theme', localStorage.getItem('fmi_theme') || 'dark');
+
+        // 已登录跳转
+        window.onload = function() {
+            const status = JSON.parse(localStorage.getItem('fmi_login_status') || '{"isLogin":false}');
+            if (status.isLogin) { window.location.href = 'index.html'; return; }
+
+            // 跨天清空
+            const todayStr = new Date().toLocaleDateString();
+            const savedDate = localStorage.getItem('fmi_study_date');
+            if (savedDate && savedDate !== todayStr) {
+                localStorage.removeItem('fmi_today_record');
+                localStorage.removeItem('fmi_study_stats');
+                localStorage.removeItem('fmi_all_words');
+                localStorage.setItem('fmi_study_date', todayStr);
+            }
+
+            loadOnlineCount();
+        };
+
+        // 回车登录
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                if (document.getElementById('panel-login').classList.contains('active')) handleLogin();
+                else handleRegister();
+            }
+        });
+    </script>
+</body>
+</html>

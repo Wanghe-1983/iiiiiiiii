@@ -1,0 +1,25 @@
+{
+  "name": "印尼语学习助手",
+  "short_name": "印尼语学习",
+  "description": "Selamat Belajar Bahasa Indonesia!",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#030712",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "Wang_he.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "Wang_he.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ],
+  "categories": [
+    "education"
+  ]
+}

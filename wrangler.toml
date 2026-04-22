@@ -1,0 +1,11 @@
+# Cloudflare Pages 配置
+# Account: 1505301234@qq.com
+# Account ID: c36ee07f9d923810f1ff719f074469fe
+# KV: INDO_LEARN_KV (c80ebd802e4d4637a3d8f8dd864d7e07)
+
+name = "indonesian-learn"
+compatibility_date = "2025-04-01"
+
+[[kv_namespaces]]
+binding = "INDO_LEARN_KV"
+id = "c80ebd802e4d4637a3d8f8dd864d7e07"

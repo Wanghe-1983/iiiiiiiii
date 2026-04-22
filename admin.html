@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 印尼语学习助手</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="config.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: var(--bg-main, #0b1120); color: var(--text-main, #e2e8f0); font-family: system-ui, sans-serif; min-height: 100vh; }
+
+        .admin-header { background: rgba(17,24,39,0.95); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(15px); }
+        .admin-header h1 { font-size: 1.3rem; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .admin-header h1 i { color: #a78bfa; }
+        .header-actions { display: flex; gap: 10px; }
+        .hdr-btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
+        .hdr-btn.primary { background: #6366f1; color: #fff; }
+        .hdr-btn.primary:hover { background: #4f46e5; }
+        .hdr-btn.ghost { background: rgba(255,255,255,0.06); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); }
+        .hdr-btn.ghost:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .hdr-btn.danger { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+        .hdr-btn.danger:hover { background: rgba(239,68,68,0.25); }
+
+        .admin-body { display: flex; min-height: calc(100vh - 60px); }
+
+        /* Sidebar */
+        .admin-nav { width: 240px; background: rgba(17,24,39,0.6); border-right: 1px solid rgba(255,255,255,0.06); padding: 20px 0; flex-shrink: 0; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 24px; cursor: pointer; color: #94a3b8; font-size: 0.9rem; transition: 0.2s; border-left: 3px solid transparent; }
+        .nav-item:hover { background: rgba(99,102,241,0.08); color: #cbd5e1; }
+        .nav-item.active { background: rgba(99,102,241,0.12); color: #a5b4fc; border-left-color: #6366f1; font-weight: 600; }
+        .nav-item i { width: 20px; text-align: center; font-size: 1rem; }
+        .nav-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 15px 20px; }
+
+        /* Content */
+        .admin-content { flex: 1; padding: 30px; overflow-y: auto; max-height: calc(100vh - 60px); }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        .panel-title { font-size: 1.2rem; color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .panel-title i { color: #a78bfa; }
+
+        /* Cards */
+        .card { background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .card-title { font-size: 0.95rem; color: #cbd5e1; margin-bottom: 15px; font-weight: 600; }
+
+        /* Stats row */
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; }
+        .stat-card .stat-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; margin-bottom: 12px; }
+        .stat-card .stat-value { font-size: 1.8rem; font-weight: 700; color: #fff; }
+        .stat-card .stat-label { font-size: 0.85rem; color: #64748b; margin-top: 4px; }
+        .stat-purple .stat-icon { background: rgba(99,102,241,0.15); color: #a78bfa; }
+        .stat-green .stat-icon { background: rgba(16,185,129,0.15); color: #34d399; }
+        .stat-orange .stat-icon { background: rgba(249,115,22,0.15); color: #fb923c; }
+        .stat-red .stat-icon { background: rgba(239,68,68,0.15); color: #f87171; }
+
+        /* Form */
+        .form-row { display: flex; gap: 15px; align-items: flex-end; margin-bottom: 15px; flex-wrap: wrap; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 0.8rem; color: #64748b; font-weight: 500; }
+        .form-group input, .form-group select { padding: 10px 14px; background: rgba(15,23,42,0.8); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; font-size: 0.9rem; outline: none; min-width: 160px; }
+        .form-group input:focus, .form-group select:focus { border-color: #6366f1; }
+
+        /* Table */
+        .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .data-table th { text-align: left; padding: 12px 10px; color: #64748b; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); white-space: nowrap; }
+        .data-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #cbd5e1; }
+        .data-table tr:hover td { background: rgba(99,102,241,0.05); }
+
+        /* Badges */
+        .badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+        .badge-online { background: rgba(16,185,129,0.15); color: #34d399; }
+        .badge-offline { background: rgba(100,116,139,0.15); color: #64748b; }
+        .badge-admin { background: rgba(99,102,241,0.15); color: #a78bfa; }
+        .badge-banned { background: rgba(239,68,68,0.15); color: #f87171; }
+
+        /* Action buttons */
+        .action-btn { padding: 5px 10px; border-radius: 6px; border: none; cursor: pointer; font-size: 0.8rem; transition: 0.2s; }
+        .action-btn:hover { opacity: 0.85; }
+        .action-btn.kick { background: rgba(249,115,22,0.15); color: #fb923c; }
+        .action-btn.ban { background: rgba(239,68,68,0.15); color: #f87171; }
+        .action-btn.unban { background: rgba(16,185,129,0.15); color: #34d399; }
+        .action-btn.edit { background: rgba(99,102,241,0.15); color: #a78bfa; }
+        .action-btn.del { background: rgba(239,68,68,0.2); color: #f87171; }
+
+        /* Settings */
+        .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .setting-row:last-child { border-bottom: none; }
+        .setting-info { flex: 1; }
+        .setting-label { color: #e2e8f0; font-size: 0.9rem; font-weight: 500; }
+        .setting-desc { color: #64748b; font-size: 0.8rem; margin-top: 3px; }
+        .setting-control { display: flex; align-items: center; gap: 10px; }
+        .setting-input { width: 80px; padding: 8px 12px; background: rgba(15,23,42,0.8); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; text-align: center; font-size: 0.9rem; }
+        .toggle { position: relative; width: 44px; height: 24px; cursor: pointer; }
+        .toggle input { opacity: 0; width: 0; height: 0; }
+        .toggle .slider { position: absolute; inset: 0; background: rgba(100,116,139,0.3); border-radius: 24px; transition: 0.3s; }
+        .toggle .slider:before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: 0.3s; }
+        .toggle input:checked + .slider { background: #6366f1; }
+        .toggle input:checked + .slider:before { transform: translateX(20px); }
+
+        /* User table scroll */
+        .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); background: rgba(30,41,59,0.3); }
+        .table-wrap table { margin: 0; }
+
+        /* Upload section */
+        .upload-section { padding: 20px; background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; margin-bottom: 20px; }
+        .upload-section input[type="file"] { margin: 10px 0; color: #94a3b8; }
+        .upload-section .hint { color: #64748b; font-size: 0.8rem; margin-top: 8px; line-height: 1.6; }
+        .upload-section .hint strong { color: #a5b4fc; }
+        .parsed-list { max-height: 250px; overflow-y: auto; background: rgba(17,24,39,0.8); padding: 10px; border-radius: 8px; margin-top: 10px; }
+        .parsed-item { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.06); color: #cbd5e1; font-size: 0.85rem; }
+        .parsed-header { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(99,102,241,0.08); border-radius: 8px; margin: 10px 0; }
+        .parsed-header .parsed-count { color: #a5b4fc; font-weight: 600; }
+        .copy-all-btn { background: #10b981; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
+        .json-output-box { background: rgba(17,24,39,0.9); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 15px; margin-top: 10px; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 0.8rem; color: #a5b4fc; white-space: pre-wrap; word-break: break-all; }
+        .format-selector { display: flex; gap: 8px; margin: 8px 0; flex-wrap: wrap; }
+        .format-option { padding: 6px 12px; background: rgba(30,41,59,0.6); border: 1px solid rgba(255,255,255,0.08); border-radius: 6px; cursor: pointer; color: #cbd5e1; font-size: 0.8rem; }
+        .format-option:hover, .format-option.active { border-color: #6366f1; color: #a5b4fc; }
+        .column-mapping { display: flex; gap: 8px; margin: 8px 0; flex-wrap: wrap; align-items: center; }
+        .column-mapping select, .column-mapping input { padding: 6px 10px; background: #0f172a; color: #fff; border: 1px solid #334155; border-radius: 6px; font-size: 0.8rem; }
+        .column-mapping label { color: #94a3b8; font-size: 0.8rem; }
+
+        /* Leaderboard config */
+        .lb-config-row { display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
+        .lb-config-row .form-group { flex: 1; min-width: 180px; }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="admin-header">
+        <h1><i class="fas fa-shield-halved"></i> 管理员后台</h1>
+        <div class="header-actions">
+            <button class="hdr-btn ghost" onclick="location.href='index.html'"><i class="fas fa-arrow-left"></i> 返回学习</button>
+            <button class="hdr-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button>
+        </div>
+    </div>
+
+    <div class="admin-body">
+        <!-- Sidebar -->
+        <div class="admin-nav">
+            <div class="nav-item active" onclick="switchTab('overview', this)"><i class="fas fa-chart-pie"></i> 概览</div>
+            <div class="nav-item" onclick="switchTab('users', this)"><i class="fas fa-users-gear"></i> 用户管理</div>
+            <div class="nav-item" onclick="switchTab('settings', this)"><i class="fas fa-sliders"></i> 系统设置</div>
+            <div class="nav-item" onclick="switchTab('leaderboard', this)"><i class="fas fa-trophy"></i> 打榜配置</div>
+            <div class="nav-divider"></div>
+            <div class="nav-item" onclick="switchTab('whitelist', this)"><i class="fas fa-clipboard-list"></i> 白名单/导入</div>
+        </div>
+
+        <!-- Content -->
+        <div class="admin-content">
+            <!-- 概览 -->
+            <div class="tab-panel active" id="tab-overview">
+                <div class="panel-title"><i class="fas fa-chart-pie"></i> 系统概览</div>
+                <div class="stats-row" id="statsRow"></div>
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-wifi" style="color:#34d399;"></i> 当前在线用户</div>
+                    <div class="table-wrap"><table class="data-table"><thead><tr><th>用户名</th><th>昵称</th><th>最后心跳</th><th>操作</th></tr></thead><tbody id="onlineList"></tbody></table></div>
+                </div>
+            </div>
+
+            <!-- 用户管理 -->
+            <div class="tab-panel" id="tab-users">
+                <div class="panel-title"><i class="fas fa-users-gear"></i> 用户管理</div>
+                <div class="card">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px;">
+                        <input type="text" id="userSearch" placeholder="搜索用户名/昵称..." oninput="filterUsers()" style="padding:8px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.85rem;width:250px;">
+                        <div style="display:flex;gap:8px;">
+                            <button class="hdr-btn primary" onclick="showAddUser()"><i class="fas fa-user-plus"></i> 添加用户</button>
+                            <button class="hdr-btn ghost" onclick="loadUsers()"><i class="fas fa-refresh"></i> 刷新</button>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead><tr><th>用户名</th><th>昵称</th><th>角色</th><th>状态</th><th>密码</th><th>注册时间</th><th>操作</th></tr></thead>
+                            <tbody id="userList"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Add/Edit user modal -->
+                <div class="card" id="userFormCard" style="display:none;">
+                    <div class="card-title" id="userFormTitle">添加用户</div>
+                    <div class="form-row">
+                        <div class="form-group"><label>用户名</label><input id="ufUsername" placeholder="登录用户名"></div>
+                        <div class="form-group"><label>昵称</label><input id="ufName" placeholder="显示名称"></div>
+                        <div class="form-group"><label>密码</label><input id="ufPassword" placeholder="登录密码"></div>
+                        <div class="form-group"><label>角色</label><select id="ufRole"><option value="user">普通用户</option><option value="admin">管理员</option></select></div>
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button class="hdr-btn primary" id="ufSubmit" onclick="submitUserForm()">确认添加</button>
+                        <button class="hdr-btn ghost" onclick="hideUserForm()">取消</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 系统设置 -->
+            <div class="tab-panel" id="tab-settings">
+                <div class="panel-title"><i class="fas fa-sliders"></i> 系统设置</div>
+                <div class="card">
+                    <div class="setting-row">
+                        <div class="setting-info"><div class="setting-label">最大同时在线人数</div><div class="setting-desc">0 表示不限制</div></div>
+                        <div class="setting-control"><input type="number" class="setting-input" id="setMaxOnline" min="0" value="0"><span style="color:#64748b;font-size:0.8rem;">人</span></div>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info"><div class="setting-label">最大注册人数</div><div class="setting-desc">0 表示不限制</div></div>
+                        <div class="setting-control"><input type="number" class="setting-input" id="setMaxRegistered" min="0" value="0"><span style="color:#64748b;font-size:0.8rem;">人</span></div>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info"><div class="setting-label">允许自助注册</div><div class="setting-desc">关闭后用户无法自行注册，只能由管理员创建</div></div>
+                        <div class="setting-control"><label class="toggle"><input type="checkbox" id="setAllowRegister" checked><span class="slider"></span></label></div>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info"><div class="setting-label">主界面显示在线人数</div><div class="setting-desc">在学习页面显示当前在线人数</div></div>
+                        <div class="setting-control"><label class="toggle"><input type="checkbox" id="setShowOnlineMain" checked><span class="slider"></span></label></div>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info"><div class="setting-label">登录界面显示在线人数</div><div class="setting-desc">在登录页面显示当前在线和注册人数</div></div>
+                        <div class="setting-control"><label class="toggle"><input type="checkbox" id="setShowOnlineLogin" checked><span class="slider"></span></label></div>
+                    </div>
+                    <div style="margin-top:20px;"><button class="hdr-btn primary" onclick="saveSettings()"><i class="fas fa-save"></i> 保存设置</button></div>
+                </div>
+            </div>
+
+            <!-- 打榜配置 -->
+            <div class="tab-panel" id="tab-leaderboard">
+                <div class="panel-title"><i class="fas fa-trophy"></i> 打榜配置</div>
+                <div class="card">
+                    <div class="setting-row">
+                        <div class="setting-info"><div class="setting-label">启用打榜</div><div class="setting-desc">开启后用户可在练习结束后提交成绩到排行榜</div></div>
+                        <div class="setting-control"><label class="toggle"><input type="checkbox" id="lbEnabled"><span class="slider"></span></label></div>
+                    </div>
+                    <div class="lb-config-row">
+                        <div class="form-group"><label>打榜名称</label><input id="lbTitle" placeholder="例：每日单词挑战"></div>
+                        <div class="form-group"><label>题目数量</label><input type="number" id="lbQuestionCount" min="5" max="100" value="20"></div>
+                    </div>
+                    <div class="lb-config-row">
+                        <div class="form-group"><label>课件分类</label><select id="lbCategory"><option value="all">全部</option></select></div>
+                        <div class="form-group"><label>题目类型</label><select id="lbType"><option value="indo2cn">印尼语→中文</option><option value="cn2indo">中文→印尼语</option><option value="mixed">混合模式</option></select></div>
+                    </div>
+                    <div style="margin-top:15px;display:flex;gap:10px;">
+                        <button class="hdr-btn primary" onclick="saveLbConfig()"><i class="fas fa-save"></i> 保存配置</button>
+                        <button class="hdr-btn ghost" onclick="loadLbConfig()"><i class="fas fa-refresh"></i> 刷新</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 白名单/导入 -->
+            <div class="tab-panel" id="tab-whitelist">
+                <div class="panel-title"><i class="fas fa-clipboard-list"></i> 白名单 / 名单导入</div>
+                <div class="upload-section">
+                    <div class="card-title" style="margin-bottom:12px;"><i class="fas fa-file-import" style="color:#a78bfa;"></i> 名单解析工具</div>
+                    <p style="color:#94a3b8;font-size:0.85rem;margin-bottom:10px;">上传名单文件，自动解析并导入到用户库</p>
+                    <input type="file" id="file-input" accept=".json,.csv,.txt,.xls,.xlsx">
+                    <div style="display:flex;gap:8px;margin-top:8px;">
+                        <button class="hdr-btn primary" onclick="parseFile()"><i class="fas fa-search"></i> 解析文件</button>
+                        <button class="hdr-btn ghost" onclick="importParsedToKV()"><i class="fas fa-cloud-arrow-up"></i> 导入到云端</button>
+                    </div>
+                    <div class="hint"><strong>支持格式：</strong>JSON / CSV / TXT / Excel<br><strong>必需字段：</strong>公司、工号、姓名、初始密码<br><strong>映射：</strong>公司→username，姓名→name，密码→password</div>
+                    <div id="column-mapping-area" style="display:none;margin-top:12px;">
+                        <div style="color:#fff;font-size:0.85rem;margin-bottom:6px;">列映射：</div>
+                        <div class="column-mapping">
+                            <label>username列：</label><select id="map-username"></select>
+                            <label>name列：</label><select id="map-name"></select>
+                            <label>password列：</label><select id="map-password"></select>
+                            <button class="action-btn edit" onclick="reparseWithMapping()">重新解析</button>
+                        </div>
+                    </div>
+                    <div class="parsed-header" id="parsed-header" style="display:none;">
+                        <span class="parsed-count" id="parsed-count">已解析 0 条</span>
+                        <button class="copy-all-btn" onclick="copyAllJSON()"><i class="fas fa-copy"></i> 一键复制 JSON</button>
+                    </div>
+                    <div class="parsed-list" id="parsed-list" style="display:none;"></div>
+                    <div class="json-output-box" id="json-output-box" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SheetJS -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+    <script>
+    let allUsers = [];
+    let editingUsername = null;
+
+    // ========== 权限检查 ==========
+    (async function() {
+        const user = JSON.parse(localStorage.getItem('fmi_login_status') || '{}');
+        if (user.role !== 'admin' && !user.isAdmin) {
+            alert('无管理员权限');
+            location.href = 'login.html';
+            return;
+        }
+        loadOverview();
+    })();
+
+    // ========== Tab切换 ==========
+    function switchTab(name, el) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+        el.classList.add('active');
+        if (name === 'overview') loadOverview();
+        if (name === 'users') loadUsers();
+        if (name === 'settings') loadSettings();
+        if (name === 'leaderboard') loadLbConfig();
+    }
+
+    // ========== 概览 ==========
+    async function loadOverview() {
+        try {
+            const [settings, online] = await Promise.all([
+                API.adminGetSettings(),
+                API.adminGetOnline()
+            ]);
+            if (settings.error) return;
+            const row = document.getElementById('statsRow');
+            row.innerHTML = `
+                <div class="stat-card stat-purple"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-value">${settings.totalUsers || 0}</div><div class="stat-label">注册用户</div></div>
+                <div class="stat-card stat-green"><div class="stat-icon"><i class="fas fa-wifi"></i></div><div class="stat-value">${settings.currentOnline || 0}</div><div class="stat-label">当前在线</div></div>
+                <div class="stat-card stat-orange"><div class="stat-icon"><i class="fas fa-user-clock"></i></div><div class="stat-value">${settings.maxOnline || 0}</div><div class="stat-label">在线人数上限</div></div>
+                <div class="stat-card stat-red"><div class="stat-icon"><i class="fas fa-user-lock"></i></div><div class="stat-value">${settings.maxRegistered || 0}</div><div class="stat-label">注册人数上限</div></div>
+            `;
+            // Online users list
+            const tbody = document.getElementById('onlineList');
+            if (online.users && online.users.length > 0) {
+                tbody.innerHTML = online.users.map(u => `<tr><td>${esc(u)}</td><td>-</td><td>在线中</td><td><button class="action-btn kick" onclick="kickUser('${esc(u)}')"><i class="fas fa-right-from-bracket"></i> 踢下线</button></td></tr>`).join('');
+            } else {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#64748b;">当前无在线用户</td></tr>';
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    // ========== 用户管理 ==========
+    async function loadUsers() {
+        try {
+            const data = await API.adminGetUsers();
+            if (data.error) return;
+            allUsers = data;
+            renderUsers(data);
+        } catch(e) { console.error(e); }
+    }
+
+    function renderUsers(users) {
+        const tbody = document.getElementById('userList');
+        if (!users || users.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#64748b;">暂无用户</td></tr>';
+            return;
+        }
+        tbody.innerHTML = users.map(u => `<tr>
+            <td style="font-weight:600;">${esc(u.username)}</td>
+            <td>${esc(u.name || '-')}</td>
+            <td><span class="badge ${u.role === 'admin' ? 'badge-admin' : ''}">${u.role === 'admin' ? '<i class="fas fa-crown"></i> 管理员' : '用户'}</span></td>
+            <td>${u.isBanned ? '<span class="badge badge-banned"><i class="fas fa-ban"></i> 已封禁</span>' : u.isOnline ? '<span class="badge badge-online"><i class="fas fa-circle"></i> 在线</span>' : '<span class="badge badge-offline">离线</span>'}</td>
+            <td style="font-family:monospace;color:#64748b;font-size:0.8rem;">${esc(u.password || '***')}</td>
+            <td style="color:#64748b;font-size:0.8rem;">${u.createdAt ? u.createdAt.split('T')[0] : '-'}</td>
+            <td style="white-space:nowrap;">
+                ${u.isOnline ? `<button class="action-btn kick" onclick="kickUser('${esc(u.username)}')" title="踢下线"><i class="fas fa-right-from-bracket"></i></button>` : ''}
+                ${u.isBanned ? `<button class="action-btn unban" onclick="toggleBan('${esc(u.username)}', false)" title="解封"><i class="fas fa-lock-open"></i></button>` : `<button class="action-btn ban" onclick="toggleBan('${esc(u.username)}', true)" title="封禁"><i class="fas fa-ban"></i></button>`}
+                <button class="action-btn edit" onclick="editUser('${esc(u.username)}')" title="编辑"><i class="fas fa-pen"></i></button>
+                <button class="action-btn del" onclick="deleteUser('${esc(u.username)}')" title="删除"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>`).join('');
+    }
+
+    function filterUsers() {
+        const q = document.getElementById('userSearch').value.toLowerCase();
+        if (!q) { renderUsers(allUsers); return; }
+        renderUsers(allUsers.filter(u => (u.username + u.name).toLowerCase().includes(q)));
+    }
+
+    function showAddUser() {
+        editingUsername = null;
+        document.getElementById('userFormCard').style.display = 'block';
+        document.getElementById('userFormTitle').textContent = '添加用户';
+        document.getElementById('ufSubmit').textContent = '确认添加';
+        document.getElementById('ufUsername').value = '';
+        document.getElementById('ufUsername').disabled = false;
+        document.getElementById('ufName').value = '';
+        document.getElementById('ufPassword').value = '';
+        document.getElementById('ufRole').value = 'user';
+    }
+
+    function editUser(username) {
+        const u = allUsers.find(x => x.username === username);
+        if (!u) return;
+        editingUsername = username;
+        document.getElementById('userFormCard').style.display = 'block';
+        document.getElementById('userFormTitle').textContent = '编辑用户 - ' + username;
+        document.getElementById('ufSubmit').textContent = '保存修改';
+        document.getElementById('ufUsername').value = u.username;
+        document.getElementById('ufUsername').disabled = true;
+        document.getElementById('ufName').value = u.name || '';
+        document.getElementById('ufPassword').value = u.password || '';
+        document.getElementById('ufRole').value = u.role || 'user';
+    }
+
+    function hideUserForm() {
+        document.getElementById('userFormCard').style.display = 'none';
+        editingUsername = null;
+    }
+
+    async function submitUserForm() {
+        const username = document.getElementById('ufUsername').value.trim();
+        const name = document.getElementById('ufName').value.trim();
+        const password = document.getElementById('ufPassword').value;
+        const role = document.getElementById('ufRole').value;
+        if (!username || !password) { alert('用户名和密码不能为空'); return; }
+
+        let result;
+        if (editingUsername) {
+            result = await API.adminUpdateUser(editingUsername, { name, password, role });
+        } else {
+            result = await API.adminCreateUser({ username, password, name: name || username, role });
+        }
+
+        if (result.error) { alert(result.error); return; }
+        if (result.success) {
+            hideUserForm();
+            loadUsers();
+            loadOverview();
+        }
+    }
+
+    async function deleteUser(username) {
+        if (!confirm('确定要删除用户 ' + username + ' 吗？该操作不可恢复。')) return;
+        const result = await API.adminDeleteUser(username);
+        if (result.success) { loadUsers(); loadOverview(); }
+        else if (result.error) alert(result.error);
+    }
+
+    async function kickUser(username) {
+        if (!confirm('确定要将 ' + username + ' 踢下线吗？')) return;
+        await API.adminKick(username);
+        loadOverview();
+        loadUsers();
+    }
+
+    async function toggleBan(username, ban) {
+        const result = await API.adminBan(username, ban);
+        if (result.success) { loadUsers(); }
+    }
+
+    // ========== 系统设置 ==========
+    async function loadSettings() {
+        const s = await API.adminGetSettings();
+        if (s.error) return;
+        document.getElementById('setMaxOnline').value = s.maxOnline || 0;
+        document.getElementById('setMaxRegistered').value = s.maxRegistered || 0;
+        document.getElementById('setAllowRegister').checked = s.allowRegister !== false;
+        document.getElementById('setShowOnlineMain').checked = s.showOnlineMain !== false;
+        document.getElementById('setShowOnlineLogin').checked = s.showOnlineLogin !== false;
+    }
+
+    async function saveSettings() {
+        const settings = {
+            maxOnline: parseInt(document.getElementById('setMaxOnline').value) || 0,
+            maxRegistered: parseInt(document.getElementById('setMaxRegistered').value) || 0,
+            allowRegister: document.getElementById('setAllowRegister').checked,
+            showOnlineMain: document.getElementById('setShowOnlineMain').checked,
+            showOnlineLogin: document.getElementById('setShowOnlineLogin').checked,
+        };
+        const result = await API.adminSetSettings(settings);
+        if (result.success) alert('设置已保存');
+        else if (result.error) alert(result.error);
+    }
+
+    // ========== 打榜配置 ==========
+    async function loadLbConfig() {
+        // Load category list from learning data
+        try {
+            const resp = await fetch('./indonesian_learning_data.json');
+            const data = await resp.json();
+            const sel = document.getElementById('lbCategory');
+            const cats = [...new Set(data.words.map(w => w.category).filter(Boolean))];
+            sel.innerHTML = '<option value="all">全部</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
+        } catch(e) {}
+
+        const config = await API.adminGetLeaderboardConfig();
+        if (!config || config.error) return;
+        document.getElementById('lbEnabled').checked = config.enabled || false;
+        document.getElementById('lbTitle').value = config.title || '';
+        document.getElementById('lbQuestionCount').value = config.questionCount || 20;
+        document.getElementById('lbCategory').value = config.category || 'all';
+        document.getElementById('lbType').value = config.type || 'indo2cn';
+    }
+
+    async function saveLbConfig() {
+        const config = {
+            enabled: document.getElementById('lbEnabled').checked,
+            title: document.getElementById('lbTitle').value,
+            questionCount: parseInt(document.getElementById('lbQuestionCount').value) || 20,
+            category: document.getElementById('lbCategory').value,
+            type: document.getElementById('lbType').value,
+        };
+        const result = await API.adminSetLeaderboardConfig(config);
+        if (result.success) alert('打榜配置已保存');
+        else if (result.error) alert(result.error);
+    }
+
+    // ========== 名单解析 ==========
+    let parsedRawData = [];
+    let parsedResult = [];
+
+    function parseFile() {
+        const fileInput = document.getElementById('file-input');
+        if (!fileInput.files.length) return alert('请先选择文件');
+        const file = fileInput.files[0];
+        const ext = file.name.split('.').pop().toLowerCase();
+
+        if (ext === 'json') {
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (Array.isArray(data)) {
+                        parsedResult = data.map(item => ({
+                            username: item.username || item['公司'] || item.company || '',
+                            name: item.name || item['姓名'] || '',
+                            password: item.password || item['初始密码'] || '',
+                        }));
+                    } else {
+                        parsedResult = Object.entries(data).map(([k, v]) => ({
+                            username: v.username || k,
+                            name: v.name || v['姓名'] || '',
+                            password: v.password || v['初始密码'] || '',
+                        }));
+                    }
+                    displayParsedResult();
+                } catch(err) { alert('JSON 解析失败: ' + err.message); }
+            };
+            reader.readAsText(file);
+        } else if (ext === 'csv' || ext === 'txt') {
+            const reader = new FileReader();
+            reader.onload = e => parseCSVText(e.target.result);
+            reader.readAsText(file);
+        } else if (ext === 'xls' || ext === 'xlsx') {
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+                    const ws = wb.Sheets[wb.SheetNames[0]];
+                    parsedRawData = XLSX.utils.sheet_to_json(ws, { header: 1 });
+                    if (parsedRawData.length > 0) setupColumnMapping(parsedRawData[0].map((_, i) => '列' + (i + 1)));
+                    parseWithMapping(1);
+                } catch(err) { alert('Excel 解析失败: ' + err.message); }
+            };
+            reader.readAsArrayBuffer(file);
+        } else {
+            alert('不支持的文件格式');
+        }
+    }
+
+    function parseCSVText(text) {
+        const lines = text.trim().split(/\r?\n/).filter(l => l.trim());
+        if (lines.length === 0) return alert('文件为空');
+        // Detect delimiter
+        const delimiters = [',', '\t', '|', ';'];
+        let bestDelim = ',', maxCols = 0;
+        for (const d of delimiters) {
+            const cols = lines[0].split(d).length;
+            if (cols > maxCols) { maxCols = cols; bestDelim = d; }
+        }
+        parsedRawData = lines.map(l => l.split(bestDelim).map(c => c.trim()));
+        setupColumnMapping(parsedRawData[0].map((_, i) => '列' + (i + 1)));
+        parseWithMapping(1);
+    }
+
+    function setupColumnMapping(headers) {
+        const area = document.getElementById('column-mapping-area');
+        area.style.display = 'block';
+        ['map-username', 'map-name', 'map-password'].forEach((id, idx) => {
+            const sel = document.getElementById(id);
+            sel.innerHTML = headers.map((h, i) => `<option value="${i}">${h}</option>`).join('');
+            if (idx < headers.length) sel.value = idx;
+        });
+    }
+
+    function autoMapColumns(headers) {
+        const kw = { username: ['公司', 'company', 'username', 'user', '单位'], name: ['姓名', 'name', '名字'], password: ['密码', 'password', '初始密码', 'pass'] };
+        const map = {};
+        headers.forEach((h, i) => {
+            const hl = h.toLowerCase();
+            for (const [key, words] of Object.entries(kw)) {
+                if (words.some(w => hl.includes(w))) map[key] = i;
+            }
+        });
+        if (map.username !== undefined) document.getElementById('map-username').value = map.username;
+        if (map.name !== undefined) document.getElementById('map-name').value = map.name;
+        if (map.password !== undefined) document.getElementById('map-password').value = map.password;
+    }
+
+    function parseWithMapping(startRow) {
+        const ui = parseInt(document.getElementById('map-username').value);
+        const ni = parseInt(document.getElementById('map-name').value);
+        const pi = parseInt(document.getElementById('map-password').value);
+        parsedResult = [];
+        for (let i = startRow; i < parsedRawData.length; i++) {
+            const row = parsedRawData[i];
+            if (row && row[ui] && row[ui].trim()) {
+                parsedResult.push({ username: row[ui].trim(), name: row[ni] ? row[ni].trim() : '', password: row[pi] ? row[pi].trim() : '' });
+            }
+        }
+        displayParsedResult();
+    }
+
+    function reparseWithMapping() { parseWithMapping(1); }
+
+    function displayParsedResult() {
+        document.getElementById('parsed-header').style.display = 'flex';
+        document.getElementById('parsed-count').textContent = '已解析 ' + parsedResult.length + ' 条';
+        const list = document.getElementById('parsed-list');
+        list.style.display = 'block';
+        list.innerHTML = parsedResult.map((item, i) => `<div class="parsed-item"><span style="color:#6b7280;margin-right:8px;">#${i + 1}</span><span style="margin-right:12px;">${esc(item.username)}</span><span style="margin-right:12px;">${esc(item.name)}</span><span style="color:#64748b;">${esc(item.password)}</span></div>`).join('');
+        const box = document.getElementById('json-output-box');
+        box.style.display = 'block';
+        box.textContent = JSON.stringify(parsedResult, null, 2);
+    }
+
+    function copyAllJSON() {
+        navigator.clipboard.writeText(JSON.stringify(parsedResult, null, 2)).then(() => alert('已复制到剪贴板'));
+    }
+
+    async function importParsedToKV() {
+        if (parsedResult.length === 0) { alert('没有可导入的数据，请先解析文件'); return; }
+        if (!confirm('确定要将 ' + parsedResult.length + ' 条记录导入到云端用户库吗？')) return;
+        const result = await API.adminInitUsers(parsedResult);
+        if (result.success) {
+            alert('成功导入 ' + result.imported + ' 条记录');
+            loadOverview();
+            loadUsers();
+        } else if (result.error) {
+            alert('导入失败：' + result.error);
+        }
+    }
+
+    // ========== 工具函数 ==========
+    function esc(str) {
+        if (!str) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    function logout() {
+        if (confirm('确定退出登录吗？')) {
+            API.clearToken();
+            localStorage.removeItem('fmi_login_status');
+            location.href = 'login.html';
+        }
+    }
+    </script>
+</body>
+</html>
