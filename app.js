@@ -268,10 +268,23 @@ function initUI() {
     <section class="study-card" id="main-card">
         <div class="top-meta">
             <div class="word-badge" id="word-idx">01</div>
-            <div class="compact-controls" style="display:flex;align-items:center;gap:12px;flex:1;justify-content:center;">
-                <span style="font-size:0.7rem;color:#64748b;display:flex;align-items:center;gap:4px;"><i class="fas fa-tachometer-alt"></i><input type="range" id="inp-rate" min="0.1" max="1.5" step="0.1" value="0.8" oninput="updateSetting('rate', this.value)" style="width:50px;height:3px;vertical-align:middle;"><span id="val-rate" style="font-size:0.65rem;width:20px;">0.8</span></span>
-                <span style="font-size:0.7rem;color:#64748b;display:flex;align-items:center;gap:4px;"><i class="fas fa-redo"></i><input type="range" id="inp-loop" min="1" max="10" step="1" value="1" oninput="updateSetting('loop', this.value)" style="width:40px;height:3px;vertical-align:middle;"><span id="val-loop" style="font-size:0.65rem;width:14px;">1</span></span>
-                <label style="font-size:0.7rem;color:#64748b;display:flex;align-items:center;gap:3px;cursor:pointer;"><i class="fas fa-eye-slash"></i><input type="checkbox" id="hide-toggle" onchange="renderCurrent()" style="width:12px;height:12px;accent-color:var(--accent);cursor:pointer;"></label>
+            <div class="compact-controls" id="learn-controls" style="display:flex;align-items:center;gap:16px;flex:1;justify-content:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:6px 14px;">
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <i class="fas fa-tachometer-alt" style="color:#a5b4fc;font-size:0.8rem;"></i>
+                    <input type="range" id="inp-rate" min="0.1" max="1.5" step="0.1" value="0.8" oninput="updateSetting('rate', this.value)" style="width:70px;height:4px;accent-color:var(--accent);cursor:pointer;">
+                    <span id="val-rate" style="color:#a5b4fc;font-size:0.8rem;font-weight:600;min-width:26px;">0.8x</span>
+                </div>
+                <div style="width:1px;height:16px;background:rgba(255,255,255,0.08);"></div>
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <i class="fas fa-redo" style="color:#34d399;font-size:0.75rem;"></i>
+                    <input type="range" id="inp-loop" min="1" max="10" step="1" value="1" oninput="updateSetting('loop', this.value)" style="width:55px;height:4px;accent-color:#34d399;cursor:pointer;">
+                    <span id="val-loop" style="color:#34d399;font-size:0.8rem;font-weight:600;min-width:20px;">1次</span>
+                </div>
+                <div style="width:1px;height:16px;background:rgba(255,255,255,0.08);"></div>
+                <label style="display:flex;align-items:center;gap:5px;cursor:pointer;color:#94a3b8;font-size:0.8rem;" title="隐藏中文释义">
+                    <i class="fas fa-eye-slash" style="font-size:0.75rem;"></i>
+                    <input type="checkbox" id="hide-toggle" onchange="renderCurrent()" style="width:14px;height:14px;accent-color:var(--accent);cursor:pointer;">
+                </label>
             </div>
             <div class="star-btn" id="fav-trigger" onclick="handleFav()"><i class="fas fa-star"></i></div>
         </div>
@@ -306,7 +319,7 @@ function initUI() {
     </div><!-- end page-learn -->
     <div id="page-practice" style="display:none;"></div>
     <div id="page-dashboard" style="display:none;"></div>
-    <div class="control-panel" id="control-panel" style="display:none;">
+    <div class="control-panel" id="control-panel">
 
     <div class="copyright" id="copyright">
         仅供学习・禁止商用 © 2026｜联系：
@@ -499,27 +512,37 @@ async function loadDB() {
 // 构建左侧菜单 - 收藏夹部分重构 + 生词/短语展示所有单词
 function buildMenu() {
     const menuBox = document.getElementById('menu-box');
-    // 收藏夹HTML重构：清空按钮移到最下方
-    let favsHTML = favs.length > 0 ? favs.map((item, index) => `
-        <div style="padding:8px 10px;font-size:13px;color:#94a3b8;display:flex;justify-content:space-between;align-items:center;">
-            <span style="cursor:pointer;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" onclick="showFavWord('${item.cat}', ${item.idx}, '${item.lesson || "1"}')">${index + 1}. ${item.indonesian}</span>
-            <button onclick="deleteFav(${index}, event)" style="background:rgba(248,113,113,0.1);color:#f87171;border:none;padding:2px 6px;border-radius:4px;cursor:pointer;font-size:11px;margin-left:8px;flex-shrink:0;" title="删除此收藏"><i class="fas fa-times"></i></button>
-        </div>
-    `).join('') : '<div style="padding:8px;font-size:13px;color:#94a3b8">暂无收藏</div>';
-    
-    // 新增清空按钮到收藏夹最下方
-    favsHTML += `
-        <div style="padding:8px 10px;margin-top:10px;border-top:1px solid rgba(255,255,255,0.05);">
-            <button onclick="clearAllFavs(event)" style="background:rgba(248,113,113,0.1);color:#f87171;border:none;padding:5px 10px;border-radius:5px;cursor:pointer;font-size:12px;">
-                <i class="fas fa-trash-alt"></i> 清空收藏
-            </button>
-        </div>
-    `;
+    // 错题集 & 收藏夹
+    const wrongFavs = favs.filter(f => f._wrongBook);
+    const normalFavs = favs.filter(f => !f._wrongBook);
+
+    let wrongHTML = wrongFavs.length > 0 ? wrongFavs.map(item => {
+        const ri = favs.indexOf(item);
+        return '<div style="padding:6px 10px;font-size:13px;color:#fca5a5;display:flex;justify-content:space-between;align-items:center;">' +
+            '<span style="cursor:pointer;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" onclick="showFavWord(\'' + item.cat + '\', ' + item.idx + ', \'1\')">' + item.indonesian + ' - ' + item.chinese + '</span>' +
+            '<button onclick="deleteFav(' + ri + ', event)" style="background:rgba(248,113,113,0.1);color:#f87171;border:none;padding:2px 6px;border-radius:4px;cursor:pointer;font-size:11px;margin-left:6px;"><i class="fas fa-times"></i></button></div>';
+    }).join('') : '<div style="padding:8px;font-size:13px;color:#64748b;">暂无错题</div>';
+    wrongHTML += '<div style="padding:6px 10px;margin-top:6px;"><button onclick="clearWrongBook(event)" style="background:rgba(248,113,113,0.1);color:#f87171;border:none;padding:4px 10px;border-radius:5px;cursor:pointer;font-size:11px;"><i class="fas fa-trash-alt"></i> 一键清空</button></div>';
+
+    let favsHTML = normalFavs.length > 0 ? normalFavs.map(item => {
+        const ri = favs.indexOf(item);
+        return '<div style="padding:6px 10px;font-size:13px;color:#cbd5e1;display:flex;justify-content:space-between;align-items:center;">' +
+            '<span style="cursor:pointer;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" onclick="showFavWord(\'' + item.cat + '\', ' + item.idx + ', \'1\')">' + item.indonesian + '</span>' +
+            '<button onclick="deleteFav(' + ri + ', event)" style="background:rgba(248,113,113,0.1);color:#f87171;border:none;padding:2px 6px;border-radius:4px;cursor:pointer;font-size:11px;margin-left:6px;"><i class="fas fa-times"></i></button></div>';
+    }).join('') : '<div style="padding:8px;font-size:13px;color:#64748b;">暂无收藏</div>';
 
     let menuHTML = `
     <div class="cat-item">
+        <div class="cat-head" style="color:#f87171" onclick="this.nextElementSibling.classList.toggle('active')">
+            <span>📝 错题集 (${wrongFavs.length})</span>
+            <i class="fas fa-chevron-down"></i> </div>
+        <div class="sub-menu">
+            ${wrongHTML}
+        </div>
+    </div>
+    <div class="cat-item">
         <div class="cat-head" style="color:#fbbf24" onclick="this.nextElementSibling.classList.toggle('active')">
-            <span>⭐ 我的收藏 (${favs.length})</span>
+            <span>⭐ 我的收藏 (${normalFavs.length})</span>
             <i class="fas fa-chevron-down"></i> </div>
         <div class="sub-menu">
             ${favsHTML}
@@ -527,7 +550,7 @@ function buildMenu() {
     </div>
     `;
 
-    // 遍历词库分类 - 展开课程显示所有单词
+        // 遍历词库分类 - 展开课程显示所有单词
     for (const catId in db) {
         const cat = db[catId];
         const catName = catId === "1" ? "生词 (Vocabulary)" : catId === "2" ? "短语 (Phrases)" : cat.name;
@@ -1515,7 +1538,11 @@ function initPracticePage() {
         const n = catId === "1" ? "生词 Vocabulary" : catId === "2" ? "短语 Phrases" : catId;
         catOpts += '<option value="' + catId + '">' + catId + '. ' + n + '</option>';
     }
-    c.innerHTML = `<header style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;"><h1 class="main-title" style="font-size:1.3rem;">印尼语学习助手</h1><div style="font-size:0.85rem;color:#94a3b8;">练习模式</div></header><div class="practice-container" style="max-width:600px;margin:0 auto;"><div id="practice-setup"><div style="text-align:center;margin-bottom:25px;"><h2 style="font-size:1.5rem;font-weight:800;color:var(--text-main);"><i class="fas fa-pen-fancy" style="color:var(--accent);margin-right:8px;"></i>练习模式</h2></div><div style="margin-bottom:20px;"><div style="color:var(--text-muted);font-size:0.9rem;margin-bottom:10px;">选择词库分类</div><select id="practice-cat-select" style="width:100%;padding:12px;border-radius:10px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:0.95rem;outline:none;"><option value="all">全部词库</option>' + catOpts + '</select></div><div style="margin-bottom:20px;"><div style="color:var(--text-muted);font-size:0.9rem;margin-bottom:10px;">选择练习类型</div><div class="practice-type-selector"><button class="practice-type-btn active" onclick="selectPracticeType('choice',this)"><i class="fas fa-th-large"></i> 选择题</button><button class="practice-type-btn" onclick="selectPracticeType('fill',this)"><i class="fas fa-keyboard"></i> 填空题</button><button class="practice-type-btn" onclick="selectPracticeType('listen',this)"><i class="fas fa-headphones"></i> 听力题</button></div></div><div style="margin-bottom:20px;padding:14px 18px;border-radius:14px;border:1px dashed var(--border-subtle);background:var(--accent-subtle);display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;">
+    c.innerHTML = `<header style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;"><h1 class="main-title" style="font-size:1.3rem;">印尼语学习助手</h1><div style="font-size:0.85rem;color:#94a3b8;">练习模式</div></header><div class="practice-container" style="max-width:100%;"><div id="practice-setup"><div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:8px 14px;margin-bottom:20px;">
+                    <div style="display:flex;align-items:center;gap:6px;"><i class="fas fa-tachometer-alt" style="color:#a5b4fc;font-size:0.8rem;"></i><input type="range" id="inp-rate" min="0.1" max="1.5" step="0.1" value="0.8" oninput="updateSetting('rate', this.value)" style="width:70px;height:4px;accent-color:var(--accent);cursor:pointer;"><span id="val-rate" style="color:#a5b4fc;font-size:0.8rem;font-weight:600;min-width:26px;">0.8x</span></div>
+                    <div style="width:1px;height:16px;background:rgba(255,255,255,0.08);"></div>
+                    <div style="display:flex;align-items:center;gap:6px;"><i class="fas fa-redo" style="color:#34d399;font-size:0.75rem;"></i><input type="range" id="inp-loop" min="1" max="10" step="1" value="1" oninput="updateSetting('loop', this.value)" style="width:55px;height:4px;accent-color:#34d399;cursor:pointer;"><span id="val-loop" style="color:#34d399;font-size:0.8rem;font-weight:600;min-width:20px;">1次</span></div>
+                </div><div style="text-align:center;margin-bottom:25px;"><h2 style="font-size:1.5rem;font-weight:800;color:var(--text-main);"><i class="fas fa-pen-fancy" style="color:var(--accent);margin-right:8px;"></i>练习模式</h2></div><div style="margin-bottom:20px;"><div style="color:var(--text-muted);font-size:0.9rem;margin-bottom:10px;">选择词库分类</div><select id="practice-cat-select" style="width:100%;padding:12px;border-radius:10px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:0.95rem;outline:none;"><option value="all">全部词库</option>' + catOpts + '</select></div><div style="margin-bottom:20px;"><div style="color:var(--text-muted);font-size:0.9rem;margin-bottom:10px;">选择练习类型</div><div class="practice-type-selector"><button class="practice-type-btn active" onclick="selectPracticeType('choice',this)"><i class="fas fa-th-large"></i> 选择题</button><button class="practice-type-btn" onclick="selectPracticeType('fill',this)"><i class="fas fa-keyboard"></i> 填空题</button><button class="practice-type-btn" onclick="selectPracticeType('listen',this)"><i class="fas fa-headphones"></i> 听力题</button></div></div><div style="margin-bottom:20px;padding:14px 18px;border-radius:14px;border:1px dashed var(--border-subtle);background:var(--accent-subtle);display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;">
             <label style="display:flex;align-items:center;gap:12px;cursor:pointer;color:var(--text-main);font-size:1rem;font-weight:600;">
                 <input type="checkbox" id="practice-learned-only" style="width:22px;height:22px;accent-color:var(--accent);cursor:pointer;">
                 <i class="fas fa-check-double" style="color:var(--accent);"></i>
@@ -1523,7 +1550,7 @@ function initPracticePage() {
             </label>
             <span id="practice-learned-count" style="color:var(--accent);font-size:0.9rem;font-weight:600;"></span>
         </div>
-        <div style="margin-bottom:20px;"><div style="color:var(--text-muted);font-size:0.9rem;margin-bottom:10px;">题目数量</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="practice-type-btn" onclick="selectPracticeCount(10,this)">10题</button><button class="practice-type-btn active" onclick="selectPracticeCount(20,this)">20题</button><button class="practice-type-btn" onclick="selectPracticeCount(50,this)">50题</button><button class="practice-type-btn" onclick="selectPracticeCount(0,this)">全部</button></div></div><button class="practice-start-btn" onclick="startPractice()" style="width:100%;padding:14px;font-size:1.1rem;"><i class="fas fa-play"></i> 开始练习</button></div><div id="practice-quiz" style="display:none;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;"><div style="color:var(--text-main);font-weight:700;">练习中</div><div style="color:var(--text-muted);font-size:0.9rem;" id="practice-progress">1/20</div></div><div class="practice-score-bar"><div class="practice-score-item"><span class="score-val" id="p-correct">0</span>正确</div><div class="practice-score-item"><span class="score-val" id="p-wrong">0</span>错误</div><div class="practice-score-item"><span class="score-val" id="p-accuracy">0%</span>正确率</div></div><div class="practice-question-box"><div id="p-question-label" style="color:var(--text-muted);font-size:0.9rem;margin-bottom:8px;">请选择正确的中文翻译</div><div id="p-question-word" style="font-size:2.2rem;font-weight:800;color:var(--text-main);margin-bottom:15px;">加载中...</div><div id="p-question-hint" style="color:var(--text-dim);font-size:0.85rem;"></div></div><div id="p-options" class="practice-options"></div><div id="p-input-box" style="display:none;"><input type="text" class="practice-input" id="p-fill-input" placeholder="输入中文翻译..." autocomplete="off" style="width:100%;padding:12px;border-radius:10px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:1rem;outline:none;"><button class="practice-start-btn" onclick="submitFillAnswer()" style="margin-top:10px;width:100%;">提交答案</button></div><div id="p-feedback" class="practice-feedback"></div><div style="display:flex;gap:12px;justify-content:center;margin-top:20px;"><button class="practice-btn-sec" onclick="endPractice()">结束练习</button><button class="practice-start-btn" id="p-next-btn" onclick="nextQuestion()" style="display:none;">下一题 <i class="fas fa-arrow-right"></i></button></div></div><div id="practice-result" style="display:none;"><div style="text-align:center;padding:30px;"><div id="p-result-score" style="font-size:4rem;font-weight:900;color:var(--accent);">0%</div><div id="p-result-text" style="color:var(--text-muted);font-size:1.1rem;margin:10px 0 20px;">练习完成！</div><div style="display:flex;gap:20px;justify-content:center;margin-bottom:25px;"><div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:#10b981;" id="p-r-correct">0</div><div style="color:var(--text-dim);font-size:0.8rem;">正确</div></div><div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:#ef4444;" id="p-r-wrong">0</div><div style="color:var(--text-dim);font-size:0.8rem;">错误</div></div><div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:var(--text-main);" id="p-r-total">0</div><div style="color:var(--text-dim);font-size:0.8rem;">总题数</div></div></div><div style="display:flex;gap:12px;justify-content:center;"><button class="practice-btn-sec" onclick="showWrongWords()">查看错题</button><button id="lb-submit-btn" style="display:none;padding:10px 20px;background:#f59e0b;color:#000;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:0.9rem;" onclick="submitToLeaderboard()"><i class="fas fa-trophy"></i> 提交到排行榜</button><button class="practice-start-btn" onclick="resetPractice()">再来一次</button></div></div></div></div>`;
+        <div style="margin-bottom:20px;"><div style="color:var(--text-muted);font-size:0.9rem;margin-bottom:10px;">题目数量</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="practice-type-btn" onclick="selectPracticeCount(10,this)">10题</button><button class="practice-type-btn active" onclick="selectPracticeCount(20,this)">20题</button><button class="practice-type-btn" onclick="selectPracticeCount(50,this)">50题</button><button class="practice-type-btn" onclick="selectPracticeCount(0,this)">全部</button></div></div><button class="practice-start-btn" onclick="startPractice()" style="width:100%;padding:14px;font-size:1.1rem;"><i class="fas fa-play"></i> 开始练习</button></div><div id="practice-quiz" style="display:none;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;"><div style="color:var(--text-main);font-weight:700;">练习中</div><div style="color:var(--text-muted);font-size:0.9rem;" id="practice-progress">1/20</div></div><div class="practice-score-bar"><div class="practice-score-item"><span class="score-val" id="p-correct">0</span>正确</div><div class="practice-score-item"><span class="score-val" id="p-wrong">0</span>错误</div><div class="practice-score-item"><span class="score-val" id="p-accuracy">0%</span>正确率</div></div><div class="practice-question-box"><div id="p-question-label" style="color:var(--text-muted);font-size:0.9rem;margin-bottom:8px;">请选择正确的中文翻译</div><div id="p-question-word" style="font-size:2.5rem;font-weight:800;color:var(--text-main);margin-bottom:20px;padding:15px 0;">加载中...</div><div id="p-question-hint" style="color:var(--text-dim);font-size:0.85rem;"></div></div><div id="p-options" class="practice-options"></div><div id="p-input-box" style="display:none;"><input type="text" class="practice-input" id="p-fill-input" placeholder="输入中文翻译..." autocomplete="off" style="width:100%;padding:12px;border-radius:10px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:1rem;outline:none;"><button class="practice-start-btn" onclick="submitFillAnswer()" style="margin-top:10px;width:100%;">提交答案</button></div><div id="p-feedback" class="practice-feedback"></div><div style="display:flex;gap:12px;justify-content:center;margin-top:20px;"><button class="practice-btn-sec" onclick="endPractice()">结束练习</button><button class="practice-start-btn" id="p-next-btn" onclick="nextQuestion()" style="display:none;">下一题 <i class="fas fa-arrow-right"></i></button></div></div><div id="practice-result" style="display:none;"><div style="text-align:center;padding:30px;"><div id="p-result-score" style="font-size:4rem;font-weight:900;color:var(--accent);">0%</div><div id="p-result-text" style="color:var(--text-muted);font-size:1.1rem;margin:10px 0 20px;">练习完成！</div><div style="display:flex;gap:20px;justify-content:center;margin-bottom:25px;"><div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:#10b981;" id="p-r-correct">0</div><div style="color:var(--text-dim);font-size:0.8rem;">正确</div></div><div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:#ef4444;" id="p-r-wrong">0</div><div style="color:var(--text-dim);font-size:0.8rem;">错误</div></div><div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:var(--text-main);" id="p-r-total">0</div><div style="color:var(--text-dim);font-size:0.8rem;">总题数</div></div></div><div style="display:flex;gap:12px;justify-content:center;"><button class="practice-btn-sec" onclick="showWrongWords()">查看错题</button><button id="lb-submit-btn" style="display:none;padding:10px 20px;background:#f59e0b;color:#000;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:0.9rem;" onclick="submitToLeaderboard()"><i class="fas fa-trophy"></i> 提交到排行榜</button><button class="practice-start-btn" onclick="resetPractice()">再来一次</button></div></div></div></div>`;
 }
 // Update learned count when checkbox changes
 document.addEventListener('change', function(e) {
@@ -1629,6 +1656,8 @@ function selectOption(el, correct, answer) {
         fb.textContent = '✗ 正确答案：' + q.chinese;
         fb.className = 'practice-feedback show wrong';
         practiceState.wrongWords.push(q);
+        // 自动加入错题集（收藏夹）
+        addToWrongBook(q);
     }
     document.getElementById('p-next-btn').style.display = 'inline-flex';
     const t = practiceState.currentIndex + 1;
@@ -1654,6 +1683,8 @@ function submitFillAnswer() {
         fb.textContent = '✗ 正确答案：' + q.chinese;
         fb.className = 'practice-feedback show wrong';
         practiceState.wrongWords.push(q);
+        // 自动加入错题集（收藏夹）
+        addToWrongBook(q);
     }
     document.getElementById('p-next-btn').style.display = 'inline-flex';
     const t = practiceState.currentIndex + 1;
@@ -1738,11 +1769,50 @@ async function submitToLeaderboard() {
         btn.disabled = false;
     }
 }
+// 错题自动加入错题集
+function addToWrongBook(word) {
+    if (!word || !word.indonesian) return;
+    const exists = favs.some(f => f.indonesian === word.indonesian && f._wrongBook);
+    if (!exists) {
+        favs.push({
+            cat: 'wrong',
+            lesson: 'wrong',
+            idx: Date.now(),
+            indonesian: word.indonesian,
+            chinese: word.chinese,
+            _wrongBook: true
+        });
+        localStorage.setItem('fmi_v1_favs', JSON.stringify(favs));
+        buildMenu();
+    }
+}
+
+// 错题自动加入错题集
+function addToWrongBook(word) {
+    if (!word || !word.indonesian) return;
+    const exists = favs.some(f => f.indonesian === word.indonesian && f._wrongBook);
+    if (!exists) {
+        favs.push({ cat: 'wrong', lesson: 'wrong', idx: Date.now(), indonesian: word.indonesian, chinese: word.chinese, _wrongBook: true });
+        localStorage.setItem('fmi_v1_favs', JSON.stringify(favs));
+        buildMenu();
+    }
+}
+
+// 清空错题集
+function clearWrongBook(event) {
+    if (event) event.stopPropagation();
+    if (confirm('确认清空错题集？')) {
+        favs = favs.filter(f => !f._wrongBook);
+        localStorage.setItem('fmi_v1_favs', JSON.stringify(favs));
+        buildMenu();
+    }
+}
+
 function showWrongWords() {
     if (practiceState.wrongWords.length === 0) { alert('没有错题，全部正确！'); return; }
     let msg = '错题列表：\n\n';
     practiceState.wrongWords.forEach((w, i) => { msg += (i + 1) + '. ' + w.indonesian + ' - ' + w.chinese + '\n'; });
-    alert(msg + '\n建议将错题加入收藏夹重点复习！');
+    alert(msg + '\n错题已自动加入错题集（收藏夹）！');
 }
 function resetPractice() {
     document.getElementById('practice-setup').style.display = 'block';
