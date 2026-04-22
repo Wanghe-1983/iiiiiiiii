@@ -229,6 +229,10 @@
                         <div class="setting-info"><div class="setting-label">员工工号验证</div><div class="setting-desc">开启后公司员工注册时需匹配后台员工名单；关闭后员工注册无需校验工号</div></div>
                         <div class="setting-control"><label class="toggle"><input type="checkbox" id="setRequireEmployeeVerify" checked><span class="slider"></span></label></div>
                     </div>
+                    <div class="setting-row">
+                        <div class="setting-info"><div class="setting-label">白名单登录控制</div><div class="setting-desc">开启后只有白名单中的用户才能登录，未在白名单的用户将被拒绝</div></div>
+                        <div class="setting-control"><label class="toggle"><input type="checkbox" id="setWhitelistEnabled"><span class="slider"></span></label></div>
+                    </div>
                     <div style="margin-top:20px;"><button class="hdr-btn primary" onclick="saveSettings()"><i class="fas fa-save"></i> 保存设置</button></div>
                 </div>
             </div>
@@ -517,6 +521,7 @@
         document.getElementById('setShowOnlineLogin').checked = s.showOnlineLogin !== false;
         document.getElementById('setAllowMultiDevice').checked = s.allowMultiDevice !== false;
         document.getElementById('setRequireEmployeeVerify').checked = s.requireEmployeeVerify !== false;
+        document.getElementById('setWhitelistEnabled').checked = s.whitelistEnabled === true;
     }
 
     async function saveSettings() {
@@ -528,6 +533,7 @@
             showOnlineLogin: document.getElementById('setShowOnlineLogin').checked,
             allowMultiDevice: document.getElementById('setAllowMultiDevice').checked,
             requireEmployeeVerify: document.getElementById('setRequireEmployeeVerify').checked,
+            whitelistEnabled: document.getElementById('setWhitelistEnabled').checked,
         };
         const result = await API.adminSetSettings(settings);
         if (result.success) alert('设置已保存');

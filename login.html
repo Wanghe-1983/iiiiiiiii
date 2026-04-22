@@ -420,6 +420,9 @@
                     } else {
                         maxText.textContent = '';
                     }
+                    if (info.whitelistEnabled) {
+                        maxText.textContent += (maxText.textContent ? '  |  ' : '') + '白名单模式';
+                    }
                 }
                 // 更新员工验证提示
         if (info.requireEmployeeVerify === false) {

@@ -239,6 +239,7 @@ async function getSystemSettings(env) {
         showOnlineMain: true, showOnlineLogin: true,
         allowMultiDevice: true,
         requireEmployeeVerify: true,
+        whitelistEnabled: false,
     }));
 }
 
@@ -356,6 +357,12 @@ async function handleRequest(context) {
             if (!user) return json({ error: '用户名或密码错误' }, 401);
             if (await isBanned(username, env)) return json({ error: '该账号已被禁止登录，请联系管理员' }, 403);
             const settings = await getSystemSettings(env);
+            // 白名单校验
+            if (settings.whitelistEnabled) {
+                const whitelist = await getWhitelist(env);
+                const inWhitelist = whitelist.some(w => w.username === user.username || w.username === username);
+                if (!inWhitelist) return json({ error: '当前开启了白名单登录控制，您的账号不在白名单中，请联系管理员' }, 403);
+            }
             if (settings.maxOnline > 0) {
                 const online = await getOnlineCount(env);
                 if (!online.users.includes(username) && online.count >= settings.maxOnline)
@@ -411,6 +418,7 @@ async function handleRequest(context) {
             const users = await getAllUsers(env);
             return json({
                 onlineCount: online.count, registeredCount: users.length,
+                whitelistEnabled: settings.whitelistEnabled === true,
                 maxOnline: settings.maxOnline || 0,
                 allowMultiDevice: settings.allowMultiDevice !== false,
                 requireEmployeeVerify: settings.requireEmployeeVerify !== false,
