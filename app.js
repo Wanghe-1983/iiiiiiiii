@@ -59,18 +59,42 @@ function checkLoginStatus() {
         if (userStatusEl) {
             userStatusEl.innerHTML = `
                 <div style="display:flex;align-items:center;gap:10px;">
-                    <span>欢迎，${loginStatus.user.name}</span>
-                    <button class="logout-btn" onclick="logout()" style="background:rgba(248,113,113,0.2);color:#f87171;border:none;padding:5px 12px;border-radius:8px;cursor:pointer;font-size:0.85rem;">
-                        <i class="fas fa-sign-out-alt"></i> 登出
-                    </button>
-                    <button onclick="showDeleteAccountDialog()" style="background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.3);padding:5px 12px;border-radius:8px;cursor:pointer;font-size:0.8rem;" title="注销账号（永久删除）">
-                        <i class="fas fa-user-slash"></i>
-                    </button>
+                    <div style="position:relative;">
+                        <span onclick="toggleUserMenu()" style="cursor:pointer;display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:8px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                            <i class="fas fa-user-circle" style="color:#a5b4fc;font-size:1.1rem;"></i>
+                            欢迎，${loginStatus.user.name}
+                            <i class="fas fa-chevron-down" style="font-size:0.65rem;color:#64748b;"></i>
+                        </span>
+                        <div id="user-dropdown" style="display:none;position:absolute;top:100%;right:0;margin-top:8px;background:rgba(30,41,59,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px;min-width:150px;z-index:1000;backdrop-filter:blur(20px);box-shadow:0 10px 30px rgba(0,0,0,0.4);">
+                            <div onclick="logout()" style="padding:10px 14px;border-radius:8px;cursor:pointer;color:#e2e8f0;font-size:0.85rem;display:flex;align-items:center;gap:8px;transition:background 0.2s;" onmouseover="this.style.background='rgba(248,113,113,0.1)'" onmouseout="this.style.background='transparent'">
+                                <i class="fas fa-sign-out-alt" style="color:#f87171;width:16px;text-align:center;"></i> 退出登录
+                            </div>
+                            <div style="height:1px;background:rgba(255,255,255,0.05);margin:4px 8px;"></div>
+                            <div onclick="showDeleteAccountDialog();toggleUserMenu();" style="padding:10px 14px;border-radius:8px;cursor:pointer;color:#ef4444;font-size:0.85rem;display:flex;align-items:center;gap:8px;transition:background 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'">
+                                <i class="fas fa-user-slash" style="width:16px;text-align:center;"></i> 注销账号
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `;
         }
     }
 }
+
+// 用户菜单切换
+function toggleUserMenu() {
+    const dropdown = document.getElementById('user-dropdown');
+    if (dropdown) {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    }
+}
+// 点击页面其他区域关闭菜单
+document.addEventListener('click', function(e) {
+    const dropdown = document.getElementById('user-dropdown');
+    if (dropdown && !e.target.closest('#user-status')) {
+        dropdown.style.display = 'none';
+    }
+});
 
 // 退出登录（带确认弹窗）
 function logout() {
@@ -275,7 +299,7 @@ function initUI() {
     </div><!-- end page-learn -->
     <div id="page-practice" style="display:none;"></div>
     <div id="page-dashboard" style="display:none;"></div>
-    <footer class="control-panel">
+    <div class="control-panel" id="control-panel">
         <div class="ctrl-row">
             <span class="ctrl-label">语音语速</span>
             <div style="flex:1; display:flex; align-items:center; gap:25px;">
@@ -297,7 +321,7 @@ function initUI() {
                 <span class="slider"></span>
             </label>
         </div>
-    </footer>
+    </div>
 
     <div class="copyright" id="copyright">
         仅供学习・禁止商用 © 2026｜联系：
@@ -378,11 +402,9 @@ function initUI() {
                     🎯 完成率：0%
                 </div>
             </div>
-            <div class="share-tip" id="share-tip">💡 学习小贴士：坚持学习，每天进步一点点！</div>
+            <div class="share-tip" id="share-tip">💡 学习小贴士：${window._dailyTip || document.getElementById('tip-content')?.textContent || '坚持学习，每天进步一点点！'}</div>
             <div id="share-record-list">
-                ${todayRecord.length > 0 ? todayRecord.map(item => `
-                    <div class="share-record">${item.indonesian} - ${item.chinese}</div>
-                `).join('') : '<div class="share-record">今日暂无学习</div>'}
+                <div class="share-record" style="text-align:center;color:#94a3b8;font-style:italic;">继续努力，坚持每天学习 💪</div>
             </div>
         </div>
         <div>
@@ -1364,17 +1386,14 @@ function switchPage(page) {
     document.getElementById('page-learn').style.display = page === 'learn' ? 'block' : 'none';
     document.getElementById('page-practice').style.display = page === 'practice' ? 'block' : 'none';
     document.getElementById('page-dashboard').style.display = page === 'dashboard' ? 'block' : 'none';
-    // 统计页隐藏侧边栏和底部功能区
+    // 统计页隐藏侧边栏和底部版权
     const sidebar = document.getElementById('sidebar');
-    const ctrlPanel = document.querySelector('.control-panel');
     const copyRight = document.getElementById('copyright');
     if (page === 'dashboard') {
         sidebar.style.display = 'none';
-        ctrlPanel.style.display = 'none';
         if (copyRight) copyRight.style.display = 'none';
     } else {
         sidebar.style.display = '';
-        ctrlPanel.style.display = '';
         if (copyRight) copyRight.style.display = '';
     }
     if (page === 'practice') initPracticePage();

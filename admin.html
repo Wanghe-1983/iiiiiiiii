@@ -10,6 +10,112 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="config.js"></script>
+    <script>
+    // ========== 后台管理本地 Fallback 模式 ==========
+    // 当 API 不可用时，自动降级到 localStorage 管理
+    window._adminFallback = false;
+
+    async function adminFetch(path, opts = {}) {
+        try {
+            const method = opts.method || 'GET';
+            const url = (CONFIG.apiBase || '') + '/api/' + path;
+            const headers = { 'Content-Type': 'application/json' };
+            const token = localStorage.getItem('fmi_token');
+            if (token) headers['Authorization'] = 'Bearer ' + token;
+            const res = await fetch(url, { method, headers, body: opts.body, signal: AbortSignal.timeout(5000) });
+            const data = await res.json();
+            window._adminFallback = false;
+            return data;
+        } catch(e) {
+            window._adminFallback = true;
+            console.warn('[Admin Fallback] API不可用，使用本地模式:', path);
+            return adminFallbackHandler(path, opts);
+        }
+    }
+
+    function adminFallbackHandler(path, opts) {
+        const method = (opts.method || 'GET').toUpperCase();
+
+        if (path === 'auth/login') {
+            const { username, password } = JSON.parse(opts.body || '{}');
+            const user = JSON.parse(localStorage.getItem('fmi_login_status') || '{}');
+            if (user.user && user.user.username === username && user.user.password === password) {
+                localStorage.setItem('fmi_token', 'fallback_' + Date.now());
+                return { token: 'fallback_' + Date.now(), user: user.user };
+            }
+            return { error: '用户名或密码错误' };
+        }
+
+        if (path === 'admin/settings' && method === 'GET') {
+            return JSON.parse(localStorage.getItem('fmi_admin_settings') || '{"maxOnline":0,"maxRegistered":0,"allowRegister":true,"showOnlineMain":true,"showOnlineLogin":true,"allowMultiDevice":false}');
+        }
+        if (path === 'admin/settings' && method === 'PUT') {
+            const settings = JSON.parse(opts.body || '{}');
+            localStorage.setItem('fmi_admin_settings', JSON.stringify(settings));
+            return { success: true };
+        }
+        if (path === 'admin/users' && method === 'GET') {
+            const users = JSON.parse(localStorage.getItem('fmi_admin_users') || '[]');
+            return users;
+        }
+        if (path === 'admin/users' && method === 'PUT') {
+            const { action, ...rest } = JSON.parse(opts.body || '{}');
+            let users = JSON.parse(localStorage.getItem('fmi_admin_users') || '[]');
+            if (action === 'add') {
+                if (!users.some(u => u.username === rest.user.username)) {
+                    users.push(rest.user);
+                }
+            } else if (action === 'delete') {
+                users = users.filter(u => u.username !== rest.username);
+            } else if (action === 'update') {
+                users = users.map(u => u.username === rest.username ? { ...u, ...rest.data } : u);
+            }
+            localStorage.setItem('fmi_admin_users', JSON.stringify(users));
+            return { success: true };
+        }
+        if (path === 'admin/online' && method === 'GET') {
+            return { count: 1, users: [{ username: 'admin', name: '管理员' }] };
+        }
+        if (path === 'admin/study-stats' && method === 'GET') {
+            return { stats: {} };
+        }
+        if (path === 'admin/study-clear' && method === 'POST') {
+            return { success: true, message: '已清空（本地模式）' };
+        }
+        if (path.startsWith('admin/whitelist')) {
+            if (method === 'GET') return { employees: [] };
+            return { success: true };
+        }
+        if (path === 'changelog/list') {
+            return { versions: [] };
+        }
+
+        return { error: 'API不可用' };
+    }
+
+    // 替换所有 API.adminXxx 调用
+    window.API.adminGetSettings = () => adminFetch('admin/settings', { method: 'GET' });
+    window.API.adminGetOnline = () => adminFetch('admin/online', { method: 'GET' });
+    window.API.adminGetUsers = () => adminFetch('admin/users', { method: 'GET' });
+
+    // 添加网络状态指示
+    function showFallbackBanner() {
+        if (!window._adminFallback) return;
+        let banner = document.getElementById('fallback-banner');
+        if (!banner) {
+            banner = document.createElement('div');
+            banner.id = 'fallback-banner';
+            banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;background:linear-gradient(90deg,#f59e0b,#d97706);color:#fff;text-align:center;padding:8px;font-size:0.85rem;font-weight:500;';
+            banner.innerHTML = '⚠️ 网络连接异常，当前为<strong>本地管理模式</strong>（数据存储在浏览器本地，仅当前设备生效）';
+            document.body.prepend(banner);
+        }
+    }
+
+    function hideFallbackBanner() {
+        const banner = document.getElementById('fallback-banner');
+        if (banner) banner.remove();
+    }
+    </script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: var(--bg-main, #0b1120); color: var(--text-main, #e2e8f0); font-family: system-ui, sans-serif; min-height: 100vh; }
@@ -474,9 +580,10 @@
     async function loadOverview() {
         try {
             const [settings, online] = await Promise.all([
-                API.adminGetSettings(),
-                API.adminGetOnline()
+                adminFetch('admin/settings', { method: 'GET' }),
+                adminFetch('admin/online', { method: 'GET' })
             ]);
+            if (window._adminFallback) showFallbackBanner(); else hideFallbackBanner();
             if (settings.error) return;
             const row = document.getElementById('statsRow');
             row.innerHTML = `
@@ -498,7 +605,7 @@
     // ========== 用户管理 ==========
     async function loadUsers() {
         try {
-            const data = await API.adminGetUsers();
+            const data = await adminFetch('admin/users', { method: 'GET' });
             if (data.error) return;
             allUsers = data;
             renderUsers(data);
@@ -607,7 +714,7 @@
 
     // ========== 系统设置 ==========
     async function loadSettings() {
-        const s = await API.adminGetSettings();
+        const s = await adminFetch('admin/settings', { method: 'GET' });
         if (s.error) return;
         document.getElementById('setMaxOnline').value = s.maxOnline || 0;
         document.getElementById('setMaxRegistered').value = s.maxRegistered || 0;
@@ -1021,7 +1128,7 @@
     // ========== 学习统计管理 ==========
     async function loadStudyStats() {
         try {
-            const data = await API.request('admin/study-stats', { method: 'GET' });
+            const data = await adminFetch('admin/study-stats', { method: 'GET' });
             if (data.error) { console.warn('loadStudyStats error:', data.error); return; }
             const tbody = document.getElementById('studyStatsList');
             const empty = document.getElementById('studyStatsEmpty');
@@ -1059,7 +1166,7 @@
     async function clearUserStudy(username) {
         if (!confirm('确认清空用户 ' + username + ' 的学习数据？\n（包括学习记录、累计词汇、学习时长）')) return;
         try {
-            const data = await API.request('admin/study-clear', {
+            const data = await adminFetch('admin/study-clear', {
                 method: 'POST',
                 body: JSON.stringify({ username })
             });
