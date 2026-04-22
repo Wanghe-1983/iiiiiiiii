@@ -60,6 +60,9 @@ function checkLoginStatus() {
                     <button class="logout-btn" onclick="logout()" style="background:rgba(248,113,113,0.2);color:#f87171;border:none;padding:5px 12px;border-radius:8px;cursor:pointer;font-size:0.85rem;">
                         <i class="fas fa-sign-out-alt"></i> 登出
                     </button>
+                    <button onclick="showDeleteAccountDialog()" style="background:rgba(239,68,68,0.1);color:#ef4444;border:1px solid rgba(239,68,68,0.3);padding:5px 12px;border-radius:8px;cursor:pointer;font-size:0.8rem;" title="注销账号（永久删除）">
+                        <i class="fas fa-user-slash"></i>
+                    </button>
                 </div>
             `;
         }
@@ -70,6 +73,45 @@ function checkLoginStatus() {
 function logout() {
     // 使用自定义弹窗代替 confirm
     showLogoutConfirmDialog();
+}
+
+// 注销账号确认弹窗
+function showDeleteAccountDialog() {
+    const dialog = document.createElement('div');
+    dialog.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:10000;display:flex;justify-content:center;align-items:center;backdrop-filter:blur(10px);';
+    dialog.innerHTML = `
+        <div style="background:#111827;padding:35px 40px;border-radius:25px;border:1px solid rgba(239,68,68,0.4);text-align:center;max-width:420px;width:90%;">
+            <div style="font-size:2rem;margin-bottom:15px;">⚠️</div>
+            <h3 style="color:#f87171;margin-bottom:12px;font-size:1.2rem;">确认注销账号？</h3>
+            <p style="color:#94a3b8;margin-bottom:25px;font-size:0.95rem;line-height:1.6;">
+                此操作将<strong style="color:#f87171;">永久删除</strong>您的账号和所有数据，<br>包括学习记录、练习历史等，<strong style="color:#f87171;">无法恢复</strong>。
+            </p>
+            <div style="display:flex;gap:12px;justify-content:center;">
+                <button id="del-cancel" style="background:#475569;color:white;border:none;padding:10px 25px;border-radius:12px;cursor:pointer;font-size:0.95rem;">取消</button>
+                <button id="del-confirm" style="background:#ef4444;color:white;border:none;padding:10px 25px;border-radius:12px;cursor:pointer;font-size:0.95rem;">确认注销</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(dialog);
+    dialog.querySelector('#del-cancel').onclick = () => document.body.removeChild(dialog);
+    dialog.querySelector('#del-confirm').onclick = async () => {
+        dialog.querySelector('#del-confirm').textContent = '注销中...';
+        dialog.querySelector('#del-confirm').disabled = true;
+        const result = await API.request('user/delete', { method: 'POST' });
+        if (result.success) {
+            API.clearToken();
+            localStorage.removeItem('fmi_login_status');
+            localStorage.removeItem('fmi_today_record');
+            localStorage.removeItem('fmi_study_stats');
+            localStorage.removeItem('fmi_all_words');
+            alert('账号已注销');
+            location.href = 'login.html';
+        } else {
+            alert(result.error || '注销失败');
+            dialog.querySelector('#del-confirm').textContent = '确认注销';
+            dialog.querySelector('#del-confirm').disabled = false;
+        }
+    };
 }
 
 // 登出确认弹窗

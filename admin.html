@@ -217,6 +217,10 @@
                         <div class="setting-info"><div class="setting-label">登录界面显示在线人数</div><div class="setting-desc">在登录页面显示当前在线和注册人数</div></div>
                         <div class="setting-control"><label class="toggle"><input type="checkbox" id="setShowOnlineLogin" checked><span class="slider"></span></label></div>
                     </div>
+                    <div class="setting-row">
+                        <div class="setting-info"><div class="setting-label">同账号多设备登录</div><div class="setting-desc">开启后同一账号可在多个设备同时在线；关闭后新登录将踢掉旧设备</div></div>
+                        <div class="setting-control"><label class="toggle"><input type="checkbox" id="setAllowMultiDevice" checked><span class="slider"></span></label></div>
+                    </div>
                     <div style="margin-top:20px;"><button class="hdr-btn primary" onclick="saveSettings()"><i class="fas fa-save"></i> 保存设置</button></div>
                 </div>
             </div>
@@ -450,6 +454,7 @@
         document.getElementById('setAllowRegister').checked = s.allowRegister !== false;
         document.getElementById('setShowOnlineMain').checked = s.showOnlineMain !== false;
         document.getElementById('setShowOnlineLogin').checked = s.showOnlineLogin !== false;
+        document.getElementById('setAllowMultiDevice').checked = s.allowMultiDevice !== false;
     }
 
     async function saveSettings() {
@@ -459,6 +464,7 @@
             allowRegister: document.getElementById('setAllowRegister').checked,
             showOnlineMain: document.getElementById('setShowOnlineMain').checked,
             showOnlineLogin: document.getElementById('setShowOnlineLogin').checked,
+            allowMultiDevice: document.getElementById('setAllowMultiDevice').checked,
         };
         const result = await API.adminSetSettings(settings);
         if (result.success) alert('设置已保存');

@@ -59,8 +59,20 @@ async function getAuthUser(request, env) {
     return await verifyToken(auth.slice(7), env);
 }
 
-async function heartbeat(username, env) {
-    await env.INDO_LEARN_KV.put('online:' + username, JSON.stringify({ username, ts: Date.now() }), { expirationTtl: 120 });
+async function heartbeat(username, env, deviceToken) {
+    const settings = await getSystemSettings(env);
+    if (!settings.allowMultiDevice && deviceToken) {
+        // 单设备模式：如果设备token不匹配，标记为需要被踢
+        const prev = await env.INDO_LEARN_KV.get('online:' + username);
+        if (prev) {
+            const prevData = JSON.parse(prev);
+            if (prevData.deviceToken && prevData.deviceToken !== deviceToken) {
+                // 其他设备登录了，标记被踢
+                await env.INDO_LEARN_KV.put('kicked:' + username, deviceToken, { expirationTtl: 60 });
+            }
+        }
+    }
+    await env.INDO_LEARN_KV.put('online:' + username, JSON.stringify({ username, ts: Date.now(), deviceToken: deviceToken || '' }), { expirationTtl: 120 });
     return true;
 }
 
@@ -310,8 +322,8 @@ async function handleRequest(context) {
                     return json({ error: '在线人数已满（' + settings.maxOnline + '人），请稍后再试' }, 429);
             }
             const token = await signToken({ username: user.username, name: user.name, role: user.role }, env);
-            await heartbeat(user.username, env);
-            return json({ token, user: { username: user.username, name: user.name, role: user.role } });
+            await heartbeat(user.username, env, token);
+            return json({ token, user: { username: user.username, name: user.name, role: user.role, email: user.email || '' } });
         }
 
         if (path === 'auth/register' && method === 'POST') {
@@ -361,12 +373,29 @@ async function handleRequest(context) {
         if (!authUser) return json({ error: '未登录或登录已过期' }, 401);
         if (await isKicked(authUser.username, env)) return json({ error: 'kicked', message: '您已被管理员强制下线' }, 401);
 
-        if (path === 'user/heartbeat' && method === 'POST') { await heartbeat(authUser.username, env); return json({ ok: true }); }
+        if (path === 'user/heartbeat' && method === 'POST') { const clientToken = request.headers.get('Authorization')?.replace('Bearer ', '') || ''; await heartbeat(authUser.username, env, clientToken); return json({ ok: true }); }
         if (path === 'user/me' && method === 'GET') {
             const user = await getUser(authUser.username, env);
             if (!user) return json({ error: '用户不存在' }, 404);
             return json({ username: user.username, name: user.name, role: user.role, createdAt: user.createdAt });
         }
+        // 注销账号
+        if (path === 'user/delete' && method === 'POST') {
+            if (!authUser) return json({ error: '未登录' }, 401);
+            // 管理员不能注销自己
+            if (authUser.role === 'admin') {
+                const allAdmins = (await getAllUsers(env)).filter(u => u.role === 'admin');
+                if (allAdmins.length <= 1) return json({ error: '最后一个管理员不能注销' }, 400);
+            }
+            const result = await deleteUser(authUser.username, env);
+            if (result.error) return json(result, 400);
+            // 清除在线状态和学习数据
+            await env.INDO_LEARN_KV.delete('online:' + authUser.username);
+            await env.INDO_LEARN_KV.delete('study:' + authUser.username);
+            await env.INDO_LEARN_KV.delete('practice_history:' + authUser.username);
+            return json({ success: true, message: '账号已注销' });
+        }
+
         if (path === 'user/password' && method === 'PUT') {
             const { oldPassword, newPassword } = await request.json();
             const user = await getUser(authUser.username, env);
