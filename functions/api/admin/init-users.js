@@ -1,14 +1,17 @@
-import { onRequest, getAllUsers, createUser } from "../../_shared/utils.js";
-
 export const onRequest = async (context) => {
     const { env } = context;
 
-    // 检查是否已有用户
-    const users = await getAllUsers(env);
+    // 内联获取所有用户
+    const keys = await env.KV.list({ prefix: 'user:' });
+    const users = [];
+    for (const key of keys.keys) {
+        const data = await env.KV.get(key.name, 'json');
+        if (data) users.push(data);
+    }
 
     if (users.length === 0) {
         // 首次访问：初始化默认超级管理员
-        await createUser({
+        const adminUser = {
             username: 'admin',
             password: 'admin123',
             name: '系统管理员',
@@ -17,7 +20,9 @@ export const onRequest = async (context) => {
             companyCode: 'SYS',
             empNo: '000000',
             verified: true,
-        }, env);
+            createdAt: new Date().toISOString(),
+        };
+        await env.KV.put('user:admin', JSON.stringify(adminUser));
 
         return new Response(JSON.stringify({
             success: true,
