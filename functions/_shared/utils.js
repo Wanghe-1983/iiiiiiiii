@@ -282,6 +282,17 @@ async function handleRequest(context) {
             return json({ success: true, message: '注册成功' });
         }
 
+        // 临时：提升用户角色（部署完成后应删除）
+        if (path === 'init/promote' && method === 'POST') {
+            const { username, role } = await request.json();
+            const users = await getAllUsers(env);
+            const idx = users.findIndex(u => u.username === username);
+            if (idx === -1) return json({ error: '用户不存在' }, 404);
+            users[idx].role = role || 'admin';
+            await saveAllUsers(users, env);
+            return json({ success: true });
+        }
+
         if (path === 'system/info' && method === 'GET') {
             const online = await getOnlineCount(env);
             const settings = await getSystemSettings(env);
