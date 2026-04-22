@@ -281,54 +281,29 @@ function initUI() {
         </div>
         <div class="indo-box" id="disp-indo">加载中...</div>
         <div class="zh-box" id="disp-zh">请稍候</div>
-        <div class="face-controls" id="learn-controls" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 0 4px;">
-            <div style="position:relative;width:80px;height:54px;cursor:pointer;" onclick="cycleRate()" id="left-eye" title="语速（点击切换）">
-                <svg viewBox="0 0 80 54" width="80" height="54">
-                    <defs>
-                        <radialGradient id="iris-gl" cx="45%" cy="42%"><stop offset="0%" stop-color="#e0e7ff"/><stop offset="40%" stop-color="#a5b4fc"/><stop offset="100%" stop-color="#6366f1"/></radialGradient>
-                        <radialGradient id="iris-shine" cx="35%" cy="35%"><stop offset="0%" stop-color="rgba(255,255,255,0.4)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient>
-                    </defs>
-                    <path id="left-lid-top" d="M2,27 Q40,4 78,27" fill="none" stroke="rgba(165,180,252,0.6)" stroke-width="2.5" stroke-linecap="round"/>
-                    <path id="left-lid-bot" d="M2,27 Q40,50 78,27" fill="none" stroke="rgba(165,180,252,0.6)" stroke-width="2.5" stroke-linecap="round"/>
-                    <path id="left-eyelid" d="M2,27 Q40,4 78,27 Q40,50 2,27 Z" fill="rgba(99,102,241,0.04)" stroke="none"/>
-                    <ellipse id="left-iris" cx="40" cy="27" rx="13" ry="13" fill="url(#iris-gl)"/>
-                    <ellipse cx="40" cy="27" rx="13" ry="13" fill="url(#iris-shine)"/>
-                    <ellipse id="left-pupil" cx="40" cy="27" rx="6.5" ry="6.5" fill="#1e1b4b"/>
-                    <circle cx="36" cy="23" r="3" fill="#fff" opacity="0.75"/>
-                    <circle cx="44" cy="29" r="1.5" fill="#fff" opacity="0.35"/>
-                    <ellipse cx="40" cy="27" rx="12" ry="12" fill="none" stroke="rgba(99,102,241,0.25)" stroke-width="0.8"/>
-                </svg>
-                <div style="text-align:center;margin-top:4px;">
-                    <span id="val-rate" style="color:#a5b4fc;font-size:0.8rem;font-weight:700;">0.8x</span>
-                    <div style="color:#475569;font-size:0.5rem;margin-top:1px;">语速</div>
-                </div>
-            </div>
-            <div onclick="toggleHide()" id="hide-btn" style="display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;padding:0 8px;align-self:center;margin-bottom:12px;" title="隐藏/显示中文释义">
-                <svg viewBox="0 0 28 38" width="20" height="27">
-                    <path id="nose-path" d="M14,3 Q21,17 14,32 Q7,17 14,3 Z" fill="none" stroke="#64748b" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
-                    <circle id="nose-dot" cx="14" cy="32" r="2" fill="none" stroke="#64748b" stroke-width="1.2" opacity="0.4"/>
+        <div class="learn-controls" id="learn-controls" style="display:flex;align-items:center;justify-content:center;gap:24px;padding:8px 0;">
+            <div style="position:relative;width:72px;height:72px;cursor:pointer;" onclick="cycleRate()" title="语速调节">
+                <svg viewBox="0 0 72 72" width="72" height="72">
+                    <circle cx="36" cy="36" r="30" fill="none" stroke="rgba(165,180,252,0.1)" stroke-width="4"/>
+                    <circle id="rate-ring" cx="36" cy="36" r="30" fill="none" stroke="url(#rate-grad)" stroke-width="4" stroke-dasharray="188.5" stroke-dashoffset="141.4" stroke-linecap="round" style="transition:stroke-dashoffset 0.4s ease;"/>
+                    <defs><linearGradient id="rate-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#c084fc"/></linearGradient></defs>
+                    <text x="36" y="33" text-anchor="middle" fill="#a5b4fc" font-size="13" font-weight="700" id="val-rate">0.8x</text>
+                    <text x="36" y="47" text-anchor="middle" fill="#475569" font-size="8">语速</text>
                 </svg>
             </div>
-            <div style="position:relative;width:80px;height:54px;cursor:pointer;" onclick="cycleLoop()" id="right-eye" title="循环（点击切换）">
-                <svg viewBox="0 0 80 54" width="80" height="54">
-                    <defs>
-                        <radialGradient id="iris-gr" cx="45%" cy="42%"><stop offset="0%" stop-color="#d1fae5"/><stop offset="40%" stop-color="#6ee7b7"/><stop offset="100%" stop-color="#059669"/></radialGradient>
-                        <radialGradient id="iris-shine2" cx="35%" cy="35%"><stop offset="0%" stop-color="rgba(255,255,255,0.4)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient>
-                    </defs>
-                    <path id="right-lid-top" d="M2,27 Q40,4 78,27" fill="none" stroke="rgba(110,231,183,0.6)" stroke-width="2.5" stroke-linecap="round"/>
-                    <path id="right-lid-bot" d="M2,27 Q40,50 78,27" fill="none" stroke="rgba(110,231,183,0.6)" stroke-width="2.5" stroke-linecap="round"/>
-                    <path id="right-eyelid" d="M2,27 Q40,4 78,27 Q40,50 2,27 Z" fill="rgba(52,211,153,0.04)" stroke="none"/>
-                    <ellipse id="right-iris" cx="40" cy="27" rx="13" ry="13" fill="url(#iris-gr)"/>
-                    <ellipse cx="40" cy="27" rx="13" ry="13" fill="url(#iris-shine2)"/>
-                    <ellipse id="right-pupil" cx="40" cy="27" rx="6.5" ry="6.5" fill="#064e3b"/>
-                    <circle cx="36" cy="23" r="3" fill="#fff" opacity="0.75"/>
-                    <circle cx="44" cy="29" r="1.5" fill="#fff" opacity="0.35"/>
-                    <ellipse cx="40" cy="27" rx="12" ry="12" fill="none" stroke="rgba(52,211,153,0.25)" stroke-width="0.8"/>
+            <div onclick="toggleHide()" id="hide-btn" style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(148,163,184,0.06);border:1px solid rgba(148,163,184,0.12);transition:all 0.3s;" title="隐藏/显示中文释义">
+                <svg viewBox="0 0 24 24" width="20" height="20">
+                    <path id="hide-eye-path" d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="#64748b"/>
                 </svg>
-                <div style="text-align:center;margin-top:4px;">
-                    <span id="val-loop" style="color:#6ee7b7;font-size:0.8rem;font-weight:700;">1次</span>
-                    <div style="color:#475569;font-size:0.5rem;margin-top:1px;">循环</div>
-                </div>
+            </div>
+            <div style="position:relative;width:72px;height:72px;cursor:pointer;" onclick="cycleLoop()" title="循环调节">
+                <svg viewBox="0 0 72 72" width="72" height="72">
+                    <circle cx="36" cy="36" r="30" fill="none" stroke="rgba(110,231,183,0.1)" stroke-width="4"/>
+                    <circle id="loop-ring" cx="36" cy="36" r="30" fill="none" stroke="url(#loop-grad)" stroke-width="4" stroke-dasharray="188.5" stroke-dashoffset="169.65" stroke-linecap="round" style="transition:stroke-dashoffset 0.4s ease;"/>
+                    <defs><linearGradient id="loop-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#34d399"/><stop offset="100%" stop-color="#2dd4bf"/></linearGradient></defs>
+                    <text x="36" y="33" text-anchor="middle" fill="#6ee7b7" font-size="13" font-weight="700" id="val-loop">1次</text>
+                    <text x="36" y="47" text-anchor="middle" fill="#475569" font-size="8">循环</text>
+                </svg>
             </div>
         </div>
         <div class="nav-row">
@@ -787,10 +762,10 @@ function cycleRate() {
     const rate = RATE_LEVELS[_rateIdx];
     _rate = rate;
     localStorage.setItem('fmi_rate', rate);
-    document.getElementById('val-rate').innerText = rate + 'x';
-    updateEyeShape('left', _rateIdx / (RATE_LEVELS.length - 1));
-    updateEyeShape('p-left', _rateIdx / (RATE_LEVELS.length - 1));
-    const pVal = document.getElementById('p-val-rate'); if (pVal) pVal.innerText = rate + 'x';
+    const el = document.getElementById('val-rate'); if (el) el.innerText = rate + 'x';
+    const pEl = document.getElementById('p-val-rate'); if (pEl) pEl.innerText = rate + 'x';
+    updateRing('rate-ring', _rateIdx / (RATE_LEVELS.length - 1));
+    updateRing('p-rate-ring', _rateIdx / (RATE_LEVELS.length - 1));
 }
 
 function cycleLoop() {
@@ -798,81 +773,34 @@ function cycleLoop() {
     const loop = LOOP_LEVELS[_loopIdx];
     _loop = loop;
     localStorage.setItem('fmi_loop', loop);
-    document.getElementById('val-loop').innerText = loop + '次';
-    updateEyeShape('right', _loopIdx / (LOOP_LEVELS.length - 1));
-    updateEyeShape('p-right', _loopIdx / (LOOP_LEVELS.length - 1));
-    const pVal = document.getElementById('p-val-loop'); if (pVal) pVal.innerText = loop + '次';
+    const el = document.getElementById('val-loop'); if (el) el.innerText = loop + '次';
+    const pEl = document.getElementById('p-val-loop'); if (pEl) pEl.innerText = loop + '次';
+    updateRing('loop-ring', _loopIdx / (LOOP_LEVELS.length - 1));
+    updateRing('p-loop-ring', _loopIdx / (LOOP_LEVELS.length - 1));
 }
 
 // 更新眼睛开合度：ratio 0=闭合, 1=完全睁开
-function updateEyeShape(side, ratio) {
-    ratio = Math.max(0.12, Math.min(1, ratio));
-    const midY = 27, leftX = 2, rightX = 78, ctrlX = 40;
-    const maxOpen = 23;
-    const open = maxOpen * ratio;
-
-    const lidTop = document.getElementById(side + '-lid-top');
-    const lidBot = document.getElementById(side + '-lid-bot');
-    const eyelid = document.getElementById(side + '-eyelid');
-    const iris = document.getElementById(side + '-iris');
-    const pupil = document.getElementById(side + '-pupil');
-
-    const topD = 'M' + leftX + ',' + midY + ' Q' + ctrlX + ',' + (midY - open) + ' ' + rightX + ',' + midY;
-    const botD = 'M' + leftX + ',' + midY + ' Q' + ctrlX + ',' + (midY + open) + ' ' + rightX + ',' + midY;
-    const fillD = topD + ' Q' + ctrlX + ',' + (midY + open) + ' ' + leftX + ',' + midY + ' Z';
-
-    if (lidTop) lidTop.setAttribute('d', topD);
-    if (lidBot) lidBot.setAttribute('d', botD);
-    if (eyelid) eyelid.setAttribute('d', fillD);
-
-    // 虹膜和瞳孔 - 大眼睛坐标 (rx=13, ry=13 for full open)
-    const irisRy = Math.max(3, 13 * ratio);
-    const irisRx = Math.max(5, 13 * (0.5 + 0.5 * ratio));
-    const pupilRy = Math.max(1.5, 6.5 * ratio);
-    const pupilRx = Math.max(2.5, 6.5 * (0.5 + 0.5 * ratio));
-
-    if (iris) { iris.setAttribute('ry', irisRy); iris.setAttribute('rx', irisRx); }
-    if (pupil) { pupil.setAttribute('ry', pupilRy); pupil.setAttribute('rx', pupilRx); }
+function updateRing(id, ratio) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const circumference = 188.5; // 2 * PI * 30
+    el.style.strokeDashoffset = circumference * (1 - Math.max(0.05, ratio));
 }
 
-// 眨眼动画
-function blinkEyes(side) {
-    const lidTop = document.getElementById(side + '-lid-top');
-    const lidBot = document.getElementById(side + '-lid-bot');
-    const eyelid = document.getElementById(side + '-eyelid');
-    const iris = document.getElementById(side + '-iris');
-    const pupil = document.getElementById(side + '-pupil');
-    if (!lidTop) return;
-
-    const midY = 27, leftX = 2, rightX = 78, ctrlX = 40;
-    const frames = [
-        { open: 23, dur: 80 },
-        { open: 3, dur: 100 },
-        { open: 1, dur: 60 },
-        { open: 3, dur: 100 },
-        { open: 23, dur: 80 }
-    ];
-    let delay = 0;
-    frames.forEach(f => {
-        setTimeout(() => {
-            const topD = 'M' + leftX + ',' + midY + ' Q' + ctrlX + ',' + (midY - f.open) + ' ' + rightX + ',' + midY;
-            const botD = 'M' + leftX + ',' + midY + ' Q' + ctrlX + ',' + (midY + f.open) + ' ' + rightX + ',' + midY;
-            const fillD = topD + ' Q' + ctrlX + ',' + (midY + f.open) + ' ' + leftX + ',' + midY + ' Z';
-            lidTop.setAttribute('d', topD);
-            lidBot.setAttribute('d', botD);
-            eyelid.setAttribute('d', fillD);
-        }, delay);
-        delay += f.dur;
-    });
+// 隐藏按钮切换
+function toggleHide() {
+    _hideChinese = !_hideChinese;
+    const path = document.getElementById('hide-eye-path');
+    const btn = document.getElementById('hide-btn');
+    if (_hideChinese) {
+        if (path) path.setAttribute('fill', '#f87171');
+        if (btn) { btn.style.background = 'rgba(248,113,113,0.1)'; btn.style.borderColor = 'rgba(248,113,113,0.2)'; }
+    } else {
+        if (path) path.setAttribute('fill', '#64748b');
+        if (btn) { btn.style.background = 'rgba(148,163,184,0.06)'; btn.style.borderColor = 'rgba(148,163,184,0.12)'; }
+    }
+    renderCurrent();
 }
-
-// 点击时触发眨眼
-document.addEventListener('DOMContentLoaded', () => {
-    ['left', 'right', 'p-left', 'p-right'].forEach(s => {
-        const el = document.getElementById(s + '-eye');
-        if (el) el.addEventListener('mousedown', () => blinkEyes(s));
-    });
-});
 
 // 隐藏/显示中文释义
 function toggleHide() {
@@ -1704,18 +1632,7 @@ function initPracticePage() {
         const n = catId === "1" ? "生词 Vocabulary" : catId === "2" ? "短语 Phrases" : catId;
         catOpts += '<option value="' + catId + '">' + catId + '. ' + n + '</option>';
     }
-    c.innerHTML = `<header style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><h1 class="main-title" style="font-size:1.3rem;">印尼语学习助手</h1><div style="font-size:0.85rem;color:#94a3b8;">练习模式</div></header><div class="practice-container" style="max-width:100%;"><div id="practice-setup"><div class="face-controls" style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;">
-                    <div style="position:relative;width:76px;height:50px;cursor:pointer;" onclick="cycleRate()" id="p-left-eye" title="语速（点击切换）">
-                        <svg viewBox="0 0 80 54" width="76" height="50"><defs><radialGradient id="p-iris-gl" cx="45%" cy="42%"><stop offset="0%" stop-color="#e0e7ff"/><stop offset="40%" stop-color="#a5b4fc"/><stop offset="100%" stop-color="#6366f1"/></radialGradient><radialGradient id="p-iris-shine" cx="35%" cy="35%"><stop offset="0%" stop-color="rgba(255,255,255,0.4)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient></defs>
-                        <path id="p-left-lid-top" d="M2,27 Q40,4 78,27" fill="none" stroke="rgba(165,180,252,0.6)" stroke-width="2.5" stroke-linecap="round"/><path id="p-left-lid-bot" d="M2,27 Q40,50 78,27" fill="none" stroke="rgba(165,180,252,0.6)" stroke-width="2.5" stroke-linecap="round"/><path id="p-left-eyelid" d="M2,27 Q40,4 78,27 Q40,50 2,27 Z" fill="rgba(99,102,241,0.04)" stroke="none"/><ellipse id="p-left-iris" cx="40" cy="27" rx="13" ry="13" fill="url(#p-iris-gl)"/><ellipse cx="40" cy="27" rx="13" ry="13" fill="url(#p-iris-shine)"/><ellipse id="p-left-pupil" cx="40" cy="27" rx="6.5" ry="6.5" fill="#1e1b4b"/><circle cx="36" cy="23" r="3" fill="#fff" opacity="0.75"/><circle cx="44" cy="29" r="1.5" fill="#fff" opacity="0.35"/><ellipse cx="40" cy="27" rx="12" ry="12" fill="none" stroke="rgba(99,102,241,0.25)" stroke-width="0.8"/></svg>
-                        <div style="text-align:center;margin-top:4px;"><span id="p-val-rate" style="color:#a5b4fc;font-size:0.8rem;font-weight:700;">0.8x</span><div style="color:#475569;font-size:0.5rem;margin-top:1px;">语速</div></div>
-                    </div>
-                    <div style="position:relative;width:76px;height:50px;cursor:pointer;" onclick="cycleLoop()" id="p-right-eye" title="循环（点击切换）">
-                        <svg viewBox="0 0 80 54" width="76" height="50"><defs><radialGradient id="p-iris-gr" cx="45%" cy="42%"><stop offset="0%" stop-color="#d1fae5"/><stop offset="40%" stop-color="#6ee7b7"/><stop offset="100%" stop-color="#059669"/></radialGradient><radialGradient id="p-iris-shine2" cx="35%" cy="35%"><stop offset="0%" stop-color="rgba(255,255,255,0.4)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient></defs>
-                        <path id="p-right-lid-top" d="M2,27 Q40,4 78,27" fill="none" stroke="rgba(110,231,183,0.6)" stroke-width="2.5" stroke-linecap="round"/><path id="p-right-lid-bot" d="M2,27 Q40,50 78,27" fill="none" stroke="rgba(110,231,183,0.6)" stroke-width="2.5" stroke-linecap="round"/><path id="p-right-eyelid" d="M2,27 Q40,4 78,27 Q40,50 2,27 Z" fill="rgba(52,211,153,0.04)" stroke="none"/><ellipse id="p-right-iris" cx="40" cy="27" rx="13" ry="13" fill="url(#p-iris-gr)"/><ellipse cx="40" cy="27" rx="13" ry="13" fill="url(#p-iris-shine2)"/><ellipse id="p-right-pupil" cx="40" cy="27" rx="6.5" ry="6.5" fill="#064e3b"/><circle cx="36" cy="23" r="3" fill="#fff" opacity="0.75"/><circle cx="44" cy="29" r="1.5" fill="#fff" opacity="0.35"/><ellipse cx="40" cy="27" rx="12" ry="12" fill="none" stroke="rgba(52,211,153,0.25)" stroke-width="0.8"/></svg>
-                        <div style="text-align:center;margin-top:4px;"><span id="p-val-loop" style="color:#6ee7b7;font-size:0.8rem;font-weight:700;">1次</span><div style="color:#475569;font-size:0.5rem;margin-top:1px;">循环</div></div>
-                    </div>
-                </div><div style="text-align:center;margin-bottom:25px;"><h2 style="font-size:1.5rem;font-weight:800;color:var(--text-main);"><i class="fas fa-pen-fancy" style="color:var(--accent);margin-right:8px;"></i>练习模式</h2></div><div style="margin-bottom:20px;"><div style="color:var(--text-muted);font-size:0.9rem;margin-bottom:10px;">选择词库分类</div><select id="practice-cat-select" style="width:100%;padding:12px;border-radius:10px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:0.95rem;outline:none;"><option value="all">全部词库</option>' + catOpts + '</select></div><div style="margin-bottom:20px;"><div style="color:var(--text-muted);font-size:0.9rem;margin-bottom:10px;">选择练习类型</div><div class="practice-type-selector"><button class="practice-type-btn active" onclick="selectPracticeType('choice',this)"><i class="fas fa-th-large"></i> 选择题</button><button class="practice-type-btn" onclick="selectPracticeType('fill',this)"><i class="fas fa-keyboard"></i> 填空题</button><button class="practice-type-btn" onclick="selectPracticeType('listen',this)"><i class="fas fa-headphones"></i> 听力题</button></div></div><div style="margin-bottom:20px;padding:14px 18px;border-radius:14px;border:1px dashed var(--border-subtle);background:var(--accent-subtle);display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;">
+    c.innerHTML = `<header style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><h1 class="main-title" style="font-size:1.3rem;">印尼语学习助手</h1><div style="font-size:0.85rem;color:#94a3b8;">练习模式</div></header><div class="practice-container" style="max-width:100%;"><div id="practice-setup"><div style="text-align:center;margin-bottom:25px;"><h2 style="font-size:1.5rem;font-weight:800;color:var(--text-main);"><i class="fas fa-pen-fancy" style="color:var(--accent);margin-right:8px;"></i>练习模式</h2></div><div style="margin-bottom:20px;"><div style="color:var(--text-muted);font-size:0.9rem;margin-bottom:10px;">选择词库分类</div><select id="practice-cat-select" style="width:100%;padding:12px;border-radius:10px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:0.95rem;outline:none;"><option value="all">全部词库</option>' + catOpts + '</select></div><div style="margin-bottom:20px;"><div style="color:var(--text-muted);font-size:0.9rem;margin-bottom:10px;">选择练习类型</div><div class="practice-type-selector"><button class="practice-type-btn active" onclick="selectPracticeType('choice',this)"><i class="fas fa-th-large"></i> 选择题</button><button class="practice-type-btn" onclick="selectPracticeType('fill',this)"><i class="fas fa-keyboard"></i> 填空题</button><button class="practice-type-btn" onclick="selectPracticeType('listen',this)"><i class="fas fa-headphones"></i> 听力题</button></div></div><div style="margin-bottom:20px;padding:14px 18px;border-radius:14px;border:1px dashed var(--border-subtle);background:var(--accent-subtle);display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap;">
             <label style="display:flex;align-items:center;gap:12px;cursor:pointer;color:var(--text-main);font-size:1rem;font-weight:600;">
                 <input type="checkbox" id="practice-learned-only" style="width:22px;height:22px;accent-color:var(--accent);cursor:pointer;">
                 <i class="fas fa-check-double" style="color:var(--accent);"></i>
