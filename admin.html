@@ -117,6 +117,7 @@
         return { error: '功能暂不可用（本地模式）' };
     }
 
+    if (!window.API) window.API = {};
     // 替换所有 API.adminXxx 调用
     window.API.adminGetSettings = () => adminFetch('admin/settings', { method: 'GET' });
     window.API.adminGetOnline = () => adminFetch('admin/online', { method: 'GET' });
@@ -709,9 +710,9 @@
 
         let result;
         if (editingUsername) {
-            result = await adminFetch('admin/users', { method: 'PUT', body: JSON.stringify({ action: 'update', username: editingUsername, data: editingUsername, { name, password, role });
+            result = await adminFetch('admin/users', { method: 'PUT', body: JSON.stringify({ action: 'update', username: editingUsername, data: { name, password, role } });
         } else {
-            result = await adminFetch('admin/users', { method: 'PUT', body: JSON.stringify({ action: 'add', user: { username, password, name: name || username, role });
+            result = await adminFetch('admin/users', { method: 'PUT', body: JSON.stringify({ action: 'add', user: { username, password, name: name || username, role } });
         }
 
         if (result.error) { alert(result.error); return; }

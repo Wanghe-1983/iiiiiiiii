@@ -281,32 +281,7 @@ function initUI() {
         </div>
         <div class="indo-box" id="disp-indo">加载中...</div>
         <div class="zh-box" id="disp-zh">请稍候</div>
-        <div class="learn-controls" id="learn-controls" style="display:flex;align-items:center;justify-content:center;gap:24px;padding:8px 0;">
-            <div style="position:relative;width:72px;height:72px;cursor:pointer;" onclick="cycleRate()" title="语速调节">
-                <svg viewBox="0 0 72 72" width="72" height="72">
-                    <circle cx="36" cy="36" r="30" fill="none" stroke="rgba(165,180,252,0.1)" stroke-width="4"/>
-                    <circle id="rate-ring" cx="36" cy="36" r="30" fill="none" stroke="url(#rate-grad)" stroke-width="4" stroke-dasharray="188.5" stroke-dashoffset="141.4" stroke-linecap="round" style="transition:stroke-dashoffset 0.4s ease;"/>
-                    <defs><linearGradient id="rate-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#c084fc"/></linearGradient></defs>
-                    <text x="36" y="33" text-anchor="middle" fill="#a5b4fc" font-size="13" font-weight="700" id="val-rate">0.8x</text>
-                    <text x="36" y="47" text-anchor="middle" fill="#475569" font-size="8">语速</text>
-                </svg>
-            </div>
-            <div onclick="toggleHide()" id="hide-btn" style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(148,163,184,0.06);border:1px solid rgba(148,163,184,0.12);transition:all 0.3s;" title="隐藏/显示中文释义">
-                <svg viewBox="0 0 24 24" width="20" height="20">
-                    <path id="hide-eye-path" d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" fill="#64748b"/>
-                </svg>
-            </div>
-            <div style="position:relative;width:72px;height:72px;cursor:pointer;" onclick="cycleLoop()" title="循环调节">
-                <svg viewBox="0 0 72 72" width="72" height="72">
-                    <circle cx="36" cy="36" r="30" fill="none" stroke="rgba(110,231,183,0.1)" stroke-width="4"/>
-                    <circle id="loop-ring" cx="36" cy="36" r="30" fill="none" stroke="url(#loop-grad)" stroke-width="4" stroke-dasharray="188.5" stroke-dashoffset="169.65" stroke-linecap="round" style="transition:stroke-dashoffset 0.4s ease;"/>
-                    <defs><linearGradient id="loop-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#34d399"/><stop offset="100%" stop-color="#2dd4bf"/></linearGradient></defs>
-                    <text x="36" y="33" text-anchor="middle" fill="#6ee7b7" font-size="13" font-weight="700" id="val-loop">1次</text>
-                    <text x="36" y="47" text-anchor="middle" fill="#475569" font-size="8">循环</text>
-                </svg>
-            </div>
-        </div>
-        <div class="nav-row">
+<div class="nav-row">
             <button class="circle-btn" onclick="navWord(-1)"><i class="fas fa-chevron-left"></i></button>
             <button id="main-play" class="circle-btn play-btn" onclick="toggleSpeech()"><i class="fas fa-play" id="play-ico"></i></button>
             <button class="circle-btn" onclick="navWord(1)"><i class="fas fa-chevron-right"></i></button>
@@ -711,15 +686,15 @@ function toggleSpeech() {
     }
 
     // 优先使用谷歌翻译发音
-    googleSpeech(word).catch(() => {
+    googleSpeech(word, _rate).catch(() => {
         // 兜底：本地合成
-        const currentRate = parseFloat(_rate || document.getElementById('inp-rate')?.value || 0.8);
+        const currentRate = parseFloat(_rate) || 0.8;
         const utterThis = new SpeechSynthesisUtterance(word);
         utterThis.lang = 'id-ID';
         utterThis.rate = currentRate;
         synth.speak(utterThis);
         // 循环播放逻辑
-        const loopTimes = parseInt(_loop || document.getElementById('inp-loop')?.value || 1);
+        const loopTimes = parseInt(_loop) || 1;
         let loopCount = 1;
         utterThis.onend = function() {
             if (loopCount < loopTimes) {
@@ -751,10 +726,10 @@ function updateSetting(k, v) {
 
 // 圆环控件：语速 1-20 对应 0.1-2.0
 // 语速级别：0.5, 0.8, 1.0, 1.2, 1.5, 2.0
-const RATE_LEVELS = [0.5, 0.8, 1.0, 1.2, 1.5, 2.0];
+const RATE_LEVELS = [0.1, 0.3, 0.5, 0.8, 1.0, 1.2, 1.5];
 let _rateIdx = 1; // 默认 0.8
 // 循环级别：1, 2, 3, 5, 10
-const LOOP_LEVELS = [1, 2, 3, 5, 10];
+const LOOP_LEVELS = [1, 2, 3, 5, 7, 9];
 let _loopIdx = 0; // 默认 1
 
 function cycleRate() {
@@ -783,7 +758,7 @@ function cycleLoop() {
 function updateRing(id, ratio) {
     const el = document.getElementById(id);
     if (!el) return;
-    const circumference = 188.5; // 2 * PI * 30
+    const circumference = 175.9; // 2 * PI * 28
     el.style.strokeDashoffset = circumference * (1 - Math.max(0.05, ratio));
 }
 
@@ -802,29 +777,8 @@ function toggleHide() {
     renderCurrent();
 }
 
-// 隐藏/显示中文释义
-function toggleHide() {
-    _hideChinese = !_hideChinese;
-    const nose = document.getElementById('nose-path');
-    if (_hideChinese) {
-        nose.setAttribute('stroke', '#f87171');
-        nose.setAttribute('fill', 'rgba(248,113,113,0.1)');
-    } else {
-        nose.setAttribute('stroke', '#94a3b8');
-        nose.setAttribute('fill', 'none');
-    }
-    renderCurrent();
-}
 
-function updatePracticeSetting(k, v) {
-    if (k === 'rate') {
-        const pVal = document.getElementById('p-val-rate');
-        if (pVal) pVal.innerText = (parseInt(v) / 10).toFixed(1) + 'x';
-    } else if (k === 'loop') {
-        const pVal = document.getElementById('p-val-loop');
-        if (pVal) pVal.innerText = v + '次';
-    }
-}
+
 
 // 打开管理员弹窗
 function openAdminModal() {
