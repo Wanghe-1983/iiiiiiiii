@@ -140,7 +140,9 @@ async function createUser(userData, env) {
     users.push({
         username: userData.username, password: userData.password,
         name: userData.name || userData.username, role: userData.role || 'user',
-        email: userData.email || '', createdAt: new Date().toISOString(),
+        userType: userData.userType || 'hobby',
+        companyCode: userData.companyCode || '', empNo: userData.empNo || '',
+        createdAt: new Date().toISOString(),
     });
     await saveAllUsers(users, env);
     return { success: true };
@@ -251,6 +253,42 @@ async function setWhitelist(list, env) {
     await env.INDO_LEARN_KV.put('whitelist', JSON.stringify(list));
 }
 
+// ========== 员工名单管理 ==========
+async function getEmployeeList(env) {
+    return JSON.parse(await env.INDO_LEARN_KV.get('employee_list') || '[]');
+}
+
+async function setEmployeeList(list, env) {
+    await env.INDO_LEARN_KV.put('employee_list', JSON.stringify(list));
+}
+
+async function addEmployee(employee, env) {
+    const list = await getEmployeeList(env);
+    // 去重：同公司同工号
+    const exists = list.find(e => e.companyCode === employee.companyCode && e.empNo === employee.empNo);
+    if (exists) return { error: '该员工已存在（' + employee.companyCode + '-' + employee.empNo + '）' };
+    list.push(employee);
+    await setEmployeeList(list, env);
+    return { success: true };
+}
+
+async function deleteEmployee(companyCode, empNo, env) {
+    let list = await getEmployeeList(env);
+    const before = list.length;
+    list = list.filter(e => !(e.companyCode === companyCode && e.empNo === empNo));
+    if (list.length === before) return { error: '员工不存在' };
+    await setEmployeeList(list, env);
+    return { success: true };
+}
+
+async function verifyEmployee(companyCode, empNo, env) {
+    if (!companyCode || !empNo) return { valid: false, error: '公司缩写和工号不能为空' };
+    const list = await getEmployeeList(env);
+    const emp = list.find(e => e.companyCode === companyCode && e.empNo === empNo);
+    if (!emp) return { valid: false, error: '未找到该员工信息，请检查公司缩写和工号' };
+    return { valid: true, employee: emp };
+}
+
 // ========== 统一路由处理器 ==========
 async function handleRequest(context) {
     const { request, env } = context;
@@ -323,7 +361,7 @@ async function handleRequest(context) {
             }
             const token = await signToken({ username: user.username, name: user.name, role: user.role }, env);
             await heartbeat(user.username, env, token);
-            return json({ token, user: { username: user.username, name: user.name, role: user.role, email: user.email || '' } });
+            return json({ token, user: { username: user.username, name: user.name, role: user.role, userType: user.userType, companyCode: user.companyCode || '', empNo: user.empNo || '' } });
         }
 
         if (path === 'auth/register' && method === 'POST') {
@@ -333,19 +371,27 @@ async function handleRequest(context) {
                 const users = await getAllUsers(env);
                 if (users.length >= settings.maxRegistered) return json({ error: '注册人数已满，请联系管理员' }, 403);
             }
-            const { username, password, name, email } = await request.json();
-            if (!username || !password) return json({ error: '用户名和密码不能为空' }, 400);
+            const { username, password, name, userType, companyCode, empNo } = await request.json();
+            if (!username || !password || !name) return json({ error: '用户名、密码和昵称不能为空' }, 400);
             if (username.length < 2 || username.length > 20) return json({ error: '用户名长度 2-20 位' }, 400);
             if (password.length < 4) return json({ error: '密码至少 4 位' }, 400);
-            // 如果提供了邮箱，检查是否已验证
-            if (email) {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(email)) return json({ error: '邮箱格式不正确' }, 400);
-                const verified = await env.INDO_LEARN_KV.get('email_verified:' + email);
-                if (!verified) return json({ error: '请先验证邮箱' }, 400);
-                await env.INDO_LEARN_KV.delete('email_verified:' + email);
+            // 昵称限制：5个汉字或10个字母（支持空格）
+            if (name.length > 10) return json({ error: '昵称最多5个汉字或10个字母' }, 400);
+            // 用户类型校验
+            if (userType === 'employee') {
+                if (!companyCode || !empNo) return json({ error: '公司员工需填写公司缩写和工号' }, 400);
+                const verify = await verifyEmployee(companyCode, empNo, env);
+                if (!verify.valid) return json({ error: verify.error }, 400);
+            } else {
+                // 业余爱好者默认工号 8888888
+                companyCode = '';
+                empNo = '8888888';
             }
-            const result = await createUser({ username, password, name: name || username, email: email || '' }, env);
+            const result = await createUser({
+                username, password, name,
+                role: 'user', userType: userType || 'hobby',
+                companyCode: companyCode || '', empNo: empNo || '8888888',
+            }, env);
             if (result.error) return json(result, 400);
             return json({ success: true, message: '注册成功' });
         }
@@ -452,6 +498,20 @@ async function handleRequest(context) {
         if (path === 'admin/settings' && method === 'PUT') { await setSystemSettings(await request.json(), env); return json({ success: true }); }
         if (path === 'admin/whitelist' && method === 'GET') { return json(await getWhitelist(env)); }
         if (path === 'admin/whitelist' && method === 'PUT') { await setWhitelist(await request.json(), env); return json({ success: true }); }
+
+        // 员工名单管理
+        if (path === 'admin/employees' && method === 'GET') { return json(await getEmployeeList(env)); }
+        if (path === 'admin/employees' && method === 'POST') {
+            const data = await request.json();
+            if (data.bulk) { await setEmployeeList(data.list, env); return json({ success: true }); }
+            const result = await addEmployee(data, env);
+            return json(result, result.error ? 400 : 200);
+        }
+        if (path === 'admin/employees' && method === 'DELETE') {
+            const { companyCode, empNo } = await request.json();
+            const result = await deleteEmployee(companyCode, empNo, env);
+            return json(result, result.error ? 400 : 200);
+        }
         if (path === 'admin/leaderboard-config' && method === 'GET') { return json(await getLeaderboardConfig(env)); }
         if (path === 'admin/leaderboard-config' && method === 'PUT') { await setLeaderboardConfig(await request.json(), env); return json({ success: true }); }
         if (path === 'admin/init-users' && method === 'POST') {

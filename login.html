@@ -7,14 +7,10 @@
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --bg: #030712;
-            --glass: rgba(17, 24, 39, 0.85);
-            --accent: #6366f1;
-            --accent-glow: rgba(99, 102, 241, 0.5);
-            --text-main: #f9fafb;
-            --text-muted: #94a3b8;
-            --danger: #ef4444;
-            --success: #10b981;
+            --bg: #030712; --glass: rgba(17, 24, 39, 0.85);
+            --accent: #6366f1; --accent-glow: rgba(99, 102, 241, 0.5);
+            --text-main: #f9fafb; --text-muted: #94a3b8;
+            --danger: #ef4444; --success: #10b981;
         }
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
@@ -24,104 +20,72 @@
                 radial-gradient(at 100% 100%, rgba(168,85,247,0.12) 0%, transparent 50%);
             color: var(--text-main);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            height: 100vh; display: flex; justify-content: center; align-items: center;
             overflow-y: auto;
         }
         .login-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 40px;
-            border-radius: 30px;
-            width: 100%;
-            max-width: 420px;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-            text-align: center;
-            position: relative;
-            z-index: 10;
-            margin: 20px 0;
+            background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 40px; border-radius: 30px; width: 100%; max-width: 460px;
+            border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            text-align: center; position: relative; z-index: 10; margin: 20px 0;
         }
         .logo-area { margin-bottom: 30px; }
         .logo-icon { font-size: 3rem; color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); margin-bottom: 15px; }
         h1 { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 8px; }
         .subtitle { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 35px; }
 
-        .input-group { margin-bottom: 18px; text-align: left; }
-        .input-label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; margin-left: 5px; }
+        .input-group { margin-bottom: 16px; text-align: left; }
+        .input-label { display: block; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 6px; margin-left: 5px; }
+        .input-label .req { color: var(--danger); }
+        .input-label .hint { font-size: 0.75rem; color: #6b7280; margin-left: 4px; }
         .input-wrapper { position: relative; }
-        .input-wrapper i.icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .input-wrapper i.icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; }
         .login-input {
-            width: 100%; padding: 14px 15px 14px 45px;
+            width: 100%; padding: 13px 15px 13px 42px;
             background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.1);
             border-radius: 12px; color: #fff; font-size: 1rem; transition: all 0.3s ease; outline: none;
         }
         .login-input:focus { border-color: var(--accent); background: rgba(30,41,59,0.8); box-shadow: 0 0 0 4px rgba(99,102,241,0.1); }
         .login-input::placeholder { color: #4b5563; }
-        .login-input.no-icon { padding-left: 15px; }
+        .login-input[readonly] { opacity: 0.6; cursor: not-allowed; }
+        /* 大写锁定样式 */
+        .login-input.uppercase { text-transform: uppercase; }
+        .login-input.digitsonly { letter-spacing: 2px; }
+
+        .input-row { display: flex; gap: 10px; }
+        .input-row .input-group { flex: 1; }
+        .input-row .company-code .login-input { text-transform: uppercase; }
+        .input-row .emp-no .login-input { letter-spacing: 2px; }
 
         .btn-primary {
-            width: 100%; padding: 15px; background: var(--accent); color: white;
+            width: 100%; padding: 14px; background: var(--accent); color: white;
             border: none; border-radius: 12px; font-size: 1rem; font-weight: 700;
-            cursor: pointer; transition: all 0.3s ease; margin-top: 10px;
+            cursor: pointer; transition: all 0.3s ease; margin-top: 8px;
             box-shadow: 0 10px 15px -3px rgba(99,102,241,0.3);
         }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(99,102,241,0.4); filter: brightness(1.1); }
         .btn-primary:active { transform: translateY(0); }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-        .btn-secondary {
-            width: 100%; padding: 13px; background: transparent; color: var(--accent);
-            border: 1px solid var(--accent); border-radius: 12px; font-size: 0.9rem; font-weight: 600;
-            cursor: pointer; transition: all 0.3s ease; margin-top: 10px;
-        }
-        .btn-secondary:hover { background: rgba(99,102,241,0.1); }
-
-        .btn-send-code {
-            position: absolute; right: 5px; top: 50%; transform: translateY(-50%);
-            padding: 8px 14px; background: var(--accent); color: white;
-            border: none; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
-            cursor: pointer; transition: all 0.3s; white-space: nowrap;
-        }
-        .btn-send-code:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-send-code:hover:not(:disabled) { filter: brightness(1.1); }
-
-        .tip-box {
-            margin-top: 18px; padding: 10px; border-radius: 8px;
-            font-size: 0.85rem; display: none;
-        }
+        .tip-box { margin-top: 16px; padding: 10px; border-radius: 8px; font-size: 0.85rem; display: none; }
         .tip-box.error { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.2); color: #f87171; }
         .tip-box.success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: #10b981; }
-
-        .switch-mode {
-            margin-top: 22px; font-size: 0.9rem; color: var(--text-muted);
-        }
-        .switch-mode a {
-            color: var(--accent); text-decoration: none; font-weight: 600; cursor: pointer;
-        }
-        .switch-mode a:hover { text-decoration: underline; }
 
         .online-badge {
             display: inline-flex; align-items: center; gap: 6px;
             padding: 5px 14px; border-radius: 20px; font-size: 0.8rem;
             background: rgba(16,185,129,0.15); color: #10b981; margin-bottom: 15px;
         }
-        .online-badge .dot {
-            width: 8px; height: 8px; border-radius: 50%; background: #10b981;
-            animation: pulse 2s infinite;
-        }
+        .online-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: pulse 2s infinite; }
         @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
 
         .footer-note { margin-top: 25px; font-size: 0.85rem; color: var(--text-muted); }
         .contact-link { color: var(--accent); text-decoration: none; font-weight: 600; cursor: pointer; }
         .contact-link:hover { text-decoration: underline; }
 
-        /* Tab 切换 */
+        /* Tab */
         .auth-tabs {
-            display: flex; gap: 0; margin-bottom: 30px; border-radius: 12px;
+            display: flex; gap: 0; margin-bottom: 25px; border-radius: 12px;
             background: rgba(30,41,59,0.5); padding: 4px; border: 1px solid rgba(255,255,255,0.05);
         }
         .auth-tab {
@@ -135,26 +99,21 @@
         .form-panel { display: none; }
         .form-panel.active { display: block; }
 
-        /* 邮箱注册引导区 */
-        .email-guide {
-            margin-top: 15px; padding: 15px; border-radius: 12px;
-            background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.15);
+        /* 用户类型选择 */
+        .type-selector {
+            display: flex; gap: 12px; margin-bottom: 20px;
         }
-        .email-guide-title {
-            font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;
+        .type-card {
+            flex: 1; padding: 16px 12px; border-radius: 14px; cursor: pointer;
+            border: 2px solid rgba(255,255,255,0.08); background: rgba(30,41,59,0.4);
+            transition: all 0.3s; text-align: center;
         }
-        .email-providers {
-            display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
-        }
-        .email-provider {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 8px 14px; border-radius: 8px; font-size: 0.82rem;
-            background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.08);
-            color: var(--text-main); text-decoration: none; cursor: pointer;
-            transition: all 0.2s;
-        }
-        .email-provider:hover { border-color: var(--accent); background: rgba(99,102,241,0.1); }
-        .email-provider i { font-size: 1rem; }
+        .type-card:hover { border-color: rgba(99,102,241,0.3); }
+        .type-card.active { border-color: var(--accent); background: rgba(99,102,241,0.1); }
+        .type-card i { font-size: 1.6rem; margin-bottom: 8px; display: block; }
+        .type-card .type-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 4px; }
+        .type-card .type-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; }
+        .type-card.active i { color: var(--accent); }
 
         /* QR 弹窗 */
         .qr-overlay {
@@ -170,7 +129,7 @@
         @keyframes qrShow { to { transform: scale(1); } }
         .qr-img { width: 240px; height: 240px; border-radius: 15px; margin: 15px 0; border: 4px solid rgba(255,255,255,0.05); }
 
-        /* Light theme */
+        /* Light */
         [data-theme="light"] { --bg:#f1f5f9; --glass:rgba(255,255,255,0.9); --accent:#4f46e5; --accent-glow:rgba(79,70,229,0.3); --text-main:#0f172a; --text-muted:#475569; }
         [data-theme="light"] body { background:var(--bg); background-image: radial-gradient(at 0% 0%, rgba(99,102,241,0.08) 0%, transparent 50%), radial-gradient(at 100% 100%, rgba(168,85,247,0.06) 0%, transparent 50%); }
         [data-theme="light"] .login-card { border-color:rgba(0,0,0,0.08); box-shadow:0 25px 50px -12px rgba(0,0,0,0.15); }
@@ -181,8 +140,7 @@
         [data-theme="light"] .qr-card { background:#fff; border-color:rgba(0,0,0,0.08); }
         [data-theme="light"] .input-wrapper i { color:var(--text-muted); }
         [data-theme="light"] .online-badge { background:rgba(16,185,129,0.1); }
-        [data-theme="light"] .email-provider { background:rgba(0,0,0,0.03); border-color:rgba(0,0,0,0.08); }
-        [data-theme="light"] .email-guide { background:rgba(99,102,241,0.05); border-color:rgba(99,102,241,0.1); }
+        [data-theme="light"] .type-card { background:rgba(0,0,0,0.03); border-color:rgba(0,0,0,0.08); }
     </style>
 </head>
 <body data-theme="dark">
@@ -193,13 +151,11 @@
             <p class="subtitle">Selamat Belajar Bahasa Indonesia!</p>
         </div>
 
-        <!-- 在线人数 -->
         <div id="online-badge" class="online-badge" style="display:none;">
             <span class="dot"></span>
             <span id="online-text">在线 0 人</span>
         </div>
 
-        <!-- Tab 切换 -->
         <div class="auth-tabs">
             <div class="auth-tab active" onclick="switchTab('login')">登录</div>
             <div class="auth-tab" onclick="switchTab('register')">注册</div>
@@ -211,7 +167,7 @@
                 <span class="input-label">账号 / Username</span>
                 <div class="input-wrapper">
                     <i class="fas fa-user icon"></i>
-                    <input type="text" id="login-username" class="login-input" placeholder="用户名或邮箱" autocomplete="off">
+                    <input type="text" id="login-username" class="login-input" placeholder="用户名" autocomplete="off">
                 </div>
             </div>
             <div class="input-group">
@@ -227,80 +183,72 @@
 
         <!-- 注册面板 -->
         <div id="panel-register" class="form-panel">
-            <!-- 步骤1：填写信息 -->
-            <div id="reg-step1">
-                <div class="input-group">
-                    <span class="input-label">用户名 / Username <span style="color:var(--danger)">*</span></span>
-                    <div class="input-wrapper">
-                        <i class="fas fa-user-plus icon"></i>
-                        <input type="text" id="reg-username" class="login-input" placeholder="2-20位字母或数字" autocomplete="off">
-                    </div>
+            <!-- 用户类型选择 -->
+            <div class="type-selector">
+                <div class="type-card active" onclick="selectType('employee')">
+                    <i class="fas fa-building"></i>
+                    <div class="type-title">公司员工</div>
+                    <div class="type-desc">需填写公司缩写和工号<br>由管理员验证</div>
                 </div>
-                <div class="input-group">
-                    <span class="input-label">昵称 / Name</span>
-                    <div class="input-wrapper">
-                        <i class="fas fa-id-badge icon"></i>
-                        <input type="text" id="reg-name" class="login-input" placeholder="你的昵称（可选）" autocomplete="off">
-                    </div>
+                <div class="type-card" onclick="selectType('hobby')">
+                    <i class="fas fa-heart"></i>
+                    <div class="type-title">业余爱好者</div>
+                    <div class="type-desc">无需工号验证<br>默认工号 8888888</div>
                 </div>
-                <div class="input-group">
-                    <span class="input-label">密码 / Password <span style="color:var(--danger)">*</span></span>
-                    <div class="input-wrapper">
-                        <i class="fas fa-lock icon"></i>
-                        <input type="password" id="reg-password" class="login-input" placeholder="至少4位">
-                    </div>
-                </div>
-                <div class="input-group">
-                    <span class="input-label">确认密码</span>
-                    <div class="input-wrapper">
-                        <i class="fas fa-lock icon"></i>
-                        <input type="password" id="reg-password2" class="login-input" placeholder="再次输入密码">
-                    </div>
-                </div>
-                <button class="btn-primary" onclick="goToEmailStep()">下一步：验证邮箱</button>
-                <div id="reg-tip" class="tip-box"></div>
             </div>
 
-            <!-- 步骤2：邮箱验证 -->
-            <div id="reg-step2" style="display:none;">
-                <div class="input-group">
-                    <span class="input-label">邮箱 / Email <span style="color:var(--danger)">*</span></span>
-                    <div class="input-wrapper">
-                        <i class="fas fa-envelope icon"></i>
-                        <input type="email" id="reg-email" class="login-input" placeholder="请输入你的邮箱地址" autocomplete="off">
-                    </div>
+            <!-- 基本信息 -->
+            <div class="input-group">
+                <span class="input-label">用户名 / Username <span class="req">*</span></span>
+                <div class="input-wrapper">
+                    <i class="fas fa-user-plus icon"></i>
+                    <input type="text" id="reg-username" class="login-input" placeholder="2-20位字母或数字" autocomplete="off">
                 </div>
-                <div class="input-group">
-                    <span class="input-label">验证码</span>
-                    <div class="input-wrapper">
-                        <i class="fas fa-shield-halved icon"></i>
-                        <input type="text" id="reg-code" class="login-input" placeholder="6位数字验证码" maxlength="6" autocomplete="off">
-                        <button class="btn-send-code" id="send-code-btn" onclick="handleSendCode()">发送验证码</button>
-                    </div>
+            </div>
+            <div class="input-group">
+                <span class="input-label">昵称 / Name <span class="req">*</span> <span class="hint">（姓名或花名，最多5个汉字或10个字母）</span></span>
+                <div class="input-wrapper">
+                    <i class="fas fa-id-badge icon"></i>
+                    <input type="text" id="reg-name" class="login-input" placeholder="例如：张三、Alex Chen" autocomplete="off" maxlength="10">
                 </div>
-                <button class="btn-primary" id="reg-btn" onclick="handleRegister()">注册账号</button>
-                <button class="btn-secondary" onclick="backToStep1()">返回上一步</button>
-                <div id="reg-step2-tip" class="tip-box"></div>
+            </div>
+            <div class="input-group">
+                <span class="input-label">密码 / Password <span class="req">*</span></span>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock icon"></i>
+                    <input type="password" id="reg-password" class="login-input" placeholder="至少4位">
+                </div>
+            </div>
+            <div class="input-group">
+                <span class="input-label">确认密码 <span class="req">*</span></span>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock icon"></i>
+                    <input type="password" id="reg-password2" class="login-input" placeholder="再次输入密码">
+                </div>
+            </div>
 
-                <!-- 无邮箱引导 -->
-                <div class="email-guide">
-                    <div class="email-guide-title">还没有邮箱？选择一个注册：</div>
-                    <div class="email-providers">
-                        <a class="email-provider" href="https://signup.live.com/signup" target="_blank">
-                            <i class="fab fa-microsoft" style="color:#00a4ef;"></i> Outlook
-                        </a>
-                        <a class="email-provider" href="https://accounts.google.com/signup" target="_blank">
-                            <i class="fab fa-google" style="color:#ea4335;"></i> Gmail
-                        </a>
-                        <a class="email-provider" href="https://mail.qq.com/register" target="_blank">
-                            <i class="fas fa-envelope" style="color:#12b7f5;"></i> QQ邮箱
-                        </a>
-                        <a class="email-provider" href="https://mail.163.com/register" target="_blank">
-                            <i class="fas fa-envelope" style="color:#c9362c;"></i> 网易邮箱
-                        </a>
+            <!-- 员工信息（仅员工显示） -->
+            <div id="employee-fields">
+                <div class="input-row">
+                    <div class="input-group company-code">
+                        <span class="input-label">公司缩写 <span class="req">*</span> <span class="hint">（大写字母，如 WK）</span></span>
+                        <div class="input-wrapper">
+                            <i class="fas fa-building icon"></i>
+                            <input type="text" id="reg-company" class="login-input uppercase" placeholder="WK" maxlength="6" autocomplete="off" style="text-transform:uppercase;">
+                        </div>
+                    </div>
+                    <div class="input-group emp-no">
+                        <span class="input-label">工号 <span class="req">*</span> <span class="hint">（纯数字）</span></span>
+                        <div class="input-wrapper">
+                            <i class="fas fa-id-card icon"></i>
+                            <input type="text" id="reg-empno" class="login-input digitsonly" placeholder="123456" autocomplete="off">
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <button class="btn-primary" id="reg-btn" onclick="handleRegister()">注册账号</button>
+            <div id="reg-tip" class="tip-box"></div>
         </div>
 
         <div class="footer-note">
@@ -308,7 +256,6 @@
         </div>
     </div>
 
-    <!-- QR 弹窗 -->
     <div id="qr-box" class="qr-overlay" onclick="hideQR()">
         <div class="qr-card" onclick="event.stopPropagation()">
             <h3 style="color:#fff;margin-bottom:5px;">联系开发者</h3>
@@ -320,8 +267,7 @@
 
     <script src="config.js"></script>
     <script>
-        // 注册步骤数据暂存
-        let regData = {};
+        let selectedType = 'employee';
 
         function showQR() { document.getElementById('qr-box').style.display = 'flex'; }
         function hideQR() { document.getElementById('qr-box').style.display = 'none'; }
@@ -333,7 +279,6 @@
             document.getElementById('panel-login').classList.toggle('active', tab === 'login');
             document.getElementById('panel-register').classList.toggle('active', tab === 'register');
             clearAllTips();
-            if (tab === 'register') backToStep1();
         }
 
         function clearAllTips() {
@@ -347,115 +292,66 @@
             el.style.display = 'block';
         }
 
-        // 步骤1 -> 步骤2
-        function goToEmailStep() {
+        // 选择用户类型
+        function selectType(type) {
+            selectedType = type;
+            document.querySelectorAll('.type-card').forEach((el, i) => {
+                el.classList.toggle('active', (type === 'employee' && i === 0) || (type === 'hobby' && i === 1));
+            });
+            const empFields = document.getElementById('employee-fields');
+            if (type === 'hobby') {
+                empFields.style.display = 'none';
+            } else {
+                empFields.style.display = 'block';
+            }
+            clearAllTips();
+        }
+
+        // 输入限制
+        document.addEventListener('DOMContentLoaded', function() {
+            const companyInput = document.getElementById('reg-company');
+            companyInput.addEventListener('input', function() {
+                this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '');
+            });
+            const empnoInput = document.getElementById('reg-empno');
+            empnoInput.addEventListener('input', function() {
+                this.value = this.value.replace(/\D/g, '');
+            });
+        });
+
+        // 注册
+        async function handleRegister() {
             const username = document.getElementById('reg-username').value.trim();
             const name = document.getElementById('reg-name').value.trim();
             const password = document.getElementById('reg-password').value.trim();
             const password2 = document.getElementById('reg-password2').value.trim();
             clearAllTips();
 
-            if (!username || !password) { showTip('reg-tip', '用户名和密码不能为空', 'error'); return; }
+            if (!username || !password || !name) { showTip('reg-tip', '用户名、密码和昵称不能为空', 'error'); return; }
             if (username.length < 2 || username.length > 20) { showTip('reg-tip', '用户名长度 2-20 位', 'error'); return; }
             if (password.length < 4) { showTip('reg-tip', '密码至少 4 位', 'error'); return; }
             if (password !== password2) { showTip('reg-tip', '两次密码输入不一致', 'error'); return; }
+            if (name.length > 10) { showTip('reg-tip', '昵称最多5个汉字或10个字母', 'error'); return; }
 
-            regData = { username, name, password };
-            document.getElementById('reg-step1').style.display = 'none';
-            document.getElementById('reg-step2').style.display = 'block';
-        }
-
-        function backToStep1() {
-            clearAllTips();
-            document.getElementById('reg-step1').style.display = 'block';
-            document.getElementById('reg-step2').style.display = 'none';
-        }
-
-        // 发送验证码
-        let countdown = 0;
-        let countdownTimer = null;
-        async function handleSendCode() {
-            const email = document.getElementById('reg-email').value.trim();
-            clearAllTips();
-
-            if (!email) { showTip('reg-step2-tip', '请输入邮箱地址', 'error'); return; }
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) { showTip('reg-step2-tip', '邮箱格式不正确', 'error'); return; }
-
-            if (countdown > 0) return;
-
-            const btn = document.getElementById('send-code-btn');
-            btn.disabled = true;
-            btn.textContent = '发送中...';
-
-            const result = await API.request('email/send-code', {
-                method: 'POST',
-                body: JSON.stringify({ email }),
-            });
-
-            btn.disabled = false;
-
-            if (result.success) {
-                showTip('reg-step2-tip', '验证码已发送到 ' + email + '，请查收', 'success');
-                startCountdown();
-            } else {
-                btn.textContent = '发送验证码';
-                if (result.message === '网络请求失败，请检查网络连接') {
-                    showTip('reg-step2-tip', '网络错误，请检查网络连接', 'error');
-                } else {
-                    showTip('reg-step2-tip', result.error || '发送失败', 'error');
-                }
+            let companyCode = '', empNo = '';
+            if (selectedType === 'employee') {
+                companyCode = document.getElementById('reg-company').value.trim();
+                empNo = document.getElementById('reg-empno').value.trim();
+                if (!companyCode) { showTip('reg-tip', '请填写公司缩写', 'error'); return; }
+                if (!empNo) { showTip('reg-tip', '请填写工号', 'error'); return; }
             }
-        }
-
-        function startCountdown() {
-            countdown = 60;
-            const btn = document.getElementById('send-code-btn');
-            clearInterval(countdownTimer);
-            countdownTimer = setInterval(() => {
-                countdown--;
-                btn.textContent = countdown > 0 ? countdown + 's 后重试' : '发送验证码';
-                btn.disabled = countdown > 0;
-                if (countdown <= 0) clearInterval(countdownTimer);
-            }, 1000);
-        }
-
-        // 注册
-        async function handleRegister() {
-            const email = document.getElementById('reg-email').value.trim();
-            const code = document.getElementById('reg-code').value.trim();
-            clearAllTips();
-
-            if (!email) { showTip('reg-step2-tip', '请输入邮箱地址', 'error'); return; }
-            if (!code || code.length !== 6) { showTip('reg-step2-tip', '请输入6位验证码', 'error'); return; }
 
             const btn = document.getElementById('reg-btn');
-            btn.disabled = true;
-            btn.textContent = '注册中...';
+            btn.disabled = true; btn.textContent = '注册中...';
 
-            // 1. 先验证验证码
-            const verifyResult = await API.request('email/verify-code', {
-                method: 'POST',
-                body: JSON.stringify({ email, code }),
-            });
-
-            if (!verifyResult.success) {
-                btn.disabled = false;
-                btn.textContent = '注册账号';
-                showTip('reg-step2-tip', verifyResult.error || '验证失败', 'error');
-                return;
-            }
-
-            // 2. 验证码通过，调用注册
-            const result = await API.register(regData.username, regData.password, regData.name || regData.username, email);
-            btn.disabled = false;
-            btn.textContent = '注册账号';
+            const result = await API.register(username, password, name, selectedType, companyCode, empNo);
+            btn.disabled = false; btn.textContent = '注册账号';
 
             if (result.success) {
-                showTip('reg-step2-tip', '注册成功！请切换到登录页面登录', 'success');
+                showTip('reg-tip', '注册成功！请切换到登录页面', 'success');
                 setTimeout(() => switchTab('login'), 1500);
             } else {
-                showTip('reg-step2-tip', result.error || '注册失败', 'error');
+                showTip('reg-tip', result.error || '注册失败', 'error');
             }
         }
 
@@ -468,48 +364,34 @@
             if (!username || !password) { showTip('login-tip', '请输入用户名和密码', 'error'); return; }
 
             const btn = document.getElementById('login-btn');
-            btn.disabled = true;
-            btn.textContent = '登录中...';
+            btn.disabled = true; btn.textContent = '登录中...';
 
             try {
                 if (API.isLoggedIn === undefined) { API.init(); }
                 const result = await API.login(username, password);
-
                 if (result.token) {
-                    localStorage.setItem('fmi_login_status', JSON.stringify({
-                        isLogin: true, user: result.user, backend: true
-                    }));
+                    localStorage.setItem('fmi_login_status', JSON.stringify({ isLogin: true, user: result.user, backend: true }));
                     setTimeout(() => { window.location.href = 'index.html'; }, 100);
                 } else if (result.error === 'network') {
                     fallbackLogin(username, password);
                 } else {
                     showTip('login-tip', result.error || '登录失败', 'error');
                 }
-            } catch (e) {
-                fallbackLogin(username, password);
-            }
-            btn.disabled = false;
-            btn.textContent = '立即登录';
+            } catch (e) { fallbackLogin(username, password); }
+            btn.disabled = false; btn.textContent = '立即登录';
         }
 
-        // 本地白名单降级登录
         function fallbackLogin(username, password) {
             const whitelist = JSON.parse(localStorage.getItem('fmi_whitelist') || JSON.stringify([
-                { username: "admin", password: "admin123", name: "超级管理员" },
-                { username: "user01", password: "123456", name: "普通用户" }
+                { username: "admin", password: "admin123", name: "超级管理员" }
             ]));
             const user = whitelist.find(item => item.username === username && item.password === password);
             if (user) {
-                localStorage.setItem('fmi_login_status', JSON.stringify({
-                    isLogin: true, user, backend: false
-                }));
+                localStorage.setItem('fmi_login_status', JSON.stringify({ isLogin: true, user, backend: false }));
                 setTimeout(() => { window.location.href = 'index.html'; }, 100);
-            } else {
-                showTip('login-tip', '用户名或密码错误', 'error');
-            }
+            } else { showTip('login-tip', '用户名或密码错误', 'error'); }
         }
 
-        // 获取在线人数
         async function loadOnlineCount() {
             try {
                 const info = await API.getSystemInfo();
@@ -525,14 +407,11 @@
             } catch (e) {}
         }
 
-        // 主题
         document.body.setAttribute('data-theme', localStorage.getItem('fmi_theme') || 'dark');
 
-        // 已登录跳转
         window.onload = function() {
             const status = JSON.parse(localStorage.getItem('fmi_login_status') || '{"isLogin":false}');
             if (status.isLogin) { window.location.href = 'index.html'; return; }
-
             const todayStr = new Date().toLocaleDateString();
             const savedDate = localStorage.getItem('fmi_study_date');
             if (savedDate && savedDate !== todayStr) {
@@ -541,15 +420,13 @@
                 localStorage.removeItem('fmi_all_words');
                 localStorage.setItem('fmi_study_date', todayStr);
             }
-
+            selectType('employee');
             loadOnlineCount();
         };
 
-        // 回车
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 if (document.getElementById('panel-login').classList.contains('active')) handleLogin();
-                else if (document.getElementById('reg-step1').style.display !== 'none') goToEmailStep();
                 else handleRegister();
             }
         });

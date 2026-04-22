@@ -144,6 +144,7 @@
             <div class="nav-item" onclick="switchTab('settings', this)"><i class="fas fa-sliders"></i> 系统设置</div>
             <div class="nav-item" onclick="switchTab('leaderboard', this)"><i class="fas fa-trophy"></i> 打榜配置</div>
             <div class="nav-divider"></div>
+            <div class="nav-item" onclick="switchTab('employees', this)"><i class="fas fa-id-card-clip"></i> 员工名单</div>
             <div class="nav-item" onclick="switchTab('whitelist', this)"><i class="fas fa-clipboard-list"></i> 白名单/导入</div>
         </div>
 
@@ -244,6 +245,59 @@
                     <div style="margin-top:15px;display:flex;gap:10px;">
                         <button class="hdr-btn primary" onclick="saveLbConfig()"><i class="fas fa-save"></i> 保存配置</button>
                         <button class="hdr-btn ghost" onclick="loadLbConfig()"><i class="fas fa-refresh"></i> 刷新</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 员工名单管理 -->
+            <div class="tab-panel" id="tab-employees">
+                <div class="panel-title"><i class="fas fa-id-card-clip"></i> 员工名单管理</div>
+                <div class="upload-section">
+                    <div class="card-title" style="margin-bottom:12px;"><i class="fas fa-plus-circle" style="color:#a78bfa;"></i> 添加员工</div>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px;">
+                        <div style="flex:1;min-width:100px;">
+                            <label style="font-size:0.8rem;color:#94a3b8;display:block;margin-bottom:4px;">公司缩写</label>
+                            <input id="emp-add-company" placeholder="WK" style="width:100%;padding:8px 12px;background:rgba(30,41,59,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.9rem;outline:none;text-transform:uppercase;">
+                        </div>
+                        <div style="flex:1;min-width:100px;">
+                            <label style="font-size:0.8rem;color:#94a3b8;display:block;margin-bottom:4px;">工号</label>
+                            <input id="emp-add-no" placeholder="123456" style="width:100%;padding:8px 12px;background:rgba(30,41,59,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.9rem;outline:none;">
+                        </div>
+                        <div style="flex:2;min-width:150px;">
+                            <label style="font-size:0.8rem;color:#94a3b8;display:block;margin-bottom:4px;">姓名</label>
+                            <input id="emp-add-name" placeholder="张三" style="width:100%;padding:8px 12px;background:rgba(30,41,59,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.9rem;outline:none;">
+                        </div>
+                        <div style="flex:2;min-width:150px;">
+                            <label style="font-size:0.8rem;color:#94a3b8;display:block;margin-bottom:4px;">部门（可选）</label>
+                            <input id="emp-add-dept" placeholder="市场部" style="width:100%;padding:8px 12px;background:rgba(30,41,59,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.9rem;outline:none;">
+                        </div>
+                        <div style="display:flex;align-items:flex-end;">
+                            <button class="hdr-btn primary" onclick="addEmployee()" style="white-space:nowrap;"><i class="fas fa-plus"></i> 添加</button>
+                        </div>
+                    </div>
+
+                    <div class="card-title" style="margin-bottom:12px;"><i class="fas fa-upload" style="color:#60a5fa;"></i> 批量导入</div>
+                    <p style="color:#94a3b8;font-size:0.8rem;margin-bottom:8px;">上传 CSV/JSON 文件批量导入员工名单（格式：公司缩写,工号,姓名,部门）</p>
+                    <div style="display:flex;gap:10px;align-items:center;margin-bottom:15px;">
+                        <input type="file" id="emp-file-input" accept=".json,.csv,.txt" style="font-size:0.85rem;color:#94a3b8;">
+                        <button class="hdr-btn" onclick="importEmployeeFile()" style="white-space:nowrap;"><i class="fas fa-upload"></i> 导入</button>
+                    </div>
+
+                    <div class="card-title" style="margin-bottom:12px;"><i class="fas fa-list" style="color:#34d399;"></i> 员工列表 <span id="emp-count" style="color:#94a3b8;font-size:0.85rem;font-weight:normal;"></span></div>
+                    <div style="max-height:400px;overflow-y:auto;">
+                        <table id="emp-table" style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+                            <thead>
+                                <tr style="border-bottom:1px solid rgba(255,255,255,0.1);text-align:left;color:#94a3b8;">
+                                    <th style="padding:8px 6px;">公司缩写</th>
+                                    <th style="padding:8px 6px;">工号</th>
+                                    <th style="padding:8px 6px;">姓名</th>
+                                    <th style="padding:8px 6px;">部门</th>
+                                    <th style="padding:8px 6px;">注册状态</th>
+                                    <th style="padding:8px 6px;text-align:right;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="emp-tbody"></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -502,6 +556,105 @@
         const result = await API.adminSetLeaderboardConfig(config);
         if (result.success) alert('打榜配置已保存');
         else if (result.error) alert(result.error);
+    }
+
+    // ========== 员工名单管理 ==========
+    let employeeList = [];
+
+    async function loadEmployees() {
+        employeeList = await API.request('admin/employees', { method: 'GET' });
+        if (employeeList.error) { employeeList = []; return; }
+        const users = await API.adminGetUsers();
+        renderEmployeeTable(users || []);
+    }
+
+    function renderEmployeeTable(users) {
+        const tbody = document.getElementById('emp-tbody');
+        const registeredSet = new Set();
+        if (users && Array.isArray(users)) {
+            users.forEach(u => {
+                if (u.empNo && u.empNo !== '8888888') {
+                    registeredSet.add((u.companyCode || '').toUpperCase() + ':' + u.empNo);
+                }
+            });
+        }
+        document.getElementById('emp-count').textContent = '(' + employeeList.length + ' 人)';
+        if (employeeList.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="padding:30px;text-align:center;color:#6b7280;">暂无员工数据，请添加或导入</td></tr>';
+            return;
+        }
+        tbody.innerHTML = employeeList.map(emp => {
+            const key = (emp.companyCode || '').toUpperCase() + ':' + emp.empNo;
+            const isRegistered = registeredSet.has(key);
+            return '<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">'
+                + '<td style="padding:8px 6px;font-weight:600;">' + (emp.companyCode || '') + '</td>'
+                + '<td style="padding:8px 6px;font-family:monospace;">' + (emp.empNo || '') + '</td>'
+                + '<td style="padding:8px 6px;">' + (emp.name || '') + '</td>'
+                + '<td style="padding:8px 6px;color:#94a3b8;">' + (emp.dept || '-') + '</td>'
+                + '<td style="padding:8px 6px;">' + (isRegistered ? '<span style="color:#10b981;">已注册</span>' : '<span style="color:#6b7280;">未注册</span>') + '</td>'
+                + '<td style="padding:8px 6px;text-align:right;"><button class="hdr-btn danger" onclick="removeEmployee('' + emp.companyCode + '','' + emp.empNo + '')" style="padding:4px 10px;font-size:0.78rem;"><i class="fas fa-trash"></i></button></td>'
+                + '</tr>';
+        }).join('');
+    }
+
+    async function addEmployee() {
+        const companyCode = document.getElementById('emp-add-company').value.trim().toUpperCase();
+        const empNo = document.getElementById('emp-add-no').value.trim();
+        const name = document.getElementById('emp-add-name').value.trim();
+        const dept = document.getElementById('emp-add-dept').value.trim();
+        if (!companyCode || !empNo || !name) { alert('公司缩写、工号和姓名不能为空'); return; }
+        const result = await API.request('admin/employees', {
+            method: 'POST',
+            body: JSON.stringify({ companyCode, empNo, name, dept }),
+        });
+        if (result.success) {
+            document.getElementById('emp-add-company').value = '';
+            document.getElementById('emp-add-no').value = '';
+            document.getElementById('emp-add-name').value = '';
+            document.getElementById('emp-add-dept').value = '';
+            loadEmployees();
+        } else { alert(result.error || '添加失败'); }
+    }
+
+    async function removeEmployee(companyCode, empNo) {
+        if (!confirm('确认删除该员工？')) return;
+        const result = await API.request('admin/employees', {
+            method: 'DELETE',
+            body: JSON.stringify({ companyCode, empNo }),
+        });
+        if (result.success) loadEmployees();
+        else alert(result.error || '删除失败');
+    }
+
+    async function importEmployeeFile() {
+        const fileInput = document.getElementById('emp-file-input');
+        if (!fileInput.files[0]) { alert('请选择文件'); return; }
+        const file = fileInput.files[0];
+        const text = await file.text();
+        let imported = [];
+        try {
+            if (file.name.endsWith('.json')) {
+                imported = JSON.parse(text);
+            } else {
+                // CSV 解析
+                const lines = text.trim().split('
+');
+                for (let i = 0; i < lines.length; i++) {
+                    const cols = lines[i].split(/[,，	|]/).map(s => s.trim());
+                    if (cols.length >= 3 && cols[0] && cols[1] && cols[2]) {
+                        imported.push({ companyCode: cols[0].toUpperCase(), empNo: cols[1], name: cols[2], dept: cols[3] || '' });
+                    }
+                }
+            }
+        } catch (e) { alert('文件解析失败：' + e.message); return; }
+        if (imported.length === 0) { alert('未解析到有效数据'); return; }
+        if (!confirm('确认导入 ' + imported.length + ' 名员工？')) return;
+        const result = await API.request('admin/employees', {
+            method: 'POST',
+            body: JSON.stringify({ bulk: true, list: imported }),
+        });
+        if (result.success) { alert('导入成功'); loadEmployees(); }
+        else alert(result.error || '导入失败');
     }
 
     // ========== 名单解析 ==========
