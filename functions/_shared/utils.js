@@ -568,11 +568,27 @@ async function handleRequest(context) {
         }
         if (path === 'admin/leaderboard-config' && method === 'GET') { return json(await getLeaderboardConfig(env)); }
         if (path === 'admin/leaderboard-config' && method === 'PUT') { await setLeaderboardConfig(await request.json(), env); return json({ success: true }); }
-        if (path === 'admin/init-users' && method === 'POST') {
-            const { users } = await request.json();
-            for (const u of users) await createUser(u, env);
-            return json({ success: true, imported: users.length });
+        // === 学习统计管理 ===
+        if (path === 'admin/study-stats' && method === 'GET') {
+            const users = await getAllUsers(env);
+            const allStats = {};
+            for (const u of users) {
+                const stats = await getStudyStats(u.username, env);
+                allStats[u.username] = {
+                    name: u.name || u.username,
+                    role: u.role || 'user',
+                    ...stats
+                };
+            }
+            return json({ stats: allStats });
         }
+        if (path === 'admin/study-clear' && method === 'POST') {
+            const { username } = await request.json();
+            if (!username) return json({ error: '缺少 username' }, 400);
+            await env.INDO_LEARN_KV.delete('study_' + username);
+            return json({ success: true, message: `已清空 ${username} 的学习数据` });
+        }
+
         // === 版本说明 ===
         if (path === 'admin/changelog/list' && method === 'GET') {
             const data = await env.KV.get('changelog', 'json') || [];

@@ -47,6 +47,7 @@ function checkLoginStatus() {
         if (savedDate && savedDate !== todayStr) {
             localStorage.removeItem('fmi_today_record');
             localStorage.removeItem('fmi_study_stats');
+            localStorage.removeItem('fmi_study_date');
             localStorage.removeItem('fmi_all_words');
             todayRecord = [];
             studyStats = { totalWords: 0, studySeconds: 0, todayWords: 0, startTime: null };
@@ -153,9 +154,11 @@ function showLogoutConfirmDialog() {
     dialog.querySelector('#logout-clear-btn').onclick = function() {
         localStorage.removeItem('fmi_today_record');
         localStorage.removeItem('fmi_study_stats');
+        localStorage.removeItem('fmi_study_date');
         localStorage.removeItem('fmi_all_words');
         localStorage.removeItem('fmi_v1_favs');
         localStorage.removeItem('fmi_login_status');
+        localStorage.removeItem('fmi_token');
         document.body.removeChild(dialog);
         location.href = "login.html";
     };
@@ -1034,13 +1037,16 @@ function renderTodayRecord() {
 
 // 清空今日记录
 function clearTodayRecord() {
-    if (confirm('确认清空今日学习记录？')) {
+    if (confirm('确认清空今日学习记录？\n（包括学习时长将一并归零）')) {
         todayRecord = [];
         studyStats.todayWords = 0;
+        studyStats.studySeconds = 0;
+        studyStats.startTime = new Date().getTime();
         localStorage.setItem('fmi_today_record', JSON.stringify(todayRecord));
         localStorage.setItem('fmi_study_stats', JSON.stringify(studyStats));
         renderTodayRecord();
         updateStats();
+        syncStudyToCloud().catch(() => {});
     }
 }
 
@@ -1674,7 +1680,55 @@ function initDashboardPage() {
     } else {
         wordsHTML = '<div style="color:var(--text-dim);text-align:center;padding:20px;">今天还没有学习记录</div>';
     }
-    c.innerHTML = '<div style="margin:0 auto;max-width:100%;"><div style="text-align:center;margin-bottom:25px;"><h2 style="font-size:1.8rem;font-weight:800;color:var(--text-main);"><i class="fas fa-chart-line" style="color:var(--accent);margin-right:10px;"></i>学习统计</h2><p style="color:var(--text-muted);font-size:0.95rem;margin-top:5px;">' + today + ' · 数据总览</p></div><div class="dash-stats-grid"><div class="dash-card" style="border-top:3px solid var(--accent);"><div style="font-size:1.8rem;color:var(--accent);margin-bottom:10px;"><i class="fas fa-book"></i></div><div class="dash-card-value">' + studyStats.todayWords + '</div><div class="dash-card-label">今日学习</div><div class="dash-card-sub">/ 20 目标单词</div></div><div class="dash-card" style="border-top:3px solid #f59e0b;"><div style="font-size:1.8rem;color:#f59e0b;margin-bottom:10px;"><i class="fas fa-clock"></i></div><div class="dash-card-value">' + mins + '<span style="font-size:0.7em;color:var(--text-muted);">分' + secs + '秒</span></div><div class="dash-card-label">在线时长</div><div class="dash-card-sub">今日累计</div></div><div class="dash-card" style="border-top:3px solid #10b981;"><div style="font-size:1.8rem;color:#10b981;margin-bottom:10px;"><i class="fas fa-layer-group"></i></div><div class="dash-card-value">' + learnedN + '<span style="font-size:0.7em;color:var(--text-muted);">/' + totalLib + '</span></div><div class="dash-card-label">累计掌握</div><div class="dash-card-sub">总词汇量</div></div><div class="dash-card" style="border-top:3px solid #a78bfa;"><div style="font-size:1.8rem;color:#a78bfa;margin-bottom:10px;"><i class="fas fa-bullseye"></i></div><div class="dash-card-value">' + learnedPct + '%</div><div class="dash-card-label">掌握率</div><div class="dash-card-sub">' + learnedN + '/' + totalLib + ' 词</div></div></div><div class="dash-section"><div class="dash-section-title"><i class="fas fa-tasks" style="color:var(--accent);margin-right:8px;"></i>词汇掌握进度</div><div class="dash-progress-bar"><div class="dash-progress-fill" style="width:' + learnedPct + '%;"></div></div><div class="dash-progress-labels"><span>已掌握 ' + learnedN + ' 词</span><span>总词汇量 ' + totalLib + ' 词</span></div><div style="margin-top:20px;">' + catBreakdown + '</div></div><div class="dash-section"><div class="dash-section-title"><i class="fas fa-history" style="color:var(--accent);margin-right:8px;"></i>练习历史</div><div class="dash-mini-grid"><div class="dash-mini-card"><div class="dash-mini-value">' + totalP + '</div><div class="dash-mini-label">练习次数</div></div><div class="dash-mini-card"><div class="dash-mini-value">' + avgS + '%</div><div class="dash-mini-label">平均正确率</div></div></div><div class="dash-history-list">' + histHTML + '</div></div><div class="dash-section"><div class="dash-section-title"><i class="fas fa-list-check" style="color:var(--accent);margin-right:8px;"></i>今日已学单词</div><div class="dash-words-grid">' + wordsHTML + '</div></div></div>';
+    c.innerHTML = '<div style="margin:0 auto;max-width:100%;"><div style="text-align:center;margin-bottom:25px;"><h2 style="font-size:1.8rem;font-weight:800;color:var(--text-main);display:inline-block;"><i class="fas fa-chart-line" style="color:var(--accent);margin-right:10px;"></i>学习统计</h2><button onclick="clearStudyData()" style="margin-left:15px;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:0.8rem;vertical-align:middle;"><i class="fas fa-trash-alt" style="margin-right:5px;"></i>清空统计</button><p style="color:var(--text-muted);font-size:0.95rem;margin-top:5px;">' + today + ' · 数据总览</p></div><div class="dash-stats-grid"><div class="dash-card" style="border-top:3px solid var(--accent);"><div style="font-size:1.8rem;color:var(--accent);margin-bottom:10px;"><i class="fas fa-book"></i></div><div class="dash-card-value">' + studyStats.todayWords + '</div><div class="dash-card-label">今日学习</div><div class="dash-card-sub">/ 20 目标单词</div></div><div class="dash-card" style="border-top:3px solid #f59e0b;"><div style="font-size:1.8rem;color:#f59e0b;margin-bottom:10px;"><i class="fas fa-clock"></i></div><div class="dash-card-value">' + mins + '<span style="font-size:0.7em;color:var(--text-muted);">分' + secs + '秒</span></div><div class="dash-card-label">在线时长</div><div class="dash-card-sub">今日累计</div></div><div class="dash-card" style="border-top:3px solid #10b981;"><div style="font-size:1.8rem;color:#10b981;margin-bottom:10px;"><i class="fas fa-layer-group"></i></div><div class="dash-card-value">' + learnedN + '<span style="font-size:0.7em;color:var(--text-muted);">/' + totalLib + '</span></div><div class="dash-card-label">累计掌握</div><div class="dash-card-sub">总词汇量</div></div><div class="dash-card" style="border-top:3px solid #a78bfa;"><div style="font-size:1.8rem;color:#a78bfa;margin-bottom:10px;"><i class="fas fa-bullseye"></i></div><div class="dash-card-value">' + learnedPct + '%</div><div class="dash-card-label">掌握率</div><div class="dash-card-sub">' + learnedN + '/' + totalLib + ' 词</div></div></div><div class="dash-section"><div class="dash-section-title"><i class="fas fa-tasks" style="color:var(--accent);margin-right:8px;"></i>词汇掌握进度</div><div class="dash-progress-bar"><div class="dash-progress-fill" style="width:' + learnedPct + '%;"></div></div><div class="dash-progress-labels"><span>已掌握 ' + learnedN + ' 词</span><span>总词汇量 ' + totalLib + ' 词</span></div><div style="margin-top:20px;">' + catBreakdown + '</div></div><div class="dash-section"><div class="dash-section-title"><i class="fas fa-history" style="color:var(--accent);margin-right:8px;"></i>练习历史</div><div class="dash-mini-grid"><div class="dash-mini-card"><div class="dash-mini-value">' + totalP + '</div><div class="dash-mini-label">练习次数</div></div><div class="dash-mini-card"><div class="dash-mini-value">' + avgS + '%</div><div class="dash-mini-label">平均正确率</div></div></div><div class="dash-history-list">' + histHTML + '</div></div><div class="dash-section"><div class="dash-section-title"><i class="fas fa-list-check" style="color:var(--accent);margin-right:8px;"></i>今日已学单词</div><div class="dash-words-grid">' + wordsHTML + '</div></div></div>';
+}
+
+// 清空学习统计数据（带二次确认）
+function clearStudyData() {
+    // 创建确认弹窗
+    const dialog = document.createElement('div');
+    dialog.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;';
+    dialog.innerHTML = `
+        <div style="background:var(--glass,rgba(30,41,59,0.95));border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:30px;max-width:400px;width:90%;text-align:center;backdrop-filter:blur(20px);">
+            <div style="font-size:2.5rem;margin-bottom:15px;">⚠️</div>
+            <h3 style="color:#fff;font-size:1.1rem;margin-bottom:12px;">确认清空学习统计？</h3>
+            <p style="color:#94a3b8;font-size:0.9rem;line-height:1.6;margin-bottom:25px;">
+                将清空以下数据：<br>
+                <span style="color:#f87171;">• 今日学习记录</span><br>
+                <span style="color:#f87171;">• 学习时长</span><br>
+                <span style="color:#f87171;">• 累计掌握词汇</span><br>
+                <span style="color:#6b7280;font-size:0.8rem;">（清空后不可恢复）</span>
+            </p>
+            <div style="display:flex;gap:12px;justify-content:center;">
+                <button id="csd-cancel" style="background:#475569;color:white;border:none;padding:10px 25px;border-radius:12px;cursor:pointer;font-size:0.95rem;">取消</button>
+                <button id="csd-confirm" style="background:#ef4444;color:white;border:none;padding:10px 25px;border-radius:12px;cursor:pointer;font-size:0.95rem;">确认清空</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(dialog);
+
+    dialog.querySelector('#csd-cancel').onclick = () => document.body.removeChild(dialog);
+    dialog.querySelector('#csd-confirm').onclick = () => {
+        // 清空所有学习相关数据
+        todayRecord = [];
+        studyStats = { todayWords: 0, totalWords: 0, studySeconds: 0, startTime: new Date().getTime() };
+        localStorage.removeItem('fmi_today_record');
+        localStorage.removeItem('fmi_study_stats');
+        localStorage.removeItem('fmi_all_words');
+        localStorage.removeItem('fmi_study_date');
+        // 同步到云端
+        syncStudyToCloud().catch(() => {});
+        document.body.removeChild(dialog);
+        // 刷新界面
+        initDashboardPage();
+        renderTodayRecord();
+        updateStats();
+        document.getElementById('stat-today').innerText = '0';
+        document.getElementById('stat-total').innerText = '0';
+        document.getElementById('stat-time').innerText = '0分0秒';
+        document.getElementById('stat-rate').innerText = '0%';
+        document.getElementById('progress-bar').style.width = '0%';
+    };
 }
 
 // ============================================================

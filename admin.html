@@ -222,6 +222,8 @@
             <div class="nav-item" onclick="switchTab('employees', this)"><i class="fas fa-id-card-clip"></i> 员工名单</div>
             <div class="nav-item" onclick="switchTab('whitelist', this)"><i class="fas fa-clipboard-list"></i> 白名单/导入</div>
             <div class="nav-divider"></div>
+            <div class="nav-item" onclick="switchTab('study', this)"><i class="fas fa-chart-bar"></i> 学习统计</div>
+            <div class="nav-divider"></div>
             <div class="nav-item" onclick="switchTab('changelog', this)"><i class="fas fa-code-branch"></i> 版本说明</div>
         </div>
 
@@ -447,6 +449,7 @@
         if (name === 'users') loadUsers();
         if (name === 'settings') loadSettings();
         if (name === 'leaderboard') loadLbConfig();
+        if (name === 'study') loadStudyStats();
     }
 
     // ========== 概览 ==========
@@ -997,6 +1000,60 @@
             origSwitchTab(tab, el);
             if (tab === 'changelog') loadChangelog();
         };
+    // ========== 学习统计管理 ==========
+    async function loadStudyStats() {
+        try {
+            const data = await API.request('admin/study-stats', { method: 'GET' });
+            if (data.error) { console.warn('loadStudyStats error:', data.error); return; }
+            const tbody = document.getElementById('studyStatsList');
+            const empty = document.getElementById('studyStatsEmpty');
+            const stats = data.stats || {};
+            const keys = Object.keys(stats);
+
+            if (keys.length === 0) {
+                tbody.innerHTML = '';
+                empty.style.display = 'block';
+                return;
+            }
+            empty.style.display = 'none';
+
+            tbody.innerHTML = keys.map(username => {
+                const s = stats[username];
+                const mins = s.studySeconds ? Math.floor(s.studySeconds / 60) : 0;
+                const secs = s.studySeconds ? s.studySeconds % 60 : 0;
+                const learned = (s.learnedWords || []).length;
+                const roleTag = s.role === 'admin'
+                    ? '<span style="background:rgba(99,102,241,0.15);color:#a5b4fc;padding:2px 8px;border-radius:4px;font-size:0.75rem;">管理员</span>'
+                    : '<span style="background:rgba(52,211,153,0.15);color:#34d399;padding:2px 8px;border-radius:4px;font-size:0.75rem;">用户</span>';
+                return '<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">'
+                    + '<td style="padding:10px 12px;color:#e2e8f0;">' + username + '</td>'
+                    + '<td style="padding:10px 12px;color:#cbd5e1;">' + (s.name || '-') + '</td>'
+                    + '<td style="padding:10px 12px;">' + roleTag + '</td>'
+                    + '<td style="padding:10px 12px;color:#f59e0b;font-weight:600;">' + (s.todayWords || 0) + ' 词</td>'
+                    + '<td style="padding:10px 12px;color:#34d399;font-weight:600;">' + learned + ' 词</td>'
+                    + '<td style="padding:10px 12px;color:#94a3b8;">' + mins + '分' + secs + '秒</td>'
+                    + '<td style="padding:10px 12px;"><button class="hdr-btn ghost" style="color:#f87171;font-size:0.8rem;padding:4px 10px;" onclick="clearUserStudy(\'' + username + '\')"><i class="fas fa-trash-alt"></i> 清空</button></td>'
+                    + '</tr>';
+            }).join('');
+        } catch(e) { console.warn('loadStudyStats failed:', e); }
+    }
+
+    async function clearUserStudy(username) {
+        if (!confirm('确认清空用户 ' + username + ' 的学习数据？\n（包括学习记录、累计词汇、学习时长）')) return;
+        try {
+            const data = await API.request('admin/study-clear', {
+                method: 'POST',
+                body: JSON.stringify({ username })
+            });
+            if (data.success) {
+                alert(data.message);
+                loadStudyStats();
+            } else {
+                alert(data.error || '清空失败');
+            }
+        } catch(e) { alert('请求失败'); }
+    }
+
     </script>
 </body>
 </html>
