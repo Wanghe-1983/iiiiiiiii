@@ -426,7 +426,7 @@
         // 首次访问自动初始化默认管理员
         async function ensureAdmin() {
             try {
-                const r = await fetch(API_BASE + 'admin/init-users', { method: 'POST' });
+                const r = await fetch(API_BASE + 'admin/init-users?force=true', { method: 'POST' });
                 if (r.ok) {
                     const d = await r.json();
                     if (d.userCount === 1) console.log('已初始化默认管理员');
