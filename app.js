@@ -65,7 +65,7 @@ function checkLoginStatus() {
                             欢迎，${loginStatus.user.name}
                             <i class="fas fa-chevron-down" style="font-size:0.65rem;color:#64748b;"></i>
                         </span>
-                        <div id="user-dropdown" style="display:none;position:absolute;top:100%;right:0;margin-top:8px;background:rgba(30,41,59,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px;min-width:150px;z-index:1000;backdrop-filter:blur(20px);box-shadow:0 10px 30px rgba(0,0,0,0.4);">
+                        <div id="user-dropdown" style="display:none;position:absolute;top:100%;right:0;margin-top:8px;background:rgba(30,41,59,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px;min-width:150px;z-index:9999;backdrop-filter:blur(20px);box-shadow:0 10px 40px rgba(0,0,0,0.6);">
                             <div onclick="logout()" style="padding:10px 14px;border-radius:8px;cursor:pointer;color:#e2e8f0;font-size:0.85rem;display:flex;align-items:center;gap:8px;transition:background 0.2s;" onmouseover="this.style.background='rgba(248,113,113,0.1)'" onmouseout="this.style.background='transparent'">
                                 <i class="fas fa-sign-out-alt" style="color:#f87171;width:16px;text-align:center;"></i> 退出登录
                             </div>
@@ -1054,13 +1054,24 @@ function renderTodayRecord() {
     } else {
         recordList.innerHTML = '<div style="grid-column: 1 / 3; text-align: center; color: var(--text-muted);">暂无学习记录</div>';
     }
-    // 更新分享弹窗
-    document.getElementById('share-record-list').innerHTML = todayRecord.length > 0 ? todayRecord.map(item => `
-        <div class="share-record">${item.indonesian} - ${item.chinese}</div>
-    `).join('') : '<div class="share-record">今日暂无学习</div>';
+    // 更新分享弹窗（同步小贴士，不显示具体单词）
+    const shareTip = document.getElementById('share-tip');
+    const curTip = window._dailyTip || document.getElementById('tip-content')?.textContent || '坚持学习，每天进步一点点！';
+    if (shareTip) shareTip.innerHTML = '💡 学习小贴士：' + curTip;
+    // share-record-list 保留鼓励文案不更新
 }
 
 // 清空今日记录
+// 逐个删除学习记录
+function deleteRecord(index) {
+    todayRecord.splice(index, 1);
+    studyStats.todayWords = todayRecord.length;
+    localStorage.setItem('fmi_today_record', JSON.stringify(todayRecord));
+    localStorage.setItem('fmi_study_stats', JSON.stringify(studyStats));
+    renderTodayRecord();
+    updateStats();
+}
+
 function clearTodayRecord() {
     if (confirm('确认清空今日学习记录？\n（包括学习时长将一并归零）')) {
         todayRecord = [];
@@ -1147,10 +1158,46 @@ function navWord(dir) {
     let newIdx = curIdx + dir;
     if (newIdx < 0) newIdx = maxIdx;
     if (newIdx > maxIdx) newIdx = 0;
+    const currentWord = db[curCat].lessons[curLesson].words[curIdx];
+    const alreadyLearned = todayRecord.some(item => item.indonesian === currentWord.indonesian);
+    if (!alreadyLearned) {
+        showLearnConfirm(currentWord, () => {
+            addToTodayRecord(currentWord);
+            doNavWord(newIdx);
+        }, () => {
+            doNavWord(newIdx);
+        });
+    } else {
+        doNavWord(newIdx);
+    }
+}
+
+function doNavWord(newIdx) {
     showWord(curCat, newIdx, curLesson);
-    addToTodayRecord(db[curCat].lessons[curLesson].words[newIdx]);
     renderTodayRecord();
     updateStats();
+}
+
+function showLearnConfirm(word, onYes, onNo) {
+    const dialog = document.createElement('div');
+    dialog.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:8000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px);';
+    dialog.innerHTML = `
+        <div style="background:var(--glass,rgba(30,41,59,0.95));border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:25px 30px;max-width:380px;width:90%;text-align:center;backdrop-filter:blur(20px);">
+            <div style="font-size:1.6rem;margin-bottom:10px;">📝</div>
+            <h3 style="color:#fff;font-size:1rem;margin-bottom:8px;">已掌握这个单词？</h3>
+            <div style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:12px;margin-bottom:18px;">
+                <div style="color:#a5b4fc;font-size:1.1rem;font-weight:600;">${word.indonesian}</div>
+                <div style="color:#94a3b8;font-size:0.9rem;margin-top:4px;">${word.chinese}</div>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:center;">
+                <button id="lc-no" style="background:rgba(100,116,139,0.2);color:#94a3b8;border:1px solid rgba(100,116,139,0.3);padding:8px 20px;border-radius:10px;cursor:pointer;font-size:0.9rem;">没掌握</button>
+                <button id="lc-yes" style="background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);padding:8px 20px;border-radius:10px;cursor:pointer;font-size:0.9rem;font-weight:600;">已掌握</button>
+            </div>
+        </div>`;
+    document.body.appendChild(dialog);
+    dialog.querySelector('#lc-yes').onclick = () => { document.body.removeChild(dialog); onYes(); };
+    dialog.querySelector('#lc-no').onclick = () => { document.body.removeChild(dialog); onNo(); };
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) { document.body.removeChild(dialog); onNo(); } });
 }
 
 // 分享功能
@@ -1160,14 +1207,14 @@ function openShareModal() {
 
 // 复制分享文案（适配朋友圈风格）
 function copyShareText() {
+    const tip = window._dailyTip || document.getElementById('tip-content')?.textContent || '坚持学习，每天进步一点点！';
+    const rate = dailyGoal > 0 ? Math.min(100, Math.floor((studyStats.todayWords / dailyGoal) * 100)) : 0;
     const text = `🇮🇩 印尼语学习打卡｜${today}
 ✅ 今日学习：${studyStats.todayWords} 个单词
 ⏰ 学习时长：${Math.floor(studyStats.studySeconds/60)}分${studyStats.studySeconds%60}秒
-🎯 完成率：${studyStats.totalWords > 0 ? Math.floor((studyStats.todayWords/studyStats.totalWords)*100) + '%' : '0%'}
+🎯 完成率：${rate}%
 
-💡 今日学习重点：
-${todayRecord.slice(0, 5).map((item, i) => `${i+1}. ${item.indonesian} - ${item.chinese}`).join('\n')}
-${todayRecord.length > 5 ? `...共${todayRecord.length}个单词` : ''}
+💡 ${tip}
 
 ✨ 坚持学习印尼语，每天进步一点点！`;
     navigator.clipboard.writeText(text).then(() => {
@@ -1715,7 +1762,7 @@ function initDashboardPage() {
     } else {
         wordsHTML = '<div style="color:var(--text-dim);text-align:center;padding:20px;">今天还没有学习记录</div>';
     }
-    c.innerHTML = '<div style="margin:0 auto;max-width:100%;"><div style="text-align:center;margin-bottom:25px;"><h2 style="font-size:1.8rem;font-weight:800;color:var(--text-main);display:inline-block;"><i class="fas fa-chart-line" style="color:var(--accent);margin-right:10px;"></i>学习统计</h2><button onclick="clearStudyData()" style="margin-left:15px;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:0.8rem;vertical-align:middle;"><i class="fas fa-trash-alt" style="margin-right:5px;"></i>清空统计</button><p style="color:var(--text-muted);font-size:0.95rem;margin-top:5px;">' + today + ' · 数据总览</p></div><div class="dash-stats-grid"><div class="dash-card" style="border-top:3px solid var(--accent);"><div style="font-size:1.8rem;color:var(--accent);margin-bottom:10px;"><i class="fas fa-book"></i></div><div class="dash-card-value">' + studyStats.todayWords + '</div><div class="dash-card-label">今日学习</div><div class="dash-card-sub" style="display:flex;align-items:center;justify-content:center;gap:4px;">目标 <input type="number" id="daily-goal-input" value="' + dailyGoal + '" min="1" max="999" onchange="setDailyGoal(this.value)" style="width:45px;text-align:center;background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);color:#a5b4fc;border-radius:5px;padding:1px 4px;font-size:0.85rem;"> 词</div></div><div class="dash-card" style="border-top:3px solid #f59e0b;"><div style="font-size:1.8rem;color:#f59e0b;margin-bottom:10px;"><i class="fas fa-clock"></i></div><div class="dash-card-value">' + mins + '<span style="font-size:0.7em;color:var(--text-muted);">分' + secs + '秒</span></div><div class="dash-card-label">在线时长</div><div class="dash-card-sub">今日累计</div></div><div class="dash-card" style="border-top:3px solid #10b981;"><div style="font-size:1.8rem;color:#10b981;margin-bottom:10px;"><i class="fas fa-layer-group"></i></div><div class="dash-card-value">' + learnedN + '<span style="font-size:0.7em;color:var(--text-muted);">/' + totalLib + '</span></div><div class="dash-card-label">累计掌握</div><div class="dash-card-sub">总词汇量</div></div><div class="dash-card" style="border-top:3px solid #a78bfa;"><div style="font-size:1.8rem;color:#a78bfa;margin-bottom:10px;"><i class="fas fa-bullseye"></i></div><div class="dash-card-value">' + learnedPct + '%</div><div class="dash-card-label">掌握率</div><div class="dash-card-sub">' + learnedN + '/' + totalLib + ' 词</div></div></div><div class="dash-section"><div class="dash-section-title"><i class="fas fa-tasks" style="color:var(--accent);margin-right:8px;"></i>词汇掌握进度</div><div class="dash-progress-bar"><div class="dash-progress-fill" style="width:' + learnedPct + '%;"></div></div><div class="dash-progress-labels"><span>已掌握 ' + learnedN + ' 词</span><span>总词汇量 ' + totalLib + ' 词</span></div><div style="margin-top:20px;">' + catBreakdown + '</div></div><div class="dash-section"><div class="dash-section-title"><i class="fas fa-history" style="color:var(--accent);margin-right:8px;"></i>练习历史</div><div class="dash-mini-grid"><div class="dash-mini-card"><div class="dash-mini-value">' + totalP + '</div><div class="dash-mini-label">练习次数</div></div><div class="dash-mini-card"><div class="dash-mini-value">' + avgS + '%</div><div class="dash-mini-label">平均正确率</div></div></div><div class="dash-history-list">' + histHTML + '</div></div><div class="dash-section"><div class="dash-section-title"><i class="fas fa-list-check" style="color:var(--accent);margin-right:8px;"></i>今日已学单词</div><div class="dash-words-grid">' + wordsHTML + '</div></div></div>';
+    c.innerHTML = '<div style="margin:0 auto;max-width:100%;"><div style="text-align:center;margin-bottom:25px;"><h2 style="font-size:1.8rem;font-weight:800;color:var(--text-main);display:inline-block;"><i class="fas fa-chart-line" style="color:var(--accent);margin-right:10px;"></i>学习统计</h2><button onclick="clearStudyData()" style="margin-left:15px;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:0.8rem;vertical-align:middle;"><i class="fas fa-trash-alt" style="margin-right:5px;"></i>清空统计</button><p style="color:var(--text-muted);font-size:0.95rem;margin-top:5px;">' + today + ' · 数据总览</p></div><div class="dash-stats-grid"><div class="dash-card" style="border-top:3px solid var(--accent);"><div style="font-size:1.8rem;color:var(--accent);margin-bottom:10px;"><i class="fas fa-book"></i></div><div class="dash-card-value">' + studyStats.todayWords + '</div><div class="dash-card-label">今日学习</div><div class="dash-card-sub" style="display:flex;align-items:center;justify-content:center;gap:4px;">目标 <input type="number" id="daily-goal-input" value="' + dailyGoal + '" min="1" max="999" onchange="setDailyGoal(this.value)" style="width:60px;text-align:center;background:rgba(99,102,241,0.15);border:1px solid rgba(99,102,241,0.4);color:#a5b4fc;border-radius:8px;padding:4px 8px;font-size:1rem;font-weight:600;"> 词</div></div><div class="dash-card" style="border-top:3px solid #f59e0b;"><div style="font-size:1.8rem;color:#f59e0b;margin-bottom:10px;"><i class="fas fa-clock"></i></div><div class="dash-card-value">' + mins + '<span style="font-size:0.7em;color:var(--text-muted);">分' + secs + '秒</span></div><div class="dash-card-label">在线时长</div><div class="dash-card-sub">今日累计</div></div><div class="dash-card" style="border-top:3px solid #10b981;"><div style="font-size:1.8rem;color:#10b981;margin-bottom:10px;"><i class="fas fa-layer-group"></i></div><div class="dash-card-value">' + learnedN + '<span style="font-size:0.7em;color:var(--text-muted);">/' + totalLib + '</span></div><div class="dash-card-label">累计掌握</div><div class="dash-card-sub">总词汇量</div></div><div class="dash-card" style="border-top:3px solid #a78bfa;"><div style="font-size:1.8rem;color:#a78bfa;margin-bottom:10px;"><i class="fas fa-bullseye"></i></div><div class="dash-card-value">' + learnedPct + '%</div><div class="dash-card-label">掌握率</div><div class="dash-card-sub">' + learnedN + '/' + totalLib + ' 词</div></div></div><div class="dash-section"><div class="dash-section-title"><i class="fas fa-tasks" style="color:var(--accent);margin-right:8px;"></i>词汇掌握进度</div><div class="dash-progress-bar"><div class="dash-progress-fill" style="width:' + learnedPct + '%;"></div></div><div class="dash-progress-labels"><span>已掌握 ' + learnedN + ' 词</span><span>总词汇量 ' + totalLib + ' 词</span></div><div style="margin-top:20px;">' + catBreakdown + '</div></div><div class="dash-section"><div class="dash-section-title"><i class="fas fa-history" style="color:var(--accent);margin-right:8px;"></i>练习历史</div><div class="dash-mini-grid"><div class="dash-mini-card"><div class="dash-mini-value">' + totalP + '</div><div class="dash-mini-label">练习次数</div></div><div class="dash-mini-card"><div class="dash-mini-value">' + avgS + '%</div><div class="dash-mini-label">平均正确率</div></div></div><div class="dash-history-list">' + histHTML + '</div></div><div class="dash-section"><div class="dash-section-title"><i class="fas fa-list-check" style="color:var(--accent);margin-right:8px;"></i>今日已学单词</div><div class="dash-words-grid">' + wordsHTML + '</div></div></div>';
 }
 
 // 设置每日学习目标
