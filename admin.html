@@ -604,8 +604,8 @@
         const dept = document.getElementById('emp-add-dept').value.trim();
         if (!companyCode || !empNo || !name) { alert('公司缩写、工号和姓名不能为空'); return; }
         const result = await API.request('admin/whitelist?action=employees', {
-            method: 'POST',
-            body: JSON.stringify({ companyCode, empNo, name, dept }),
+            method: 'PUT',
+            body: JSON.stringify({ action: 'add', employee: { companyCode, empNo, name, dept } }),
         });
         if (result.success) {
             document.getElementById('emp-add-company').value = '';
@@ -619,8 +619,8 @@
     async function removeEmployee(companyCode, empNo) {
         if (!confirm('确认删除该员工？')) return;
         const result = await API.request('admin/whitelist?action=employees', {
-            method: 'DELETE',
-            body: JSON.stringify({ companyCode, empNo }),
+            method: 'PUT',
+            body: JSON.stringify({ action: 'delete', companyCode, empNo }),
         });
         if (result.success) loadEmployees();
         else alert(result.error || '删除失败');
@@ -650,8 +650,8 @@
         if (imported.length === 0) { alert('未解析到有效数据'); return; }
         if (!confirm('确认导入 ' + imported.length + ' 名员工？')) return;
         const result = await API.request('admin/whitelist?action=employees', {
-            method: 'POST',
-            body: JSON.stringify({ bulk: true, list: imported }),
+            method: 'PUT',
+            body: JSON.stringify({ action: 'import', list: imported }),
         });
         if (result.success) { alert('导入成功'); loadEmployees(); }
         else alert(result.error || '导入失败');
