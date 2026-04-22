@@ -3,6 +3,13 @@
  * 每个路由文件只需: export { onRequest } from "../_shared/utils.js";
  */
 
+
+function utf8ToBase64(str) {
+    return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, p1) => String.fromCharCode('0x' + p1)));
+}
+function base64ToUtf8(str) {
+    return decodeURIComponent(atob(str).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+}
 function corsHeaders() {
     return {
         'Access-Control-Allow-Origin': '*',
@@ -20,8 +27,8 @@ function json(data, status = 200) {
 
 async function signToken(payload, env) {
     const header = { alg: 'HS256', typ: 'JWT' };
-    const h = btoa(JSON.stringify(header));
-    const p = btoa(JSON.stringify(payload));
+    const h = utf8ToBase64(JSON.stringify(header));
+    const p = utf8ToBase64(JSON.stringify(payload));
     const secret = await env.INDO_LEARN_KV.get('JWT_SECRET') || 'default-secret-change-me';
     const key = await crypto.subtle.importKey(
         'raw', new TextEncoder().encode(secret),
@@ -43,7 +50,7 @@ async function verifyToken(token, env) {
     const sig = Uint8Array.from(atob(parts[2].replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
     const valid = await crypto.subtle.verify('HMAC', key, sig, new TextEncoder().encode(parts[0] + '.' + parts[1]));
     if (!valid) return null;
-    try { return JSON.parse(atob(parts[1])); } catch { return null; }
+    try { return JSON.parse(base64ToUtf8(parts[1])); } catch { return null; }
 }
 
 async function getAuthUser(request, env) {
