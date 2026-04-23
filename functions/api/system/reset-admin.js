@@ -1,8 +1,21 @@
 export async function onRequest(context) {
-    const { env } = context;
+    const { env, request } = context;
+
+    // 支持自定义密码，默认 admin123
+    const url = new URL(request.url);
+    const password = url.searchParams.get('password') || 'admin123';
+
+    if (!password || password.length < 4) {
+        return new Response(JSON.stringify({
+            success: false,
+            error: '密码至少4位'
+        }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+        });
+    }
 
     const encoder = new TextEncoder();
-    const password = 'admin123';
     const salt = crypto.getRandomValues(new Uint8Array(16));
     const keyMaterial = await crypto.subtle.importKey(
         'raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']
@@ -24,7 +37,8 @@ export async function onRequest(context) {
 
         return new Response(JSON.stringify({
             success: true,
-            message: 'admin password reset to admin123',
+            message: `admin password reset to: ${password}`,
+            password: password,
             hash: stored
         }), {
             headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
