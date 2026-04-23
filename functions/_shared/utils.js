@@ -50,7 +50,12 @@ async function verifyToken(token, env) {
     const sig = Uint8Array.from(atob(parts[2].replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
     const valid = await crypto.subtle.verify('HMAC', key, sig, new TextEncoder().encode(parts[0] + '.' + parts[1]));
     if (!valid) return null;
-    try { return JSON.parse(base64ToUtf8(parts[1])); } catch { return null; }
+    try {
+        const payload = JSON.parse(base64ToUtf8(parts[1]));
+        // 访客 token 自动过期
+        if (payload.role === 'visitor' && payload.exp && Date.now() > payload.exp) return null;
+        return payload;
+    } catch { return null; }
 }
 
 async function getAuthUser(request, env) {
@@ -373,6 +378,22 @@ async function handleRequest(context) {
             return json({ token, user: { username: user.username, name: user.name, role: user.role, userType: user.userType, companyCode: user.companyCode || '', empNo: user.empNo || '' } });
         }
 
+        // 访客登录（无需账号密码）
+        if (path === 'auth/visitor-login' && method === 'POST') {
+            const settings = await getSystemSettings(env);
+            if (!settings.allowVisitor) return json({ error: '当前不允许访客登录，请联系管理员' }, 403);
+            // 员工优先：在线人数已满时，访客不能登录
+            const online = await getOnlineCount(env);
+            const maxOnline = settings.maxOnline || 0;
+            if (maxOnline > 0 && online.count >= maxOnline) return json({ error: '在线人数已满，请稍后再试' }, 429);
+            // 访客使用临时用户名
+            const visitorId = 'visitor_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+            const visitDuration = (settings.visitorDuration || 30) * 60 * 1000; // 毫秒
+            const token = await signToken({ username: visitorId, name: '访客', role: 'visitor', exp: Date.now() + visitDuration }, env);
+            await heartbeat(visitorId, env, token);
+            return json({ token, user: { username: visitorId, name: '访客', role: 'visitor', userType: 'visitor', visitDuration: settings.visitorDuration || 30 } });
+        }
+
         if (path === 'auth/register' && method === 'POST') {
             const settings = await getSystemSettings(env);
             if (!settings.allowRegister) return json({ error: '当前不允许注册' }, 403);
@@ -431,6 +452,8 @@ async function handleRequest(context) {
                 requireEmployeeVerify: settings.requireEmployeeVerify !== false,
                 allowRegister: settings.allowRegister,
                 showOnlineMain: settings.showOnlineMain, showOnlineLogin: settings.showOnlineLogin,
+                allowVisitor: settings.allowVisitor === true,
+                visitorDuration: settings.visitorDuration || 30,
             });
         }
 
@@ -445,6 +468,10 @@ async function handleRequest(context) {
         let authUser = await getAuthUser(request, env);
         if (!authUser) return json({ error: '未登录或登录已过期' }, 401);
         if (await isKicked(authUser.username, env)) return json({ error: 'kicked', message: '您已被管理员强制下线' }, 401);
+            // 访客时长到期检查
+            if (authUser.role === 'visitor' && authUser.exp && Date.now() > authUser.exp) {
+                return json({ error: 'visitor_expired', message: '访客登录时长已到，请注册账号继续学习' }, 401);
+            }
 
         if (path === 'user/heartbeat' && method === 'POST') { const clientToken = request.headers.get('Authorization')?.replace('Bearer ', '') || ''; await heartbeat(authUser.username, env, clientToken); return json({ ok: true }); }
         if (path === 'user/me' && method === 'GET') {
@@ -483,7 +510,7 @@ async function handleRequest(context) {
             const config = await getLeaderboardConfig(env);
             if (!config.enabled) return json({ error: '打榜未开启' }, 403);
             // 爱好者不能参与排行榜
-            if (authUser.userType === 'hobby') return json({ error: '爱好者不能参与排行榜' }, 403);
+            if (authUser.userType === 'hobby' || authUser.role === 'visitor') return json({ error: '访客和爱好者不能参与排行榜' }, 403);
             const entry = await request.json();
             entry.username = authUser.username; entry.name = authUser.name;
             return json({ success: true, board: await submitLeaderboard(entry, env) });

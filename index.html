@@ -17,6 +17,36 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="visitor-timer" class="visitor-timer" style="display:none;position:fixed;top:12px;right:12px;z-index:9999;background:rgba(17,24,39,0.95);color:#f59e0b;padding:8px 16px;border-radius:20px;font-size:0.85rem;font-weight:600;border:1px solid rgba(245,158,11,0.3);backdrop-filter:blur(10px);box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+        <i class="fas fa-clock"></i> 访客剩余 <span id="visitor-remaining">--:--</span>
+    </div>
+    <script>
+    // 恢复访客计时器
+    (function(){
+        var isVisitor = localStorage.getItem('fmi_visitor_login');
+        var expire = parseInt(localStorage.getItem('fmi_visitor_expire') || '0');
+        if (isVisitor && expire > Date.now()) {
+            var timer = document.getElementById('visitor-timer');
+            var remaining = document.getElementById('visitor-remaining');
+            timer.style.display = '';
+            var endTime = expire;
+            setInterval(function(){
+                var left = endTime - Date.now();
+                if (left <= 0) {
+                    timer.style.display = 'none';
+                    return;
+                }
+                var min = Math.floor(left / 60000);
+                var sec = Math.floor((left % 60000) / 1000);
+                remaining.textContent = (min < 10 ? '0' : '') + min + ':' + (sec < 10 ? '0' : '') + sec;
+                if (left < 300000) {
+                    timer.style.color = '#ef4444';
+                    timer.style.borderColor = 'rgba(239,68,68,0.3)';
+                }
+            }, 1000);
+        }
+    })();
+    </script>
     <div id="app"></div>
     <!-- 把JS放在body最后，确保DOM加载完成 -->
     <script src="config.js?v=20260422"></script>

@@ -440,6 +440,17 @@
                         <div class="setting-info"><div class="setting-label">允许自助注册</div><div class="setting-desc">关闭后用户无法自行注册，只能由管理员创建</div></div>
                         <div class="setting-control"><label class="toggle"><input type="checkbox" id="setAllowRegister" checked><span class="slider"></span></label></div>
                     </div>
+                    <div class="setting-row" style="border-top:1px solid rgba(255,255,255,0.06);padding-top:14px;margin-top:6px;">
+                        <div class="setting-info">
+                            <div class="setting-label" style="display:flex;align-items:center;gap:6px;"><i class="fas fa-user-secret" style="color:#a78bfa;font-size:0.9rem;"></i> 访客体验模式</div>
+                            <div class="setting-desc">允许未注册用户以访客身份限时体验学习，到期自动退出。员工登录优先。</div>
+                        </div>
+                        <div class="setting-control"><label class="toggle"><input type="checkbox" id="setAllowVisitor" onchange="document.getElementById('visitor-duration-row').style.display=this.checked?'':'none'"><span class="slider"></span></label></div>
+                    </div>
+                    <div class="setting-row" id="visitor-duration-row" style="display:none;">
+                        <div class="setting-info"><div class="setting-label">访客体验时长</div><div class="setting-desc">访客登录后可使用的最长时间（分钟），到期自动退出</div></div>
+                        <div class="setting-control"><input type="number" class="setting-input" id="setVisitorDuration" min="5" max="480" value="30" style="width:100px;"><span style="color:#64748b;font-size:0.8rem;">分钟</span></div>
+                    </div>
                     <div class="setting-row">
                         <div class="setting-info"><div class="setting-label">主界面显示在线人数</div><div class="setting-desc">在学习页面显示当前在线人数</div></div>
                         <div class="setting-control"><label class="toggle"><input type="checkbox" id="setShowOnlineMain" checked><span class="slider"></span></label></div>
@@ -754,6 +765,10 @@
         document.getElementById('setAllowMultiDevice').checked = s.allowMultiDevice !== false;
         document.getElementById('setRequireEmployeeVerify').checked = s.requireEmployeeVerify !== false;
         document.getElementById('setWhitelistEnabled').checked = s.whitelistEnabled === true;
+        // 访客设置
+        document.getElementById('setAllowVisitor').checked = s.allowVisitor === true;
+        document.getElementById('setVisitorDuration').value = s.visitorDuration || 30;
+        document.getElementById('visitor-duration-row').style.display = s.allowVisitor ? '' : 'none';
     }
 
     async function saveSettings() {
@@ -766,6 +781,8 @@
             allowMultiDevice: document.getElementById('setAllowMultiDevice').checked,
             requireEmployeeVerify: document.getElementById('setRequireEmployeeVerify').checked,
             whitelistEnabled: document.getElementById('setWhitelistEnabled').checked,
+            allowVisitor: document.getElementById('setAllowVisitor').checked,
+            visitorDuration: parseInt(document.getElementById('setVisitorDuration').value) || 30,
         };
         const result = await adminFetch('admin/settings', { method: 'PUT', body: JSON.stringify(settings) });
         if (result.success) alert('设置已保存');

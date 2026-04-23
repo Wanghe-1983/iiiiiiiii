@@ -72,6 +72,31 @@
         .btn-primary:active { transform: translateY(0); }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
+        .btn-visitor {
+            width: 100%; padding: 12px; background: transparent;
+            border: 2px dashed rgba(255,255,255,0.2); color: var(--text-muted);
+            border-radius: 12px; font-size: 0.92rem; font-weight: 600;
+            cursor: pointer; transition: all 0.3s ease; margin-top: 10px;
+        }
+        .btn-visitor:hover { border-color: var(--accent); color: var(--accent); background: rgba(99,102,241,0.05); }
+        .btn-visitor:disabled { opacity: 0.3; cursor: not-allowed; }
+        .btn-visitor i { margin-right: 6px; }
+        [data-theme="light"] .btn-visitor { border-color: rgba(0,0,0,0.15); color: #64748b; }
+        [data-theme="light"] .btn-visitor:hover { border-color: var(--accent); color: var(--accent); }
+
+        .visitor-info {
+            text-align: center; font-size: 0.78rem; color: var(--text-muted);
+            margin-top: 8px; line-height: 1.5;
+        }
+        .visitor-timer {
+            display: none; position: fixed; top: 12px; right: 12px; z-index: 9999;
+            background: rgba(17,24,39,0.95); color: #f59e0b; padding: 8px 16px;
+            border-radius: 20px; font-size: 0.85rem; font-weight: 600;
+            border: 1px solid rgba(245,158,11,0.3);
+            backdrop-filter: blur(10px); box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .visitor-timer i { margin-right: 6px; }
+
         .tip-box { margin-top: 16px; padding: 10px; border-radius: 8px; font-size: 0.85rem; display: none; }
         .tip-box.error { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.2); color: #f87171; }
         .tip-box.success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: #10b981; }
@@ -163,6 +188,7 @@
     </style>
 </head>
 <body data-theme="dark">
+    <div id="visitor-timer" class="visitor-timer" style="display:none;"><i class="fas fa-clock"></i> 访客剩余 <span id="visitor-remaining">--:--</span></div>
     <div class="login-card">
         <div class="logo-area">
             <div class="logo-icon"><i class="fas fa-book-reader"></i></div>
@@ -178,16 +204,16 @@
 
         <div class="auth-tabs">
             <div class="auth-tab active" onclick="switchTab('login')">登录</div>
-            <div class="auth-tab" onclick="switchTab('register')">注册</div>
+            
         </div>
 
         <!-- 登录面板 -->
         <div id="panel-login" class="form-panel active">
             <div class="input-group">
-                <span class="input-label">账号 / Username <span class="hint" style="margin-left:4px;">（员工：公司缩写-工号，业余爱好者：88888888）</span></span>
+                <span class="input-label">账号 / Username <span class="hint" style="margin-left:4px;">（格式：公司缩写-工号，如 FMI-123456）</span></span>
                 <div class="input-wrapper">
                     <i class="fas fa-user icon"></i>
-                    <input type="text" id="login-username" class="login-input" placeholder="员工输入工号 / 业余输入88888888" autocomplete="off" data-1p-ignore>
+                    <input type="text" id="login-username" class="login-input" placeholder="请输入公司缩写-工号" autocomplete="off" data-1p-ignore>
                 </div>
             </div>
             <div class="input-group">
@@ -200,62 +226,13 @@
             </div>
             <button class="btn-primary" id="login-btn" onclick="handleLogin()">立即登录</button>
             <div id="login-tip" class="tip-box"></div>
+            <button class="btn-visitor" id="visitor-btn" onclick="handleVisitorLogin()" style="display:none;">
+                <i class="fas fa-user-secret"></i> 访客体验（无需注册）
+            </button>
+            <div id="visitor-info" class="visitor-info" style="display:none;"></div>
         </div>
 
-        <!-- 注册面板 -->
-        <div id="panel-register" class="form-panel">
-            <!-- 用户类型选择 -->
-            <div class="type-selector">
-                <div class="type-card active" onclick="selectType('employee')">
-                    <i class="fas fa-building"></i>
-                    <div class="type-title">公司员工</div>
-                    <div class="type-desc">用工号登录，注册后需管理员验证</div>
-                </div>
-                <div class="type-card" onclick="selectType('hobby')">
-                    <i class="fas fa-heart"></i>
-                    <div class="type-title">爱好者</div>
-                    <div class="type-desc">无需验证即可学习<br>但不能参与排行榜</div>
-                </div>
-            </div>
-
-            <!-- 员工信息（仅员工显示） -->
-            <div id="employee-fields">
-                <div class="input-row">
-                    <div class="input-group company-code">
-                        <span class="input-label">公司缩写 <span class="req">*</span> <span class="hint">（大写字母，如 FMI）</span></span>
-                        <div class="input-wrapper">
-                            <i class="fas fa-building icon"></i>
-                            <input type="text" id="reg-company" class="login-input uppercase" placeholder="FMI" maxlength="6" autocomplete="off" style="text-transform:uppercase;">
-                        </div>
-                    </div>
-                    <div class="input-group emp-no">
-                        <span class="input-label">工号 <span class="req">*</span> <span class="hint">（纯数字，即登录账号）</span></span>
-                        <div class="input-wrapper">
-                            <i class="fas fa-id-card icon"></i>
-                            <input type="text" id="reg-empno" class="login-input digitsonly" placeholder="123456" autocomplete="off">
-                        </div>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <span class="input-label">昵称 / Name <span class="req">*</span> <span class="hint">（姓名或花名，最多5个汉字或10个字母）</span></span>
-                    <div class="input-wrapper">
-                        <i class="fas fa-id-badge icon"></i>
-                        <input type="text" id="reg-name" class="login-input" placeholder="例如：张三、Alex Chen" autocomplete="off" maxlength="10">
-                    </div>
-                </div>
-            </div>
-
-            <!-- 爱好者提示（仅爱好者显示） -->
-            <div id="hobby-fields" style="display:none;">
-                <div style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:0.85rem;color:#a5b4fc;line-height:1.6;">
-                    <i class="fas fa-info-circle" style="margin-right:6px;"></i>
-                    爱好者无需注册用户名，使用统一账号 <strong style="color:#e0e7ff;">88888888</strong> 登录。<br>
-                    <i class="fas fa-exclamation-triangle" style="margin-right:6px;color:#fbbf24;"></i>
-                    <span style="color:#fbbf24;">注意：</span>当管理员开启人数限制时，爱好者账号可能无法登录。
-                </div>
-            </div>
-
-            <!-- 密码（所有用户共用） -->
+        
             <div class="input-group">
                 <span class="input-label">设置密码 <span class="req">*</span></span>
                 <div class="input-wrapper" style="position:relative;">
@@ -273,8 +250,7 @@
                 </div>
             </div>
 
-            <button class="btn-primary" id="reg-btn" onclick="handleRegister()">注册账号</button>
-            <div id="reg-tip" class="tip-box"></div>
+            
         </div>
 
         <div class="footer-note">
@@ -298,18 +274,8 @@
         function showQR() { document.getElementById('qr-box').style.display = 'flex'; }
         function hideQR() { document.getElementById('qr-box').style.display = 'none'; }
 
-        function switchTab(tab) {
-            document.querySelectorAll('.auth-tab').forEach((el, i) => {
-                el.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1));
-            });
-            document.getElementById('panel-login').classList.toggle('active', tab === 'login');
-            document.getElementById('panel-register').classList.toggle('active', tab === 'register');
-            clearAllTips();
-        }
 
-        function clearAllTips() {
-            document.querySelectorAll('.tip-box').forEach(el => { el.style.display = 'none'; });
-        }
+        
 
         function showTip(id, msg, type) {
             const el = document.getElementById(id);
@@ -319,19 +285,7 @@
         }
 
         // 选择用户类型
-        function selectType(type) {
-            selectedType = type;
-            document.querySelectorAll('.type-card').forEach((el, i) => {
-                el.classList.toggle('active', (type === 'employee' && i === 0) || (type === 'hobby' && i === 1));
-            });
-            const empFields = document.getElementById('employee-fields');
-            if (type === 'hobby') {
-                empFields.style.display = 'none';
-            } else {
-                empFields.style.display = 'block';
-            }
-            clearAllTips();
-        }
+        
 
         // 输入限制
         document.addEventListener('DOMContentLoaded', function() {
@@ -346,47 +300,7 @@
         });
 
         // 注册
-        async function handleRegister() {
-            const password = document.getElementById('reg-password').value.trim();
-            const password2 = document.getElementById('reg-password2').value.trim();
-            clearAllTips();
-
-            if (password.length < 4) { showTip('reg-tip', '密码至少 4 位', 'error'); return; }
-            if (password !== password2) { showTip('reg-tip', '两次密码输入不一致', 'error'); return; }
-
-            let companyCode = '', empNo = '', name = '';
-            if (selectedType === 'employee') {
-                companyCode = document.getElementById('reg-company').value.trim();
-                empNo = document.getElementById('reg-empno').value.trim();
-                name = document.getElementById('reg-name').value.trim();
-                if (!companyCode) { showTip('reg-tip', '请填写公司缩写', 'error'); return; }
-                if (!empNo) { showTip('reg-tip', '请填写工号', 'error'); return; }
-                if (!name) { showTip('reg-tip', '请填写昵称', 'error'); return; }
-                if (name.length > 10) { showTip('reg-tip', '昵称最多5个汉字或10个字母', 'error'); return; }
-                if (!/^[0-9]+$/.test(empNo)) { showTip('reg-tip', '工号必须为纯数字', 'error'); return; }
-            }
-
-            const btn = document.getElementById('reg-btn');
-            btn.disabled = true; btn.textContent = '注册中...';
-
-            const result = await API.register('', password, name, selectedType, companyCode, empNo);
-            btn.disabled = false; btn.textContent = '注册账号';
-
-            if (result.success) {
-                if (selectedType === 'employee') {
-                    const loginId = companyCode.toUpperCase() + '-' + empNo;
-                    showTip('reg-tip', '注册成功！登录账号: ' + loginId + '（需管理员验证后可用）', 'success');
-                    document.getElementById('login-username').value = loginId;
-                    setTimeout(() => switchTab('login'), 3000);
-                } else {
-                    showTip('reg-tip', '注册成功！请使用统一账号 88888888 登录', 'success');
-                    document.getElementById('login-username').value = '88888888';
-                    setTimeout(() => switchTab('login'), 2000);
-                }
-            } else {
-                showTip('reg-tip', result.error || '注册失败', 'error');
-            }
-        }
+        
 
         // 登录
         async function handleLogin() {
@@ -458,12 +372,21 @@
                     }
                 }
                 // 更新员工验证提示
-        if (info.requireEmployeeVerify === false) {
-            const hint = document.getElementById('verify-hint');
-            if (hint) hint.textContent = '无需验证';
-        }
-        if (!info.allowRegister) {
-                    document.querySelectorAll('.auth-tab')[1].style.display = 'none';
+                if (info.requireEmployeeVerify === false) {
+                    const hint = document.getElementById('verify-hint');
+                    if (hint) hint.textContent = '无需验证';
+                }
+                // 访客登录按钮
+                const visitorBtn = document.getElementById('visitor-btn');
+                const visitorInfo = document.getElementById('visitor-info');
+                if (info.allowVisitor) {
+                    visitorBtn.style.display = '';
+                    visitorInfo.style.display = '';
+                    const dur = info.visitorDuration || 30;
+                    visitorInfo.innerHTML = '访客可体验 ' + dur + ' 分钟，到期自动退出';
+                } else {
+                    visitorBtn.style.display = 'none';
+                    visitorInfo.style.display = 'none';
                 }
             } catch (e) {}
         }

@@ -73,6 +73,16 @@ const API = {
                 window.location.href = 'login.html';
                 return data;
             }
+            // 访客时长到期
+            if (data.error === 'visitor_expired') {
+                this.clearToken();
+                localStorage.removeItem('fmi_login_status');
+                localStorage.removeItem('fmi_visitor_login');
+                localStorage.removeItem('fmi_visitor_expire');
+                alert('访客体验时间已到，感谢使用！如需继续学习，请注册账号。');
+                window.location.href = 'login.html';
+                return data;
+            }
             // token 过期
             if (resp.status === 401 && data.error !== '用户名或密码错误') {
                 this.clearToken();
