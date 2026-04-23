@@ -1843,12 +1843,12 @@ input:checked + .slider:before {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    min-width: 70px;
+    gap: 10px;
+    min-width: 80px;
 }
 .vslider-label {
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.95rem;
+    font-weight: 700;
     color: var(--text-muted);
     display: flex;
     align-items: center;
@@ -1856,14 +1856,14 @@ input:checked + .slider:before {
     letter-spacing: 0.5px;
 }
 .vslider-label i {
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: var(--accent);
-    opacity: 0.7;
+    opacity: 0.8;
 }
 .vslider-track-wrap {
     position: relative;
-    width: 36px;
-    height: 130px;
+    width: 40px;
+    height: 160px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1885,8 +1885,8 @@ input:checked + .slider:before {
 }
 .vslider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background: transparent;
     border: none;
@@ -1902,9 +1902,9 @@ input:checked + .slider:before {
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 6px;
+    width: 8px;
     height: 0%;
-    border-radius: 3px;
+    border-radius: 4px;
     pointer-events: none;
     z-index: 1;
     transition: height 0.15s ease-out;
@@ -1937,11 +1937,11 @@ input:checked + .slider:before {
     bottom: calc(0% - 16px);
     left: 50%;
     transform: translateX(-50%);
-    min-width: 40px;
-    padding: 4px 8px;
-    border-radius: 10px;
+    min-width: 48px;
+    padding: 6px 10px;
+    border-radius: 12px;
     text-align: center;
-    font-size: 0.75rem;
+    font-size: 0.82rem;
     font-weight: 800;
     font-family: 'Lexend', system-ui, sans-serif;
     z-index: 4;
@@ -1972,13 +1972,13 @@ input:checked + .slider:before {
 
 /* 隐藏中文按钮 */
 .hide-toggle-btn {
-    width: 52px;
-    height: 52px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     border: 2px solid rgba(148, 163, 184, 0.2);
     background: rgba(148, 163, 184, 0.06);
     color: #64748b;
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(.4, 0, .2, 1);
     display: flex;
@@ -2006,6 +2006,6 @@ input:checked + .slider:before {
 
 /* Mobile responsive for sliders */
 @media (max-width: 768px) {
-    .vslider-track-wrap { height: 100px; }
-    .vslider-box { min-width: 60px; }
+    .vslider-track-wrap { height: 120px; }
+    .vslider-box { min-width: 70px; }
 }

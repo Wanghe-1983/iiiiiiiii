@@ -69,6 +69,11 @@
             if (method === 'GET') return LS('fmi_admin_settings', '{"maxOnline":100,"maxRegistered":999,"allowRegister":true,"showOnlineMain":true,"showOnlineLogin":true,"allowMultiDevice":false}');
             if (method === 'PUT') { localStorage.setItem('fmi_admin_settings', opts.body); return { success: true }; }
         }
+        // 在线
+        if (path === 'admin/online') {
+            const onlineStr = localStorage.getItem('fmi_admin_online') || '[]';
+            return { users: JSON.parse(onlineStr), count: 0 };
+        }
         // 用户
         if (path === 'admin/users') {
             if (method === 'GET') return LS('fmi_admin_users', '[{"username":"admin","name":"管理员","role":"admin","password":"admin123"}]');
@@ -100,6 +105,11 @@
         }
         if (path === 'admin/study-clear') return { success: true, message: '已清空（本地模式）' };
         // 白名单
+        if (path === 'admin/whitelist') {
+            if (method === 'GET') return LS('fmi_admin_whitelist', '[]');
+            if (method === 'PUT') { localStorage.setItem('fmi_admin_whitelist', opts.body); return { success: true }; }
+        }
+        // 员工名单
         if (path.startsWith('admin/whitelist')) {
             if (method === 'GET') return { employees: LS('fmi_admin_whitelist', '[]') };
             if (method === 'PUT') { localStorage.setItem('fmi_admin_whitelist', opts.body); return { success: true }; }
@@ -295,7 +305,7 @@
 </head>
 <body>
     <!-- 版本标识 v20260422c -->
-    <div id="admin-version-tag" style="position:fixed;bottom:10px;left:10px;z-index:99999;background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);padding:3px 10px;border-radius:6px;font-size:0.7rem;cursor:pointer;" onclick="location.href=location.pathname+'?v='+Date.now()">v2.1.0 · 点击刷新</div>
+    <div id="admin-version-tag" style="position:fixed;bottom:10px;left:10px;z-index:99999;background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);padding:3px 10px;border-radius:6px;font-size:0.7rem;cursor:pointer;" onclick="location.href=location.pathname+'?v='+Date.now()">v2.1.1 · 点击刷新</div>
     <!-- Header -->
     <div class="admin-header">
         <h1><i class="fas fa-shield-halved"></i> 管理员后台</h1>
@@ -344,7 +354,7 @@
                 <div class="modal-body" style="padding:20px;">
                     <div style="margin-bottom:16px;">
                         <label style="display:block;font-size:0.85rem;color:#94a3b8;margin-bottom:6px;">版本号 <span style="color:#ef4444;">*</span></label>
-                        <input type="text" id="version-number" placeholder="例如: v2.1.0" style="width:100%;padding:10px 14px;background:rgba(30,41,59,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;font-size:0.95rem;outline:none;">
+                        <input type="text" id="version-number" placeholder="例如: v2.1.1" style="width:100%;padding:10px 14px;background:rgba(30,41,59,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;font-size:0.95rem;outline:none;">
                     </div>
                     <div style="margin-bottom:16px;">
                         <label style="display:block;font-size:0.85rem;color:#94a3b8;margin-bottom:6px;">更新标题</label>
@@ -600,9 +610,10 @@
 
     // ========== 权限检查 ==========
     (async function() {
-        const user = JSON.parse(localStorage.getItem('fmi_login_status') || '{}');
-        if (user.role !== 'admin' && !user.isAdmin) {
-            alert('无管理员权限');
+        const status = JSON.parse(localStorage.getItem('fmi_login_status') || '{}');
+        const user = status.user || status;
+        if (user.role !== 'admin') {
+            alert('无管理员权限，请使用管理员账号登录');
             location.href = 'login.html';
             return;
         }
@@ -628,19 +639,28 @@
     // ========== 概览 ==========
     async async function loadOverview() {
         try {
-            const [settings, online] = await Promise.all([
-                adminFetch('admin/settings', { method: 'GET' }),
-                adminFetch('admin/online', { method: 'GET' })
-            ]);
+            let settings, online;
+            try {
+                [settings, online] = await Promise.all([
+                    adminFetch('admin/settings', { method: 'GET' }),
+                    adminFetch('admin/online', { method: 'GET' })
+                ]);
+            } catch(e) { console.error('loadOverview error:', e); return; }
             if (window._adminFallback) showFallbackBanner(); else hideFallbackBanner();
-            if (settings.error) return;
+            if (!settings || settings.error) { console.warn('settings load failed'); return; }
+            const totalUsers = settings.totalUsers || allUsers.length || 0;
+            const currentOnline = settings.currentOnline || (online.users ? online.users.length : 0) || 0;
             const row = document.getElementById('statsRow');
             row.innerHTML = `
-                <div class="stat-card stat-purple"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-value">${settings.totalUsers || 0}</div><div class="stat-label">注册用户</div></div>
-                <div class="stat-card stat-green"><div class="stat-icon"><i class="fas fa-wifi"></i></div><div class="stat-value">${settings.currentOnline || 0}</div><div class="stat-label">当前在线</div></div>
+                <div class="stat-card stat-purple"><div class="stat-icon"><i class="fas fa-users"></i></div><div class="stat-value">${totalUsers}</div><div class="stat-label">注册用户</div></div>
+                <div class="stat-card stat-green"><div class="stat-icon"><i class="fas fa-wifi"></i></div><div class="stat-value">${currentOnline}</div><div class="stat-label">当前在线</div></div>
                 <div class="stat-card stat-orange"><div class="stat-icon"><i class="fas fa-user-clock"></i></div><div class="stat-value">${settings.maxOnline || 0}</div><div class="stat-label">在线人数上限</div></div>
                 <div class="stat-card stat-red"><div class="stat-icon"><i class="fas fa-user-lock"></i></div><div class="stat-value">${settings.maxRegistered || 0}</div><div class="stat-label">注册人数上限</div></div>
             `;
+            // In local mode, load users for accurate count
+            if (window._adminFallback && allUsers.length === 0) {
+                try { const usersData = await adminFetch('admin/users', { method: 'GET' }); if (Array.isArray(usersData)) { allUsers = usersData; row.querySelector('.stat-value').textContent = allUsers.length; } } catch(e) {}
+            }
             // Online users list
             const tbody = document.getElementById('onlineList');
             if (online.users && online.users.length > 0) {
@@ -1180,7 +1200,12 @@
 
         // switchTab 增加版本说明加载
         const origSwitchTab = window.switchTab;
-        // 白名单管理
+        // 白名单
+        if (path === 'admin/whitelist') {
+            if (method === 'GET') return LS('fmi_admin_whitelist', '[]');
+            if (method === 'PUT') { localStorage.setItem('fmi_admin_whitelist', opts.body); return { success: true }; }
+        }
+        // 员工名单管理
     async function loadWhitelist() {
         try {
             const data = await adminFetch('admin/whitelist', { method: 'GET' });
