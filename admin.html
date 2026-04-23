@@ -66,7 +66,7 @@
 
         // 设置
         if (path === 'admin/settings') {
-            if (method === 'GET') return LS('fmi_admin_settings', '{"maxOnline":100,"maxRegistered":999,"allowRegister":true,"showOnlineMain":true,"showOnlineLogin":true,"allowMultiDevice":false}');
+            if (method === 'GET') return LS('fmi_admin_settings', '{"maxOnline":100,"maxRegistered":999,"allowRegister":true,"showOnlineMain":true,"showOnlineLogin":true,"allowMultiDevice":false,"allowVisitor":true,"visitorDuration":3,"adminPanelPassword":"admin123"}');
             if (method === 'PUT') { localStorage.setItem('fmi_admin_settings', opts.body); return { success: true }; }
         }
         // 在线
@@ -107,7 +107,33 @@
         // 白名单
         if (path === 'admin/whitelist') {
             if (method === 'GET') return LS('fmi_admin_whitelist', '[]');
-            if (method === 'PUT') { localStorage.setItem('fmi_admin_whitelist', opts.body); return { success: true }; }
+            if (method === 'PUT') {
+                try {
+                    const body = JSON.parse(opts.body);
+                    if (body.action === 'add') {
+                        const list = LS('fmi_admin_whitelist', '[]');
+                        list.push(body.employee);
+                        localStorage.setItem('fmi_admin_whitelist', JSON.stringify(list));
+                        return { success: true };
+                    }
+                    if (body.action === 'delete') {
+                        let list = LS('fmi_admin_whitelist', '[]');
+                        list = list.filter(e => !(e.companyCode === body.companyCode && e.empNo === body.empNo));
+                        localStorage.setItem('fmi_admin_whitelist', JSON.stringify(list));
+                        return { success: true };
+                    }
+                    if (body.action === 'import') {
+                        localStorage.setItem('fmi_admin_whitelist', JSON.stringify(body.list || []));
+                        return { success: true };
+                    }
+                    if (body.employees !== undefined) {
+                        localStorage.setItem('fmi_admin_whitelist', JSON.stringify(body.employees));
+                        return { success: true };
+                    }
+                } catch(e) { console.warn('whitelist PUT error:', e); }
+                localStorage.setItem('fmi_admin_whitelist', opts.body);
+                return { success: true };
+            }
         }
         // 员工名单
         if (path.startsWith('admin/whitelist')) {
@@ -794,6 +820,10 @@
         document.getElementById('setVisitorDuration').value = s.visitorDuration || 3;
         document.getElementById('visitor-duration-row').style.display = s.allowVisitor ? '' : 'none';
         document.getElementById('setAdminPassword').value = s.adminPanelPassword || '';
+        document.getElementById('setShowOnlineCount').checked = s.showOnlineCount !== false;
+        document.getElementById('showOnlineCount-hint').textContent = s.showOnlineCount !== false ? '显示中' : '已隐藏';
+        document.getElementById('setShowRegCount').checked = s.showRegCount !== false;
+        document.getElementById('showRegCount-hint').textContent = s.showRegCount !== false ? '显示中' : '已隐藏';
     }
 
     async function saveSettings() {
@@ -809,6 +839,8 @@
             allowVisitor: document.getElementById('setAllowVisitor').checked,
             visitorDuration: parseInt(document.getElementById('setVisitorDuration').value) || 3,
             adminPanelPassword: document.getElementById('setAdminPassword').value || 'admin123',
+            showOnlineCount: document.getElementById('setShowOnlineCount').checked,
+            showRegCount: document.getElementById('setShowRegCount').checked,
         };
         const result = await adminFetch('admin/settings', { method: 'PUT', body: JSON.stringify(settings) });
         if (result.success) alert('设置已保存');

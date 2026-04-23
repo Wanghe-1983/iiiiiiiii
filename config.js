@@ -161,20 +161,26 @@ const API = {
     async getSystemInfo() {
         try {
             const result = await this.request('system/info');
-            // Cache the settings to localStorage for offline fallback
             if (result && !result.error) {
+                // Merge API response with admin localStorage settings
+                // Admin settings in localStorage take priority (may have newer changes)
+                const adminCache = localStorage.getItem('fmi_admin_settings');
+                if (adminCache) {
+                    const adminSettings = JSON.parse(adminCache);
+                    // API provides runtime data, adminCache provides configured data
+                    const merged = { ...adminSettings, ...result, ...adminSettings };
+                    localStorage.setItem('fmi_admin_settings', JSON.stringify(merged));
+                    return merged;
+                }
                 localStorage.setItem('fmi_admin_settings', JSON.stringify(result));
+                return result;
             }
-            return result;
         } catch(e) {
-            // API failed, try localStorage cache
-            const cached = localStorage.getItem('fmi_admin_settings');
-            if (cached) {
-                return JSON.parse(cached);
-            }
-            // Return defaults
-            return { allowVisitor: true, visitorDuration: 3, maxOnline: 0, showOnlineLogin: true };
+            // API failed, use localStorage cache
         }
+        const cached = localStorage.getItem('fmi_admin_settings');
+        if (cached) return JSON.parse(cached);
+        return { allowVisitor: true, visitorDuration: 3, maxOnline: 0, showOnlineLogin: true };
     },
 
     // ========== 管理员接口 ==========

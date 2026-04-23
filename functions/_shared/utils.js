@@ -249,6 +249,8 @@ async function getSystemSettings(env) {
         allowVisitor: true,
         visitorDuration: 3,
         adminPanelPassword: 'admin123',
+        showOnlineCount: true,
+        showRegCount: true,
     };
     if (!stored) return defaults;
     const settings = JSON.parse(stored);
@@ -462,7 +464,7 @@ async function handleRequest(context) {
                 allowRegister: settings.allowRegister,
                 showOnlineMain: settings.showOnlineMain, showOnlineLogin: settings.showOnlineLogin,
                 allowVisitor: settings.allowVisitor === true,
-                visitorDuration: settings.visitorDuration || 30,
+                visitorDuration: settings.visitorDuration || 3,
             });
         }
 

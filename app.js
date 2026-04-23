@@ -318,7 +318,7 @@ function initUI() {
                         <button class="hide-toggle-btn" id="hide-btn" onclick="toggleHide()" title="点击切换显示/隐藏中文翻译" style="width:44px;height:44px;font-size:1.2rem;border:none;background:none;cursor:pointer;">
                             <span id="hide-icon" class="hide-icon-show"><i class="fas fa-eye"></i></span>
                         </button>
-                        <span class="hide-status" id="hide-status" style="font-size:0.72rem;display:block;text-align:center;margin-top:2px;">显示中</span>
+                        
                     </div>
                     <div class="vslider-range"><span></span><span></span></div>
                 </div>
