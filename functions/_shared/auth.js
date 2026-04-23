@@ -36,6 +36,35 @@ async function verifyPassword(password, stored) {
     return computedHex === hashHex;
 }
 
+// ========== Base64URL 编解码（纯 Web API，不依赖 Buffer） ==========
+
+function uint8ToBase64Url(bytes) {
+    let binary = '';
+    for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function base64UrlToUint8(str) {
+    str = str.replace(/-/g, '+').replace(/_/g, '/');
+    while (str.length % 4) str += '=';
+    const binary = atob(str);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes;
+}
+
+function base64UrlEncode(text) {
+    return uint8ToBase64Url(new TextEncoder().encode(text));
+}
+
+function base64UrlDecode(str) {
+    return new TextDecoder().decode(base64UrlToUint8(str));
+}
+
 // ========== Token 工具 ==========
 
 function hashStr(str) {
@@ -49,12 +78,12 @@ function hashStr(str) {
 
 function generateToken(username) {
     const raw = `${username}|${Date.now()}|${hashStr(username + Date.now())}`;
-    return Buffer.from(raw).toString('base64url');
+    return base64UrlEncode(raw);
 }
 
 function parseToken(token) {
     try {
-        const raw = Buffer.from(token, 'base64url').toString('utf-8');
+        const raw = base64UrlDecode(token);
         const [username, timestamp, sig] = raw.split('|');
         return { username, timestamp: parseInt(timestamp), sig };
     } catch {
