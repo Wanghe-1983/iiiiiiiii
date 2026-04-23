@@ -357,6 +357,17 @@ async function handleHeartbeat(context) {
 
 async function handleStudySave(context) {
     const { env, username } = await requireAuth(context);
+    // 自动建表（兼容未执行 schema.sql 的场景）
+    await env.INDO_LEARN_DB.prepare(`CREATE TABLE IF NOT EXISTS study_records (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, word_id TEXT NOT NULL,
+        category TEXT NOT NULL DEFAULT '', mastered INTEGER NOT NULL DEFAULT 0,
+        attempts INTEGER NOT NULL DEFAULT 1, last_practiced TEXT NOT NULL DEFAULT (datetime('now'))
+    )`).run();
+    await env.INDO_LEARN_DB.prepare(`CREATE TABLE IF NOT EXISTS study_stats (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, date TEXT NOT NULL,
+        words_learned INTEGER NOT NULL DEFAULT 0, study_seconds INTEGER NOT NULL DEFAULT 0,
+        UNIQUE(username, date)
+    )`).run();
     const { wordId, category, mastered, seconds } = await context.request.json();
     const today = new Date().toISOString().slice(0, 10);
 
