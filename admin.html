@@ -29,7 +29,7 @@
         if (!base) { _apiAvailable = false; return false; }
         try {
             const r = await fetch(base + '/api/admin/settings', {
-                method: 'GET', headers: { 'Content-Type': 'application/json' },
+                method: 'GET', headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('fmi_token') || '') },
                 signal: AbortSignal.timeout(3000)
             });
             const data = await r.json();
@@ -44,7 +44,8 @@
             try {
                 const method = opts.method || 'GET';
                 const url = (CONFIG.apiBase || '') + '/api/' + path;
-                const headers = { 'Content-Type': 'application/json' };
+                const headers = {};
+                if (opts.method && opts.method !== 'GET') headers['Content-Type'] = 'application/json';
                 const token = localStorage.getItem('fmi_token');
                 if (token) headers['Authorization'] = 'Bearer ' + token;
                 const res = await fetch(url, { method, headers, body: opts.body, signal: AbortSignal.timeout(8000) });
@@ -294,7 +295,7 @@
 </head>
 <body>
     <!-- 版本标识 v20260422c -->
-    <div id="admin-version-tag" style="position:fixed;bottom:10px;left:10px;z-index:99999;background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);padding:3px 10px;border-radius:6px;font-size:0.7rem;cursor:pointer;" onclick="location.href=location.pathname+'?v='+Date.now()">v2.0.5 · 点击刷新</div>
+    <div id="admin-version-tag" style="position:fixed;bottom:10px;left:10px;z-index:99999;background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);padding:3px 10px;border-radius:6px;font-size:0.7rem;cursor:pointer;" onclick="location.href=location.pathname+'?v='+Date.now()">v2.1.0 · 点击刷新</div>
     <!-- Header -->
     <div class="admin-header">
         <h1><i class="fas fa-shield-halved"></i> 管理员后台</h1>
@@ -625,7 +626,7 @@
     }
 
     // ========== 概览 ==========
-    async function loadOverview() {
+    async async function loadOverview() {
         try {
             const [settings, online] = await Promise.all([
                 adminFetch('admin/settings', { method: 'GET' }),
@@ -651,7 +652,7 @@
     }
 
     // ========== 用户管理 ==========
-    async function loadUsers() {
+    async async function loadUsers() {
         try {
             const data = await adminFetch('admin/users', { method: 'GET' });
             if (data.error) return;
@@ -761,7 +762,7 @@
     }
 
     // ========== 系统设置 ==========
-    async function loadSettings() {
+    async async function loadSettings() {
         const s = await adminFetch('admin/settings', { method: 'GET' });
         if (s.error) return;
         document.getElementById('setMaxOnline').value = s.maxOnline || 0;

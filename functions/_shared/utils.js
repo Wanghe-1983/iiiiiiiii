@@ -239,13 +239,22 @@ async function setLeaderboardConfig(config, env) {
 }
 
 async function getSystemSettings(env) {
-    return JSON.parse(await env.INDO_LEARN_KV.get('system_settings') || JSON.stringify({
+    const stored = await env.INDO_LEARN_KV.get('system_settings');
+    const defaults = {
         maxOnline: 0, maxRegistered: 0, allowRegister: true,
         showOnlineMain: true, showOnlineLogin: true,
         allowMultiDevice: true,
         requireEmployeeVerify: true,
         whitelistEnabled: false,
-    }));
+        allowVisitor: true,
+        visitorDuration: 3,
+        adminPanelPassword: 'admin123',
+    };
+    if (!stored) return defaults;
+    const settings = JSON.parse(stored);
+    // 合并默认值（防止旧数据缺少新字段）
+    for (const k in defaults) { if (settings[k] === undefined) settings[k] = defaults[k]; }
+    return settings;
 }
 
 async function setSystemSettings(settings, env) {

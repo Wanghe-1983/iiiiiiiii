@@ -311,38 +311,39 @@ function initUI() {
     <div id="page-practice" style="display:none;"></div>
     <div id="page-dashboard" style="display:none;"></div>
     <div class="control-panel" id="control-panel">
-    <div class="ctrl-main" id="learn-controls" style="display:flex;align-items:center;justify-content:center;gap:28px;flex-wrap:wrap;">
-        <!-- 语速控制 - 渐变环形 -->
-        <div class="ctrl-ring-wrap" onclick="cycleRate()" title="播放语速（点击切换）" style="position:relative;width:76px;height:76px;cursor:pointer;">
-            <svg viewBox="0 0 76 76" width="76" height="76" style="filter:drop-shadow(0 0 8px rgba(129,140,248,0.25));">
-                <circle cx="38" cy="38" r="30" fill="rgba(99,102,241,0.04)" stroke="rgba(165,180,252,0.06)" stroke-width="4"/>
-                <circle id="rate-ring" cx="38" cy="38" r="30" fill="none" stroke="url(#rate-grad)" stroke-width="4" stroke-dasharray="188.5" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 38 38)" style="transition:stroke-dashoffset 0.5s cubic-bezier(.4,0,.2,1);"/>
-                <defs><linearGradient id="rate-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="50%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#c084fc"/></linearGradient></defs>
-                <text x="38" y="35" text-anchor="middle" fill="#c4b5fd" font-size="14" font-weight="800" id="val-rate">1.0x</text>
-                <text x="38" y="50" text-anchor="middle" fill="#475569" font-size="9" font-weight="500">语速</text>
-                <text x="38" y="62" text-anchor="middle" fill="#374151" font-size="7"><tspan fill="#6366f1">●</tspan> <tspan id="val-rate-hint" fill="#475569">点击切换</tspan></text>
-            </svg>
+    <div class="ctrl-main" id="learn-controls" style="display:flex;align-items:stretch;justify-content:center;gap:40px;flex-wrap:wrap;padding:8px 0;">
+        <!-- 语速滑块 -->
+        <div class="vslider-box">
+            <div class="vslider-label"><i class="fas fa-gauge-high"></i> 语速</div>
+            <div class="vslider-track-wrap">
+                <input type="range" class="vslider vslider-rate" id="rate-slider" min="1" max="15" value="10" step="1" orient="vertical"
+                    oninput="setRateFromSlider(this.value)" title="拖动调整语速">
+                <div class="vslider-fill" id="rate-fill"></div>
+                <div class="vslider-thumb" id="rate-thumb"><span id="val-rate">1.0x</span></div>
+            </div>
+            <div class="vslider-range"><span>0.1x</span><span>1.5x</span></div>
         </div>
-        <!-- 循环次数控制 -->
-        <div class="ctrl-ring-wrap" onclick="cycleLoop()" title="播放次数（点击切换）" style="position:relative;width:76px;height:76px;cursor:pointer;">
-            <svg viewBox="0 0 76 76" width="76" height="76" style="filter:drop-shadow(0 0 8px rgba(52,211,153,0.25));">
-                <circle cx="38" cy="38" r="30" fill="rgba(16,185,129,0.04)" stroke="rgba(110,231,183,0.06)" stroke-width="4"/>
-                <circle id="loop-ring" cx="38" cy="38" r="30" fill="none" stroke="url(#loop-grad)" stroke-width="4" stroke-dasharray="188.5" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 38 38)" style="transition:stroke-dashoffset 0.5s cubic-bezier(.4,0,.2,1);"/>
-                <defs><linearGradient id="loop-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#34d399"/><stop offset="50%" stop-color="#2dd4bf"/><stop offset="100%" stop-color="#22d3ee"/></linearGradient></defs>
-                <text x="38" y="35" text-anchor="middle" fill="#6ee7b7" font-size="14" font-weight="800" id="val-loop">1次</text>
-                <text x="38" y="50" text-anchor="middle" fill="#475569" font-size="9" font-weight="500">循环</text>
-                <text x="38" y="62" text-anchor="middle" fill="#374151" font-size="7"><tspan fill="#10b981">●</tspan> <tspan id="val-loop-hint" fill="#475569">点击切换</tspan></text>
-            </svg>
+        <!-- 循环滑块 -->
+        <div class="vslider-box">
+            <div class="vslider-label"><i class="fas fa-repeat"></i> 循环</div>
+            <div class="vslider-track-wrap">
+                <input type="range" class="vslider vslider-loop" id="loop-slider" min="0" max="5" value="0" step="1" orient="vertical"
+                    oninput="setLoopFromSlider(this.value)" title="拖动调整循环次数">
+                <div class="vslider-fill" id="loop-fill"></div>
+                <div class="vslider-thumb" id="loop-thumb"><span id="val-loop">1次</span></div>
+            </div>
+            <div class="vslider-range"><span>1次</span><span>无限</span></div>
         </div>
-        <!-- 隐藏中文答案 -->
-        <div class="ctrl-ring-wrap" onclick="toggleHide()" title="显示/隐藏中文翻译" id="hide-btn" style="position:relative;width:76px;height:76px;cursor:pointer;border-radius:50%;background:rgba(148,163,184,0.06);border:1px solid rgba(148,163,184,0.12);transition:all 0.3s;display:flex;align-items:center;justify-content:center;">
-            <svg viewBox="0 0 76 76" width="76" height="76">
-                <circle cx="38" cy="30" r="14" fill="none" stroke="#64748b" stroke-width="2.5"/>
-                <path id="hide-eye-path" d="M24 30 Q38 20 52 30" fill="none" stroke="#64748b" stroke-width="2.5" stroke-linecap="round"/>
-                <circle id="hide-pupil" cx="38" cy="30" r="5" fill="#64748b"/>
-                <path d="M24 44 Q38 54 52 44" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
-                <text x="38" y="66" text-anchor="middle" fill="#475569" font-size="9" font-weight="500" id="hide-label">隐藏</text>
-            </svg>
+        <!-- 隐藏中文开关 -->
+        <div class="vslider-box">
+            <div class="vslider-label"><i class="fas fa-eye-slash"></i> 中文</div>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:6px;">
+                <button class="hide-toggle-btn" id="hide-btn" onclick="toggleHide()" title="点击切换显示/隐藏中文翻译">
+                    <span id="hide-icon" class="hide-icon-show"><i class="fas fa-eye"></i></span>
+                </button>
+                <span class="hide-status" id="hide-status">显示中</span>
+            </div>
+            <div class="vslider-range"><span></span><span></span></div>
         </div>
     </div>
 
@@ -765,57 +766,100 @@ let _rateIdx = 4; // 默认 1.0
 const LOOP_LEVELS = [1, 3, 5, 7, 9, 0]; // 0 = 无限循环
 let _loopIdx = 0; // 默认 1次
 
-function cycleRate() {
-    _rateIdx = (_rateIdx + 1) % RATE_LEVELS.length;
-    const rate = RATE_LEVELS[_rateIdx];
+// 竖向滑块：语速（1-15 对应 0.1x-1.5x，步进0.1）
+function setRateFromSlider(val) {
+    const rate = parseInt(val) / 10; // 1->0.1, 10->1.0, 15->1.5
     _rate = rate;
+    _rateIdx = parseInt(val) - 1;
     localStorage.setItem('fmi_rate', rate);
-    const val = rate.toFixed(1) + 'x';
-    const el = document.getElementById('val-rate'); if (el) el.innerText = val;
-    const pEl = document.getElementById('p-val-rate'); if (pEl) pEl.innerText = val;
+    const display = rate.toFixed(1) + 'x';
+    const el = document.getElementById('val-rate'); if (el) el.innerText = display;
+    const pEl = document.getElementById('p-val-rate'); if (pEl) pEl.innerText = display;
+    // 更新滑块填充
+    updateSliderFill('rate', (parseInt(val) - 1) / 14);
+    updateSliderFill('p-rate', (parseInt(val) - 1) / 14);
+    // 同步练习页
+    const pSlider = document.getElementById('p-rate-slider');
+    if (pSlider) pSlider.value = val;
     updateRing('rate-ring', _rateIdx / (RATE_LEVELS.length - 1));
     updateRing('p-rate-ring', _rateIdx / (RATE_LEVELS.length - 1));
 }
 
-function cycleLoop() {
-    _loopIdx = (_loopIdx + 1) % LOOP_LEVELS.length;
-    const loop = LOOP_LEVELS[_loopIdx];
-    _loop = loop;
-    localStorage.setItem('fmi_loop', loop);
-    const val = loop === 0 ? '∞' : loop + '次';
-    const el = document.getElementById('val-loop'); if (el) el.innerText = val;
-    const pEl = document.getElementById('p-val-loop'); if (pEl) pEl.innerText = val;
+// 竖向滑块：循环（0-5 对应 1,3,5,7,9,无限）
+const LOOP_DISPLAY = ['1次', '3次', '5次', '7次', '9次', '∞'];
+function setLoopFromSlider(val) {
+    const idx = parseInt(val);
+    _loopIdx = idx;
+    _loop = LOOP_LEVELS[idx];
+    localStorage.setItem('fmi_loop', _loop);
+    const display = LOOP_DISPLAY[idx];
+    const el = document.getElementById('val-loop'); if (el) el.innerText = display;
+    const pEl = document.getElementById('p-val-loop'); if (pEl) pEl.innerText = display;
+    updateSliderFill('loop', idx / 5);
+    updateSliderFill('p-loop', idx / 5);
+    const pSlider = document.getElementById('p-loop-slider');
+    if (pSlider) pSlider.value = val;
     updateRing('loop-ring', _loopIdx / (LOOP_LEVELS.length - 1));
     updateRing('p-loop-ring', _loopIdx / (LOOP_LEVELS.length - 1));
 }
 
-// 更新眼睛开合度：ratio 0=闭合, 1=完全睁开
+// 更新滑块填充高度
+function updateSliderFill(type, ratio) {
+    const fill = document.getElementById(type + '-fill');
+    const thumb = document.getElementById(type + '-thumb');
+    if (!fill) return;
+    const pct = Math.max(0, Math.min(100, ratio * 100));
+    fill.style.height = pct + '%';
+    if (thumb) thumb.style.bottom = 'calc(' + pct + '% - 16px)';
+}
+
+// 更新圆环进度（练习页兼容）
 function updateRing(id, ratio) {
     const el = document.getElementById(id);
     if (!el) return;
-    const circumference = 188.5; // 2 * PI * 30
+    const circumference = 188.5;
     el.style.strokeDashoffset = circumference * (1 - Math.max(0.05, ratio));
 }
 
-// 隐藏按钮切换
+// 兼容旧函数（练习页仍用 click）
+function cycleRate() {
+    const slider = document.getElementById('rate-slider');
+    if (slider) { slider.value = (_rateIdx + 2) > 15 ? 1 : _rateIdx + 2; setRateFromSlider(slider.value); }
+}
+function cycleLoop() {
+    const slider = document.getElementById('loop-slider');
+    if (slider) { slider.value = (_loopIdx + 1) > 5 ? 0 : _loopIdx + 1; setLoopFromSlider(slider.value); }
+}
+
+// 隐藏中文切换
 function toggleHide() {
     _hideChinese = !_hideChinese;
-    const eyeCircle = document.getElementById('hide-eye-path');
-    const pupil = document.getElementById('hide-pupil');
-    const label = document.getElementById('hide-label');
     const btn = document.getElementById('hide-btn');
+    const icon = document.getElementById('hide-icon');
+    const status = document.getElementById('hide-status');
     if (_hideChinese) {
-        if (eyeCircle) eyeCircle.setAttribute('stroke', '#f87171');
-        if (pupil) { pupil.setAttribute('fill', '#f87171'); pupil.setAttribute('r', '0'); }
-        if (label) label.textContent = '显示';
-        if (btn) { btn.style.background = 'rgba(248,113,113,0.08)'; btn.style.borderColor = 'rgba(248,113,113,0.2)'; btn.style.boxShadow = '0 0 20px rgba(248,113,113,0.15)'; }
+        if (icon) icon.className = 'hide-icon-hide';
+        if (status) status.textContent = '已隐藏';
+        if (btn) btn.classList.add('active');
     } else {
-        if (eyeCircle) eyeCircle.setAttribute('stroke', '#64748b');
-        if (pupil) { pupil.setAttribute('fill', '#64748b'); pupil.setAttribute('r', '5'); }
-        if (label) label.textContent = '隐藏';
-        if (btn) { btn.style.background = 'rgba(148,163,184,0.06)'; btn.style.borderColor = 'rgba(148,163,184,0.12)'; btn.style.boxShadow = 'none'; }
+        if (icon) icon.className = 'hide-icon-show';
+        if (status) status.textContent = '显示中';
+        if (btn) btn.classList.remove('active');
     }
     renderCurrent();
+}
+
+// 初始化滑块位置
+function initSliders() {
+    const savedRate = parseFloat(localStorage.getItem('fmi_rate')) || 1.0;
+    const savedLoop = parseInt(localStorage.getItem('fmi_loop')) || 1;
+    const rateVal = Math.round(savedRate * 10);
+    const loopIdx = LOOP_LEVELS.indexOf(savedLoop);
+    const loopVal = loopIdx >= 0 ? loopIdx : 0;
+    const rateSlider = document.getElementById('rate-slider');
+    const loopSlider = document.getElementById('loop-slider');
+    if (rateSlider) { rateSlider.value = rateVal; setRateFromSlider(rateVal); }
+    if (loopSlider) { loopSlider.value = loopVal; setLoopFromSlider(loopVal); }
 }
 
 
@@ -1666,7 +1710,7 @@ function initPracticePage() {
             </label>
             <span id="practice-learned-count" style="color:var(--accent);font-size:0.9rem;font-weight:600;"></span>
         </div>
-        <div style="margin-bottom:20px;"><div style="color:var(--text-muted);font-size:0.9rem;margin-bottom:10px;">题目数量</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="practice-type-btn" onclick="selectPracticeCount(10,this)">10题</button><button class="practice-type-btn active" onclick="selectPracticeCount(20,this)">20题</button><button class="practice-type-btn" onclick="selectPracticeCount(50,this)">50题</button><button class="practice-type-btn" onclick="selectPracticeCount(0,this)">全部</button></div></div><button class="practice-start-btn" onclick="startPractice()" style="width:100%;padding:14px;font-size:1.1rem;"><i class="fas fa-play"></i> 开始练习</button><div style="display:flex;align-items:center;justify-content:center;gap:24px;margin-top:20px;"><div style="position:relative;width:68px;height:68px;cursor:pointer;" onclick="cycleRate()" title="语速调节（点击切换）"><svg viewBox="0 0 72 72" width="68" height="68"><circle cx="38" cy="38" r="30" fill="rgba(99,102,241,0.04)" stroke="rgba(165,180,252,0.06)" stroke-width="4"/><circle id="p-rate-ring" cx="38" cy="38" r="30" fill="none" stroke="url(#p-rate-grad)" stroke-width="4" stroke-dasharray="188.5" stroke-dashoffset="0" transform="rotate(-90 38 38)" stroke-linecap="round" style="transition:stroke-dashoffset 0.5s cubic-bezier(.4,0,.2,1), filter 0.3s; filter:drop-shadow(0 0 4px rgba(129,140,248,0.3));"/><defs><linearGradient id="p-rate-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#818cf8"/><stop offset="100%" stop-color="#c084fc"/></linearGradient></defs><text x="36" y="34" text-anchor="middle" fill="#c4b5fd" font-size="13" font-weight="800" id="p-val-rate">1.0x</text><text x="38" y="50" text-anchor="middle" fill="#475569" font-size="9" font-weight="500">语速</text></svg></div><div style="position:relative;width:68px;height:68px;cursor:pointer;" onclick="cycleLoop()" title="循环调节（点击切换）"><svg viewBox="0 0 72 72" width="68" height="68"><circle cx="38" cy="38" r="30" fill="rgba(16,185,129,0.04)" stroke="rgba(110,231,183,0.06)" stroke-width="4"/><circle id="p-loop-ring" cx="38" cy="38" r="30" fill="none" stroke="url(#p-loop-grad)" stroke-width="4" stroke-dasharray="188.5" stroke-dashoffset="0" transform="rotate(-90 38 38)" stroke-linecap="round" style="transition:stroke-dashoffset 0.5s cubic-bezier(.4,0,.2,1), filter 0.3s; filter:drop-shadow(0 0 4px rgba(52,211,153,0.3));"/><defs><linearGradient id="p-loop-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#34d399"/><stop offset="100%" stop-color="#2dd4bf"/></linearGradient></defs><text x="36" y="34" text-anchor="middle" fill="#6ee7b7" font-size="13" font-weight="800" id="p-val-loop">1次</text><text x="38" y="50" text-anchor="middle" fill="#475569" font-size="9" font-weight="500">循环</text></svg></div></div></div><div id="practice-quiz" style="display:none;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;"><div style="color:var(--text-main);font-weight:700;">练习中</div><div style="color:var(--text-muted);font-size:0.9rem;" id="practice-progress">1/20</div></div><div class="practice-score-bar"><div class="practice-score-item"><span class="score-val" id="p-correct">0</span>正确</div><div class="practice-score-item"><span class="score-val" id="p-wrong">0</span>错误</div><div class="practice-score-item"><span class="score-val" id="p-accuracy">0%</span>正确率</div></div><div class="practice-question-box"><div id="p-question-label" style="color:var(--text-muted);font-size:0.9rem;margin-bottom:8px;">请选择正确的中文翻译</div><div id="p-question-word" style="font-size:2.5rem;font-weight:800;color:var(--text-main);margin-bottom:20px;padding:15px 0;">加载中...</div><div id="p-question-hint" style="color:var(--text-dim);font-size:0.85rem;"></div></div><div id="p-options" class="practice-options"></div><div id="p-input-box" style="display:none;"><input type="text" class="practice-input" id="p-fill-input" placeholder="输入中文翻译..." autocomplete="off" style="width:100%;padding:12px;border-radius:10px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:1rem;outline:none;"><button class="practice-start-btn" onclick="submitFillAnswer()" style="margin-top:10px;width:100%;">提交答案</button></div><div id="p-feedback" class="practice-feedback"></div><div style="display:flex;gap:12px;justify-content:center;margin-top:20px;"><button class="practice-btn-sec" onclick="endPractice()">结束练习</button><button class="practice-start-btn" id="p-next-btn" onclick="nextQuestion()" style="display:none;">下一题 <i class="fas fa-arrow-right"></i></button></div></div><div id="practice-result" style="display:none;"><div style="text-align:center;padding:30px;"><div id="p-result-score" style="font-size:4rem;font-weight:900;color:var(--accent);">0%</div><div id="p-result-text" style="color:var(--text-muted);font-size:1.1rem;margin:10px 0 20px;">练习完成！</div><div style="display:flex;gap:20px;justify-content:center;margin-bottom:25px;"><div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:#10b981;" id="p-r-correct">0</div><div style="color:var(--text-dim);font-size:0.8rem;">正确</div></div><div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:#ef4444;" id="p-r-wrong">0</div><div style="color:var(--text-dim);font-size:0.8rem;">错误</div></div><div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:var(--text-main);" id="p-r-total">0</div><div style="color:var(--text-dim);font-size:0.8rem;">总题数</div></div></div><div style="display:flex;gap:12px;justify-content:center;"><button class="practice-btn-sec" onclick="showWrongWords()">查看错题</button><button id="lb-submit-btn" style="display:none;padding:10px 20px;background:#f59e0b;color:#000;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:0.9rem;" onclick="submitToLeaderboard()"><i class="fas fa-trophy"></i> 提交到排行榜</button><button class="practice-start-btn" onclick="resetPractice()">再来一次</button></div></div></div></div>`;
+        <div style="margin-bottom:20px;"><div style="color:var(--text-muted);font-size:0.9rem;margin-bottom:10px;">题目数量</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="practice-type-btn" onclick="selectPracticeCount(10,this)">10题</button><button class="practice-type-btn active" onclick="selectPracticeCount(20,this)">20题</button><button class="practice-type-btn" onclick="selectPracticeCount(50,this)">50题</button><button class="practice-type-btn" onclick="selectPracticeCount(0,this)">全部</button></div></div><button class="practice-start-btn" onclick="startPractice()" style="width:100%;padding:14px;font-size:1.1rem;"><i class="fas fa-play"></i> 开始练习</button><div style="display:flex;align-items:stretch;justify-content:center;gap:40px;margin-top:16px;"><div class="vslider-box"><div class="vslider-label"><i class="fas fa-gauge-high"></i> 语速</div><div class="vslider-track-wrap"><input type="range" class="vslider vslider-rate" id="p-rate-slider" min="1" max="15" value="10" step="1" orient="vertical" oninput="setRateFromSlider(this.value)"><div class="vslider-fill" id="p-rate-fill"></div><div class="vslider-thumb" id="p-rate-thumb"><span id="p-val-rate">1.0x</span></div></div><div class="vslider-range"><span>0.1x</span><span>1.5x</span></div></div><div class="vslider-box"><div class="vslider-label"><i class="fas fa-repeat"></i> 循环</div><div class="vslider-track-wrap"><input type="range" class="vslider vslider-loop" id="p-loop-slider" min="0" max="5" value="0" step="1" orient="vertical" oninput="setLoopFromSlider(this.value)"><div class="vslider-fill" id="p-loop-fill"></div><div class="vslider-thumb" id="p-loop-thumb"><span id="p-val-loop">1次</span></div></div><div class="vslider-range"><span>1次</span><span>无限</span></div></div></div></div><div id="practice-quiz" style="display:none;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;"><div style="color:var(--text-main);font-weight:700;">练习中</div><div style="color:var(--text-muted);font-size:0.9rem;" id="practice-progress">1/20</div></div><div class="practice-score-bar"><div class="practice-score-item"><span class="score-val" id="p-correct">0</span>正确</div><div class="practice-score-item"><span class="score-val" id="p-wrong">0</span>错误</div><div class="practice-score-item"><span class="score-val" id="p-accuracy">0%</span>正确率</div></div><div class="practice-question-box"><div id="p-question-label" style="color:var(--text-muted);font-size:0.9rem;margin-bottom:8px;">请选择正确的中文翻译</div><div id="p-question-word" style="font-size:2.5rem;font-weight:800;color:var(--text-main);margin-bottom:20px;padding:15px 0;">加载中...</div><div id="p-question-hint" style="color:var(--text-dim);font-size:0.85rem;"></div></div><div id="p-options" class="practice-options"></div><div id="p-input-box" style="display:none;"><input type="text" class="practice-input" id="p-fill-input" placeholder="输入中文翻译..." autocomplete="off" style="width:100%;padding:12px;border-radius:10px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:1rem;outline:none;"><button class="practice-start-btn" onclick="submitFillAnswer()" style="margin-top:10px;width:100%;">提交答案</button></div><div id="p-feedback" class="practice-feedback"></div><div style="display:flex;gap:12px;justify-content:center;margin-top:20px;"><button class="practice-btn-sec" onclick="endPractice()">结束练习</button><button class="practice-start-btn" id="p-next-btn" onclick="nextQuestion()" style="display:none;">下一题 <i class="fas fa-arrow-right"></i></button></div></div><div id="practice-result" style="display:none;"><div style="text-align:center;padding:30px;"><div id="p-result-score" style="font-size:4rem;font-weight:900;color:var(--accent);">0%</div><div id="p-result-text" style="color:var(--text-muted);font-size:1.1rem;margin:10px 0 20px;">练习完成！</div><div style="display:flex;gap:20px;justify-content:center;margin-bottom:25px;"><div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:#10b981;" id="p-r-correct">0</div><div style="color:var(--text-dim);font-size:0.8rem;">正确</div></div><div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:#ef4444;" id="p-r-wrong">0</div><div style="color:var(--text-dim);font-size:0.8rem;">错误</div></div><div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:var(--text-main);" id="p-r-total">0</div><div style="color:var(--text-dim);font-size:0.8rem;">总题数</div></div></div><div style="display:flex;gap:12px;justify-content:center;"><button class="practice-btn-sec" onclick="showWrongWords()">查看错题</button><button id="lb-submit-btn" style="display:none;padding:10px 20px;background:#f59e0b;color:#000;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:0.9rem;" onclick="submitToLeaderboard()"><i class="fas fa-trophy"></i> 提交到排行榜</button><button class="practice-start-btn" onclick="resetPractice()">再来一次</button></div></div></div></div>`;
 }
 // Update learned count when checkbox changes
 document.addEventListener('change', function(e) {
@@ -2240,6 +2284,7 @@ window.onload = async function() {
     await loadWhitelist(); // 先加载白名单
     checkLoginStatus(); // 优先拦截未登录状态进行跳转
     initUI();           // 渲染界面结构
+    setTimeout(initSliders, 200); // 初始化滑块控件
     checkLoginStatus(); // 界面渲染完毕后，二次调用以安全写入用户名
     updateStats();
 
