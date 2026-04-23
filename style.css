@@ -1867,14 +1867,16 @@ input:checked + .slider:before {
     height: 40px;
     flex: 1;
     min-width: 0;
+    padding-left: 28px;
 }
 .vslider {
     -webkit-appearance: none;
     appearance: none;
-    width: 100%;
+    width: calc(100% - 28px);
     height: 36px;
     background: transparent;
     position: absolute;
+    left: 28px;
     cursor: pointer;
     z-index: 3;
     opacity: 0;
@@ -1898,10 +1900,10 @@ input:checked + .slider:before {
 .vslider-track-wrap::before {
     content: '';
     position: absolute;
-    left: 0;
+    left: 28px;
     top: 50%;
     transform: translateY(-50%);
-    width: 100%;
+    width: calc(100% - 28px);
     height: 10px;
     border-radius: 5px;
     background: rgba(255, 255, 255, 0.06);
@@ -1909,7 +1911,7 @@ input:checked + .slider:before {
 }
 .vslider-fill {
     position: absolute;
-    left: 0;
+    left: 28px;
     top: 50%;
     transform: translateY(-50%);
     height: 10px;
@@ -1918,6 +1920,7 @@ input:checked + .slider:before {
     pointer-events: none;
     z-index: 1;
     transition: width 0.15s ease-out;
+    max-width: calc(100% - 28px);
 }
 .vslider-track-wrap:has(.vslider-rate) .vslider-fill,
 .vslider-fill[id^="rate"] {
@@ -1932,8 +1935,8 @@ input:checked + .slider:before {
 .vslider-thumb {
     position: absolute;
     top: 50%;
-    left: 2%;
-    transform: translate(0%, -50%);
+    left: 0%;
+    transform: translate(-50%, -50%);
     min-width: 56px;
     padding: 6px 14px;
     border-radius: 14px;

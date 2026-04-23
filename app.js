@@ -810,7 +810,7 @@ function updateSliderFill(type, ratio) {
     if (!fill) return;
     const pct = Math.max(0, Math.min(100, ratio * 100));
     fill.style.width = pct + '%';
-    if (thumb) thumb.style.left = pct + '%';
+    if (thumb) thumb.style.left = 'calc(28px + ' + pct + '% * 0.85)';
 }
 
 // 更新圆环进度（练习页兼容）
@@ -2058,7 +2058,7 @@ function initDashboardPage() {
         let catTotal = 0;
         for (const lid in db[catId].lessons) catTotal += db[catId].lessons[lid].words.length;
         const cn = catId === "1" ? "生词 Vocabulary" : catId === "2" ? "短语 Phrases" : catId;
-        catBreakdown += '<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;color:var(--text-muted);font-size:0.85rem;margin-bottom:4px;"><span>' + catId + '. ' + cn + '</span><span>' + catTotal + ' 词</span></div><div class="dash-progress-bar" style="height:6px;"><div class="dash-progress-fill" style="width:' + (catTotal > 0 ? Math.min(100, Math.round((learnedN / totalLib) * 100)) : 0) + '%;"></div></div><div class="copyright" id="dash-copyright" style="margin-top:30px;">仅供学习・禁止商用 © 2026｜联系：<span style="color:var(--accent);cursor:pointer;" onclick="openQrModal()">王鹤</span> Ver 1.1 <span class="clickable" onclick="openAdminModal()" style="font-size:0.72rem;margin-left:8px;cursor:pointer;opacity:0.5;" title="管理员入口">©</span></div></div>';
+        catBreakdown += '<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;color:var(--text-muted);font-size:0.85rem;margin-bottom:4px;"><span>' + catId + '. ' + cn + '</span><span>' + catTotal + ' 词</span></div><div class="dash-progress-bar" style="height:6px;"><div class="dash-progress-fill" style="width:' + (catTotal > 0 ? Math.min(100, Math.round((learnedN / totalLib) * 100)) : 0) + '%;"></div></div></div>';
     }
     let histHTML = '';
     if (hist.length > 0) {
