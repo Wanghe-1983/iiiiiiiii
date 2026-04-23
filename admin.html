@@ -22,7 +22,7 @@
     let _apiChecked = false;
     let _apiAvailable = false;
 
-    async function checkApiAvailable() {
+    async async function checkApiAvailable() {
         if (_apiChecked) return _apiAvailable;
         _apiChecked = true;
         const base = (CONFIG.apiBase || '');
@@ -38,7 +38,7 @@
         return _apiAvailable;
     }
 
-    async function adminFetch(path, opts = {}) {
+    async async function adminFetch(path, opts = {}) {
         const available = await checkApiAvailable();
         if (available) {
             try {
@@ -305,7 +305,7 @@
 </head>
 <body>
     <!-- 版本标识 v20260422c -->
-    <div id="admin-version-tag" style="position:fixed;bottom:10px;left:10px;z-index:99999;background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);padding:3px 10px;border-radius:6px;font-size:0.7rem;cursor:pointer;" onclick="location.href=location.pathname+'?v='+Date.now()">v2.1.1 · 点击刷新</div>
+    <div id="admin-version-tag" style="position:fixed;bottom:10px;left:10px;z-index:99999;background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);padding:3px 10px;border-radius:6px;font-size:0.7rem;cursor:pointer;" onclick="location.href=location.pathname+'?v='+Date.now()">v2.1.2 · 点击刷新</div>
     <!-- Header -->
     <div class="admin-header">
         <h1><i class="fas fa-shield-halved"></i> 管理员后台</h1>
@@ -324,7 +324,7 @@
                 <div class="modal-body" style="padding:20px;">
                     <div style="margin-bottom:16px;">
                         <label style="display:block;font-size:0.85rem;color:#94a3b8;margin-bottom:6px;">版本号 <span style="color:#ef4444;">*</span></label>
-                        <input type="text" id="version-number" placeholder="例如: v2.1.1" style="width:100%;padding:10px 14px;background:rgba(30,41,59,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;font-size:0.95rem;outline:none;">
+                        <input type="text" id="version-number" placeholder="例如: v2.1.2" style="width:100%;padding:10px 14px;background:rgba(30,41,59,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:10px;color:#fff;font-size:0.95rem;outline:none;">
                     </div>
                     <div style="margin-bottom:16px;">
                         <label style="display:block;font-size:0.85rem;color:#94a3b8;margin-bottom:6px;">更新标题</label>
@@ -898,7 +898,7 @@
         const result = await adminFetch('admin/whitelist', {
             method: 'PUT',
             body: JSON.stringify({ action: 'add', employee: { companyCode, empNo, name, dept } }),
-        });
+        }));
         if (result.success) {
             document.getElementById('emp-add-company').value = '';
             document.getElementById('emp-add-no').value = '';
@@ -913,7 +913,7 @@
         const result = await adminFetch('admin/whitelist', {
             method: 'PUT',
             body: JSON.stringify({ action: 'delete', companyCode, empNo }),
-        });
+        }));
         if (result.success) loadEmployees();
         else alert(result.error || '删除失败');
     }
@@ -943,7 +943,7 @@
         const result = await adminFetch('admin/whitelist', {
             method: 'PUT',
             body: JSON.stringify({ action: 'import', list: imported }),
-        });
+        }));
         if (result.success) { alert('导入成功'); loadEmployees(); }
         else alert(result.error || '导入失败');
     }
@@ -1221,7 +1221,7 @@
         const list = (result.employees || result || []);
         if (list && Array.isArray(list) && idx < list.length) {
             list.splice(idx, 1);
-            await adminFetch('admin/whitelist', { method: 'PUT', body: JSON.stringify({ employees: list }) });
+            await adminFetch('admin/whitelist', { method: 'PUT', body: JSON.stringify({ employees: list }) }));
         }
         loadWhitelist();
     }
@@ -1275,7 +1275,7 @@
             const data = await adminFetch('admin/study-clear', {
                 method: 'POST',
                 body: JSON.stringify({ username })
-            });
+            }));
             if (data.success) {
                 alert(data.message);
                 loadStudyStats();

@@ -1868,6 +1868,7 @@ input:checked + .slider:before {
     flex: 1;
     min-width: 0;
     padding-left: 28px;
+    overflow: visible;
 }
 .vslider {
     -webkit-appearance: none;
@@ -1993,6 +1994,10 @@ input:checked + .slider:before {
         gap: 12px;
         padding: 12px 14px;
     }
+    .vslider-track-wrap { padding-left: 24px; }
+    .vslider-thumb { min-width: 48px; font-size: 0.9rem; padding: 4px 10px; }
+    .vslider-range { width: 70px; }
+    .vslider-label { min-width: 50px; font-size: 0.85rem; }
 }
 
 
