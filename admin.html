@@ -929,8 +929,7 @@
                 imported = JSON.parse(text);
             } else {
                 // CSV 解析
-                const lines = text.trim().split('
-');
+                const lines = text.trim().split('\n');
                 for (let i = 0; i < lines.length; i++) {
                     const cols = lines[i].split(/[,，	|]/).map(s => s.trim());
                     if (cols.length >= 3 && cols[0] && cols[1] && cols[2]) {

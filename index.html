@@ -34,6 +34,14 @@
                 var left = endTime - Date.now();
                 if (left <= 0) {
                     timer.style.display = 'none';
+                    // 清除访客登录状态并跳转登录页
+                    localStorage.removeItem('fmi_token');
+                    localStorage.removeItem('fmi_user');
+                    localStorage.removeItem('fmi_login_status');
+                    localStorage.removeItem('fmi_visitor_login');
+                    localStorage.removeItem('fmi_visitor_expire');
+                    alert('访客体验时间已到，感谢使用！如需继续学习，请注册账号。');
+                    location.href = 'login.html';
                     return;
                 }
                 var min = Math.floor(left / 60000);

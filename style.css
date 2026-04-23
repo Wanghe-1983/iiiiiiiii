@@ -1855,6 +1855,7 @@ input:checked + .slider:before {
     letter-spacing: 0.5px;
     flex-shrink: 0;
     white-space: nowrap;
+    min-width: 64px;
 }
 .vslider-label i {
     font-size: 1rem;
@@ -1863,12 +1864,9 @@ input:checked + .slider:before {
 }
 .vslider-track-wrap {
     position: relative;
-    height: 36px;
+    height: 40px;
     flex: 1;
     min-width: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 .vslider {
     -webkit-appearance: none;
@@ -1934,8 +1932,8 @@ input:checked + .slider:before {
 .vslider-thumb {
     position: absolute;
     top: 50%;
-    left: 0%;
-    transform: translate(-50%, -50%);
+    left: 2%;
+    transform: translate(0%, -50%);
     min-width: 56px;
     padding: 6px 14px;
     border-radius: 14px;
