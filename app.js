@@ -83,7 +83,7 @@ function checkLoginStatus() {
             // 访客/管理员模式隐藏注销按钮
             const isVisitor = localStorage.getItem('fmi_visitor_login');
             // loginStatus 已在函数开头声明
-            const isAdmin = loginStatus.username === 'admin';
+            const isAdmin = loginStatus.user && loginStatus.user.username === 'admin';
             if (isVisitor || isAdmin) {
                 const delItem = document.getElementById('delete-account-item');
                 const delSep = document.getElementById('delete-account-btn');
