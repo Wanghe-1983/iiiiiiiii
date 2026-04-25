@@ -741,7 +741,7 @@ async function handleBroadcastDelete(context) {
 async function handleBroadcastActive(context) {
     // 公开接口，前端获取活跃广播
     const broadcasts = await dbAll(context.env,
-        "SELECT id, title, content, type, display_order as displayOrder FROM broadcasts WHERE is_active = 1 AND (start_date = '' OR start_date <= datetime('now')) AND (end_date = '' OR end_date >= datetime('now')) ORDER BY display_order ASC, id DESC");
+        "SELECT id, title, content, type, is_active as isActive, display_order as displayOrder, start_date as startDate, end_date as endDate FROM broadcasts WHERE is_active = 1 AND (start_date = '' OR start_date <= datetime('now')) AND (end_date = '' OR end_date >= datetime('now')) ORDER BY display_order ASC, id DESC");
     return json({ broadcasts });
 }
 

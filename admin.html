@@ -282,7 +282,7 @@
                     </div>
                 </div>
                 <!-- Add/Edit user modal -->
-                <div class="card" id="userFormCard" style="display:none;max-width:540px;">
+                <div class="card" id="userFormCard" style="display:none;">
                     <div class="card-title" id="userFormTitle">添加用户</div>
                     <div class="form-row">
                         <div class="form-group"><label>用户名</label><input id="ufUsername" placeholder="登录用户名"></div>
@@ -538,7 +538,7 @@
         </div><!-- /admin-content -->
     <!-- 版本编辑弹窗 -->
     <div id="version-modal" class="modal-overlay" style="display:none;">
-        <div class="modal-card" style="width:540px;">
+        <div class="modal-card" style="width:100%;max-width:720px;">
             <div class="modal-header">
                 <h3 id="version-modal-title">新增版本</h3>
                 <button class="modal-close" onclick="closeVersionModal()">&times;</button>
@@ -879,7 +879,7 @@ let allUsers = [];
     }
 
     function renderEmployeeTable(users) {
-        const tbody = document.getElementById('emp-tbody');
+        const tbody = document.getElementById('whitelistBody');
         if (!tbody) return;
         const countEl = document.getElementById('emp-count');
         const registeredSet = new Set();
@@ -912,17 +912,15 @@ let allUsers = [];
         const companyCode = document.getElementById('emp-add-company').value.trim().toUpperCase();
         const empNo = document.getElementById('emp-add-no').value.trim();
         const name = document.getElementById('emp-add-name').value.trim();
-        const dept = document.getElementById('emp-add-dept').value.trim();
         if (!companyCode || !empNo || !name) { alert('公司缩写、工号和姓名不能为空'); return; }
         const result = await adminFetch('admin/whitelist', {
             method: 'PUT',
-            body: JSON.stringify({ action: 'add', employee: { companyCode, empNo, name, dept } }),
+            body: JSON.stringify({ action: 'add', employee: { companyCode, empNo, name } }),
         });
         if (result.success) {
             document.getElementById('emp-add-company').value = '';
             document.getElementById('emp-add-no').value = '';
             document.getElementById('emp-add-name').value = '';
-            document.getElementById('emp-add-dept').value = '';
             loadEmployees();
         } else { alert(result.error || '添加失败'); }
     }
