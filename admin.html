@@ -84,7 +84,7 @@
         .hdr-btn.danger { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
         .hdr-btn.danger:hover { background: rgba(239,68,68,0.25); }
 
-        .admin-body { display: flex; height: calc(100vh - 56px); }
+        .admin-body { display: flex; height: 100vh; }
 
         /* Sidebar */
         .admin-nav { width: 200px; min-width: 200px; background: rgba(17,24,39,0.6); border-right: 1px solid rgba(255,255,255,0.06); padding: 20px 0; flex-shrink: 0; overflow-y: auto; }
@@ -102,7 +102,7 @@
         .panel-title i { color: #a78bfa; }
 
         /* Cards */
-        .card { background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .card { background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; margin-bottom: 20px; width: 100%; }
         .card-title { font-size: 0.95rem; color: #cbd5e1; margin-bottom: 15px; font-weight: 600; }
 
         /* Stats row */
@@ -239,11 +239,7 @@
 </head>
 <body>
     <!-- 版本标识 v20260422c -->
-    <div id="admin-version-tag" style="position:fixed;bottom:10px;left:10px;z-index:99999;background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);padding:3px 10px;border-radius:6px;font-size:0.7rem;cursor:pointer;" onclick="location.href=location.pathname+'?v='+Date.now()">v2.18 · 点击刷新</div>
-    <!-- Header -->
-    <div class="admin-header">
-        <h1><i class="fas fa-shield-halved"></i> 管理员后台</h1>
-    </div>
+    <div id="admin-version-tag" style="position:fixed;bottom:10px;left:10px;z-index:99999;background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);padding:3px 10px;border-radius:6px;font-size:0.7rem;cursor:pointer;" onclick="location.href=location.pathname+'?v='+Date.now()">v2.19 · 点击刷新</div>
     <!-- 固定右上角操作按钮 -->
     <div class="admin-float-actions">
         <button class="hdr-btn ghost" onclick="location.href='index.html'"><i class="fas fa-arrow-left"></i> 返回学习</button>
@@ -483,13 +479,7 @@
                             <label style="font-size:0.85rem;color:#94a3b8;">播放次数（0=无限）</label>
                             <input type="number" id="bc-loop-count" value="0" min="0" max="99" style="width:70px;padding:6px 10px;background:rgba(30,41,59,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.9rem;">
                         </div>
-                        <div style="display:flex;align-items:center;gap:8px;">
-                            <label style="font-size:0.85rem;color:#94a3b8;">展示位置</label>
-                            <select id="bc-position" style="padding:6px 10px;background:rgba(30,41,59,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.9rem;">
-                                <option value="top">页面顶部</option>
-                                <option value="bottom">页面底部</option>
-                            </select>
-                        </div>
+
                         <button class="hdr-btn primary" onclick="saveBroadcastConfig()" style="white-space:nowrap;"><i class="fas fa-save"></i> 保存配置</button>
                     </div>
                 </div>
@@ -1383,7 +1373,7 @@ let allUsers = [];
             document.getElementById('bc-enabled').checked = config.enabled !== false;
             document.getElementById('bc-interval').value = config.interval || 8;
             document.getElementById('bc-loop-count').value = config.loopCount || 0;
-            document.getElementById('bc-position').value = config.position || 'top';
+            document.getElementById('bc-allow-close').checked = !!config.allowClose;
         } catch(e) {}
     }
 
@@ -1392,7 +1382,7 @@ let allUsers = [];
             enabled: document.getElementById('bc-enabled').checked,
             interval: parseInt(document.getElementById('bc-interval').value) || 8,
             loopCount: parseInt(document.getElementById('bc-loop-count').value) || 0,
-            position: document.getElementById('bc-position').value
+            allowClose: document.getElementById('bc-allow-close').checked
         };
         const result = await adminFetch('broadcast/config', { method: 'PUT', body: JSON.stringify(config) });
         if (result && result.success) {

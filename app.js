@@ -265,7 +265,7 @@ function initUI() {
                 <div id="broadcast-text" style="font-size:0.88rem;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
                 <div id="broadcast-title" style="font-size:0.75rem;color:#64748b;margin-top:2px;"></div>
             </div>
-            <button onclick="this.parentElement.parentElement.style.display='none'" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:0.8rem;flex-shrink:0;padding:4px;"><i class="fas fa-times"></i></button>
+            <button id="broadcast-close-btn" style="display:none;background:none;border:none;color:#64748b;cursor:pointer;font-size:0.8rem;flex-shrink:0;padding:4px;" onclick="document.getElementById('broadcast-bar').style.display='none'"><i class="fas fa-times"></i></button>
         </div>
     </div>
     <div class="stats-bar" id="stats-bar">
@@ -2357,6 +2357,20 @@ async function loadBroadcasts() {
         const bar = document.getElementById('broadcast-bar');
         if (!bar) return;
 
+        // 读取广播配置
+        let allowClose = false;
+        try {
+            const cfgRes = await fetch((CONFIG.apiBase || location.origin) + '/api/broadcast/config');
+            if (cfgRes.ok) {
+                const cfg = await cfgRes.json();
+                allowClose = !!cfg.allowClose;
+            }
+        } catch(e) {}
+
+        // 根据配置决定是否显示关闭按钮
+        const closeBtn = document.getElementById('broadcast-close-btn');
+        if (closeBtn) closeBtn.style.display = allowClose ? '' : 'none';
+
         // 显示第一条广播
         const bc = broadcasts[0];
         document.getElementById('broadcast-text').textContent = bc.content || '';
@@ -2365,12 +2379,11 @@ async function loadBroadcasts() {
 
         // 如果有多条，自动轮播
         if (broadcasts.length > 1) {
-            // 加载配置获取间隔
             try {
-                const cfgRes = await fetch((CONFIG.apiBase || location.origin) + '/api/broadcast/config');
-                if (cfgRes.ok) {
-                    const cfg = await cfgRes.json();
-                    const interval = (cfg.interval || 8) * 1000;
+                const cfgRes2 = await fetch((CONFIG.apiBase || location.origin) + '/api/broadcast/config');
+                if (cfgRes2.ok) {
+                    const cfg2 = await cfgRes2.json();
+                    const interval = (cfg2.interval || 8) * 1000;
                     let idx = 0;
                     setInterval(() => {
                         idx = (idx + 1) % broadcasts.length;
