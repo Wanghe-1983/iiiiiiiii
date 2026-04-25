@@ -2340,6 +2340,16 @@ function copyRosterJSON() {
 // ========== 前台广播功能 ==========
 async function loadBroadcasts() {
     try {
+        // 先读取广播配置
+        let bcConfig = { enabled: true, allowClose: false, interval: 8 };
+        try {
+            const cfgRes = await fetch((CONFIG.apiBase || location.origin) + '/api/broadcast/config');
+            if (cfgRes.ok) bcConfig = { ...bcConfig, ...await cfgRes.json() };
+        } catch(e) {}
+
+        // 如果未启用广播，直接返回
+        if (!bcConfig.enabled) return;
+
         const res = await fetch((CONFIG.apiBase || location.origin) + '/api/broadcast/active');
         if (!res.ok) return;
         const data = await res.json();
@@ -2358,19 +2368,18 @@ async function loadBroadcasts() {
         const bar = document.getElementById('broadcast-bar');
         if (!bar) return;
 
-        // 读取广播配置
-        let allowClose = false;
-        try {
-            const cfgRes = await fetch((CONFIG.apiBase || location.origin) + '/api/broadcast/config');
-            if (cfgRes.ok) {
-                const cfg = await cfgRes.json();
-                allowClose = !!cfg.allowClose;
-            }
-        } catch(e) {}
-
-        // 根据配置决定是否显示关闭按钮
-        const closeBtn = document.getElementById('broadcast-close-btn');
-        if (closeBtn) closeBtn.style.display = allowClose ? '' : 'none';
+        // 根据配置动态创建/移除关闭按钮
+        let closeBtn = document.getElementById('broadcast-close-btn');
+        if (bcConfig.allowClose && !closeBtn) {
+            closeBtn = document.createElement('button');
+            closeBtn.id = 'broadcast-close-btn';
+            closeBtn.style.cssText = 'background:none;border:none;color:#64748b;cursor:pointer;font-size:0.8rem;flex-shrink:0;padding:4px;';
+            closeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            closeBtn.onclick = function() { bar.style.display = 'none'; };
+            bar.querySelector('div').appendChild(closeBtn);
+        } else if (!bcConfig.allowClose && closeBtn) {
+            closeBtn.remove();
+        }
 
         // 显示第一条广播
         const bc = broadcasts[0];
@@ -2380,24 +2389,18 @@ async function loadBroadcasts() {
 
         // 如果有多条，自动轮播
         if (broadcasts.length > 1) {
-            try {
-                const cfgRes2 = await fetch((CONFIG.apiBase || location.origin) + '/api/broadcast/config');
-                if (cfgRes2.ok) {
-                    const cfg2 = await cfgRes2.json();
-                    const interval = (cfg2.interval || 8) * 1000;
-                    let idx = 0;
-                    setInterval(() => {
-                        idx = (idx + 1) % broadcasts.length;
-                        const current = broadcasts[idx];
-                        const textEl = document.getElementById('broadcast-text');
-                        const titleEl = document.getElementById('broadcast-title');
-                        if (textEl && titleEl && bar.style.display !== 'none') {
-                            textEl.textContent = current.content || '';
-                            titleEl.textContent = current.title || '';
-                        }
-                    }, interval);
+            const interval = (bcConfig.interval || 8) * 1000;
+            let idx = 0;
+            setInterval(() => {
+                idx = (idx + 1) % broadcasts.length;
+                const current = broadcasts[idx];
+                const textEl = document.getElementById('broadcast-text');
+                const titleEl = document.getElementById('broadcast-title');
+                if (textEl && titleEl && bar.style.display !== 'none') {
+                    textEl.textContent = current.content || '';
+                    titleEl.textContent = current.title || '';
                 }
-            } catch(e) {}
+            }, interval);
         }
     } catch(e) {}
 }
