@@ -137,7 +137,8 @@ function showDeleteAccountDialog() {
     dialog.querySelector('#del-confirm').onclick = async () => {
         dialog.querySelector('#del-confirm').textContent = '注销中...';
         dialog.querySelector('#del-confirm').disabled = true;
-        const result = await API.request('user/delete', { method: 'POST' });
+        const currentUsername = localStorage.getItem('fmi_username') || '';
+        const result = await API.request('user/delete', { method: 'POST', body: JSON.stringify({ targetUsername: currentUsername }) });
         if (result.success) {
             API.clearToken();
             localStorage.removeItem('fmi_login_status');
