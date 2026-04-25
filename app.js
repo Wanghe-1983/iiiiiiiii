@@ -115,7 +115,7 @@ function logout() {
     showLogoutConfirmDialog();
 }
 
-// 注销账号确认弹窗
+// 注销账号确认弹窗（密码确认式）
 function showDeleteAccountDialog() {
     const dialog = document.createElement('div');
     dialog.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:10000;display:flex;justify-content:center;align-items:center;backdrop-filter:blur(10px);';
@@ -123,9 +123,13 @@ function showDeleteAccountDialog() {
         <div style="background:#111827;padding:35px 40px;border-radius:25px;border:1px solid rgba(239,68,68,0.4);text-align:center;max-width:420px;width:90%;">
             <div style="font-size:2rem;margin-bottom:15px;">⚠️</div>
             <h3 style="color:#f87171;margin-bottom:12px;font-size:1.2rem;">确认注销账号？</h3>
-            <p style="color:#94a3b8;margin-bottom:25px;font-size:0.95rem;line-height:1.6;">
+            <p style="color:#94a3b8;margin-bottom:20px;font-size:0.95rem;line-height:1.6;">
                 此操作将<strong style="color:#f87171;">永久删除</strong>您的账号和所有数据，<br>包括学习记录、练习历史等，<strong style="color:#f87171;">无法恢复</strong>。
             </p>
+            <div style="margin-bottom:20px;text-align:left;">
+                <label style="color:#94a3b8;font-size:0.85rem;display:block;margin-bottom:6px;">请输入登录密码以确认注销</label>
+                <input id="del-password" type="password" placeholder="输入您的登录密码" style="width:100%;padding:10px 14px;background:#1e293b;border:1px solid #334155;border-radius:10px;color:#e2e8f0;font-size:0.95rem;outline:none;box-sizing:border-box;" />
+            </div>
             <div style="display:flex;gap:12px;justify-content:center;">
                 <button id="del-cancel" style="background:#475569;color:white;border:none;padding:10px 25px;border-radius:12px;cursor:pointer;font-size:0.95rem;">取消</button>
                 <button id="del-confirm" style="background:#ef4444;color:white;border:none;padding:10px 25px;border-radius:12px;cursor:pointer;font-size:0.95rem;">确认注销</button>
@@ -134,7 +138,15 @@ function showDeleteAccountDialog() {
     `;
     document.body.appendChild(dialog);
     dialog.querySelector('#del-cancel').onclick = () => document.body.removeChild(dialog);
+    dialog.querySelector('#del-password').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') dialog.querySelector('#del-confirm').click();
+    });
     dialog.querySelector('#del-confirm').onclick = async () => {
+        const password = dialog.querySelector('#del-password').value.trim();
+        if (!password) {
+            alert('请输入密码');
+            return;
+        }
         dialog.querySelector('#del-confirm').textContent = '注销中...';
         dialog.querySelector('#del-confirm').disabled = true;
         // 从登录状态获取用户名
@@ -149,7 +161,7 @@ function showDeleteAccountDialog() {
             location.href = 'login.html';
             return;
         }
-        const result = await API.request('user/delete', { method: 'POST', body: JSON.stringify({ targetUsername: currentUsername }) });
+        const result = await API.request('user/delete', { method: 'POST', body: JSON.stringify({ targetUsername: currentUsername, password: password }) });
         if (result.success) {
             API.clearToken();
             localStorage.removeItem('fmi_login_status');

@@ -319,9 +319,19 @@ async function handleChangePassword(context) {
 
 async function handleDeleteUser(context) {
     const { env, username } = await requireAuth(context);
-    const { targetUsername } = await context.request.json();
-    // 只能删除自己，或管理员删除他人
-    if (username !== targetUsername) {
+    const { targetUsername, password } = await context.request.json();
+    // 用户删除自己：需验证登录密码
+    if (username === targetUsername) {
+        if (!password) throw new AuthError('请输入密码', 400);
+        const user = await env.INDO_LEARN_DB
+            .prepare('SELECT password FROM users WHERE username = ?')
+            .bind(targetUsername)
+            .first();
+        if (!user) throw new AuthError('用户不存在', 404);
+        const ok = await verifyPassword(password, user.password);
+        if (!ok) throw new AuthError('密码错误', 401);
+    } else {
+        // 管理员删除他人：需管理员权限
         await requireAdmin(context);
     }
     await dbRun(env, 'DELETE FROM users WHERE username = ?', [targetUsername]);
