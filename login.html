@@ -163,10 +163,10 @@
         </div>
         <div id="panel-login" class="form-panel active">
             <div class="input-group">
-                <span class="input-label">账号 / Username <span class="hint" style="margin-left:4px;">（格式：公司缩写-工号，如 FMI-123456）</span></span>
+                <span class="input-label">账号 / Username <span class="hint" style="margin-left:4px;">（工号）</span></span>
                 <div class="input-wrapper">
                     <i class="fas fa-user icon"></i>
-                    <input type="text" id="login-username" class="login-input" placeholder="请输入公司缩写-工号" autocomplete="off" data-1p-ignore>
+                    <input type="text" id="login-username" class="login-input" placeholder="请输入工号" autocomplete="off" data-1p-ignore>
                 </div>
             </div>
             <div class="input-group">
@@ -289,7 +289,7 @@
                     return;
                 }
             }
-            if (!companyCode || !empNo || !name) { showTip('reg-tip', '请填写公司缩写、工号和昵称', 'error'); return; }
+            if (!empNo || !name) { showTip('reg-tip', '请填写工号和昵称', 'error'); return; }
             if (!password) { showTip('reg-tip', '请设置密码', 'error'); return; }
             if (password.length < 4) { showTip('reg-tip', '密码至少 4 位', 'error'); return; }
             if (password !== password2) { showTip('reg-tip', '两次密码输入不一致', 'error'); return; }
@@ -298,11 +298,12 @@
             btn.disabled = true; btn.textContent = '注册中...';
             try {
                 if (API.isLoggedIn === undefined) API.init();
-                var username = companyCode.toUpperCase() + '-' + empNo;
+                var username = empNo;
                 var result = await API.register(username, password, name, 'employee', companyCode, empNo);
                 if (result.success) {
-                    showTip('reg-tip', '注册成功！您的登录账号为 <b style="color:#fff;font-family:monospace;">' + username + '</b>，请切换到登录页面登录', 'success'); window._systemInfo = window._systemInfo || {}; window._systemInfo.registeredCount = (window._systemInfo.registeredCount || 0) + 1; updateRegLimitBar();
-                    document.getElementById('reg-company').value = '';
+                    showTip('reg-tip', '注册成功！请切换到登录页面使用工号登录', 'success'); window._systemInfo = window._systemInfo || {}; window._systemInfo.registeredCount = (window._systemInfo.registeredCount || 0) + 1; updateRegLimitBar();
+                    // company保留不清空方便同公司连续注册
+                    // document.getElementById('reg-company').value = '';
                     document.getElementById('reg-empno').value = '';
                     document.getElementById('reg-name').value = '';
                     document.getElementById('reg-password').value = '';
