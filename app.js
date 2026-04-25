@@ -265,7 +265,7 @@ function initUI() {
                 <div id="broadcast-text" style="font-size:0.88rem;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
                 <div id="broadcast-title" style="font-size:0.75rem;color:#64748b;margin-top:2px;"></div>
             </div>
-            <button id="broadcast-close-btn" style="display:none;background:none;border:none;color:#64748b;cursor:pointer;font-size:0.8rem;flex-shrink:0;padding:4px;" onclick="document.getElementById('broadcast-bar').style.display='none'"><i class="fas fa-times"></i></button>
+
         </div>
     </div>
     <div class="stats-bar" id="stats-bar">

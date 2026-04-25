@@ -103,6 +103,7 @@
 
         /* Cards */
         .card { background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; margin-bottom: 20px; width: 100%; }
+        .tab-panel .card { max-width: 100%; width: 100%; }
         .card-title { font-size: 0.95rem; color: #cbd5e1; margin-bottom: 15px; font-weight: 600; }
 
         /* Stats row */
@@ -478,6 +479,11 @@
                         <div style="display:flex;align-items:center;gap:8px;">
                             <label style="font-size:0.85rem;color:#94a3b8;">播放次数（0=无限）</label>
                             <input type="number" id="bc-loop-count" value="0" min="0" max="99" style="width:70px;padding:6px 10px;background:rgba(30,41,59,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;font-size:0.9rem;">
+
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <label style="font-size:0.85rem;color:#94a3b8;">允许用户关闭</label>
+                            <input type="checkbox" id="bc-allow-close" style="width:18px;height:18px;accent-color:#6366f1;">
+                        </div>
                         </div>
 
                         <button class="hdr-btn primary" onclick="saveBroadcastConfig()" style="white-space:nowrap;"><i class="fas fa-save"></i> 保存配置</button>
