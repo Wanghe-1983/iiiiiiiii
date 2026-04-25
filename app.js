@@ -907,11 +907,11 @@ function verifyAdminPrompt() {
     const pass = document.getElementById('admin-prompt-pass').value;
     if (pass === storedPass) {
         cancelAdminPrompt();
-        // 通过 API 登录获取 token，确保 admin.html 有权限
-        fetch((CONFIG.apiBase || location.origin) + '/api/auth/login', {
+        // 通过 admin/verify 端点验证并获取 token
+        fetch((CONFIG.apiBase || location.origin) + '/api/admin/verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: 'admin', password: pass })
+            body: JSON.stringify({ panelPassword: pass })
         }).then(r => r.json()).then(data => {
             if (data.token) {
                 localStorage.setItem('fmi_token', data.token);

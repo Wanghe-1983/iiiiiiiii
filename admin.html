@@ -240,7 +240,7 @@
 </head>
 <body>
     <!-- 版本标识 v20260422c -->
-    <div id="admin-version-tag" style="position:fixed;bottom:10px;left:10px;z-index:99999;background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);padding:3px 10px;border-radius:6px;font-size:0.7rem;cursor:pointer;" onclick="location.href=location.pathname+'?v='+Date.now()">v2.21 · 点击刷新</div>
+    <div id="admin-version-tag" style="position:fixed;bottom:10px;left:10px;z-index:99999;background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);padding:3px 10px;border-radius:6px;font-size:0.7rem;cursor:pointer;" onclick="location.href=location.pathname+'?v='+Date.now()">v2.22 · 点击刷新</div>
     <!-- 固定右上角操作按钮 -->
     <div class="admin-float-actions">
         <button class="hdr-btn ghost" onclick="location.href='index.html'"><i class="fas fa-arrow-left"></i> 返回学习</button>
@@ -1331,22 +1331,26 @@ let allUsers = [];
         }
     }
 
-    function editBroadcast(id) {
-        // 找到广播数据并填充表单
-        const rows = document.querySelectorAll('#broadcast-list tbody tr');
-        rows.forEach(row => {
-            const btn = row.querySelector('.action-btn.edit');
-            if (btn && btn.getAttribute('onclick') === 'editBroadcast(' + id + ')') {
-                const cells = row.querySelectorAll('td');
-                document.getElementById('bc-title').value = cells[0].textContent;
-                // 需要从 API 获取完整数据
-            }
-        });
-        // 简单处理：标记编辑状态
+    async function editBroadcast(id) {
+        // 从 API 获取完整广播数据
+        const data = await adminFetch('broadcast/list', { method: 'GET' });
+        if (!data || !data.broadcasts) { showAdminToast('获取广播数据失败', 'error'); return; }
+        const bc = data.broadcasts.find(b => b.id === id);
+        if (!bc) { showAdminToast('未找到该广播', 'error'); return; }
+        // 填充表单
+        document.getElementById('bc-title').value = bc.title || '';
+        document.getElementById('bc-content').value = bc.content || '';
+        document.getElementById('bc-type').value = bc.type || 'notice';
+        document.getElementById('bc-order').value = bc.displayOrder || 0;
+        document.getElementById('bc-active').checked = !!bc.isActive;
+        document.getElementById('bc-start').value = bc.startDate || '';
+        document.getElementById('bc-end').value = bc.endDate || '';
+        // 标记编辑状态
         editingBroadcastId = id;
-        document.getElementById('bc-form-title').innerHTML = '<i class="fas fa-pen" style="color:#a78bfa;"></i> 编辑广播';
+        document.getElementById('bc-form-title').innerHTML = '<i class="fas fa-pen" style="color:#a78bfa;"></i> 编辑广播 #' + id;
         document.getElementById('bc-cancel').style.display = '';
-        showAdminToast('正在编辑广播 #' + id + '，修改后请点击保存', 'info');
+        // 滚动到表单
+        document.getElementById('bc-title').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function cancelBroadcastEdit() {

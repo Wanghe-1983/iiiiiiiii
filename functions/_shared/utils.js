@@ -43,6 +43,7 @@ export async function onRequest(context) {
         'admin/study-stats':            { get: handleAdminStudyStats },
         'admin/study-clear':            { post: handleAdminStudyClear },
         'admin/leaderboard-config':     { get: handleAdminGetLBConfig, put: handleAdminPutLBConfig },
+        'admin/verify':                 { post: handleAdminVerify },
         'admin/init-users':             { post: handleAdminInitUsers },
 
         // ========== 版本说明 ==========
@@ -661,6 +662,30 @@ async function handleAdminPutLBConfig(context) {
 }
 
 // ========== 初始化用户 ==========
+
+async function handleAdminVerify(context) {
+    // 仅验证后台面板密码，不要求已登录状态
+    const { panelPassword } = await context.request.json();
+    const settings = await getSettings(context.env) || defaultSettings();
+    const storedPass = settings.adminPanelPassword || 'admin123';
+    if (!panelPassword || panelPassword !== storedPass) {
+        return json({ error: '密码错误' }, 403);
+    }
+    // 确保admin用户存在
+    const admin = await dbGet(context.env, "SELECT username FROM users WHERE username = 'admin'");
+    if (!admin) {
+        const hashed = await hashPassword('admin123');
+        await dbRun(context.env,
+            "INSERT OR IGNORE INTO users (username, password, name, role, user_type, company_code, emp_no) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            ['admin', hashed, '系统管理员', 'admin', 'employee', 'SYS', '000000']
+        );
+    }
+    // 获取admin密码用于登录
+    const adminUser = await dbGet(context.env, "SELECT password FROM users WHERE username = 'admin'");
+    const adminToken = generateToken('admin');
+    await context.env.INDO_LEARN_KV.put('token_' + adminToken, 'admin', { expirationTtl: 86400 });
+    return json({ success: true, token: adminToken, user: { username: 'admin', name: '系统管理员', role: 'admin' } });
+}
 
 async function handleAdminInitUsers(context) {
     await requireAdmin(context);
