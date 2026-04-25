@@ -10,9 +10,9 @@
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理后台 - 印尼语学习助手</title>
-    <link rel="stylesheet" href="style.css?v=20260424g">
+    <link rel="stylesheet" href="style.css?v=20260425">
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="config.js?v=20260424g"></script>
+    <script src="config.js?v=20260425"></script>
     <script>
     // ========== 后台管理本地 Fallback 模式 ==========
     // 当 API 不可用时，自动降级到 localStorage 管理
@@ -224,7 +224,7 @@
 </head>
 <body>
     <!-- 版本标识 v20260422c -->
-    <div id="admin-version-tag" style="position:fixed;bottom:10px;left:10px;z-index:99999;background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);padding:3px 10px;border-radius:6px;font-size:0.7rem;cursor:pointer;" onclick="location.href=location.pathname+'?v='+Date.now()">v2.1.2 · 点击刷新</div>
+    <div id="admin-version-tag" style="position:fixed;bottom:10px;left:10px;z-index:99999;background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);padding:3px 10px;border-radius:6px;font-size:0.7rem;cursor:pointer;" onclick="location.href=location.pathname+'?v='+Date.now()">v2.13 · 点击刷新</div>
     <!-- Header -->
     <div class="admin-header">
         <h1><i class="fas fa-shield-halved"></i> 管理员后台</h1>
@@ -265,12 +265,12 @@
     <div class="admin-body">
         <!-- Sidebar -->
         <div class="admin-nav">
-            <div class="nav-item active" onclick="switchTab('overview', this)"><i class="fas fa-chart-pie"></i> 概览</div>
+            <div class="nav-item active" onclick="switchTab('overview', this)"><i class="fas fa-chart-pie"></i> 运行概览</div>
             <div class="nav-item" onclick="switchTab('users', this)"><i class="fas fa-users-gear"></i> 用户管理</div>
             <div class="nav-item" onclick="switchTab('settings', this)"><i class="fas fa-sliders"></i> 系统设置</div>
             <div class="nav-item" onclick="switchTab('leaderboard', this)"><i class="fas fa-trophy"></i> 打榜配置</div>
             <div class="nav-divider"></div>
-            <div class="nav-item" onclick="switchTab('employees', this)"><i class="fas fa-id-card-clip"></i> 员工与注册</div>
+            <div class="nav-item" onclick="switchTab('parser', this)"><i class="fas fa-file-import"></i> 名单解析</div>
             <div class="nav-divider"></div>
             <div class="nav-item" onclick="switchTab('study', this)"><i class="fas fa-chart-bar"></i> 学习统计</div>
             <div class="nav-divider"></div>
@@ -282,7 +282,7 @@
         <div class="admin-content">
             <!-- 概览 -->
             <div class="tab-panel active" id="tab-overview">
-                <div class="panel-title"><i class="fas fa-chart-pie"></i> 系统概览</div>
+                <div class="panel-title"><i class="fas fa-chart-pie"></i> 运行概览</div>
                 <div class="stats-row" id="statsRow"></div>
                 <div class="card">
                     <div class="card-title"><i class="fas fa-wifi" style="color:#34d399;"></i> 当前在线用户</div>
@@ -386,6 +386,14 @@
                         <div class="setting-info"><div class="setting-label">登录页注册人数显示</div><div class="setting-desc">控制登录页面是否显示已注册人数 <span id="showRegCount-hint" style="color:#22c55e;margin-left:8px;font-size:0.8rem;">显示中</span></div></div>
                         <div class="setting-control"><label class="toggle"><input type="checkbox" id="setShowRegCount" checked><span class="slider"></span></label></div>
                     </div>
+                    <!-- 广播播放配置 -->
+                    <div class="setting-row" style="border-top:1px solid rgba(255,255,255,0.06);padding-top:14px;margin-top:6px;">
+                        <div class="setting-info">
+                            <div class="setting-label" style="display:flex;align-items:center;gap:6px;"><i class="fas fa-bullhorn" style="color:#f472b6;font-size:0.9rem;"></i> 广播播放配置</div>
+                            <div class="setting-desc">在广播管理面板中编辑播放参数后，点击下方保存</div>
+                        </div>
+                        <div class="setting-control"><button class="hdr-btn ghost" onclick="saveBroadcastConfig()" style="font-size:0.8rem;padding:6px 14px;"><i class="fas fa-save"></i> 保存广播配置</button></div>
+                    </div>
                     <div style="margin-top:20px;"><button class="hdr-btn primary" onclick="saveSettings()"><i class="fas fa-save"></i> 保存设置</button></div>
                 </div>
             </div>
@@ -414,8 +422,8 @@
             </div>
 
             <!-- 员工名单管理 -->
-            <div class="tab-panel" id="tab-employees">
-                <div class="panel-title"><i class="fas fa-id-card-clip"></i> 注册信息管理</div>
+            <div class="tab-panel" id="tab-parser">
+                <div class="panel-title"><i class="fas fa-file-import"></i> 名单解析</div>
                 <div class="upload-section">
                     <div class="card-title" style="margin-bottom:12px;"><i class="fas fa-plus-circle" style="color:#a78bfa;"></i> 添加员工</div>
                     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px;">
@@ -548,7 +556,6 @@
                                 <option value="bottom">页面底部</option>
                             </select>
                         </div>
-                        <button class="hdr-btn primary" onclick="saveBroadcastConfig()" style="white-space:nowrap;"><i class="fas fa-save"></i> 保存配置</button>
                     </div>
                 </div>
 
@@ -1296,6 +1303,142 @@ let allUsers = [];
             await adminFetch('admin/whitelist', { method: 'PUT', body: JSON.stringify({ employees: list }) });
         }
         loadWhitelist();
+    }
+
+
+    // ========== 广播管理 ==========
+    let editingBroadcastId = null;
+
+    async function loadBroadcastList() {
+        try {
+            const data = await adminFetch('broadcast/list', { method: 'GET' });
+            if (!data || data.error) return;
+            const broadcasts = data.broadcasts || [];
+            const container = document.getElementById('broadcast-list');
+            const empty = document.getElementById('broadcast-empty');
+            if (!Array.isArray(broadcasts) || broadcasts.length === 0) {
+                container.innerHTML = '';
+                empty.style.display = '';
+                return;
+            }
+            empty.style.display = 'none';
+            const typeLabels = { notice: '公告通知', update: '版本更新', event: '活动消息', champion: '打榜冠军' };
+            const typeColors = { notice: '#60a5fa', update: '#a78bfa', event: '#fbbf24', champion: '#f472b6' };
+            container.innerHTML = '<table class="data-table"><thead><tr><th>标题</th><th>类型</th><th>状态</th><th>排序</th><th>日期范围</th><th>操作</th></tr></thead><tbody>' +
+                broadcasts.map(b => '<tr>' +
+                    '<td style="font-weight:600;">' + esc(b.title || '') + '</td>' +
+                    '<td><span style="color:' + (typeColors[b.type] || '#94a3b8') + ';font-size:0.8rem;">' + (typeLabels[b.type] || b.type || '') + '</span></td>' +
+                    '<td>' + (b.isActive ? '<span class="badge badge-online">启用</span>' : '<span class="badge badge-offline">禁用</span>') + '</td>' +
+                    '<td style="color:#64748b;">' + (b.displayOrder || 0) + '</td>' +
+                    '<td style="color:#64748b;font-size:0.8rem;">' + ((b.startDate || '-') + ' ~ ' + (b.endDate || '永久')) + '</td>' +
+                    '<td style="white-space:nowrap;">' +
+                        '<button class="action-btn edit" onclick="editBroadcast(' + b.id + ')" title="编辑"><i class="fas fa-pen"></i></button>' +
+                        '<button class="action-btn del" onclick="deleteBroadcast(' + b.id + ')" title="删除"><i class="fas fa-trash"></i></button>' +
+                    '</td></tr>'
+                ).join('') + '</tbody></table>';
+        } catch(e) { console.warn('loadBroadcastList error:', e); }
+    }
+
+    async function saveBroadcast() {
+        const title = document.getElementById('bc-title').value.trim();
+        const content_bc = document.getElementById('bc-content').value.trim();
+        if (!title) { showAdminToast('请输入标题', 'error'); return; }
+        const payload = {
+            title,
+            content: content_bc,
+            type: document.getElementById('bc-type').value,
+            isActive: document.getElementById('bc-active').checked,
+            displayOrder: parseInt(document.getElementById('bc-order').value) || 0,
+            startDate: document.getElementById('bc-start').value || '',
+            endDate: document.getElementById('bc-end').value || ''
+        };
+        if (editingBroadcastId) {
+            payload.id = editingBroadcastId;
+        }
+        const result = await adminFetch('broadcast/save', { method: 'POST', body: JSON.stringify(payload) });
+        if (result && result.success) {
+            showAdminToast(editingBroadcastId ? '广播已更新' : '广播已创建', 'success');
+            // 清空表单
+            document.getElementById('bc-title').value = '';
+            document.getElementById('bc-content').value = '';
+            document.getElementById('bc-order').value = '0';
+            document.getElementById('bc-active').checked = true;
+            document.getElementById('bc-start').value = '';
+            document.getElementById('bc-end').value = '';
+            document.getElementById('bc-form-title').innerHTML = '<i class="fas fa-plus-circle" style="color:#a78bfa;"></i> 新增广播';
+            document.getElementById('bc-cancel').style.display = 'none';
+            editingBroadcastId = null;
+            loadBroadcastList();
+        } else {
+            showAdminToast(result?.error || '保存失败，请检查网络', 'error');
+        }
+    }
+
+    function editBroadcast(id) {
+        // 找到广播数据并填充表单
+        const rows = document.querySelectorAll('#broadcast-list tbody tr');
+        rows.forEach(row => {
+            const btn = row.querySelector('.action-btn.edit');
+            if (btn && btn.getAttribute('onclick') === 'editBroadcast(' + id + ')') {
+                const cells = row.querySelectorAll('td');
+                document.getElementById('bc-title').value = cells[0].textContent;
+                // 需要从 API 获取完整数据
+            }
+        });
+        // 简单处理：标记编辑状态
+        editingBroadcastId = id;
+        document.getElementById('bc-form-title').innerHTML = '<i class="fas fa-pen" style="color:#a78bfa;"></i> 编辑广播';
+        document.getElementById('bc-cancel').style.display = '';
+        showAdminToast('正在编辑广播 #' + id + '，修改后请点击保存', 'info');
+    }
+
+    function cancelBroadcastEdit() {
+        editingBroadcastId = null;
+        document.getElementById('bc-form-title').innerHTML = '<i class="fas fa-plus-circle" style="color:#a78bfa;"></i> 新增广播';
+        document.getElementById('bc-cancel').style.display = 'none';
+        document.getElementById('bc-title').value = '';
+        document.getElementById('bc-content').value = '';
+        document.getElementById('bc-order').value = '0';
+        document.getElementById('bc-active').checked = true;
+        document.getElementById('bc-start').value = '';
+        document.getElementById('bc-end').value = '';
+    }
+
+    async function deleteBroadcast(id) {
+        if (!confirm('确认删除此广播？')) return;
+        const result = await adminFetch('broadcast/delete', { method: 'POST', body: JSON.stringify({ id }) });
+        if (result && result.success) {
+            showAdminToast('广播已删除', 'success');
+            loadBroadcastList();
+        } else {
+            showAdminToast(result?.error || '删除失败', 'error');
+        }
+    }
+
+    async function loadBroadcastConfig() {
+        try {
+            const config = await adminFetch('broadcast/config', { method: 'GET' });
+            if (!config || config.error) return;
+            document.getElementById('bc-enabled').checked = config.enabled !== false;
+            document.getElementById('bc-interval').value = config.interval || 8;
+            document.getElementById('bc-loop-count').value = config.loopCount || 0;
+            document.getElementById('bc-position').value = config.position || 'top';
+        } catch(e) {}
+    }
+
+    async function saveBroadcastConfig() {
+        const config = {
+            enabled: document.getElementById('bc-enabled').checked,
+            interval: parseInt(document.getElementById('bc-interval').value) || 8,
+            loopCount: parseInt(document.getElementById('bc-loop-count').value) || 0,
+            position: document.getElementById('bc-position').value
+        };
+        const result = await adminFetch('broadcast/config', { method: 'PUT', body: JSON.stringify(config) });
+        if (result && result.success) {
+            showAdminToast('广播配置已保存', 'success');
+        } else {
+            showAdminToast(result?.error || '保存失败', 'error');
+        }
     }
 
     window.switchTab = function(tab, el) {
