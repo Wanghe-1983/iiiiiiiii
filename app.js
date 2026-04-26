@@ -97,16 +97,20 @@ function checkLoginStatus() {
 // 用户菜单切换
 function toggleUserMenu() {
     const dropdown = document.getElementById('user-dropdown');
-    if (dropdown) {
-        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-    }
+    const dropdownHome = document.getElementById('user-dropdown-home');
+    [dropdown, dropdownHome].forEach(dd => {
+        if (dd) dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+    });
 }
 // 点击页面其他区域关闭菜单
 document.addEventListener('click', function(e) {
-    const dropdown = document.getElementById('user-dropdown');
-    if (dropdown && !e.target.closest('#user-status')) {
-        dropdown.style.display = 'none';
-    }
+    ['user-dropdown', 'user-dropdown-home'].forEach(id => {
+        const dd = document.getElementById(id);
+        const parentId = id === 'user-dropdown' ? '#user-status' : '#home-user-bar';
+        if (dd && !e.target.closest(parentId)) {
+            dd.style.display = 'none';
+        }
+    });
 });
 
 // 退出登录（带确认弹窗）
@@ -260,8 +264,18 @@ function initUI() {
         <button class="nav-tab" onclick="switchMainPage('study')" data-tab="study"><i class="fas fa-book-open"></i> 勤学苦练</button>
         <button class="nav-tab" onclick="switchMainPage('challenge')" data-tab="challenge"><i class="fas fa-gamepad"></i> 闯天关</button>
     </div>
-    <header style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-        <h1 class="main-title">印尼语学习助手</h1>
+    <header class="app-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+            <div class="date-time" id="date-time-header" style="color:#94a3b8;font-size:0.82rem;">${new Date().toLocaleString()}</div>
+            <div class="weather-location" id="weather-location">
+                <i class="fas fa-cloud"></i>
+                <span>加载中...</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;color:#64748b;font-size:0.8rem;" id="location-info">
+                <i class="fas fa-map-marker-alt" style="font-size:0.75rem;"></i>
+                <span id="location-name">定位中...</span>
+            </div>
+        </div>
         <div class="user-status" id="user-status" style="font-size:0.9rem;">
             欢迎，管理员
         </div>
@@ -271,6 +285,9 @@ function initUI() {
     <!-- 主页 -->
     <div id="page-home">
         <div class="home-container">
+            <div class="home-user-bar" id="home-user-bar">
+                <span style="color:#94a3b8;font-size:0.9rem;">加载中...</span>
+            </div>
             <div class="home-hero">
                 <h1 class="home-title">印尼语学习助手</h1>
                 <p class="home-subtitle">BIPA 学习平台</p>
@@ -305,19 +322,7 @@ function initUI() {
 
     <div id="page-study" style="display:none;">
 
-    <div class="top-info-bar">
-        <div class="date-time" id="date-time">${new Date().toLocaleString()}</div>
-        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-            <div class="weather-location" id="weather-location">
-                <i class="fas fa-cloud"></i>
-                <span>加载中...</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:4px;color:#64748b;font-size:0.8rem;" id="location-info">
-                <i class="fas fa-map-marker-alt" style="font-size:0.75rem;"></i>
-                <span id="location-name">定位中...</span>
-            </div>
-        </div>
-    </div>
+    
 
     <div id="broadcast-bar" style="display:none;margin:10px 0;padding:12px 18px;background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.12));border:1px solid rgba(99,102,241,0.2);border-radius:12px;overflow:hidden;position:relative;">
         <div style="display:flex;align-items:center;gap:10px;">
@@ -527,7 +532,7 @@ function initUI() {
     setInterval(() => {
         const d = new Date();
         const pad = n => n.toString().padStart(2, '0');
-        document.getElementById('date-time').innerText = 
+        document.getElementById('date-time-header').innerText = 
             `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
     }, 1000);
 
@@ -1824,9 +1829,17 @@ function switchMainPage(page) {
         if (toggleTab) toggleTab.style.display = 'none';
         if (mainHeader) mainHeader.style.display = 'none';
         if (copyRight) copyRight.style.display = '';
+        // 渲染主页用户状态栏
+        renderHomeUserBar();
     } else if (page === 'study') {
         // 勤学苦练：显示侧边栏，导航栏改为返回+标题
-        if (mainContainer) mainContainer.classList.remove('full-width');
+        if (mainContainer) {
+            if (sidebar && sidebar.classList.contains('collapsed')) {
+                mainContainer.classList.add('full-width');
+            } else {
+                mainContainer.classList.remove('full-width');
+            }
+        }
         if (navTabs) {
             navTabs.style.display = '';
             navTabs.innerHTML = `<button class="nav-tab back-home-btn" onclick="switchMainPage('home')" style="flex:0;padding:10px 16px;gap:6px;"><i class="fas fa-chevron-left"></i> 主页</button><div class="nav-tab" style="flex:1;cursor:default;background:var(--accent);color:white;box-shadow:0 4px 12px var(--accent-glow);"><i class="fas fa-book-open"></i> 勤学苦练</div>`;
@@ -1859,6 +1872,35 @@ function switchMainPage(page) {
         if (copyRight) copyRight.style.display = '';
         // 延迟初始化
         initChallengePage();
+    }
+}
+
+
+function renderHomeUserBar() {
+    const bar = document.getElementById('home-user-bar');
+    if (!bar) return;
+    if (typeof loginStatus !== 'undefined' && loginStatus && loginStatus.user) {
+        bar.innerHTML = `
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="position:relative;">
+                    <span onclick="toggleUserMenu()" style="cursor:pointer;display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:8px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                        <i class="fas fa-user-circle" style="color:#a5b4fc;font-size:1.1rem;"></i>
+                        欢迎，${loginStatus.user.name}
+                        <i class="fas fa-chevron-down" style="font-size:0.65rem;color:#64748b;"></i>
+                    </span>
+                    <div id="user-dropdown-home" style="display:none;position:absolute;top:100%;right:0;margin-top:8px;background:rgba(30,41,59,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px;min-width:150px;z-index:9999;backdrop-filter:blur(20px);box-shadow:0 10px 40px rgba(0,0,0,0.6);">
+                        <div onclick="logout();toggleUserMenu();" style="padding:10px 14px;border-radius:8px;cursor:pointer;color:#e2e8f0;font-size:0.85rem;display:flex;align-items:center;gap:8px;transition:background 0.2s;" onmouseover="this.style.background='rgba(248,113,113,0.1)'" onmouseout="this.style.background='transparent'">
+                            <i class="fas fa-sign-out-alt" style="color:#f87171;width:16px;text-align:center;"></i> 退出登录
+                        </div>
+                        <div style="height:1px;background:rgba(255,255,255,0.06);margin:4px 0;"></div>
+                        <div onclick="showDeleteAccountDialog();toggleUserMenu();" style="padding:10px 14px;border-radius:8px;cursor:pointer;color:#ef4444;font-size:0.85rem;display:flex;align-items:center;gap:8px;transition:background 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.1)'" onmouseout="this.style.background='transparent'">
+                            <i class="fas fa-user-slash" style="width:16px;text-align:center;"></i> 注销账号
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+    } else {
+        bar.innerHTML = `<span style="color:#94a3b8;font-size:0.9rem;">加载中...</span>`;
     }
 }
 
