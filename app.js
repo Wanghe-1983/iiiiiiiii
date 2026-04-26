@@ -387,7 +387,18 @@ function initUI() {
     </div>
 
     </div><!-- end page-learn -->
-    <div id="page-course" style="display:none;"></div>
+    <div id="page-course" style="display:none;">
+        <div class="course-top-tabs">
+            <button class="course-tab active" data-ctab="study" onclick="switchCourseTab('study')">
+                <i class="fas fa-book-open"></i> 勤学苦练
+            </button>
+            <button class="course-tab" data-ctab="challenge" onclick="switchCourseTab('challenge')">
+                <i class="fas fa-gamepad"></i> 闯天关
+            </button>
+        </div>
+        <div id="course-tab-study"></div>
+        <div id="course-tab-challenge" style="display:none;"></div>
+    </div>
     <div id="page-practice" style="display:none;"></div>
     <div id="page-dashboard" style="display:none;"></div>
     <div class="control-panel" id="control-panel">
@@ -1703,6 +1714,7 @@ function switchPage(page) {
         tab.classList.toggle('active', tab.dataset.tab === page);
     });
     document.getElementById('page-learn').style.display = page === 'learn' ? 'block' : 'none';
+    document.getElementById('page-course').style.display = page === 'course' ? 'block' : 'none';
     document.getElementById('page-practice').style.display = page === 'practice' ? 'block' : 'none';
     document.getElementById('page-dashboard').style.display = page === 'dashboard' ? 'block' : 'none';
     // 统计页隐藏侧边栏和版权
@@ -1720,7 +1732,8 @@ function switchPage(page) {
     if (learnCtrls) learnCtrls.style.display = (page === 'dashboard') ? 'none' : 'flex';
     const inlineCtrl = document.getElementById('learn-inline-controls');
     if (inlineCtrl) inlineCtrl.style.display = (page === 'dashboard') ? 'none' : 'flex';
-    if (page === 'practice') initPracticePage();
+    if (page === 'course') initCoursePage();
+    else if (page === 'practice') initPracticePage();
     else if (page === 'dashboard') initDashboardPage();
 }
 
@@ -2578,3 +2591,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 1000);
 });
+
+
+// ========== 课程页面：勤学苦练 + 闯天关 ==========
+let courseInitDone = { study: false, challenge: false };
+
+function switchCourseTab(tab) {
+    document.querySelectorAll('.course-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.ctab === tab);
+    });
+    document.getElementById('course-tab-study').style.display = tab === 'study' ? '' : 'none';
+    document.getElementById('course-tab-challenge').style.display = tab === 'challenge' ? '' : 'none';
+    if (tab === 'study' && !courseInitDone.study) {
+        StudyModule.init(document.getElementById('course-tab-study'));
+        courseInitDone.study = true;
+    }
+    if (tab === 'challenge' && !courseInitDone.challenge) {
+        ChallengeModule.init(document.getElementById('course-tab-challenge'));
+        courseInitDone.challenge = true;
+    }
+}
+
+function initCoursePage() {
+    if (!courseInitDone.study) {
+        StudyModule.init(document.getElementById('course-tab-study'));
+        courseInitDone.study = true;
+    }
+}

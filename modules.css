@@ -1374,3 +1374,38 @@
     .quiz-indo { font-size: 1.2rem; }
     .champion-name { font-size: 0.95rem; }
 }
+
+
+/* ========== 课程页顶部Tab（勤学苦练/闯天关） ========== */
+.course-top-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 12px;
+    padding: 4px;
+}
+
+.course-tab {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.course-tab:hover {
+    color: #e2e8f0;
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.course-tab.active {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
