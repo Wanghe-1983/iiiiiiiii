@@ -1,0 +1,3988 @@
+{
+  "levels": [
+    {
+      "id": "0",
+      "name": "通用印尼语学习手册",
+      "bipa": "BIPA 0",
+      "description": "基础词汇与短语积累",
+      "color": "#10b981",
+      "icon": "fa-seedling",
+      "units": [
+        {
+          "id": "0-words",
+          "name": "生词 Vocabulary",
+          "words": [
+            {
+              "id": 1,
+              "indonesian": "Kata sapaan",
+              "chinese": "问候语"
+            },
+            {
+              "id": 2,
+              "indonesian": "Nama",
+              "chinese": "名字"
+            },
+            {
+              "id": 3,
+              "indonesian": "Umur",
+              "chinese": "年龄"
+            },
+            {
+              "id": 4,
+              "indonesian": "Tempat Tinggal",
+              "chinese": "住处"
+            },
+            {
+              "id": 5,
+              "indonesian": "Hobi/Kesukaan",
+              "chinese": "兴趣爱好"
+            },
+            {
+              "id": 6,
+              "indonesian": "Departemen",
+              "chinese": "部门"
+            },
+            {
+              "id": 7,
+              "indonesian": "Jabatan",
+              "chinese": "岗位"
+            },
+            {
+              "id": 8,
+              "indonesian": "Masa kerja",
+              "chinese": "工龄"
+            },
+            {
+              "id": 9,
+              "indonesian": "Admin",
+              "chinese": "文员"
+            },
+            {
+              "id": 10,
+              "indonesian": "Air Dingin",
+              "chinese": "冷水"
+            },
+            {
+              "id": 11,
+              "indonesian": "Air Hangat",
+              "chinese": "温水"
+            },
+            {
+              "id": 12,
+              "indonesian": "Apotek",
+              "chinese": "药店"
+            },
+            {
+              "id": 13,
+              "indonesian": "Area",
+              "chinese": "区域"
+            },
+            {
+              "id": 14,
+              "indonesian": "Asrama",
+              "chinese": "宿舍"
+            },
+            {
+              "id": 15,
+              "indonesian": "ATM",
+              "chinese": "提款机"
+            },
+            {
+              "id": 16,
+              "indonesian": "Bahaya",
+              "chinese": "危险"
+            },
+            {
+              "id": 17,
+              "indonesian": "Bakso",
+              "chinese": "肉丸"
+            },
+            {
+              "id": 18,
+              "indonesian": "Bank",
+              "chinese": "银行"
+            },
+            {
+              "id": 19,
+              "indonesian": "Bantu/Tolong",
+              "chinese": "帮"
+            },
+            {
+              "id": 20,
+              "indonesian": "Barang",
+              "chinese": "物品"
+            },
+            {
+              "id": 21,
+              "indonesian": "Batal",
+              "chinese": "取消"
+            },
+            {
+              "id": 22,
+              "indonesian": "Merokok",
+              "chinese": "吸烟"
+            },
+            {
+              "id": 23,
+              "indonesian": "Mi instan",
+              "chinese": "方便面"
+            },
+            {
+              "id": 24,
+              "indonesian": "Makan obat",
+              "chinese": "吃药"
+            },
+            {
+              "id": 25,
+              "indonesian": "Mobil",
+              "chinese": "车"
+            },
+            {
+              "id": 26,
+              "indonesian": "Muda",
+              "chinese": "年轻"
+            },
+            {
+              "id": 27,
+              "indonesian": "Mudah",
+              "chinese": "容易"
+            },
+            {
+              "id": 28,
+              "indonesian": "Murah",
+              "chinese": "便宜"
+            },
+            {
+              "id": 29,
+              "indonesian": "Batuk",
+              "chinese": "咳嗽"
+            },
+            {
+              "id": 30,
+              "indonesian": "Bawa/Ambil",
+              "chinese": "拿"
+            },
+            {
+              "id": 31,
+              "indonesian": "Begadang",
+              "chinese": "熬夜"
+            },
+            {
+              "id": 32,
+              "indonesian": "Belanja",
+              "chinese": "购物"
+            },
+            {
+              "id": 33,
+              "indonesian": "Berawan",
+              "chinese": "多云"
+            },
+            {
+              "id": 34,
+              "indonesian": "Berhenti",
+              "chinese": "停"
+            },
+            {
+              "id": 35,
+              "indonesian": "Berkas",
+              "chinese": "资料"
+            },
+            {
+              "id": 36,
+              "indonesian": "Biskuit",
+              "chinese": "饼干"
+            },
+            {
+              "id": 37,
+              "indonesian": "Bubur",
+              "chinese": "粥"
+            },
+            {
+              "id": 38,
+              "indonesian": "Budaya",
+              "chinese": "文化"
+            },
+            {
+              "id": 39,
+              "indonesian": "Olahraga",
+              "chinese": "运动"
+            },
+            {
+              "id": 40,
+              "indonesian": "Paham",
+              "chinese": "懂"
+            },
+            {
+              "id": 41,
+              "indonesian": "Pakai masker",
+              "chinese": "戴口罩"
+            },
+            {
+              "id": 42,
+              "indonesian": "Pasta gigi",
+              "chinese": "牙膏"
+            },
+            {
+              "id": 43,
+              "indonesian": "Pelatihan",
+              "chinese": "培训"
+            },
+            {
+              "id": 44,
+              "indonesian": "Peraturan",
+              "chinese": "制度/规定"
+            },
+            {
+              "id": 45,
+              "indonesian": "Bunga",
+              "chinese": "花"
+            },
+            {
+              "id": 46,
+              "indonesian": "Bungkus",
+              "chinese": "包"
+            },
+            {
+              "id": 47,
+              "indonesian": "Bunyi",
+              "chinese": "声音"
+            },
+            {
+              "id": 48,
+              "indonesian": "Bus",
+              "chinese": "公交车"
+            },
+            {
+              "id": 49,
+              "indonesian": "Cemilan",
+              "chinese": "零食"
+            },
+            {
+              "id": 50,
+              "indonesian": "Coklat",
+              "chinese": "巧克力"
+            },
+            {
+              "id": 51,
+              "indonesian": "Daging",
+              "chinese": "肉"
+            },
+            {
+              "id": 52,
+              "indonesian": "Dokter",
+              "chinese": "医生"
+            },
+            {
+              "id": 53,
+              "indonesian": "Produksi",
+              "chinese": "生产"
+            },
+            {
+              "id": 54,
+              "indonesian": "Rapat",
+              "chinese": "开会"
+            },
+            {
+              "id": 55,
+              "indonesian": "Rumah sakit",
+              "chinese": "医院"
+            },
+            {
+              "id": 56,
+              "indonesian": "Sakit gigi",
+              "chinese": "牙痛"
+            },
+            {
+              "id": 57,
+              "indonesian": "Sakit kepala",
+              "chinese": "头痛"
+            },
+            {
+              "id": 58,
+              "indonesian": "Makanan penutup",
+              "chinese": "甜点"
+            },
+            {
+              "id": 59,
+              "indonesian": "Meja kerja",
+              "chinese": "办公桌"
+            },
+            {
+              "id": 60,
+              "indonesian": "Mendung",
+              "chinese": "阴天"
+            },
+            {
+              "id": 61,
+              "indonesian": "Warna ungu",
+              "chinese": "紫色"
+            },
+            {
+              "id": 62,
+              "indonesian": "Jalan kaki",
+              "chinese": "走路"
+            },
+            {
+              "id": 63,
+              "indonesian": "Jus Lemon",
+              "chinese": "柠檬汁"
+            },
+            {
+              "id": 64,
+              "indonesian": "Keselamatan",
+              "chinese": "安全"
+            },
+            {
+              "id": 65,
+              "indonesian": "Kebersihan",
+              "chinese": "清洁"
+            },
+            {
+              "id": 66,
+              "indonesian": "Shampoo",
+              "chinese": "洗发水"
+            },
+            {
+              "id": 67,
+              "indonesian": "Sikat gigi",
+              "chinese": "牙刷"
+            },
+            {
+              "id": 68,
+              "indonesian": "Struk",
+              "chinese": "小票"
+            },
+            {
+              "id": 69,
+              "indonesian": "Sup ayam",
+              "chinese": "鸡汤"
+            },
+            {
+              "id": 70,
+              "indonesian": "SKS",
+              "chinese": "病假单"
+            },
+            {
+              "id": 71,
+              "indonesian": "Tanda tangan",
+              "chinese": "签字"
+            },
+            {
+              "id": 72,
+              "indonesian": "Teman mess",
+              "chinese": "室友"
+            },
+            {
+              "id": 73,
+              "indonesian": "Kesehatan",
+              "chinese": "健康"
+            },
+            {
+              "id": 74,
+              "indonesian": "Keuangan",
+              "chinese": "财务"
+            },
+            {
+              "id": 75,
+              "indonesian": "Klinik",
+              "chinese": "诊所"
+            },
+            {
+              "id": 76,
+              "indonesian": "Laporan",
+              "chinese": "报告"
+            },
+            {
+              "id": 77,
+              "indonesian": "Lemari berkas",
+              "chinese": "文件柜"
+            },
+            {
+              "id": 78,
+              "indonesian": "Lepas sepatu",
+              "chinese": "脱鞋"
+            },
+            {
+              "id": 79,
+              "indonesian": "Tisu basah",
+              "chinese": "湿纸巾"
+            }
+          ],
+          "sentences": [],
+          "dialogues": []
+        },
+        {
+          "id": "0-phrases",
+          "name": "短语 Phrases",
+          "words": [
+            {
+              "id": 1,
+              "indonesian": "Hari ini saya baik baik saja.",
+              "chinese": "我今天挺好的"
+            },
+            {
+              "id": 2,
+              "indonesian": "Kita sudah lama tidak bertemu.",
+              "chinese": "我们好久不见"
+            },
+            {
+              "id": 3,
+              "indonesian": "Selamat pagi semuanya！",
+              "chinese": "大家早上好"
+            },
+            {
+              "id": 4,
+              "indonesian": "Hati - hati di jalan！",
+              "chinese": "路上小心"
+            },
+            {
+              "id": 5,
+              "indonesian": "Jaga diri baik - baik !",
+              "chinese": "好好照顾自己"
+            },
+            {
+              "id": 6,
+              "indonesian": "Apakah kamu sibuk?",
+              "chinese": "你忙吗？"
+            },
+            {
+              "id": 7,
+              "indonesian": "Kamu pulang kerja jam berapa?",
+              "chinese": "你几点下班？"
+            },
+            {
+              "id": 8,
+              "indonesian": "Silakan tunggu sebentar.",
+              "chinese": "请稍等一下"
+            },
+            {
+              "id": 9,
+              "indonesian": "Numpang tanya kantin dimana?",
+              "chinese": "请问食堂在哪里？"
+            },
+            {
+              "id": 10,
+              "indonesian": "Terima kasih atas bantuanya.",
+              "chinese": "感谢您的帮忙"
+            },
+            {
+              "id": 11,
+              "indonesian": "Semoga cepat sembuh！",
+              "chinese": "祝你早日康复"
+            },
+            {
+              "id": 12,
+              "indonesian": "Begadang tidak baik bagi kesehatan.",
+              "chinese": "熬夜对身体不好"
+            },
+            {
+              "id": 13,
+              "indonesian": "Selamat ulang tahun！",
+              "chinese": "生日快乐"
+            },
+            {
+              "id": 14,
+              "indonesian": "Selamat tahun baru imlek！",
+              "chinese": "春节快乐"
+            },
+            {
+              "id": 15,
+              "indonesian": "Semoga semuanya lancar.",
+              "chinese": "祝你一切顺利"
+            },
+            {
+              "id": 16,
+              "indonesian": "Nama kamu siapa?",
+              "chinese": "你叫什么名字"
+            },
+            {
+              "id": 17,
+              "indonesian": "Kamu berasal dari mana?",
+              "chinese": "你来自哪里"
+            },
+            {
+              "id": 18,
+              "indonesian": "Saya tinggal di asrama.",
+              "chinese": "我住在宿舍"
+            },
+            {
+              "id": 19,
+              "indonesian": "Selamat datang ke tim kami.",
+              "chinese": "欢迎来到我们的团队"
+            },
+            {
+              "id": 20,
+              "indonesian": "Ini adalah lemari berkas.",
+              "chinese": "这是文件柜"
+            },
+            {
+              "id": 21,
+              "indonesian": "Apakah kamu sudah sarapan?",
+              "chinese": "你吃早餐了吗？"
+            },
+            {
+              "id": 22,
+              "indonesian": "Hari ini atasan kami yang traktir.",
+              "chinese": "今天我们领导请客"
+            },
+            {
+              "id": 23,
+              "indonesian": "Saya mau pesan sup ayam.",
+              "chinese": "我要订鸡汤"
+            },
+            {
+              "id": 24,
+              "indonesian": "Boleh minta struknya?",
+              "chinese": "可以给我小票吗？"
+            },
+            {
+              "id": 25,
+              "indonesian": "Halte bus disebelah sana.",
+              "chinese": "公交站在那边"
+            },
+            {
+              "id": 26,
+              "indonesian": "Besok jam berapa Rapat?",
+              "chinese": "明天几点开会？"
+            },
+            {
+              "id": 27,
+              "indonesian": "Rapat hari ini batal.",
+              "chinese": "今天的会议取消"
+            },
+            {
+              "id": 28,
+              "indonesian": "Indonesia ada 2 musim.",
+              "chinese": "印尼有两个季节"
+            },
+            {
+              "id": 29,
+              "indonesian": "Di luar sedang hujan.",
+              "chinese": "外面在下雨"
+            },
+            {
+              "id": 30,
+              "indonesian": "Bolehkah saya nebeng payung?",
+              "chinese": "我可以和你共用一把伞吗？"
+            },
+            {
+              "id": 31,
+              "indonesian": "Apa warna baju kamu?",
+              "chinese": "你穿的衣服是什么颜色的？"
+            },
+            {
+              "id": 32,
+              "indonesian": "Apakah jauh dari sini?",
+              "chinese": "离这里远吗？"
+            },
+            {
+              "id": 33,
+              "indonesian": "Bisa kurang harganya？",
+              "chinese": "可以便宜点吗？"
+            },
+            {
+              "id": 34,
+              "indonesian": "Apakah Kamu sering Lembur?",
+              "chinese": "你经常加班吗？"
+            }
+          ],
+          "sentences": [],
+          "dialogues": []
+        }
+      ]
+    },
+    {
+      "id": "1",
+      "name": "BIPA 1 - Dasar",
+      "bipa": "BIPA 1",
+      "description": "掌握日常生活交流基础用语，对标TSZ15012测评1级（津贴1000元/月）",
+      "color": "#6366f1",
+      "icon": "fa-star",
+      "units": [
+        {
+          "id": "1-1",
+          "name": "Pelajaran 1",
+          "words": [
+            {
+              "id": 1,
+              "indonesian": "Selamat pagi",
+              "chinese": "早上好",
+              "example_id": "Halo, selamat pagi, Bu."
+            },
+            {
+              "id": 2,
+              "indonesian": "Selamat siang",
+              "chinese": "中午好",
+              "example_id": "Selamat siang, Pak."
+            },
+            {
+              "id": 3,
+              "indonesian": "Selamat sore",
+              "chinese": "下午好",
+              "example_id": "Selamat sore, teman-teman."
+            },
+            {
+              "id": 4,
+              "indonesian": "Selamat malam",
+              "chinese": "晚上好",
+              "example_id": "Selamat malam, semua."
+            },
+            {
+              "id": 5,
+              "indonesian": "Halo",
+              "chinese": "你好",
+              "example_id": "Halo, apa kabar?"
+            },
+            {
+              "id": 6,
+              "indonesian": "Apa kabar?",
+              "chinese": "你好吗？",
+              "example_id": "Halo, apa kabar?"
+            },
+            {
+              "id": 7,
+              "indonesian": "Baik",
+              "chinese": "好的/身体好",
+              "example_id": "Kabar saya baik."
+            },
+            {
+              "id": 8,
+              "indonesian": "Terima kasih",
+              "chinese": "谢谢",
+              "example_id": "Terima kasih banyak."
+            },
+            {
+              "id": 9,
+              "indonesian": "Sama-sama",
+              "chinese": "不客气",
+              "example_id": "Sama-sama, tidak apa-apa."
+            },
+            {
+              "id": 10,
+              "indonesian": "Nama",
+              "chinese": "名字",
+              "example_id": "Siapa nama Anda?"
+            },
+            {
+              "id": 11,
+              "indonesian": "Saya",
+              "chinese": "我",
+              "example_id": "Nama saya Li Wei."
+            },
+            {
+              "id": 12,
+              "indonesian": "Anda",
+              "chinese": "您（尊称）",
+              "example_id": "Dari mana Anda?"
+            },
+            {
+              "id": 13,
+              "indonesian": "Kamu",
+              "chinese": "你",
+              "example_id": "Kamu berasal dari mana?"
+            },
+            {
+              "id": 14,
+              "indonesian": "Beliau",
+              "chinese": "他/她（尊称）",
+              "example_id": "Beliau adalah guru saya."
+            },
+            {
+              "id": 15,
+              "indonesian": "Bapak / Pak",
+              "chinese": "先生",
+              "example_id": "Selamat pagi, Pak."
+            },
+            {
+              "id": 16,
+              "indonesian": "Ibu / Bu",
+              "chinese": "女士/夫人",
+              "example_id": "Selamat pagi, Bu."
+            },
+            {
+              "id": 17,
+              "indonesian": "Teman",
+              "chinese": "朋友",
+              "example_id": "Dia adalah teman saya."
+            },
+            {
+              "id": 18,
+              "indonesian": "Saudara",
+              "chinese": "兄弟/姐妹",
+              "example_id": "Saudara-saudara sekalian."
+            },
+            {
+              "id": 19,
+              "indonesian": "Senang",
+              "chinese": "高兴",
+              "example_id": "Saya senang bertemu Anda."
+            },
+            {
+              "id": 20,
+              "indonesian": "Bertemu",
+              "chinese": "见面",
+              "example_id": "Senang bertemu dengan Anda."
+            },
+            {
+              "id": 21,
+              "indonesian": "Dari",
+              "chinese": "从",
+              "example_id": "Saya dari Tiongkok."
+            },
+            {
+              "id": 22,
+              "indonesian": "Berasal",
+              "chinese": "来自",
+              "example_id": "Saya berasal dari Beijing."
+            },
+            {
+              "id": 23,
+              "indonesian": "Tiongkok",
+              "chinese": "中国",
+              "example_id": "Saya dari Tiongkok."
+            },
+            {
+              "id": 24,
+              "indonesian": "Sampai jumpa",
+              "chinese": "再见",
+              "example_id": "Sampai jumpa lagi."
+            },
+            {
+              "id": 25,
+              "indonesian": "Selamat tinggal",
+              "chinese": "告别/留步",
+              "example_id": "Selamat tinggal, semuanya."
+            },
+            {
+              "id": 26,
+              "indonesian": "Permisi",
+              "chinese": "打扰一下/借过",
+              "example_id": "Permisi, boleh saya bertanya?"
+            },
+            {
+              "id": 27,
+              "indonesian": "Maaf",
+              "chinese": "对不起",
+              "example_id": "Maaf, saya terlambat."
+            },
+            {
+              "id": 28,
+              "indonesian": "Silakan",
+              "chinese": "请",
+              "example_id": "Silakan masuk."
+            },
+            {
+              "id": 29,
+              "indonesian": "Tolong",
+              "chinese": "请帮忙",
+              "example_id": "Tolong bantu saya."
+            },
+            {
+              "id": 30,
+              "indonesian": "Ya",
+              "chinese": "是",
+              "example_id": "Ya, benar."
+            },
+            {
+              "id": 31,
+              "indonesian": "Tidak",
+              "chinese": "不/不是",
+              "example_id": "Tidak, terima kasih."
+            },
+            {
+              "id": 32,
+              "indonesian": "Pria",
+              "chinese": "男人",
+              "example_id": "Dia seorang pria."
+            },
+            {
+              "id": 33,
+              "indonesian": "Wanita",
+              "chinese": "女人",
+              "example_id": "Dia seorang wanita."
+            },
+            {
+              "id": 34,
+              "indonesian": "Anak",
+              "chinese": "孩子",
+              "example_id": "Anak itu lucu sekali."
+            },
+            {
+              "id": 35,
+              "indonesian": "Orang",
+              "chinese": "人",
+              "example_id": "Orang itu sangat baik."
+            }
+          ],
+          "sentences": [
+            {
+              "id": 1,
+              "indonesian": "Halo, nama saya Li Wei.",
+              "chinese": "你好，我叫李伟。"
+            },
+            {
+              "id": 2,
+              "indonesian": "Saya berasal dari Tiongkok.",
+              "chinese": "我来自中国。"
+            },
+            {
+              "id": 3,
+              "indonesian": "Senang bertemu dengan Anda.",
+              "chinese": "很高兴认识您。"
+            },
+            {
+              "id": 4,
+              "indonesian": "Dari mana Anda berasal?",
+              "chinese": "您来自哪里？"
+            },
+            {
+              "id": 5,
+              "indonesian": "Saya bekerja di perusahaan ini.",
+              "chinese": "我在这家公司工作。"
+            },
+            {
+              "id": 6,
+              "indonesian": "Apa kabar hari ini?",
+              "chinese": "今天好吗？"
+            },
+            {
+              "id": 7,
+              "indonesian": "Kabar saya baik, terima kasih.",
+              "chinese": "我很好，谢谢。"
+            },
+            {
+              "id": 8,
+              "indonesian": "Sampai jumpa lagi, Pak!",
+              "chinese": "再见，先生！"
+            },
+            {
+              "id": 9,
+              "indonesian": "Permisi, boleh saya bertanya?",
+              "chinese": "打扰一下，我可以问一下吗？"
+            },
+            {
+              "id": 10,
+              "indonesian": "Maaf, saya tidak mengerti.",
+              "chinese": "对不起，我不明白。"
+            }
+          ],
+          "dialogues": [
+            {
+              "id": 1,
+              "title": "初次见面",
+              "title_id": "Pertemuan Pertama",
+              "lines": [
+                {
+                  "speaker": "A",
+                  "indonesian": "Halo, nama saya Li Wei.",
+                  "chinese": "你好，我叫李伟。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Halo, saya Budi. Senang bertemu Anda.",
+                  "chinese": "你好，我叫布迪。很高兴认识你。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Senang bertemu juga. Dari mana Anda?",
+                  "chinese": "我也很高兴认识你。你来自哪里？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Saya dari Jakarta. Anda?",
+                  "chinese": "我来自雅加达。你呢？"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Saya dari Tiongkok. Saya baru di sini.",
+                  "chinese": "我来自中国。我刚到这里。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Selamat datang di Indonesia!",
+                  "chinese": "欢迎来到印尼！"
+                }
+              ]
+            },
+            {
+              "id": 2,
+              "title": "办公室问候",
+              "title_id": "Sapaan di Kantor",
+              "lines": [
+                {
+                  "speaker": "A",
+                  "indonesian": "Selamat pagi, Pak Hendra!",
+                  "chinese": "早上好，亨德拉先生！"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Selamat pagi, Li. Apa kabar?",
+                  "chinese": "早上好，李。你好吗？"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Baik, Pak. Terima kasih.",
+                  "chinese": "我很好，先生。谢谢。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Sudah sarapan belum?",
+                  "chinese": "吃过早饭了吗？"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Sudah, Pak. Terima kasih.",
+                  "chinese": "吃过了，先生。谢谢。"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "1-2",
+          "name": "Pelajaran 2",
+          "words": [
+            {
+              "id": 1,
+              "indonesian": "Satu",
+              "chinese": "一",
+              "example_id": "Satu orang."
+            },
+            {
+              "id": 2,
+              "indonesian": "Dua",
+              "chinese": "二",
+              "example_id": "Dua buku."
+            },
+            {
+              "id": 3,
+              "indonesian": "Tiga",
+              "chinese": "三",
+              "example_id": "Tiga kursi."
+            },
+            {
+              "id": 4,
+              "indonesian": "Empat",
+              "chinese": "四",
+              "example_id": "Empat meja."
+            },
+            {
+              "id": 5,
+              "indonesian": "Lima",
+              "chinese": "五",
+              "example_id": "Lima orang."
+            },
+            {
+              "id": 6,
+              "indonesian": "Enam",
+              "chinese": "六",
+              "example_id": "Enam puluh rupiah."
+            },
+            {
+              "id": 7,
+              "indonesian": "Tujuh",
+              "chinese": "七",
+              "example_id": "Tujuh hari."
+            },
+            {
+              "id": 8,
+              "indonesian": "Delapan",
+              "chinese": "八",
+              "example_id": "Delapan jam."
+            },
+            {
+              "id": 9,
+              "indonesian": "Sembilan",
+              "chinese": "九",
+              "example_id": "Sembilan bulan."
+            },
+            {
+              "id": 10,
+              "indonesian": "Sepuluh",
+              "chinese": "十",
+              "example_id": "Sepuluh menit."
+            },
+            {
+              "id": 11,
+              "indonesian": "Sebelas",
+              "chinese": "十一",
+              "example_id": "Sebelas orang."
+            },
+            {
+              "id": 12,
+              "indonesian": "Dua belas",
+              "chinese": "十二",
+              "example_id": "Dua belas jam."
+            },
+            {
+              "id": 13,
+              "indonesian": "Tiga belas",
+              "chinese": "十三",
+              "example_id": "Tiga belas kilo."
+            },
+            {
+              "id": 14,
+              "indonesian": "Dua puluh",
+              "chinese": "二十",
+              "example_id": "Dua puluh ribu."
+            },
+            {
+              "id": 15,
+              "indonesian": "Tiga puluh",
+              "chinese": "三十",
+              "example_id": "Tiga puluh menit."
+            },
+            {
+              "id": 16,
+              "indonesian": "Seratus",
+              "chinese": "一百",
+              "example_id": "Seratus rupiah."
+            },
+            {
+              "id": 17,
+              "indonesian": "Seribu",
+              "chinese": "一千",
+              "example_id": "Seribu rupiah."
+            },
+            {
+              "id": 18,
+              "indonesian": "Sepuluh ribu",
+              "chinese": "一万",
+              "example_id": "Sepuluh ribu rupiah."
+            },
+            {
+              "id": 19,
+              "indonesian": "Seratus ribu",
+              "chinese": "十万",
+              "example_id": "Seratus ribu rupiah."
+            },
+            {
+              "id": 20,
+              "indonesian": "Sejuta",
+              "chinese": "一百万",
+              "example_id": "Satu juta rupiah."
+            },
+            {
+              "id": 21,
+              "indonesian": "Berapa",
+              "chinese": "多少",
+              "example_id": "Berapa harganya?"
+            },
+            {
+              "id": 22,
+              "indonesian": "Harga",
+              "chinese": "价格",
+              "example_id": "Berapa harga satu buku?"
+            },
+            {
+              "id": 23,
+              "indonesian": "Rupiah",
+              "chinese": "卢比（印尼货币）",
+              "example_id": "Lima ribu rupiah."
+            },
+            {
+              "id": 24,
+              "indonesian": "Jumlah",
+              "chinese": "数量/总数",
+              "example_id": "Berapa jumlahnya?"
+            },
+            {
+              "id": 25,
+              "indonesian": "Tambah",
+              "chinese": "加",
+              "example_id": "Satu tambah satu sama dengan dua."
+            },
+            {
+              "id": 26,
+              "indonesian": "Kurang",
+              "chinese": "减/少",
+              "example_id": "Tiga kurang satu sama dengan dua."
+            },
+            {
+              "id": 27,
+              "indonesian": "Setengah",
+              "chinese": "一半",
+              "example_id": "Setengah kilo."
+            },
+            {
+              "id": 28,
+              "indonesian": "Separuh",
+              "chinese": "一半",
+              "example_id": "Separuh dari harga itu."
+            },
+            {
+              "id": 29,
+              "indonesian": "Semua",
+              "chinese": "全部",
+              "example_id": "Semua orang sudah datang."
+            },
+            {
+              "id": 30,
+              "indonesian": "Beberapa",
+              "chinese": "几个",
+              "example_id": "Beberapa orang di kantor."
+            }
+          ],
+          "sentences": [
+            {
+              "id": 1,
+              "indonesian": "Berapa harganya?",
+              "chinese": "多少钱？"
+            },
+            {
+              "id": 2,
+              "indonesian": "Ini berapa?",
+              "chinese": "这个多少钱？"
+            },
+            {
+              "id": 3,
+              "indonesian": "Seribu rupiah.",
+              "chinese": "一千卢比。"
+            },
+            {
+              "id": 4,
+              "indonesian": "Satu tambah satu sama dengan dua.",
+              "chinese": "一加一等于二。"
+            },
+            {
+              "id": 5,
+              "indonesian": "Saya mau dua porsi.",
+              "chinese": "我要两份。"
+            },
+            {
+              "id": 6,
+              "indonesian": "Berapa jumlahnya?",
+              "chinese": "数量是多少？"
+            },
+            {
+              "id": 7,
+              "indonesian": "Lima puluh ribu rupiah.",
+              "chinese": "五万卢比。"
+            },
+            {
+              "id": 8,
+              "indonesian": "Tidak cukup, saya butuh lebih banyak.",
+              "chinese": "不够，我需要更多。"
+            },
+            {
+              "id": 9,
+              "indonesian": "Setengah kilo daging, Bu.",
+              "chinese": "半公斤肉，夫人。"
+            },
+            {
+              "id": 10,
+              "indonesian": "Semua totalnya berapa?",
+              "chinese": "一共多少钱？"
+            }
+          ],
+          "dialogues": [
+            {
+              "id": 1,
+              "title": "在商店问价",
+              "title_id": "Menanyakan Harga di Toko",
+              "lines": [
+                {
+                  "speaker": "A",
+                  "indonesian": "Pak, berapa harga buku ini?",
+                  "chinese": "先生，这本书多少钱？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Lima belas ribu rupiah.",
+                  "chinese": "一万五千卢比。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Kalau beli dua berapa?",
+                  "chinese": "买两本多少钱？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Dua puluh delapan ribu. Dapat diskon.",
+                  "chinese": "两万八千卢比。有折扣。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Baik, saya ambil dua.",
+                  "chinese": "好的，我拿两本。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Ini uangnya, Pak. Terima kasih.",
+                  "chinese": "这是钱，先生。谢谢。"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "1-3",
+          "name": "Pelajaran 3",
+          "words": [
+            {
+              "id": 1,
+              "indonesian": "Jam",
+              "chinese": "小时/点钟",
+              "example_id": "Jam berapa sekarang?"
+            },
+            {
+              "id": 2,
+              "indonesian": "Menit",
+              "chinese": "分钟",
+              "example_id": "Tunggu lima menit."
+            },
+            {
+              "id": 3,
+              "indonesian": "Detik",
+              "chinese": "秒",
+              "example_id": "Tunggu beberapa detik."
+            },
+            {
+              "id": 4,
+              "indonesian": "Pagi",
+              "chinese": "早上",
+              "example_id": "Saya bangun jam lima pagi."
+            },
+            {
+              "id": 5,
+              "indonesian": "Siang",
+              "chinese": "中午",
+              "example_id": "Jam dua belas siang."
+            },
+            {
+              "id": 6,
+              "indonesian": "Sore",
+              "chinese": "下午",
+              "example_id": "Jam tiga sore."
+            },
+            {
+              "id": 7,
+              "indonesian": "Malam",
+              "chinese": "晚上",
+              "example_id": "Jam delapan malam."
+            },
+            {
+              "id": 8,
+              "indonesian": "Hari",
+              "chinese": "天/日",
+              "example_id": "Hari ini hari Senin."
+            },
+            {
+              "id": 9,
+              "indonesian": "Minggu",
+              "chinese": "星期日",
+              "example_id": "Hari Minggu saya libur."
+            },
+            {
+              "id": 10,
+              "indonesian": "Senin",
+              "chinese": "星期一",
+              "example_id": "Hari Senin ada meeting."
+            },
+            {
+              "id": 11,
+              "indonesian": "Selasa",
+              "chinese": "星期二",
+              "example_id": "Selasa saya pulang cepat."
+            },
+            {
+              "id": 12,
+              "indonesian": "Rabu",
+              "chinese": "星期三",
+              "example_id": "Rabu malam ada acara."
+            },
+            {
+              "id": 13,
+              "indonesian": "Kamis",
+              "chinese": "星期四",
+              "example_id": "Kamis besok kita pergi."
+            },
+            {
+              "id": 14,
+              "indonesian": "Jumat",
+              "chinese": "星期五",
+              "example_id": "Jumat hari yang menyenangkan."
+            },
+            {
+              "id": 15,
+              "indonesian": "Sabtu",
+              "chinese": "星期六",
+              "example_id": "Sabtu saya olahraga."
+            },
+            {
+              "id": 16,
+              "indonesian": "Tanggal",
+              "chinese": "日期",
+              "example_id": "Tanggal berapa hari ini?"
+            },
+            {
+              "id": 17,
+              "indonesian": "Bulan",
+              "chinese": "月/月份",
+              "example_id": "Sekarang bulan April."
+            },
+            {
+              "id": 18,
+              "indonesian": "Tahun",
+              "chinese": "年",
+              "example_id": "Tahun ini 2026."
+            },
+            {
+              "id": 19,
+              "indonesian": "Sekarang",
+              "chinese": "现在",
+              "example_id": "Sekarang jam berapa?"
+            },
+            {
+              "id": 20,
+              "indonesian": "Kemarin",
+              "chinese": "昨天",
+              "example_id": "Kemarin saya pergi ke pasar."
+            },
+            {
+              "id": 21,
+              "indonesian": "Hari ini",
+              "chinese": "今天",
+              "example_id": "Hari ini cuaca cerah."
+            },
+            {
+              "id": 22,
+              "indonesian": "Besok",
+              "chinese": "明天",
+              "example_id": "Besok ada meeting."
+            },
+            {
+              "id": 23,
+              "indonesian": "Lusa",
+              "chinese": "后天",
+              "example_id": "Lusa saya libur."
+            },
+            {
+              "id": 24,
+              "indonesian": "Pagi-pagi sekali",
+              "chinese": "一大早",
+              "example_id": "Saya bangun pagi-pagi sekali."
+            },
+            {
+              "id": 25,
+              "indonesian": "Siang-siang",
+              "chinese": "正午",
+              "example_id": "Saya makan siang jam dua belas."
+            },
+            {
+              "id": 26,
+              "indonesian": "Malam-malam",
+              "chinese": "深夜",
+              "example_id": "Jangan keluar malam-malam."
+            },
+            {
+              "id": 27,
+              "indonesian": "Sehari",
+              "chinese": "一天",
+              "example_id": "Saya bekerja delapan jam sehari."
+            },
+            {
+              "id": 28,
+              "indonesian": "Seminggu",
+              "chinese": "一周",
+              "example_id": "Saya bekerja lima hari seminggu."
+            },
+            {
+              "id": 29,
+              "indonesian": "Sebulan",
+              "chinese": "一个月",
+              "example_id": "Satu bulan sudah berlalu."
+            },
+            {
+              "id": 30,
+              "indonesian": "Setahun",
+              "chinese": "一年",
+              "example_id": "Saya sudah di sini setahun."
+            }
+          ],
+          "sentences": [
+            {
+              "id": 1,
+              "indonesian": "Jam berapa sekarang?",
+              "chinese": "现在几点了？"
+            },
+            {
+              "id": 2,
+              "indonesian": "Sekarang jam delapan pagi.",
+              "chinese": "现在是早上八点。"
+            },
+            {
+              "id": 3,
+              "indonesian": "Hari ini hari apa?",
+              "chinese": "今天是星期几？"
+            },
+            {
+              "id": 4,
+              "indonesian": "Tanggal berapa hari ini?",
+              "chinese": "今天是几号？"
+            },
+            {
+              "id": 5,
+              "indonesian": "Besok jam berapa kita bertemu?",
+              "chinese": "明天几点见面？"
+            },
+            {
+              "id": 6,
+              "indonesian": "Saya biasanya bangun jam lima pagi.",
+              "chinese": "我通常早上五点起床。"
+            },
+            {
+              "id": 7,
+              "indonesian": "Meeting-nya jam sepuluh pagi.",
+              "chinese": "会议是上午十点。"
+            },
+            {
+              "id": 8,
+              "indonesian": "Kemarin sore saya pergi ke supermarket.",
+              "chinese": "昨天下午我去了超市。"
+            },
+            {
+              "id": 9,
+              "indonesian": "Saya sudah di sini dua minggu.",
+              "chinese": "我在这里已经两周了。"
+            },
+            {
+              "id": 10,
+              "indonesian": "Lusa jam sembilan pagi, ya.",
+              "chinese": "后天上午九点，好的。"
+            }
+          ],
+          "dialogues": [
+            {
+              "id": 1,
+              "title": "约定时间",
+              "title_id": "Mengatur Waktu Pertemuan",
+              "lines": [
+                {
+                  "speaker": "A",
+                  "indonesian": "Besok kita meeting, jam berapa?",
+                  "chinese": "明天我们开会，几点？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Jam sembilan pagi, bisa?",
+                  "chinese": "上午九点，可以吗？"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Bisa. Di ruangan mana?",
+                  "chinese": "可以。在哪个房间？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Di ruang meeting tiga.",
+                  "chinese": "在三号会议室。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Baik, sampai jumpa besok.",
+                  "chinese": "好的，明天见。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Sampai jumpa.",
+                  "chinese": "再见。"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "1-4",
+          "name": "Pelajaran 4",
+          "words": [
+            {
+              "id": 1,
+              "indonesian": "Keluarga",
+              "chinese": "家庭",
+              "example_id": "Keluarga saya ada lima orang."
+            },
+            {
+              "id": 2,
+              "indonesian": "Ayah",
+              "chinese": "爸爸",
+              "example_id": "Ayah saya bekerja di sekolah."
+            },
+            {
+              "id": 3,
+              "indonesian": "Ibu",
+              "chinese": "妈妈",
+              "example_id": "Ibu saya seorang guru."
+            },
+            {
+              "id": 4,
+              "indonesian": "Anak laki-laki",
+              "chinese": "儿子",
+              "example_id": "Dia punya satu anak laki-laki."
+            },
+            {
+              "id": 5,
+              "indonesian": "Anak perempuan",
+              "chinese": "女儿",
+              "example_id": "Anak perempuannya sudah besar."
+            },
+            {
+              "id": 6,
+              "indonesian": "Suami",
+              "chinese": "丈夫",
+              "example_id": "Suami saya bekerja di bank."
+            },
+            {
+              "id": 7,
+              "indonesian": "Istri",
+              "chinese": "妻子",
+              "example_id": "Istrinya sangat cantik."
+            },
+            {
+              "id": 8,
+              "indonesian": "Adik",
+              "chinese": "弟弟/妹妹",
+              "example_id": "Saya punya satu adik perempuan."
+            },
+            {
+              "id": 9,
+              "indonesian": "Kakak",
+              "chinese": "哥哥/姐姐",
+              "example_id": "Kakak saya tinggal di Jakarta."
+            },
+            {
+              "id": 10,
+              "indonesian": "Paman",
+              "chinese": "叔叔/舅舅",
+              "example_id": "Paman saya dari Surabaya."
+            },
+            {
+              "id": 11,
+              "indonesian": "Bibi",
+              "chinese": "阿姨/婶婶",
+              "example_id": "Bibi saya sangat baik."
+            },
+            {
+              "id": 12,
+              "indonesian": "Kakek",
+              "chinese": "爷爷/外公",
+              "example_id": "Kakek saya sudah tua."
+            },
+            {
+              "id": 13,
+              "indonesian": "Nenek",
+              "chinese": "奶奶/外婆",
+              "example_id": "Nenek saya tinggal di kampung."
+            },
+            {
+              "id": 14,
+              "indonesian": "Keponakan",
+              "chinese": "侄子/外甥",
+              "example_id": "Keponakan saya masih kecil."
+            },
+            {
+              "id": 15,
+              "indonesian": "Cucu",
+              "chinese": "孙子/孙女",
+              "example_id": "Cucunya sangat lucu."
+            },
+            {
+              "id": 16,
+              "indonesian": "Orang tua",
+              "chinese": "父母",
+              "example_id": "Orang tua saya di Tiongkok."
+            },
+            {
+              "id": 17,
+              "indonesian": "Saudara kandung",
+              "chinese": "亲兄弟姐妹",
+              "example_id": "Saya tidak punya saudara kandung."
+            },
+            {
+              "id": 18,
+              "indonesian": "Tidak menikah",
+              "chinese": "未婚",
+              "example_id": "Dia belum menikah."
+            },
+            {
+              "id": 19,
+              "indonesian": "Menikah",
+              "chinese": "结婚",
+              "example_id": "Mereka sudah menikah."
+            },
+            {
+              "id": 20,
+              "indonesian": "Punya",
+              "chinese": "有",
+              "example_id": "Saya punya dua adik."
+            }
+          ],
+          "sentences": [
+            {
+              "id": 1,
+              "indonesian": "Keluarga saya ada lima orang.",
+              "chinese": "我家有五口人。"
+            },
+            {
+              "id": 2,
+              "indonesian": "Ayah saya bekerja di pabrik.",
+              "chinese": "我爸爸在工厂工作。"
+            },
+            {
+              "id": 3,
+              "indonesian": "Ibu saya seorang ibu rumah tangga.",
+              "chinese": "我妈妈是家庭主妇。"
+            },
+            {
+              "id": 4,
+              "indonesian": "Saya punya satu kakak laki-laki.",
+              "chinese": "我有一个哥哥。"
+            },
+            {
+              "id": 5,
+              "indonesian": "Adik saya masih sekolah.",
+              "chinese": "我弟弟还在上学。"
+            },
+            {
+              "id": 6,
+              "indonesian": "Orang tua saya tinggal di Tiongkok.",
+              "chinese": "我父母住在中国。"
+            },
+            {
+              "id": 7,
+              "indonesian": "Sudah menikah atau belum?",
+              "chinese": "结婚了吗？"
+            },
+            {
+              "id": 8,
+              "indonesian": "Anaknya sudah bersekolah.",
+              "chinese": "他的孩子已经上学了。"
+            },
+            {
+              "id": 9,
+              "indonesian": "Saya rindu keluarga saya.",
+              "chinese": "我想念我的家人。"
+            },
+            {
+              "id": 10,
+              "indonesian": "Minggu ini saya telepon keluarga.",
+              "chinese": "这周我给家里打电话。"
+            }
+          ],
+          "dialogues": [
+            {
+              "id": 1,
+              "title": "谈论家庭",
+              "title_id": "Berbicara tentang Keluarga",
+              "lines": [
+                {
+                  "speaker": "A",
+                  "indonesian": "Anda sudah menikah?",
+                  "chinese": "您结婚了吗？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Sudah. Saya punya dua anak.",
+                  "chinese": "结了。我有两个孩子。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Wah, besar sekali keluarganya!",
+                  "chinese": "哇，家庭真大！"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Satu laki-laki, satu perempuan.",
+                  "chinese": "一个儿子，一个女儿。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Masih sekolah atau sudah bekerja?",
+                  "chinese": "还在上学还是已经工作了？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Anak laki-laki sudah bekerja. Anak perempuan masih SMP.",
+                  "chinese": "儿子已经工作了，女儿还在上初中。"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "1-5",
+          "name": "Pelajaran 5",
+          "words": [
+            {
+              "id": 1,
+              "indonesian": "Makanan",
+              "chinese": "食物",
+              "example_id": "Makanan di sini enak."
+            },
+            {
+              "id": 2,
+              "indonesian": "Minuman",
+              "chinese": "饮料",
+              "example_id": "Saya mau minuman dingin."
+            },
+            {
+              "id": 3,
+              "indonesian": "Nasi",
+              "chinese": "米饭",
+              "example_id": "Saya mau nasi putih."
+            },
+            {
+              "id": 4,
+              "indonesian": "Nasi goreng",
+              "chinese": "炒饭",
+              "example_id": "Satu porsi nasi goreng."
+            },
+            {
+              "id": 5,
+              "indonesian": "Mi",
+              "chinese": "面条",
+              "example_id": "Mi goreng sangat enak."
+            },
+            {
+              "id": 6,
+              "indonesian": "Ayam",
+              "chinese": "鸡肉",
+              "example_id": "Saya mau ayam goreng."
+            },
+            {
+              "id": 7,
+              "indonesian": "Ikan",
+              "chinese": "鱼",
+              "example_id": "Ikan bakar yang ini enak."
+            },
+            {
+              "id": 8,
+              "indonesian": "Daging",
+              "chinese": "肉",
+              "example_id": "Daging sapi atau daging kambing?"
+            },
+            {
+              "id": 9,
+              "indonesian": "Sayur",
+              "chinese": "蔬菜",
+              "example_id": "Saya suka sayur hijau."
+            },
+            {
+              "id": 10,
+              "indonesian": "Buah",
+              "chinese": "水果",
+              "example_id": "Buah mangga sudah matang."
+            },
+            {
+              "id": 11,
+              "indonesian": "Air",
+              "chinese": "水",
+              "example_id": "Satu gelas air, Bu."
+            },
+            {
+              "id": 12,
+              "indonesian": "Kopi",
+              "chinese": "咖啡",
+              "example_id": "Satu kopi hitam, Pak."
+            },
+            {
+              "id": 13,
+              "indonesian": "Teh",
+              "chinese": "茶",
+              "example_id": "Teh manis, satu gelas."
+            },
+            {
+              "id": 14,
+              "indonesian": "Goreng",
+              "chinese": "油炸/炒",
+              "example_id": "Ayam goreng atau ayam bakar?"
+            },
+            {
+              "id": 15,
+              "indonesian": "Bakar",
+              "chinese": "烤",
+              "example_id": "Saya suka ikan bakar."
+            },
+            {
+              "id": 16,
+              "indonesian": "Pedas",
+              "chinese": "辣",
+              "example_id": "Tidak usah pedas."
+            },
+            {
+              "id": 17,
+              "indonesian": "Manis",
+              "chinese": "甜",
+              "example_id": "Kue ini sangat manis."
+            },
+            {
+              "id": 18,
+              "indonesian": "Asin",
+              "chinese": "咸",
+              "example_id": "Masakan ini terlalu asin."
+            },
+            {
+              "id": 19,
+              "indonesian": "Enak",
+              "chinese": "好吃/美味",
+              "example_id": "Nasi gorengnya sangat enak."
+            },
+            {
+              "id": 20,
+              "indonesian": "Lapar",
+              "chinese": "饿",
+              "example_id": "Saya sangat lapar."
+            },
+            {
+              "id": 21,
+              "indonesian": "Pesan",
+              "chinese": "点餐/订购",
+              "example_id": "Saya mau pesan makan."
+            },
+            {
+              "id": 22,
+              "indonesian": "Porsi",
+              "chinese": "份",
+              "example_id": "Satu porsi nasi goreng."
+            },
+            {
+              "id": 23,
+              "indonesian": "Gelas",
+              "chinese": "杯",
+              "example_id": "Satu gelas air."
+            },
+            {
+              "id": 24,
+              "indonesian": "Piring",
+              "chinese": "盘/碟",
+              "example_id": "Satu piring nasi."
+            },
+            {
+              "id": 25,
+              "indonesian": "Sendok",
+              "chinese": "勺子",
+              "example_id": "Boleh minta sendok?"
+            },
+            {
+              "id": 26,
+              "indonesian": "Garpu",
+              "chinese": "叉子",
+              "example_id": "Garpu untuk makan pasta."
+            },
+            {
+              "id": 27,
+              "indonesian": "Cabai",
+              "chinese": "辣椒",
+              "example_id": "Tidak pakai cabai, ya."
+            },
+            {
+              "id": 28,
+              "indonesian": "Garam",
+              "chinese": "盐",
+              "example_id": "Kurang garam."
+            },
+            {
+              "id": 29,
+              "indonesian": "Gula",
+              "chinese": "糖",
+              "example_id": "Tolong tambah gula."
+            },
+            {
+              "id": 30,
+              "indonesian": "Warung",
+              "chinese": "小饭馆/小吃摊",
+              "example_id": "Makan di warung saja."
+            }
+          ],
+          "sentences": [
+            {
+              "id": 1,
+              "indonesian": "Saya mau pesan nasi goreng.",
+              "chinese": "我要点炒饭。"
+            },
+            {
+              "id": 2,
+              "indonesian": "Satu porsi ayam bakar, tolong.",
+              "chinese": "请来一份烤鸡。"
+            },
+            {
+              "id": 3,
+              "indonesian": "Ada makanan apa di sini?",
+              "chinese": "这里有什么吃的？"
+            },
+            {
+              "id": 4,
+              "indonesian": "Tidak pakai cabai, ya.",
+              "chinese": "不要放辣椒。"
+            },
+            {
+              "id": 5,
+              "indonesian": "Boleh minta air putih?",
+              "chinese": "可以要白开水吗？"
+            },
+            {
+              "id": 6,
+              "indonesian": "Makanannya enak sekali!",
+              "chinese": "饭菜真好吃！"
+            },
+            {
+              "id": 7,
+              "indonesian": "Saya mau kopi hitam tanpa gula.",
+              "chinese": "我要不加糖的黑咖啡。"
+            },
+            {
+              "id": 8,
+              "indonesian": "Berapa harga satu porsi?",
+              "chinese": "一份多少钱？"
+            },
+            {
+              "id": 9,
+              "indonesian": "Masakan ini terlalu pedas.",
+              "chinese": "这道菜太辣了。"
+            },
+            {
+              "id": 10,
+              "indonesian": "Sudah cukup, terima kasih.",
+              "chinese": "够了，谢谢。"
+            }
+          ],
+          "dialogues": [
+            {
+              "id": 1,
+              "title": "在Warung点餐",
+              "title_id": "Memesan Makan di Warung",
+              "lines": [
+                {
+                  "speaker": "A",
+                  "indonesian": "Bu, saya mau pesan makan.",
+                  "chinese": "夫人，我要点餐。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Silakan, mau makan apa?",
+                  "chinese": "请吧，想吃什么？"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Satu nasi goreng dan satu ayam bakar.",
+                  "chinese": "一份炒饭和一份烤鸡。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Pedas atau tidak?",
+                  "chinese": "辣还是不辣？"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Tidak usah pedas. Oh ya, satu kopi juga.",
+                  "chinese": "不要辣。对了，再来一杯咖啡。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Baik, ditunggu ya.",
+                  "chinese": "好的，请稍等。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Berapa totalnya, Bu?",
+                  "chinese": "一共多少钱，夫人？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Tiga puluh lima ribu rupiah.",
+                  "chinese": "三万五千卢比。"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "1-6",
+          "name": "Pelajaran 6",
+          "words": [
+            {
+              "id": 1,
+              "indonesian": "Pasar",
+              "chinese": "市场",
+              "example_id": "Saya mau ke pasar."
+            },
+            {
+              "id": 2,
+              "indonesian": "Toko",
+              "chinese": "商店",
+              "example_id": "Toko ini buka jam berapa?"
+            },
+            {
+              "id": 3,
+              "indonesian": "Supermarket",
+              "chinese": "超市",
+              "example_id": "Di supermarket ada semuanya."
+            },
+            {
+              "id": 4,
+              "indonesian": "Beli",
+              "chinese": "买",
+              "example_id": "Saya mau beli baju."
+            },
+            {
+              "id": 5,
+              "indonesian": "Jual",
+              "chinese": "卖",
+              "example_id": "Dia menjual buah segar."
+            },
+            {
+              "id": 6,
+              "indonesian": "Murah",
+              "chinese": "便宜",
+              "example_id": "Harganya sangat murah."
+            },
+            {
+              "id": 7,
+              "indonesian": "Mahal",
+              "chinese": "贵",
+              "example_id": "Terlalu mahal, bisa kurang?"
+            },
+            {
+              "id": 8,
+              "indonesian": "Tawar",
+              "chinese": "砍价/讨价还价",
+              "example_id": "Boleh tawar tidak?"
+            },
+            {
+              "id": 9,
+              "indonesian": "Kilo / Kilogram",
+              "chinese": "公斤",
+              "example_id": "Satu kilo apel, Bu."
+            },
+            {
+              "id": 10,
+              "indonesian": "Liter",
+              "chinese": "升",
+              "example_id": "Satu liter minyak goreng."
+            },
+            {
+              "id": 11,
+              "indonesian": "Beras",
+              "chinese": "大米",
+              "example_id": "Beras lima kilo."
+            },
+            {
+              "id": 12,
+              "indonesian": "Minyak",
+              "chinese": "油",
+              "example_id": "Minyak goreng satu liter."
+            },
+            {
+              "id": 13,
+              "indonesian": "Sabun",
+              "chinese": "肥皂",
+              "example_id": "Satu batang sabun mandi."
+            },
+            {
+              "id": 14,
+              "indonesian": "Baju",
+              "chinese": "衣服",
+              "example_id": "Baju ini ukuran berapa?"
+            },
+            {
+              "id": 15,
+              "indonesian": "Celana",
+              "chinese": "裤子",
+              "example_id": "Celana panjang atau pendek?"
+            },
+            {
+              "id": 16,
+              "indonesian": "Sepatu",
+              "chinese": "鞋",
+              "example_id": "Sepatu yang ini ukuran 42."
+            },
+            {
+              "id": 17,
+              "indonesian": "Ukuran",
+              "chinese": "尺寸/码",
+              "example_id": "Ada ukuran lain?"
+            },
+            {
+              "id": 18,
+              "indonesian": "Warna",
+              "chinese": "颜色",
+              "example_id": "Warna apa yang ada?"
+            },
+            {
+              "id": 19,
+              "indonesian": "Hitam",
+              "chinese": "黑色",
+              "example_id": "Saya mau warna hitam."
+            },
+            {
+              "id": 20,
+              "indonesian": "Putih",
+              "chinese": "白色",
+              "example_id": "Baju putih ini bagus."
+            },
+            {
+              "id": 21,
+              "indonesian": "Merah",
+              "chinese": "红色",
+              "example_id": "Yang merah, Bu."
+            },
+            {
+              "id": 22,
+              "indonesian": "Biru",
+              "chinese": "蓝色",
+              "example_id": "Celana biru satu."
+            },
+            {
+              "id": 23,
+              "indonesian": "Bayar",
+              "chinese": "付款",
+              "example_id": "Saya mau bayar."
+            },
+            {
+              "id": 24,
+              "indonesian": "Uang",
+              "chinese": "钱",
+              "example_id": "Ini uangnya."
+            },
+            {
+              "id": 25,
+              "indonesian": "Kembalian",
+              "chinese": "找零",
+              "example_id": "Kembalian berapa?"
+            },
+            {
+              "id": 26,
+              "indonesian": "Diskon",
+              "chinese": "折扣",
+              "example_id": "Ada diskon hari ini?"
+            },
+            {
+              "id": 27,
+              "indonesian": "Tas",
+              "chinese": "袋子/包",
+              "example_id": "Boleh minta tas plastik?"
+            },
+            {
+              "id": 28,
+              "indonesian": "Keranjang",
+              "chinese": "购物篮",
+              "example_id": "Ambil keranjang dulu."
+            },
+            {
+              "id": 29,
+              "indonesian": "Kasir",
+              "chinese": "收银台",
+              "example_id": "Bayar di kasir."
+            },
+            {
+              "id": 30,
+              "indonesian": "Barang",
+              "chinese": "商品/东西",
+              "example_id": "Barang ini bagus kualitasnya."
+            }
+          ],
+          "sentences": [
+            {
+              "id": 1,
+              "indonesian": "Berapa harga satu kilo?",
+              "chinese": "一公斤多少钱？"
+            },
+            {
+              "id": 2,
+              "indonesian": "Bisa kurang tidak?",
+              "chinese": "能便宜点吗？"
+            },
+            {
+              "id": 3,
+              "indonesian": "Terlalu mahal.",
+              "chinese": "太贵了。"
+            },
+            {
+              "id": 4,
+              "indonesian": "Saya beli dua kilo.",
+              "chinese": "我买两公斤。"
+            },
+            {
+              "id": 5,
+              "indonesian": "Ada ukuran lain?",
+              "chinese": "有其他尺码吗？"
+            },
+            {
+              "id": 6,
+              "indonesian": "Warna merah ada tidak?",
+              "chinese": "有红色的吗？"
+            },
+            {
+              "id": 7,
+              "indonesian": "Boleh saya coba dulu?",
+              "chinese": "我可以先试一下吗？"
+            },
+            {
+              "id": 8,
+              "indonesian": "Bayar pakai tunai atau kartu?",
+              "chinese": "现金还是刷卡？"
+            },
+            {
+              "id": 9,
+              "indonesian": "Kembalian sudah benar?",
+              "chinese": "找零对了吗？"
+            },
+            {
+              "id": 10,
+              "indonesian": "Ada diskon hari ini?",
+              "chinese": "今天有折扣吗？"
+            }
+          ],
+          "dialogues": [
+            {
+              "id": 1,
+              "title": "在市场买菜",
+              "title_id": "Berbelanja di Pasar",
+              "lines": [
+                {
+                  "speaker": "A",
+                  "indonesian": "Bu, tomatnya berapa satu kilo?",
+                  "chinese": "夫人，番茄一公斤多少钱？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Sepuluh ribu, Bu.",
+                  "chinese": "一万卢比，夫人。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Mahal sekali. Bisa delapan ribu?",
+                  "chinese": "太贵了。八千可以吗？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Baiklah, sembilan ribu ya.",
+                  "chinese": "好吧，九千吧。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Oke, saya ambil satu kilo. Cabai juga satu kilo.",
+                  "chinese": "好的，我来一公斤。辣椒也要一公斤。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Cabai lima belas ribu per kilo.",
+                  "chinese": "辣椒一万五一公斤。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Wah, naik harga. Ya sudah, ambil setengah kilo saja.",
+                  "chinese": "哇，涨价了。那算了，只要半公斤。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Totalnya dua puluh ribu.",
+                  "chinese": "一共两万卢比。"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "1-7",
+          "name": "Pelajaran 7",
+          "words": [
+            {
+              "id": 1,
+              "indonesian": "Jalan",
+              "chinese": "路/街道",
+              "example_id": "Jalan ini ke mana?"
+            },
+            {
+              "id": 2,
+              "indonesian": "Kiri",
+              "chinese": "左边",
+              "example_id": "Belok kiri."
+            },
+            {
+              "id": 3,
+              "indonesian": "Kanan",
+              "chinese": "右边",
+              "example_id": "Belok kanan di lampu merah."
+            },
+            {
+              "id": 4,
+              "indonesian": "Lurus",
+              "chinese": "直走",
+              "example_id": "Terus lurus saja."
+            },
+            {
+              "id": 5,
+              "indonesian": "Belok",
+              "chinese": "转弯",
+              "example_id": "Belok kiri di simpang."
+            },
+            {
+              "id": 6,
+              "indonesian": "Dekat",
+              "chinese": "近",
+              "example_id": "Sudah dekat."
+            },
+            {
+              "id": 7,
+              "indonesian": "Jauh",
+              "chinese": "远",
+              "example_id": "Terlalu jauh dari sini."
+            },
+            {
+              "id": 8,
+              "indonesian": "Seberang",
+              "chinese": "对面/过马路",
+              "example_id": "Di seberang jalan."
+            },
+            {
+              "id": 9,
+              "indonesian": "Lampu merah",
+              "chinese": "红灯",
+              "example_id": "Belok kiri di lampu merah."
+            },
+            {
+              "id": 10,
+              "indonesian": "Simpang",
+              "chinese": "十字路口",
+              "example_id": "Di simpang belok kanan."
+            },
+            {
+              "id": 11,
+              "indonesian": "Gedung",
+              "chinese": "大楼",
+              "example_id": "Gedung kantor kami di sana."
+            },
+            {
+              "id": 12,
+              "indonesian": "Kantor",
+              "chinese": "办公室",
+              "example_id": "Kantor ada di jalan Sudirman."
+            },
+            {
+              "id": 13,
+              "indonesian": "Mobil",
+              "chinese": "汽车",
+              "example_id": "Mobil itu milik Pak Budi."
+            },
+            {
+              "id": 14,
+              "indonesian": "Motor",
+              "chinese": "摩托车",
+              "example_id": "Banyak motor di Jakarta."
+            },
+            {
+              "id": 15,
+              "indonesian": "Taksi",
+              "chinese": "出租车",
+              "example_id": "Saya naik taksi ke kantor."
+            },
+            {
+              "id": 16,
+              "indonesian": "Bus",
+              "chinese": "公交车",
+              "example_id": "Naik bus nomor berapa?"
+            },
+            {
+              "id": 17,
+              "indonesian": "Ojek",
+              "chinese": "摩的",
+              "example_id": "Panggil ojek online."
+            },
+            {
+              "id": 18,
+              "indonesian": "Stasiun",
+              "chinese": "火车站",
+              "example_id": "Stasiun kereta dekat sini."
+            },
+            {
+              "id": 19,
+              "indonesian": "Bandara",
+              "chinese": "机场",
+              "example_id": "Ke bandara butuh satu jam."
+            },
+            {
+              "id": 20,
+              "indonesian": "Naik",
+              "chinese": "乘坐/上去",
+              "example_id": "Naik bus atau motor?"
+            },
+            {
+              "id": 21,
+              "indonesian": "Turun",
+              "chinese": "下车",
+              "example_id": "Turun di mana?"
+            },
+            {
+              "id": 22,
+              "indonesian": "Parkir",
+              "chinese": "停车",
+              "example_id": "Di mana parkir?"
+            },
+            {
+              "id": 23,
+              "indonesian": "Macet",
+              "chinese": "堵车",
+              "example_id": "Jalan ini sangat macet."
+            },
+            {
+              "id": 24,
+              "indonesian": " cepat",
+              "chinese": "快",
+              "example_id": "Motor lebih cepat."
+            },
+            {
+              "id": 25,
+              "indonesian": "Lambat",
+              "chinese": "慢",
+              "example_id": "Busnya terlalu lambat."
+            },
+            {
+              "id": 26,
+              "indonesian": "Persimpangan",
+              "chinese": "交叉路口",
+              "example_id": "Di persimpangan kedua belok kanan."
+            },
+            {
+              "id": 27,
+              "indonesian": "Jembatan",
+              "chinese": "桥",
+              "example_id": "Lewat jembatan itu."
+            },
+            {
+              "id": 28,
+              "indonesian": "Peta",
+              "chinese": "地图",
+              "example_id": "Saya pakai peta online."
+            },
+            {
+              "id": 29,
+              "indonesian": "Arah",
+              "chinese": "方向",
+              "example_id": "Ke arah mana?"
+            },
+            {
+              "id": 30,
+              "indonesian": "Lokasi",
+              "chinese": "位置/地点",
+              "example_id": "Lokasinya di mana?"
+            }
+          ],
+          "sentences": [
+            {
+              "id": 1,
+              "indonesian": "Bagaimana cara menuju ke kantor?",
+              "chinese": "怎么去办公室？"
+            },
+            {
+              "id": 2,
+              "indonesian": "Di mana lokasinya?",
+              "chinese": "位置在哪里？"
+            },
+            {
+              "id": 3,
+              "indonesian": "Belok kiri di lampu merah.",
+              "chinese": "在红灯处左转。"
+            },
+            {
+              "id": 4,
+              "indonesian": "Terus lurus sekitar 500 meter.",
+              "chinese": "一直走大约500米。"
+            },
+            {
+              "id": 5,
+              "indonesian": "Sudah dekat dari sini.",
+              "chinese": "离这里已经很近了。"
+            },
+            {
+              "id": 6,
+              "indonesian": "Berapa lama dari sini?",
+              "chinese": "从这里去要多久？"
+            },
+            {
+              "id": 7,
+              "indonesian": "Naik motor sekitar lima belas menit.",
+              "chinese": "骑摩托大约十五分钟。"
+            },
+            {
+              "id": 8,
+              "indonesian": "Jalan ini sering macet.",
+              "chinese": "这条路经常堵车。"
+            },
+            {
+              "id": 9,
+              "indonesian": "Turun di persimpangan berikutnya.",
+              "chinese": "在下一个路口下车。"
+            },
+            {
+              "id": 10,
+              "indonesian": "Gedungnya di sebelah kanan jalan.",
+              "chinese": "大楼在路的右边。"
+            }
+          ],
+          "dialogues": [
+            {
+              "id": 1,
+              "title": "向路人问路",
+              "title_id": "Bertanya Arah ke Orang",
+              "lines": [
+                {
+                  "speaker": "A",
+                  "indonesian": "Permisi, Pak. Di mana Rumah Sakit Umum?",
+                  "chinese": "打扰一下，先生。请问公立医院在哪里？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Oh, RS Umum? Dari sini jauh sekali.",
+                  "chinese": "哦，公立医院？从这里很远。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Bagaimana caranya?",
+                  "chinese": "怎么去？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Naik bus nomor 5, turun di lampu merah ketiga.",
+                  "chinese": "坐5路公交，在第三个红绿灯下车。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Lalu belok kiri?",
+                  "chinese": "然后左转吗？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Betul. Belok kiri, jalan sekitar 200 meter.",
+                  "chinese": "对的。左转，走大约200米。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Berapa lama perjalanannya?",
+                  "chinese": "路程要多久？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Sekitar tiga puluh menit kalau tidak macet.",
+                  "chinese": "不堵车的话大约三十分钟。"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "1-8",
+          "name": "Pelajaran 8",
+          "words": [
+            {
+              "id": 1,
+              "indonesian": "Cuaca",
+              "chinese": "天气",
+              "example_id": "Cuaca hari ini panas."
+            },
+            {
+              "id": 2,
+              "indonesian": "Panas",
+              "chinese": "热",
+              "example_id": "Sangat panas hari ini."
+            },
+            {
+              "id": 3,
+              "indonesian": "Dingin",
+              "chinese": "冷",
+              "example_id": "Malam ini dingin."
+            },
+            {
+              "id": 4,
+              "indonesian": "Hujan",
+              "chinese": "下雨",
+              "example_id": "Kemarin hujan deras."
+            },
+            {
+              "id": 5,
+              "indonesian": "Cerah",
+              "chinese": "晴朗",
+              "example_id": "Cuaca hari ini cerah."
+            },
+            {
+              "id": 6,
+              "indonesian": "Mendung",
+              "chinese": "阴天",
+              "example_id": "Langit mendung sekali."
+            },
+            {
+              "id": 7,
+              "indonesian": "Lelah",
+              "chinese": "累",
+              "example_id": "Saya sangat lelah hari ini."
+            },
+            {
+              "id": 8,
+              "indonesian": "Senang",
+              "chinese": "开心/高兴",
+              "example_id": "Saya senang sekali."
+            },
+            {
+              "id": 9,
+              "indonesian": "Sedih",
+              "chinese": "难过",
+              "example_id": "Jangan sedih."
+            },
+            {
+              "id": 10,
+              "indonesian": "Lapar",
+              "chinese": "饿",
+              "example_id": "Saya lapar sekali."
+            },
+            {
+              "id": 11,
+              "indonesian": "Haus",
+              "chinese": "渴",
+              "example_id": "Saya haus, mau minum."
+            },
+            {
+              "id": 12,
+              "indonesian": "Sakit",
+              "chinese": "疼/生病",
+              "example_id": "Kepala saya sakit."
+            },
+            {
+              "id": 13,
+              "indonesian": "Sehat",
+              "chinese": "健康",
+              "example_id": "Alhamdulillah, saya sehat."
+            },
+            {
+              "id": 14,
+              "indonesian": "Baik",
+              "chinese": "好",
+              "example_id": "Kabar baik."
+            },
+            {
+              "id": 15,
+              "indonesian": "Buruk",
+              "chinese": "坏/差",
+              "example_id": "Cuaca buruk hari ini."
+            },
+            {
+              "id": 16,
+              "indonesian": "Kerja",
+              "chinese": "工作",
+              "example_id": "Kerja hari ini banyak."
+            },
+            {
+              "id": 17,
+              "indonesian": "Libur",
+              "chinese": "休息/放假",
+              "example_id": "Besok hari libur."
+            },
+            {
+              "id": 18,
+              "indonesian": "Rumah",
+              "chinese": "家/房子",
+              "example_id": "Saya mau pulang ke rumah."
+            },
+            {
+              "id": 19,
+              "indonesian": "Sekarang",
+              "chinese": "现在",
+              "example_id": "Sekarang jam makan siang."
+            },
+            {
+              "id": 20,
+              "indonesian": "Nanti",
+              "chinese": "等会儿",
+              "example_id": "Saya nanti datang."
+            },
+            {
+              "id": 21,
+              "indonesian": "Tadi",
+              "chinese": "刚才",
+              "example_id": "Tadi saya makan di kantin."
+            },
+            {
+              "id": 22,
+              "indonesian": "Sudah",
+              "chinese": "已经",
+              "example_id": "Sudah makan belum?"
+            },
+            {
+              "id": 23,
+              "indonesian": "Belum",
+              "chinese": "还没",
+              "example_id": "Belum, nanti saja."
+            },
+            {
+              "id": 24,
+              "indonesian": "Bagaimana",
+              "chinese": "怎么样",
+              "example_id": "Bagaimana pekerjaannya?"
+            },
+            {
+              "id": 25,
+              "indonesian": "Biasanya",
+              "chinese": "通常",
+              "example_id": "Biasanya saya makan jam dua belas."
+            },
+            {
+              "id": 26,
+              "indonesian": "Kadang-kadang",
+              "chinese": "有时候",
+              "example_id": "Kadang-kadang saya olahraga."
+            },
+            {
+              "id": 27,
+              "indonesian": "Sering",
+              "chinese": "经常",
+              "example_id": "Sering hujan di sini."
+            },
+            {
+              "id": 28,
+              "indonesian": "Jarang",
+              "chinese": "很少",
+              "example_id": "Jarang pergi ke sana."
+            },
+            {
+              "id": 29,
+              "indonesian": "Banyak",
+              "chinese": "很多",
+              "example_id": "Banyak pekerjaan hari ini."
+            },
+            {
+              "id": 30,
+              "indonesian": "Sedikit",
+              "chinese": "很少/一点",
+              "example_id": "Sedikit saja, terima kasih."
+            }
+          ],
+          "sentences": [
+            {
+              "id": 1,
+              "indonesian": "Cuaca hari ini sangat panas.",
+              "chinese": "今天天气很热。"
+            },
+            {
+              "id": 2,
+              "indonesian": "Kemarin hujan deras sekali.",
+              "chinese": "昨天雨下得很大。"
+            },
+            {
+              "id": 3,
+              "indonesian": "Saya lelah setelah bekerja.",
+              "chinese": "工作后我很累。"
+            },
+            {
+              "id": 4,
+              "indonesian": "Bagaimana pekerjaan Anda?",
+              "chinese": "您的工作怎么样？"
+            },
+            {
+              "id": 5,
+              "indonesian": "Biasanya makan siang di mana?",
+              "chinese": "通常在哪儿吃午饭？"
+            },
+            {
+              "id": 6,
+              "indonesian": "Sudah makan atau belum?",
+              "chinese": "吃过了吗？"
+            },
+            {
+              "id": 7,
+              "indonesian": "Libur kemarin ke mana?",
+              "chinese": "昨天放假去哪儿了？"
+            },
+            {
+              "id": 8,
+              "indonesian": "Rumah Anda jauh dari kantor?",
+              "chinese": "你家离办公室远吗？"
+            },
+            {
+              "id": 9,
+              "indonesian": "Nanti kita makan bersama.",
+              "chinese": "等会儿我们一起吃饭。"
+            },
+            {
+              "id": 10,
+              "indonesian": "Semoga besok cuaca cerah.",
+              "chinese": "希望明天天气晴朗。"
+            }
+          ],
+          "dialogues": [
+            {
+              "id": 1,
+              "title": "午休时聊天",
+              "title_id": "Ngobrol Saat Istirahat",
+              "lines": [
+                {
+                  "speaker": "A",
+                  "indonesian": "Sudah makan, Pak?",
+                  "chinese": "吃过了吗，先生？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Belum, tadi terlalu sibuk.",
+                  "chinese": "还没，刚才太忙了。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Cuaca hari ini panas sekali, ya.",
+                  "chinese": "今天天气真热啊。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Betul. Semoga sore nanti tidak hujan.",
+                  "chinese": "是啊。希望下午不要下雨。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Mau makan di kantin atau di luar?",
+                  "chinese": "想在食堂吃还是外面吃？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Di kantin saja. Lebih dekat.",
+                  "chinese": "食堂吧。更近。"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "1-9",
+          "name": "Pelajaran 9",
+          "words": [
+            {
+              "id": 1,
+              "indonesian": "Kantor",
+              "chinese": "办公室",
+              "example_id": "Jam berapa masuk kantor?"
+            },
+            {
+              "id": 2,
+              "indonesian": "Bos",
+              "chinese": "老板",
+              "example_id": "Bos minta saya datang."
+            },
+            {
+              "id": 3,
+              "indonesian": "Rekan kerja",
+              "chinese": "同事",
+              "example_id": "Rekan kerja saya sangat baik."
+            },
+            {
+              "id": 4,
+              "indonesian": "Meeting",
+              "chinese": "会议",
+              "example_id": "Ada meeting jam sepuluh."
+            },
+            {
+              "id": 5,
+              "indonesian": "Istirahat",
+              "chinese": "休息",
+              "example_id": "Waktu istirahat jam dua belas."
+            },
+            {
+              "id": 6,
+              "indonesian": "Masuk",
+              "chinese": "进入/上班",
+              "example_id": "Jam tujuh pagi masuk kerja."
+            },
+            {
+              "id": 7,
+              "indonesian": "Pulang",
+              "chinese": "下班/回家",
+              "example_id": "Jam lima sore pulang."
+            },
+            {
+              "id": 8,
+              "indonesian": "Cuti",
+              "chinese": "请假/休假",
+              "example_id": "Saya mau minta cuti."
+            },
+            {
+              "id": 9,
+              "indonesian": "Sakit",
+              "chinese": "生病",
+              "example_id": "Saya sakit, tidak bisa masuk."
+            },
+            {
+              "id": 10,
+              "indonesian": "Terlambat",
+              "chinese": "迟到",
+              "example_id": "Maaf, saya terlambat."
+            },
+            {
+              "id": 11,
+              "indonesian": "Dokumen",
+              "chinese": "文件",
+              "example_id": "Tolong kirim dokumen ini."
+            },
+            {
+              "id": 12,
+              "indonesian": "Surat",
+              "chinese": "信件/邮件",
+              "example_id": "Ada surat untuk Anda."
+            },
+            {
+              "id": 13,
+              "indonesian": "Tanda tangan",
+              "chinese": "签名",
+              "example_id": "Tolong tanda tangan di sini."
+            },
+            {
+              "id": 14,
+              "indonesian": "Komputer",
+              "chinese": "电脑",
+              "example_id": "Komputer saya rusak."
+            },
+            {
+              "id": 15,
+              "indonesian": "Printer",
+              "chinese": "打印机",
+              "example_id": "Printer tidak bisa nyala."
+            },
+            {
+              "id": 16,
+              "indonesian": "Email",
+              "chinese": "电子邮件",
+              "example_id": "Saya kirim lewat email."
+            },
+            {
+              "id": 17,
+              "indonesian": "Proyek",
+              "chinese": "项目",
+              "example_id": "Proyek ini sudah selesai."
+            },
+            {
+              "id": 18,
+              "indonesian": "Deadline",
+              "chinese": "截止日期",
+              "example_id": "Deadline-nya kapan?"
+            },
+            {
+              "id": 19,
+              "indonesian": "Laporan",
+              "chinese": "报告",
+              "example_id": "Tolong buat laporan mingguan."
+            },
+            {
+              "id": 20,
+              "indonesian": "Selesai",
+              "chinese": "完成",
+              "example_id": "Pekerjaan sudah selesai."
+            },
+            {
+              "id": 21,
+              "indonesian": "Mulai",
+              "chinese": "开始",
+              "example_id": "Kita mulai meetingnya."
+            },
+            {
+              "id": 22,
+              "indonesian": "Bantu",
+              "chinese": "帮助",
+              "example_id": "Tolong bantu saya."
+            },
+            {
+              "id": 23,
+              "indonesian": "Jadwal",
+              "chinese": "日程/时间表",
+              "example_id": "Ini jadwal meeting minggu ini."
+            },
+            {
+              "id": 24,
+              "indonesian": "Tugas",
+              "chinese": "任务",
+              "example_id": "Tugas saya sudah selesai."
+            },
+            {
+              "id": 25,
+              "indonesian": "Masalah",
+              "chinese": "问题",
+              "example_id": "Ada masalah dengan dokumen ini."
+            },
+            {
+              "id": 26,
+              "indonesian": "Solusi",
+              "chinese": "解决方案",
+              "example_id": "Kita perlu cari solusi."
+            },
+            {
+              "id": 27,
+              "indonesian": "Presentasi",
+              "chinese": "演示/汇报",
+              "example_id": "Besok ada presentasi."
+            },
+            {
+              "id": 28,
+              "indonesian": "Klien",
+              "chinese": "客户",
+              "example_id": "Klien dari Jakarta datang."
+            },
+            {
+              "id": 29,
+              "indonesian": "Telp / Telepon",
+              "chinese": "电话",
+              "example_id": "Ada telepon untuk Anda."
+            },
+            {
+              "id": 30,
+              "indonesian": "Foto kopi",
+              "chinese": "复印",
+              "example_id": "Tolong foto kopi dokumen ini."
+            }
+          ],
+          "sentences": [
+            {
+              "id": 1,
+              "indonesian": "Jam berapa masuk kerja?",
+              "chinese": "几点上班？"
+            },
+            {
+              "id": 2,
+              "indonesian": "Saya minta izin cuti satu hari.",
+              "chinese": "我请假一天。"
+            },
+            {
+              "id": 3,
+              "indonesian": "Besok ada meeting jam sepuluh.",
+              "chinese": "明天上午十点有会议。"
+            },
+            {
+              "id": 4,
+              "indonesian": "Tolong kirim dokumen ini ke bos.",
+              "chinese": "请把这份文件发给老板。"
+            },
+            {
+              "id": 5,
+              "indonesian": "Deadline-nya kapan?",
+              "chinese": "截止日期是什么时候？"
+            },
+            {
+              "id": 6,
+              "indonesian": "Pekerjaan sudah selesai belum?",
+              "chinese": "工作完成了吗？"
+            },
+            {
+              "id": 7,
+              "indonesian": "Bisa tolong bantu saya?",
+              "chinese": "能帮帮我吗？"
+            },
+            {
+              "id": 8,
+              "indonesian": "Komputer saya rusak.",
+              "chinese": "我的电脑坏了。"
+            },
+            {
+              "id": 9,
+              "indonesian": "Maaf, saya terlambat hari ini.",
+              "chinese": "对不起，我今天迟到了。"
+            },
+            {
+              "id": 10,
+              "indonesian": "Saya akan kirim laporan besok.",
+              "chinese": "我明天会发报告。"
+            }
+          ],
+          "dialogues": [
+            {
+              "id": 1,
+              "title": "与同事沟通工作",
+              "title_id": "Komunikasi Kerja dengan Rekan",
+              "lines": [
+                {
+                  "speaker": "A",
+                  "indonesian": "Budi, ada meeting jam sepuluh.",
+                  "chinese": "布迪，十点有会议。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Oh iya, di ruang mana?",
+                  "chinese": "哦对了，在哪个房间？"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Di ruang meeting lantai tiga.",
+                  "chinese": "在三楼会议室。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Tolong siapkan dokumen proyek.",
+                  "chinese": "请准备好项目文件。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Sudah, tapi perlu tanda tangan bos.",
+                  "chinese": "准备好了，但需要老板签字。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Baik, saya minta tanda tangan dulu.",
+                  "chinese": "好的，我先去要签字。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Deadline-nya hari Jumat, ya.",
+                  "chinese": "截止日期是周五。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Siap, tidak akan terlambat.",
+                  "chinese": "放心，不会迟的。"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "1-10",
+          "name": "Pelajaran 10",
+          "words": [
+            {
+              "id": 1,
+              "indonesian": "Kepala",
+              "chinese": "头",
+              "example_id": "Saya sakit kepala."
+            },
+            {
+              "id": 2,
+              "indonesian": "Perut",
+              "chinese": "肚子",
+              "example_id": "Perut saya sakit."
+            },
+            {
+              "id": 3,
+              "indonesian": "Gigi",
+              "chinese": "牙齿",
+              "example_id": "Gigi saya sakit."
+            },
+            {
+              "id": 4,
+              "indonesian": "Mata",
+              "chinese": "眼睛",
+              "example_id": "Mata saya merah."
+            },
+            {
+              "id": 5,
+              "indonesian": "Hidung",
+              "chinese": "鼻子",
+              "example_id": "Hidung saya tersumbat."
+            },
+            {
+              "id": 6,
+              "indonesian": "Telinga",
+              "chinese": "耳朵",
+              "example_id": "Telinga saya sakit."
+            },
+            {
+              "id": 7,
+              "indonesian": "Demam",
+              "chinese": "发烧",
+              "example_id": "Saya demam tinggi."
+            },
+            {
+              "id": 8,
+              "indonesian": "Batuk",
+              "chinese": "咳嗽",
+              "example_id": "Saya batuk sudah tiga hari."
+            },
+            {
+              "id": 9,
+              "indonesian": "Pilek",
+              "chinese": "流鼻涕",
+              "example_id": "Saya pilek dan batuk."
+            },
+            {
+              "id": 10,
+              "indonesian": "Obat",
+              "chinese": "药",
+              "example_id": "Saya butuh obat demam."
+            },
+            {
+              "id": 11,
+              "indonesian": "Dokter",
+              "chinese": "医生",
+              "example_id": "Saya mau ke dokter."
+            },
+            {
+              "id": 12,
+              "indonesian": "Rumah sakit",
+              "chinese": "医院",
+              "example_id": "Di mana rumah sakit terdekat?"
+            },
+            {
+              "id": 13,
+              "indonesian": "Apotek",
+              "chinese": "药店",
+              "example_id": "Ada apotek di sekitar sini?"
+            },
+            {
+              "id": 14,
+              "indonesian": "Resep",
+              "chinese": "处方",
+              "example_id": "Dokter kasih resep obat."
+            },
+            {
+              "id": 15,
+              "indonesian": "Suntik",
+              "chinese": "打针",
+              "example_id": "Saya tidak suka suntik."
+            },
+            {
+              "id": 16,
+              "indonesian": "Pijat",
+              "chinese": "按摩",
+              "example_id": "Pijat sedikit, pegal."
+            },
+            {
+              "id": 17,
+              "indonesian": "Luka",
+              "chinese": "伤口",
+              "example_id": "Lukanya sudah sembuh."
+            },
+            {
+              "id": 18,
+              "indonesian": "Alergi",
+              "chinese": "过敏",
+              "example_id": "Saya alergi obat."
+            },
+            {
+              "id": 19,
+              "indonesian": "Sembuh",
+              "chinese": "痊愈",
+              "example_id": "Kapan saya bisa sembuh?"
+            },
+            {
+              "id": 20,
+              "indonesian": "Istirahat",
+              "chinese": "休息",
+              "example_id": "Anda perlu istirahat."
+            }
+          ],
+          "sentences": [
+            {
+              "id": 1,
+              "indonesian": "Saya sakit kepala.",
+              "chinese": "我头疼。"
+            },
+            {
+              "id": 2,
+              "indonesian": "Di mana rumah sakit terdekat?",
+              "chinese": "最近的医院在哪里？"
+            },
+            {
+              "id": 3,
+              "indonesian": "Saya butuh obat demam.",
+              "chinese": "我需要退烧药。"
+            },
+            {
+              "id": 4,
+              "indonesian": "Saya demam dan batuk.",
+              "chinese": "我发烧和咳嗽。"
+            },
+            {
+              "id": 5,
+              "indonesian": "Dokter kasih resep obat.",
+              "chinese": "医生开了处方。"
+            },
+            {
+              "id": 6,
+              "indonesian": "Minum obat tiga kali sehari.",
+              "chinese": "每天吃三次药。"
+            },
+            {
+              "id": 7,
+              "indonesian": "Berapa lama saya bisa sembuh?",
+              "chinese": "我多久能好？"
+            },
+            {
+              "id": 8,
+              "indonesian": "Anda perlu istirahat yang cukup.",
+              "chinese": "您需要充分休息。"
+            },
+            {
+              "id": 9,
+              "indonesian": "Ada apotek dekat sini?",
+              "chinese": "附近有药店吗？"
+            },
+            {
+              "id": 10,
+              "indonesian": "Saya alergi makanan laut.",
+              "chinese": "我对海鲜过敏。"
+            }
+          ],
+          "dialogues": [
+            {
+              "id": 1,
+              "title": "在药店买药",
+              "title_id": "Membeli Obat di Apotek",
+              "lines": [
+                {
+                  "speaker": "A",
+                  "indonesian": "Selamat malam, Bu. Saya sakit kepala.",
+                  "chinese": "晚上好，夫人。我头疼。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Sudah berapa lama?",
+                  "chinese": "已经多久了？"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Sejak tadi malam. Dan juga batuk.",
+                  "chinese": "从昨晚开始。而且还咳嗽。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Ada resep dari dokter?",
+                  "chinese": "有医生的处方吗？"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Belum. Saya langsung ke sini.",
+                  "chinese": "还没有。我直接来这里的。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Ini obat sakit kepala dan batuk. Minum tiga kali sehari.",
+                  "chinese": "这是头疼和咳嗽药。每天吃三次。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Berapa harganya?",
+                  "chinese": "多少钱？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Lima puluh ribu rupiah.",
+                  "chinese": "五万卢比。"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "1-11",
+          "name": "Pelajaran 11",
+          "words": [
+            {
+              "id": 1,
+              "indonesian": "Siapa",
+              "chinese": "谁",
+              "example_id": "Siapa nama Anda?"
+            },
+            {
+              "id": 2,
+              "indonesian": "Apa",
+              "chinese": "什么",
+              "example_id": "Apa ini?"
+            },
+            {
+              "id": 3,
+              "indonesian": "Di mana",
+              "chinese": "在哪里",
+              "example_id": "Di mana kantor pos?"
+            },
+            {
+              "id": 4,
+              "indonesian": "Kapan",
+              "chinese": "什么时候",
+              "example_id": "Kapan dibuka?"
+            },
+            {
+              "id": 5,
+              "indonesian": "Bagaimana",
+              "chinese": "怎么样",
+              "example_id": "Bagaimana caranya?"
+            },
+            {
+              "id": 6,
+              "indonesian": "Mengapa",
+              "chinese": "为什么",
+              "example_id": "Mengapa terlambat?"
+            },
+            {
+              "id": 7,
+              "indonesian": "Berapa",
+              "chinese": "多少",
+              "example_id": "Berapa harganya?"
+            },
+            {
+              "id": 8,
+              "indonesian": "Berapa lama",
+              "chinese": "多久",
+              "example_id": "Berapa lama dari sini?"
+            },
+            {
+              "id": 9,
+              "indonesian": "Berapa banyak",
+              "chinese": "多少个",
+              "example_id": "Berapa banyak yang dibutuhkan?"
+            },
+            {
+              "id": 10,
+              "indonesian": "Bisa",
+              "chinese": "可以/能",
+              "example_id": "Bisa tolong saya?"
+            },
+            {
+              "id": 11,
+              "indonesian": "Boleh",
+              "chinese": "可以吗",
+              "example_id": "Boleh saya bertanya?"
+            },
+            {
+              "id": 12,
+              "indonesian": "Minta",
+              "chinese": "请求/要",
+              "example_id": "Saya mau minta tolong."
+            },
+            {
+              "id": 13,
+              "indonesian": "Butuh",
+              "chinese": "需要",
+              "example_id": "Saya butuh bantuan."
+            },
+            {
+              "id": 14,
+              "indonesian": "Tolong",
+              "chinese": "请帮忙",
+              "example_id": "Tolong tunjukkan jalannya."
+            },
+            {
+              "id": 15,
+              "indonesian": "Tunjukkan",
+              "chinese": "指出/展示",
+              "example_id": "Tolong tunjukkan ke saya."
+            },
+            {
+              "id": 16,
+              "indonesian": "Jelaskan",
+              "chinese": "解释",
+              "example_id": "Tolong jelaskan sekali lagi."
+            },
+            {
+              "id": 17,
+              "indonesian": "Mengerti",
+              "chinese": "明白",
+              "example_id": "Saya tidak mengerti."
+            },
+            {
+              "id": 18,
+              "indonesian": "Bicara",
+              "chinese": "说话",
+              "example_id": "Anda bicara bahasa Indonesia?"
+            },
+            {
+              "id": 19,
+              "indonesian": "Tulis",
+              "chinese": "写",
+              "example_id": "Tolong tulis di sini."
+            },
+            {
+              "id": 20,
+              "indonesian": "Baca",
+              "chinese": "读",
+              "example_id": "Saya bisa baca sedikit."
+            },
+            {
+              "id": 21,
+              "indonesian": "Paham",
+              "chinese": "理解/懂",
+              "example_id": "Saya sudah paham."
+            },
+            {
+              "id": 22,
+              "indonesian": "Bertanya",
+              "chinese": "问",
+              "example_id": "Boleh saya bertanya?"
+            },
+            {
+              "id": 23,
+              "indonesian": "Jawab",
+              "chinese": "回答",
+              "example_id": "Tolong jawab pertanyaan ini."
+            },
+            {
+              "id": 24,
+              "indonesian": "Informasi",
+              "chinese": "信息",
+              "example_id": "Saya butuh informasi ini."
+            },
+            {
+              "id": 25,
+              "indonesian": "Hubungi",
+              "chinese": "联系",
+              "example_id": "Hubungi kami di nomor ini."
+            },
+            {
+              "id": 26,
+              "indonesian": "Nomor",
+              "chinese": "号码",
+              "example_id": "Nomor telepon Anda berapa?"
+            },
+            {
+              "id": 27,
+              "indonesian": "Alamat",
+              "chinese": "地址",
+              "example_id": "Alamat kantor Anda di mana?"
+            },
+            {
+              "id": 28,
+              "indonesian": "Telepon",
+              "chinese": "电话",
+              "example_id": "Tolong telepon dokter."
+            },
+            {
+              "id": 29,
+              "indonesian": "Kirim",
+              "chinese": "发送",
+              "example_id": "Kirim ke alamat ini."
+            },
+            {
+              "id": 30,
+              "indonesian": "Terima",
+              "chinese": "收到",
+              "example_id": "Sudah terima atau belum?"
+            }
+          ],
+          "sentences": [
+            {
+              "id": 1,
+              "indonesian": "Boleh saya bertanya?",
+              "chinese": "我可以问一下吗？"
+            },
+            {
+              "id": 2,
+              "indonesian": "Siapa yang bertanggung jawab di sini?",
+              "chinese": "这里谁负责？"
+            },
+            {
+              "id": 3,
+              "indonesian": "Di mana saya bisa mendaftar?",
+              "chinese": "我在哪里可以注册？"
+            },
+            {
+              "id": 4,
+              "indonesian": "Kapan jam operasionalnya?",
+              "chinese": "营业时间是什么时候？"
+            },
+            {
+              "id": 5,
+              "indonesian": "Bagaimana cara mendaftar?",
+              "chinese": "怎么注册？"
+            },
+            {
+              "id": 6,
+              "indonesian": "Berapa biayanya?",
+              "chinese": "费用是多少？"
+            },
+            {
+              "id": 7,
+              "indonesian": "Bisa bicara bahasa Inggris?",
+              "chinese": "会说英语吗？"
+            },
+            {
+              "id": 8,
+              "indonesian": "Saya tidak mengerti, tolong jelaskan lagi.",
+              "chinese": "我不明白，请再解释一下。"
+            },
+            {
+              "id": 9,
+              "indonesian": "Nomor telepon Anda berapa?",
+              "chinese": "您的电话号码是多少？"
+            },
+            {
+              "id": 10,
+              "indonesian": "Bisa kirim ke email saya?",
+              "chinese": "能发到我的邮箱吗？"
+            }
+          ],
+          "dialogues": [
+            {
+              "id": 1,
+              "title": "在服务台咨询",
+              "title_id": "Konsultasi di Loket Informasi",
+              "lines": [
+                {
+                  "speaker": "A",
+                  "indonesian": "Permisi, boleh saya bertanya?",
+                  "chinese": "打扰一下，我可以问一下吗？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Tentu, silakan.",
+                  "chinese": "当然可以，请说。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Di mana saya bisa buat SIM internasional?",
+                  "chinese": "我在哪里可以办国际驾照？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Di kantor SAMSAT, lantai dua.",
+                  "chinese": "在SAMSAT办公室二楼。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Kapan buka? Dan berapa biayanya?",
+                  "chinese": "什么时候开门？费用多少？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Buka jam delapan pagi. Biayanya dua ratus ribu rupiah.",
+                  "chinese": "早上八点开门。费用二十万卢比。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Dokumen apa yang perlu saya bawa?",
+                  "chinese": "我需要带什么文件？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Paspor, foto, dan KTP asli.",
+                  "chinese": "护照、照片和身份证原件。"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "1-12",
+          "name": "Pelajaran 12",
+          "words": [
+            {
+              "id": 1,
+              "indonesian": "Makan",
+              "chinese": "吃",
+              "example_id": "Sudah makan?"
+            },
+            {
+              "id": 2,
+              "indonesian": "Minum",
+              "chinese": "喝",
+              "example_id": "Minum air putih banyak."
+            },
+            {
+              "id": 3,
+              "indonesian": "Tidur",
+              "chinese": "睡觉",
+              "example_id": "Saya tidur jam sepuluh malam."
+            },
+            {
+              "id": 4,
+              "indonesian": "Bangun",
+              "chinese": "起床",
+              "example_id": "Bangun tidur jam lima pagi."
+            },
+            {
+              "id": 5,
+              "indonesian": "Mandi",
+              "chinese": "洗澡",
+              "example_id": "Saya mandi setiap pagi."
+            },
+            {
+              "id": 6,
+              "indonesian": "Pergi",
+              "chinese": "去",
+              "example_id": "Saya pergi ke kantor."
+            },
+            {
+              "id": 7,
+              "indonesian": "Datang",
+              "chinese": "来",
+              "example_id": "Dia sudah datang."
+            },
+            {
+              "id": 8,
+              "indonesian": "Pulang",
+              "chinese": "回/下班",
+              "example_id": "Sudah waktunya pulang."
+            },
+            {
+              "id": 9,
+              "indonesian": "Bawa",
+              "chinese": "带/携带",
+              "example_id": "Bawa payung, nanti hujan."
+            },
+            {
+              "id": 10,
+              "indonesian": "Ambil",
+              "chinese": "拿/取",
+              "example_id": "Ambil dompet saya, tolong."
+            },
+            {
+              "id": 11,
+              "indonesian": "Kasih",
+              "chinese": "给",
+              "example_id": "Tolong kasih saya air."
+            },
+            {
+              "id": 12,
+              "indonesian": "Tunggu",
+              "chinese": "等",
+              "example_id": "Tunggu sebentar."
+            },
+            {
+              "id": 13,
+              "indonesian": "Lihat",
+              "chinese": "看",
+              "example_id": "Lihat di sana!"
+            },
+            {
+              "id": 14,
+              "indonesian": "Dengar",
+              "chinese": "听",
+              "example_id": "Saya tidak dengar jelas."
+            },
+            {
+              "id": 15,
+              "indonesian": "Bicara",
+              "chinese": "说",
+              "example_id": "Bicara pelan-pelan."
+            },
+            {
+              "id": 16,
+              "indonesian": "Tulis",
+              "chinese": "写",
+              "example_id": "Tulis nama Anda di sini."
+            },
+            {
+              "id": 17,
+              "indonesian": "Buka",
+              "chinese": "打开",
+              "example_id": "Buka pintunya, tolong."
+            },
+            {
+              "id": 18,
+              "indonesian": "Tutup",
+              "chinese": "关",
+              "example_id": "Tutup pintu, ya."
+            },
+            {
+              "id": 19,
+              "indonesian": "Pakai",
+              "chinese": "穿/用",
+              "example_id": "Pakai baju putih."
+            },
+            {
+              "id": 20,
+              "indonesian": "Cari",
+              "chinese": "找",
+              "example_id": "Saya sedang cari kunci."
+            },
+            {
+              "id": 21,
+              "indonesian": "Ingat",
+              "chinese": "记得",
+              "example_id": "Saya tidak ingat."
+            },
+            {
+              "id": 22,
+              "indonesian": "Lupa",
+              "chinese": "忘记",
+              "example_id": "Maaf, saya lupa."
+            },
+            {
+              "id": 23,
+              "indonesian": "Paham",
+              "chinese": "懂/理解",
+              "example_id": "Sudah paham?"
+            },
+            {
+              "id": 24,
+              "indonesian": "Coba",
+              "chinese": "尝试",
+              "example_id": "Saya coba dulu."
+            },
+            {
+              "id": 25,
+              "indonesian": "Bisa",
+              "chinese": "可以/会",
+              "example_id": "Saya bisa bahasa Indonesia sedikit."
+            },
+            {
+              "id": 26,
+              "indonesian": "Suka",
+              "chinese": "喜欢",
+              "example_id": "Saya suka makanan Indonesia."
+            },
+            {
+              "id": 27,
+              "indonesian": "Tidak suka",
+              "chinese": "不喜欢",
+              "example_id": "Saya tidak suka pedas."
+            },
+            {
+              "id": 28,
+              "indonesian": "Mau",
+              "chinese": "想要",
+              "example_id": "Saya mau minum kopi."
+            },
+            {
+              "id": 29,
+              "indonesian": "Tidak mau",
+              "chinese": "不想要",
+              "example_id": "Saya tidak mau pergi."
+            },
+            {
+              "id": 30,
+              "indonesian": "Kalau",
+              "chinese": "如果/那么",
+              "example_id": "Kalau hujan, kita tidak pergi."
+            }
+          ],
+          "sentences": [
+            {
+              "id": 1,
+              "indonesian": "Selamat pagi, apa kabar?",
+              "chinese": "早上好，你好吗？"
+            },
+            {
+              "id": 2,
+              "indonesian": "Saya dari Tiongkok, baru di sini.",
+              "chinese": "我来自中国，刚到这里。"
+            },
+            {
+              "id": 3,
+              "indonesian": "Berapa harga satu porsi nasi goreng?",
+              "chinese": "一份炒饭多少钱？"
+            },
+            {
+              "id": 4,
+              "indonesian": "Bagaimana cara ke rumah sakit?",
+              "chinese": "去医院怎么走？"
+            },
+            {
+              "id": 5,
+              "indonesian": "Saya sakit kepala, butuh obat.",
+              "chinese": "我头疼，需要药。"
+            },
+            {
+              "id": 6,
+              "indonesian": "Besok ada meeting jam sepuluh.",
+              "chinese": "明天上午十点有会议。"
+            },
+            {
+              "id": 7,
+              "indonesian": "Cuaca hari ini sangat panas.",
+              "chinese": "今天天气很热。"
+            },
+            {
+              "id": 8,
+              "indonesian": "Keluarga saya ada lima orang.",
+              "chinese": "我家有五口人。"
+            },
+            {
+              "id": 9,
+              "indonesian": "Saya mau pesan ayam bakar, tidak pedas.",
+              "chinese": "我要点烤鸡，不要辣。"
+            },
+            {
+              "id": 10,
+              "indonesian": "Kalau hujan, kita makan di dalam.",
+              "chinese": "如果下雨，我们在里面吃。"
+            }
+          ],
+          "dialogues": [
+            {
+              "id": 1,
+              "title": "新员工第一天",
+              "title_id": "Hari Pertama Karyawan Baru",
+              "lines": [
+                {
+                  "speaker": "A",
+                  "indonesian": "Selamat pagi, Pak. Saya karyawan baru.",
+                  "chinese": "早上好，先生。我是新员工。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Selamat datang! Nama Anda siapa?",
+                  "chinese": "欢迎！你叫什么名字？"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Nama saya Li Wei, dari Tiongkok.",
+                  "chinese": "我叫李伟，来自中国。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Oh, dari Tiongkok. Sudah bisa bahasa Indonesia?",
+                  "chinese": "哦，来自中国。会说印尼语了吗？"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Sedikit. Saya masih belajar.",
+                  "chinese": "会一点。我还在学。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Tidak apa-apa. Nanti saya perkenalkan dengan rekan kerja.",
+                  "chinese": "没关系。等下我介绍你给同事们。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Terima kasih banyak, Pak.",
+                  "chinese": "非常感谢，先生。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Mari, saya tunjukkan kantor Anda.",
+                  "chinese": "来吧，我带你去你的办公室。"
+                }
+              ]
+            },
+            {
+              "id": 2,
+              "title": "综合日常对话",
+              "title_id": "Percakapan Sehari-hari Lengkap",
+              "lines": [
+                {
+                  "speaker": "A",
+                  "indonesian": "Halo, Budi! Mau ke mana?",
+                  "chinese": "你好，布迪！要去哪儿？"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Saya mau ke supermarket. Beli sayur dan daging.",
+                  "chinese": "我要去超市。买蔬菜和肉。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Oh, saya juga mau beli beberapa barang.",
+                  "chinese": "哦，我也要买些东西。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Mau ikut? Kita naik motor sama-sama.",
+                  "chinese": "要一起吗？我们骑同一辆摩托。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Bagus! Tapi tunggu, saya mau makan dulu. Lapar sekali.",
+                  "chinese": "好啊！但等等，我先吃饭。太饿了。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Oke, makan di warung sana. Saya juga belum makan.",
+                  "chinese": "好的，在那边的小饭馆吃。我也还没吃。"
+                },
+                {
+                  "speaker": "A",
+                  "indonesian": "Setelah makan, kita pergi ke supermarket.",
+                  "chinese": "吃完后我们去超市。"
+                },
+                {
+                  "speaker": "B",
+                  "indonesian": "Setuju. Ayo!",
+                  "chinese": "同意。走吧！"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

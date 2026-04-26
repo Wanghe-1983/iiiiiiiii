@@ -11,17 +11,16 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
-    <!-- 引入必要依赖 -->
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link rel="stylesheet" href="style.css?v=202604251635">
+    <link rel="stylesheet" href="modules.css?v=202604261200">
 </head>
 <body>
     <div id="visitor-timer" class="visitor-timer" style="display:none;position:fixed;top:12px;right:12px;z-index:9999;background:rgba(17,24,39,0.95);color:#f59e0b;padding:8px 16px;border-radius:20px;font-size:0.85rem;font-weight:600;border:1px solid rgba(245,158,11,0.3);backdrop-filter:blur(10px);box-shadow:0 4px 20px rgba(0,0,0,0.3);">
         <i class="fas fa-clock"></i> 访客剩余 <span id="visitor-remaining">--:--</span>
     </div>
     <script>
-    // 恢复访客计时器
     (function(){
         var isVisitor = localStorage.getItem('fmi_visitor_login');
         var expire = parseInt(localStorage.getItem('fmi_visitor_expire') || '0');
@@ -34,7 +33,6 @@
                 var left = endTime - Date.now();
                 if (left <= 0) {
                     timer.style.display = 'none';
-                    // 清除访客登录状态并跳转登录页
                     localStorage.removeItem('fmi_token');
                     localStorage.removeItem('fmi_user');
                     localStorage.removeItem('fmi_login_status');
@@ -56,8 +54,14 @@
     })();
     </script>
     <div id="app"></div>
-    <!-- 把JS放在body最后，确保DOM加载完成 -->
     <script src="config.js?v=202604251635"></script>
+    <!-- 旧版功能（侧边栏、统计页、管理后台等兼容保留） -->
     <script src="app.js?v=202604251635"></script>
+    <!-- 新版模块 -->
+    <script src="course-content-loader.js?v=202604261200"></script>
+    <script src="module-study.js?v=202604261200"></script>
+    <script src="module-study-practice.js?v=202604261200"></script>
+    <script src="module-challenge.js?v=202604261200"></script>
+    <script src="app-v2.js?v=202604261200"></script>
 </body>
 </html>

@@ -1,0 +1,1376 @@
+/* ============================================
+   modules.css - 勤学苦练 + 闯天关 模块样式
+   ============================================ */
+
+/* ========== 通用模块容器 ========== */
+.study-module, .challenge-module {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* ========== 子Tab ========== */
+.study-sub-tabs, .challenge-sub-tabs {
+    display: flex;
+    gap: 4px;
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 16px;
+}
+
+.sub-tab {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.sub-tab:hover {
+    color: #e2e8f0;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.sub-tab.active {
+    background: var(--accent, #6366f1);
+    color: white;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+/* ========== 课程选择页 ========== */
+.course-page {
+    padding: 0 4px;
+}
+
+.level-tabs-scroll {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 0 12px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.level-tabs-scroll::-webkit-scrollbar { display: none; }
+
+.level-tab {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(30, 41, 59, 0.4);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 80px;
+}
+
+.level-tab:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.level-tab-icon { font-size: 1.2rem; }
+.level-tab-name { font-size: 0.8rem; font-weight: 600; }
+.level-tab-pct { font-size: 0.7rem; opacity: 0.7; }
+
+/* ========== 掌握进度 ========== */
+.mastery-progress-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    background: rgba(30, 41, 59, 0.3);
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.mastery-progress-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mastery-label {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    min-width: 60px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mastery-count {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.mastery-bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(30, 41, 59, 0.6);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.mastery-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+
+.mastery-pct {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    min-width: 36px;
+    text-align: right;
+}
+
+/* ========== 单元卡片 ========== */
+.unit-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.unit-card {
+    background: rgba(30, 41, 59, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.unit-card:hover {
+    background: rgba(30, 41, 59, 0.5);
+    border-color: rgba(99, 102, 241, 0.3);
+    transform: translateX(4px);
+}
+
+.unit-card.selected {
+    border-color: var(--accent, #6366f1);
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.unit-card.mastered {
+    opacity: 0.7;
+}
+
+.unit-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.unit-card-number {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.unit-card-info { flex: 1; min-width: 0; }
+
+.unit-card-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.unit-card-meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.meta-tag {
+    font-size: 0.78rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.meta-tag.done { color: #10b981; }
+.meta-tag i { font-size: 0.7rem; }
+
+.unit-card-arrow {
+    color: #475569;
+    font-size: 0.85rem;
+}
+
+/* ========== 学习页 ========== */
+.learn-page {
+    padding: 0 4px;
+}
+
+.learn-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.learn-unit-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.back-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: rgba(255, 255, 255, 0.06);
+    color: #94a3b8;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.back-btn:hover { background: rgba(255, 255, 255, 0.12); color: #e2e8f0; }
+
+.learn-unit-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+.review-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 6px;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.learn-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.hide-toggle-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+    color: #94a3b8;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+}
+
+.hide-toggle-btn:hover { color: #e2e8f0; border-color: rgba(255, 255, 255, 0.2); }
+
+.learn-progress-bar {
+    height: 6px;
+    background: rgba(30, 41, 59, 0.6);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.learn-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #6366f1, #a78bfa);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.learn-progress-text {
+    font-size: 0.75rem;
+    color: #64748b;
+    text-align: right;
+    margin-bottom: 16px;
+}
+
+/* ========== 学习卡片 ========== */
+.learn-card {
+    background: rgba(30, 41, 59, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.word-badge {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.sentence-badge {
+    background: rgba(99, 102, 241, 0.12);
+    color: #6366f1;
+    border: 1px solid rgba(99, 102, 241, 0.25);
+}
+
+.dialogue-badge {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.card-indo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+}
+
+.card-indo:hover { color: var(--accent, #6366f1); }
+
+.card-play-icon { font-size: 1rem; color: var(--accent, #6366f1); opacity: 0.6; }
+
+.card-zh {
+    font-size: 1.2rem;
+    color: #94a3b8;
+    transition: opacity 0.2s;
+}
+
+/* ========== 对话卡片 ========== */
+.dialogue-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.dialogue-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dialogue-line {
+    padding: 10px 14px;
+    border-radius: 10px;
+    max-width: 85%;
+}
+
+.dialogue-line.speaker-a {
+    align-self: flex-start;
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+.dialogue-line.speaker-b {
+    align-self: flex-end;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+.dialogue-speaker {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.dialogue-indo {
+    font-size: 0.95rem;
+    color: #e2e8f0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dialogue-play-icon { font-size: 0.75rem; opacity: 0.5; }
+
+.dialogue-zh {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+
+/* ========== 学习导航 ========== */
+.learn-nav-row {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+}
+
+.learn-nav-btn {
+    padding: 10px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+    color: #94a3b8;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.learn-nav-btn:hover:not(:disabled) {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #e2e8f0;
+}
+
+.learn-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.learn-nav-btn.primary {
+    background: var(--accent, #6366f1);
+    border-color: var(--accent, #6366f1);
+    color: white;
+}
+
+.learn-nav-btn.primary:hover {
+    background: #4f46e5;
+}
+
+/* ========== 练习页 ========== */
+.practice-page {
+    padding: 0 4px;
+}
+
+.practice-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.practice-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+}
+
+.practice-unit-name {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.practice-stats-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.practice-stat-card {
+    flex: 1;
+    text-align: center;
+    padding: 14px;
+    background: rgba(30, 41, 59, 0.3);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.practice-stat-num {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #a5b4fc;
+}
+
+.practice-stat-label {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.practice-section-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-bottom: 10px;
+}
+
+.practice-type-section, .practice-mastery-section {
+    margin-bottom: 20px;
+}
+
+.practice-type-btns {
+    display: flex;
+    gap: 8px;
+}
+
+.ptype-btn {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+    color: #94a3b8;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.ptype-btn:hover {
+    border-color: rgba(99, 102, 241, 0.3);
+    color: #e2e8f0;
+}
+
+.ptype-btn.active {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.4);
+    color: #a5b4fc;
+}
+
+.mastery-check-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    background: rgba(30, 41, 59, 0.3);
+    border-radius: 12px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.mastery-check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    color: #cbd5e1;
+    font-size: 0.9rem;
+}
+
+.mastery-check-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--accent, #6366f1);
+    cursor: pointer;
+}
+
+/* ========== 答题界面 ========== */
+.quiz-container {
+    padding: 16px 0;
+}
+
+.quiz-progress-bar {
+    height: 6px;
+    background: rgba(30, 41, 59, 0.6);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.quiz-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #34d399);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.quiz-counter {
+    font-size: 0.75rem;
+    color: #64748b;
+    text-align: right;
+    margin-bottom: 16px;
+}
+
+.quiz-type-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    background: rgba(99, 102, 241, 0.12);
+    color: #a5b4fc;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.quiz-type-tag.fill-tag {
+    background: rgba(245, 158, 11, 0.12);
+    color: #fbbf24;
+}
+
+.quiz-question {
+    background: rgba(30, 41, 59, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.quiz-indo {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.quiz-prompt {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.quiz-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(30, 41, 59, 0.2);
+    border-radius: 10px;
+    cursor: pointer;
+    color: #cbd5e1;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    text-align: left;
+    width: 100%;
+}
+
+.quiz-option:hover {
+    border-color: rgba(99, 102, 241, 0.4);
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.quiz-option.correct {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+}
+
+.quiz-option.wrong {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+.quiz-option-letter {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+.quiz-option-text {
+    flex: 1;
+}
+
+/* ========== 填空题 ========== */
+.fill-input-area {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.fill-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(15, 23, 42, 0.6);
+    color: #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.fill-input:focus {
+    border-color: var(--accent, #6366f1);
+}
+
+.fill-submit-btn {
+    padding: 12px 24px;
+    background: var(--accent, #6366f1);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.fill-submit-btn:hover { background: #4f46e5; }
+
+.fill-feedback {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+}
+
+.fill-feedback.correct {
+    background: rgba(16, 185, 129, 0.1);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.fill-feedback.wrong {
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.fill-actions {
+    text-align: center;
+}
+
+.fill-next-btn {
+    padding: 10px 28px;
+    background: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.fill-next-btn:hover {
+    background: rgba(99, 102, 241, 0.25);
+}
+
+/* ========== 答题结果 ========== */
+.quiz-result {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.result-icon {
+    font-size: 3rem;
+    color: #a5b4fc;
+    margin-bottom: 12px;
+}
+
+.result-msg {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 16px;
+}
+
+.result-score {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #a5b4fc;
+    margin-bottom: 4px;
+}
+
+.result-pct {
+    font-size: 1rem;
+    color: #64748b;
+    margin-bottom: 24px;
+}
+
+.result-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.result-btn {
+    padding: 10px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.result-btn.retry {
+    background: rgba(99, 102, 241, 0.15);
+    color: #a5b4fc;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.result-btn.retry:hover { background: rgba(99, 102, 241, 0.25); }
+
+.result-btn.back {
+    background: transparent;
+    color: #94a3b8;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.result-btn.back:hover { color: #e2e8f0; border-color: rgba(255, 255, 255, 0.2); }
+
+/* ========== 闯天关 - 关卡地图 ========== */
+.stages-page {
+    padding: 0 4px;
+}
+
+.stages-summary {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.summary-card {
+    flex: 1;
+    text-align: center;
+    padding: 16px;
+    background: rgba(30, 41, 59, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+}
+
+.summary-num {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #fbbf24;
+}
+
+.summary-label {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.stage-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 10px;
+}
+
+.stage-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+    text-align: center;
+    min-height: 90px;
+}
+
+.stage-card.available {
+    background: rgba(30, 41, 59, 0.4);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.stage-card.available:hover {
+    border-color: rgba(99, 102, 241, 0.6);
+    transform: translateY(-2px);
+}
+
+.stage-card.current {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: var(--accent, #6366f1);
+    animation: pulse-border 2s ease-in-out infinite;
+}
+
+@keyframes pulse-border {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(99, 102, 241, 0); }
+}
+
+.stage-card.cleared {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.stage-card.locked {
+    background: rgba(30, 41, 59, 0.2);
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.stage-number {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+}
+
+.stage-icon {
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+    color: #94a3b8;
+}
+
+.stage-card.current .stage-icon { color: var(--accent, #6366f1); }
+.stage-card.cleared .stage-icon { color: #10b981; }
+
+.stage-name {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 80px;
+}
+
+.stage-type {
+    font-size: 0.65rem;
+    color: #475569;
+}
+
+.stage-best {
+    font-size: 0.65rem;
+    color: #10b981;
+    font-weight: 600;
+}
+
+.stage-hint {
+    font-size: 0.65rem;
+    color: var(--accent, #6366f1);
+    font-weight: 600;
+}
+
+.mini-stars {
+    display: flex;
+    gap: 2px;
+    justify-content: center;
+}
+
+.mini-stars .fa-star {
+    font-size: 0.75rem;
+    color: #475569;
+}
+
+.mini-stars .fa-star.earned {
+    color: #fbbf24;
+}
+
+/* ========== 闯天关 - 答题 ========== */
+.challenge-play-page {
+    padding: 0 4px;
+}
+
+.challenge-play-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.challenge-play-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #e2e8f0;
+}
+
+.challenge-timer {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #f59e0b;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.challenge-progress-bar {
+    height: 6px;
+    background: rgba(30, 41, 59, 0.6);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.challenge-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.challenge-progress-text {
+    font-size: 0.75rem;
+    color: #64748b;
+    text-align: right;
+    margin-bottom: 16px;
+}
+
+.challenge-question-area {
+    min-height: 300px;
+}
+
+.challenge-q-type {
+    display: inline-block;
+    padding: 2px 10px;
+    background: rgba(245, 158, 11, 0.12);
+    color: #fbbf24;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.challenge-q-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 8px;
+}
+
+.challenge-q-indo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.challenge-q-prompt {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin-bottom: 16px;
+}
+
+.challenge-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.challenge-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(30, 41, 59, 0.2);
+    border-radius: 10px;
+    cursor: pointer;
+    color: #cbd5e1;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    text-align: left;
+    width: 100%;
+}
+
+.challenge-option:hover {
+    border-color: rgba(245, 158, 11, 0.4);
+    background: rgba(245, 158, 11, 0.08);
+}
+
+.challenge-option.correct {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+}
+
+.challenge-option.wrong {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+.challenge-option-letter {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+.challenge-option-text {
+    flex: 1;
+}
+
+/* ========== 闯关结果 ========== */
+.challenge-result-page {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.challenge-result-icon {
+    margin-bottom: 16px;
+}
+
+.challenge-result-icon .mini-stars .fa-star.earned {
+    font-size: 2rem;
+}
+
+.challenge-result-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #e2e8f0;
+    margin-bottom: 20px;
+}
+
+.challenge-result-stats {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.result-stat {
+    text-align: center;
+}
+
+.result-stat-label {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.result-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #cbd5e1;
+}
+
+.result-stat-value.highlight {
+    color: #fbbf24;
+    font-size: 2rem;
+}
+
+.new-record-badge {
+    display: inline-block;
+    padding: 6px 20px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.1));
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    animation: record-glow 1.5s ease-in-out infinite;
+}
+
+@keyframes record-glow {
+    0%, 100% { box-shadow: 0 0 8px rgba(245, 158, 11, 0.3); }
+    50% { box-shadow: 0 0 16px rgba(245, 158, 11, 0.5); }
+}
+
+/* ========== 排行榜 ========== */
+.rank-page {
+    padding: 0 4px;
+}
+
+.champion-banner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(251, 191, 36, 0.06));
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 14px;
+    margin-bottom: 16px;
+}
+
+.champion-trophy {
+    font-size: 2rem;
+    color: #fbbf24;
+}
+
+.champion-text { flex: 1; }
+
+.champion-title {
+    font-size: 0.75rem;
+    color: #f59e0b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.champion-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #e2e8f0;
+}
+
+.champion-score {
+    font-size: 0.85rem;
+    color: #fbbf24;
+    font-weight: 600;
+}
+
+.rank-period-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.rank-period-btn {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+    color: #94a3b8;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.rank-period-btn:hover { border-color: rgba(255, 255, 255, 0.2); color: #e2e8f0; }
+
+.rank-period-btn.active {
+    background: rgba(245, 158, 11, 0.12);
+    border-color: rgba(245, 158, 11, 0.3);
+    color: #fbbf24;
+}
+
+.rank-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.rank-header, .rank-item {
+    display: grid;
+    grid-template-columns: 50px 1fr 60px 60px;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 8px;
+}
+
+.rank-header {
+    font-size: 0.78rem;
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.rank-item {
+    background: rgba(30, 41, 59, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    transition: all 0.2s;
+}
+
+.rank-item:hover {
+    background: rgba(30, 41, 59, 0.4);
+}
+
+.rank-me {
+    border-color: rgba(99, 102, 241, 0.3);
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.rank-position {
+    text-align: center;
+    font-weight: 700;
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
+
+.rank-position.rank-top {
+    color: #fbbf24;
+}
+
+.rank-name {
+    font-weight: 500;
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rank-company {
+    text-align: center;
+    font-size: 0.78rem;
+    color: #64748b;
+}
+
+.rank-score {
+    text-align: right;
+    font-weight: 700;
+    color: #a5b4fc;
+    font-size: 0.9rem;
+}
+
+.rank-item.rank-1 { border-left: 3px solid #fbbf24; }
+.rank-item.rank-2 { border-left: 3px solid #94a3b8; }
+.rank-item.rank-3 { border-left: 3px solid #cd7f32; }
+
+/* ========== 响应式 ========== */
+@media (max-width: 640px) {
+    .stage-grid {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+        gap: 6px;
+    }
+    .stage-card { padding: 10px 4px; min-height: 70px; }
+    .stage-number { font-size: 0.9rem; }
+    .stage-name { font-size: 0.6rem; max-width: 60px; }
+    .card-indo { font-size: 1.4rem; }
+    .quiz-indo { font-size: 1.2rem; }
+    .champion-name { font-size: 0.95rem; }
+}
