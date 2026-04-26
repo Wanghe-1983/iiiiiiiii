@@ -1408,3 +1408,162 @@
     color: #fff;
     box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
 }
+
+
+/* ========== 主页样式 ========== */
+.home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 220px);
+    padding: 40px 20px;
+    animation: homeFadeIn 0.6s ease;
+}
+
+@keyframes homeFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.home-hero {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.home-title {
+    font-size: 2.4rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #6366f1, #a78bfa, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+    letter-spacing: -0.5px;
+}
+
+.home-subtitle {
+    font-size: 1.1rem;
+    color: #64748b;
+    font-weight: 400;
+    letter-spacing: 2px;
+}
+
+.home-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    max-width: 640px;
+    width: 100%;
+}
+
+.home-card {
+    background: var(--glass);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 20px;
+    padding: 32px 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.home-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.home-card-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: #fff;
+    margin-bottom: 18px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.home-card-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 8px;
+}
+
+.home-card-desc {
+    font-size: 0.82rem;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+.home-card-arrow {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.15);
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+.home-card:hover .home-card-arrow {
+    color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-50%) translateX(3px);
+}
+
+/* ========== 闯天关答题控制区 ========== */
+.challenge-controls {
+    display: flex;
+    gap: 20px;
+    margin-top: 16px;
+    padding: 16px 20px;
+    background: rgba(30, 41, 59, 0.3);
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.challenge-controls .vslider-box {
+    flex: 1;
+    min-width: 0;
+}
+
+.challenge-controls .vslider-label {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin-bottom: 6px;
+}
+
+.challenge-controls .vslider-range {
+    font-size: 0.7rem;
+}
+
+/* 闯天关滑块需要独立ID避免与主页面滑块冲突 */
+#ch-rate-slider,
+#ch-loop-slider {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    pointer-events: none;
+    z-index: 2;
+    margin: 0;
+}
+
+@media (max-width: 640px) {
+    .home-title { font-size: 1.8rem; }
+    .home-subtitle { font-size: 0.95rem; }
+    .home-cards { grid-template-columns: 1fr; gap: 16px; max-width: 360px; }
+    .home-card { padding: 24px 20px; }
+    .home-container { min-height: calc(100vh - 180px); padding: 24px 16px; }
+    .challenge-controls { flex-direction: column; gap: 12px; }
+}

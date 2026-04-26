@@ -256,7 +256,8 @@ function initUI() {
 
 <main class="main-container">
     <div class="nav-tabs" id="nav-tabs">
-        <button class="nav-tab active" onclick="switchMainPage('study')" data-tab="study"><i class="fas fa-book-open"></i> 勤学苦练</button>
+        <button class="nav-tab active" onclick="switchMainPage('home')" data-tab="home"><i class="fas fa-home"></i> 主页</button>
+        <button class="nav-tab" onclick="switchMainPage('study')" data-tab="study"><i class="fas fa-book-open"></i> 勤学苦练</button>
         <button class="nav-tab" onclick="switchMainPage('challenge')" data-tab="challenge"><i class="fas fa-gamepad"></i> 闯天关</button>
     </div>
     <header style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
@@ -267,13 +268,42 @@ function initUI() {
     </header>
 
     <!-- 勤学苦练子Tab -->
-    <div class="study-sub-tabs" id="study-sub-tabs">
+    <!-- 主页 -->
+    <div id="page-home">
+        <div class="home-container">
+            <div class="home-hero">
+                <h1 class="home-title">印尼语学习助手</h1>
+                <p class="home-subtitle">BIPA 学习平台</p>
+            </div>
+            <div class="home-cards">
+                <div class="home-card" onclick="switchMainPage('study')">
+                    <div class="home-card-icon" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="home-card-title">勤学苦练</div>
+                    <div class="home-card-desc">课程学习 · 选择填空 · 学习统计</div>
+                    <div class="home-card-arrow"><i class="fas fa-chevron-right"></i></div>
+                </div>
+                <div class="home-card" onclick="switchMainPage('challenge')">
+                    <div class="home-card-icon" style="background:linear-gradient(135deg,#f59e0b,#f97316);">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <div class="home-card-title">闯天关</div>
+                    <div class="home-card-desc">闯关挑战 · 计时答题 · 排行榜</div>
+                    <div class="home-card-arrow"><i class="fas fa-chevron-right"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 勤学苦练区域 -->
+    <div class="study-sub-tabs" id="study-sub-tabs" style="display:none;">
         <button class="sub-tab active" data-stab="learn" onclick="switchStudySubTab('learn')"><i class="fas fa-book-open"></i> 学习</button>
         <button class="sub-tab" data-stab="practice" onclick="switchStudySubTab('practice')"><i class="fas fa-pen-fancy"></i> 练习</button>
         <button class="sub-tab" data-stab="stats" onclick="switchStudySubTab('stats')"><i class="fas fa-chart-line"></i> 统计</button>
     </div>
 
-    <div id="page-study">
+    <div id="page-study" style="display:none;">
 
     <div class="top-info-bar">
         <div class="date-time" id="date-time">${new Date().toLocaleString()}</div>
@@ -299,13 +329,6 @@ function initUI() {
 
         </div>
     </div>
-    <div class="stats-bar" id="stats-bar">
-        <div class="stat-item">📚 今日：<span id="stat-today">${studyStats.todayWords}</span> 词</div>
-        <div class="stat-item">📈 总计：<span id="stat-total">${studyStats.totalWords}</span> 词</div>
-        <div class="stat-item">⏱ 时长：<span id="stat-time">${Math.floor(studyStats.studySeconds/60)}分${studyStats.studySeconds%60}秒</span></div>
-        <div class="stat-item">🎯 完成率：<span id="stat-rate">0%</span></div>
-    </div>
-
     <div class="tip-box" id="study-tip">
         <div class="tip-title">每日学习小贴士</div>
         <div id="tip-content">每天学习一点，进步一大步！</div>
@@ -1771,53 +1794,62 @@ function switchMainPage(page) {
     document.querySelectorAll('.nav-tab').forEach(tab => {
         tab.classList.toggle('active', tab.dataset.tab === page);
     });
-    // 勤学苦练区域
+
+    const sidebar = document.getElementById('sidebar');
+    const copyRight = document.getElementById('copyright');
     const studyArea = document.getElementById('study-sub-tabs');
+    const pageHome = document.getElementById('page-home');
     const pageStudy = document.getElementById('page-study');
     const pagePractice = document.getElementById('page-study-practice');
     const pageStats = document.getElementById('page-study-stats');
-    // 闯天关区域
     const pageChallenge = document.getElementById('page-challenge');
+    const ctrl = document.getElementById('learn-inline-controls');
+    const toggleTab = document.querySelector('.toggle-tab');
 
-    if (page === 'study') {
+    // 先全部隐藏
+    if (pageHome) pageHome.style.display = 'none';
+    if (studyArea) studyArea.style.display = 'none';
+    if (pageStudy) pageStudy.style.display = 'none';
+    if (pagePractice) pagePractice.style.display = 'none';
+    if (pageStats) pageStats.style.display = 'none';
+    if (pageChallenge) pageChallenge.style.display = 'none';
+    if (ctrl) ctrl.style.display = 'none';
+
+    if (page === 'home') {
+        // 主页：隐藏侧边栏和header
+        if (pageHome) pageHome.style.display = '';
+        if (sidebar) sidebar.style.display = 'none';
+        if (toggleTab) toggleTab.style.display = 'none';
+        if (copyRight) copyRight.style.display = '';
+        // 隐藏学习页面的header（主页有自己的标题区）
+        const mainHeader = document.querySelector('.main-container > header');
+        if (mainHeader) mainHeader.style.display = 'none';
+    } else if (page === 'study') {
+        // 勤学苦练：显示侧边栏
+        const mainHeader = document.querySelector('.main-container > header');
+        if (mainHeader) mainHeader.style.display = '';
         if (studyArea) studyArea.style.display = '';
         if (pageStudy) pageStudy.style.display = '';
-        // 显示当前子Tab对应的内容
         const activeSub = document.querySelector('#study-sub-tabs .sub-tab.active');
         const subTab = activeSub ? activeSub.dataset.stab : 'learn';
-        if (pagePractice) pagePractice.style.display = subTab === 'practice' ? '' : 'none';
-        if (pageStats) pageStats.style.display = subTab === 'stats' ? '' : 'none';
-        if (pageChallenge) pageChallenge.style.display = 'none';
-        // 功能控件在学习页可见
-        const ctrl = document.getElementById('learn-inline-controls');
-        if (ctrl) ctrl.style.display = 'flex';
-        // 侧边栏和版权可见
-        const sidebar = document.getElementById('sidebar');
-        const copyRight = document.getElementById('copyright');
+        if (subTab === 'practice' && pagePractice) pagePractice.style.display = '';
+        if (subTab === 'stats' && pageStats) pageStats.style.display = '';
+        if (subTab === 'learn' && ctrl) ctrl.style.display = 'flex';
         if (sidebar) sidebar.style.display = '';
+        if (toggleTab) toggleTab.style.display = '';
         if (copyRight) copyRight.style.display = '';
-    } else if (page === 'challenge') {
-        if (studyArea) studyArea.style.display = 'none';
-        if (pageStudy) pageStudy.style.display = 'none';
-        if (pagePractice) pagePractice.style.display = 'none';
-        if (pageStats) pageStats.style.display = 'none';
-        if (pageChallenge) pageChallenge.style.display = '';
-        // 功能控件隐藏
-        const ctrl = document.getElementById('learn-inline-controls');
-        if (ctrl) ctrl.style.display = 'none';
-        // 侧边栏和版权可见
-        const sidebar = document.getElementById('sidebar');
-        const copyRight = document.getElementById('copyright');
-        if (sidebar) sidebar.style.display = '';
-        if (copyRight) copyRight.style.display = '';
-    }
-    // 延迟初始化模块
-    if (page === 'study') {
-        const activeSub = document.querySelector('#study-sub-tabs .sub-tab.active');
-        const subTab = activeSub ? activeSub.dataset.stab : 'learn';
+        // 延迟初始化子模块
         if (subTab === 'practice') initPracticePage();
         else if (subTab === 'stats') initDashboardPage();
     } else if (page === 'challenge') {
+        // 闯天关：隐藏侧边栏
+        const mainHeader = document.querySelector('.main-container > header');
+        if (mainHeader) mainHeader.style.display = '';
+        if (pageChallenge) pageChallenge.style.display = '';
+        if (sidebar) sidebar.style.display = 'none';
+        if (toggleTab) toggleTab.style.display = 'none';
+        if (copyRight) copyRight.style.display = '';
+        // 延迟初始化
         initChallengePage();
     }
 }
@@ -2537,6 +2569,7 @@ window.onload = async function() {
     await loadWhitelist(); // 先加载白名单
     checkLoginStatus(); // 优先拦截未登录状态进行跳转
     initUI();           // 渲染界面结构
+    switchMainPage('home'); // 默认显示主页
     setTimeout(initSliders, 200); // 初始化滑块控件
     checkLoginStatus(); // 界面渲染完毕后，二次调用以安全写入用户名
     updateStats();
@@ -2788,3 +2821,16 @@ function updateFavBtnForCourse() {
     // 收藏功能保持原有逻辑
     if (typeof updateFavBtn === 'function') updateFavBtn();
 }
+
+
+// ========== 全局语音播放（闯天关和课程模块使用） ==========
+window.speak = function(encodedText) {
+    const text = decodeURIComponent(encodedText);
+    if ('speechSynthesis' in window) {
+        speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'id-ID';
+        utterance.rate = parseFloat(localStorage.getItem('fmi_rate') || '1.0');
+        speechSynthesis.speak(utterance);
+    }
+};

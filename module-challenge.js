@@ -199,7 +199,7 @@ const ChallengeModule = {
             questionContent = `
                 <div class="challenge-q-type">对话题</div>
                 <div class="challenge-q-title">${q.title || ''}</div>
-                <div class="challenge-q-indo">${q.title_id || ''}</div>
+                <div class="challenge-q-indo" ${q.title_id ? `onclick="speak('${encodeURIComponent(q.title_id)}')" style="cursor:pointer;"` : ''}>${q.title_id || ''} ${q.title_id ? '<i class="fas fa-volume-up" style="margin-left:8px;color:var(--accent);"></i>' : ''}</div>
                 <div class="challenge-q-prompt">这个对话的主题是什么？</div>
             `;
         } else {
@@ -237,6 +237,28 @@ const ChallengeModule = {
                                 <span class="challenge-option-text">${opt}</span>
                             </button>
                         `).join('')}
+                    </div>
+                </div>
+                <div class="challenge-controls">
+                    <div class="vslider-box">
+                        <div class="vslider-label"><i class="fas fa-gauge-high"></i> 语速</div>
+                        <div class="vslider-track-wrap">
+                            <input type="range" class="vslider vslider-rate" id="ch-rate-slider" min="1" max="15" value="10" step="1"
+                                oninput="ChallengeModule.setRate(this.value)" title="拖动调整语速">
+                            <div class="vslider-fill" id="ch-rate-fill"></div>
+                            <div class="vslider-thumb" id="ch-rate-thumb"><span id="ch-val-rate">1.0x</span></div>
+                        </div>
+                        <div class="vslider-range"><span>0.1x</span><span>1.5x</span></div>
+                    </div>
+                    <div class="vslider-box">
+                        <div class="vslider-label"><i class="fas fa-redo"></i> 重复</div>
+                        <div class="vslider-track-wrap">
+                            <input type="range" class="vslider vslider-loop" id="ch-loop-slider" min="0" max="5" value="0" step="1"
+                                oninput="ChallengeModule.setLoop(this.value)" title="拖动调整重复次数">
+                            <div class="vslider-fill" id="ch-loop-fill"></div>
+                            <div class="vslider-thumb" id="ch-loop-thumb"><span id="ch-val-loop">1次</span></div>
+                        </div>
+                        <div class="vslider-range"><span>1次</span><span>5次</span></div>
                     </div>
                 </div>
             </div>
@@ -474,6 +496,30 @@ const ChallengeModule = {
     },
 
     // ========== 工具 ==========
+    setRate(val) {
+        const rate = val / 10;
+        localStorage.setItem('fmi_rate', rate.toFixed(1));
+        const thumb = document.getElementById('ch-val-rate');
+        if (thumb) thumb.textContent = rate.toFixed(1) + 'x';
+        // 同步更新主页面滑块
+        const mainSlider = document.getElementById('rate-slider');
+        const mainThumb = document.getElementById('val-rate');
+        if (mainSlider) mainSlider.value = val;
+        if (mainThumb) mainThumb.textContent = rate.toFixed(1) + 'x';
+    },
+
+    setLoop(val) {
+        const count = parseInt(val);
+        localStorage.setItem('fmi_loop', count);
+        const thumb = document.getElementById('ch-val-loop');
+        if (thumb) thumb.textContent = count === 0 ? '1次' : (count + '次');
+        // 同步更新主页面滑块
+        const mainSlider = document.getElementById('loop-slider');
+        const mainThumb = document.getElementById('val-loop');
+        if (mainSlider) mainSlider.value = val;
+        if (mainThumb) mainThumb.textContent = count === 0 ? '1次' : (count + '次');
+    },
+
     _shuffle(arr) {
         const a = [...arr];
         for (let i = a.length - 1; i > 0; i--) {
