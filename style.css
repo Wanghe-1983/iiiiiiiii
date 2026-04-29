@@ -1105,14 +1105,14 @@ input:checked + .slider:before {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 0 16px;
+    padding: 0 18px;
     background: rgba(30, 41, 59, 0.5);
     cursor: pointer;
     transition: background 0.2s ease;
     flex-shrink: 0;
     border: none;
     color: #94a3b8;
-    font-size: 0;
+    font-size: 0.85rem;
 }
 .subpage-nav-side:first-child {
     border-radius: 11px 0 0 11px;

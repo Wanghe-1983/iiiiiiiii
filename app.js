@@ -567,7 +567,46 @@ function loadRandomWord() {
 function loadWeather() {
     const el = document.getElementById('weather-location');
     if (!el) return;
-    // 优先使用IP定位获取天气
+    
+    // 优先尝试浏览器Geolocation获取精确位置
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const { latitude, longitude } = pos.coords;
+                fetchWeatherByCoords(el, latitude, longitude);
+            },
+            () => {
+                // 定位权限被拒绝或不可用，回退到IP定位
+                fetchWeatherByIP(el);
+            },
+            { timeout: 8000, enableHighAccuracy: false }
+        );
+    } else {
+        fetchWeatherByIP(el);
+    }
+}
+
+// 通过经纬度获取天气（Open-Meteo，免费无需key）
+function fetchWeatherByCoords(el, lat, lon) {
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=auto`)
+        .then(r => r.json())
+        .then(data => {
+            const temp = Math.round(data.current?.temperature_2m ?? 0);
+            const code = data.current?.weather_code ?? 0;
+            const weather = weatherCodeToText(code);
+            const icon = weatherCodeToIcon(code);
+            // 反向地理编码获取城市名
+            fetchLocationName(lat, lon).then(city => {
+                el.innerHTML = `<i class="fas fa-${icon}"></i><span> ${city ? city + ' ' : ''}${temp}℃ ${weather}</span>`;
+                const locName = document.getElementById('location-name');
+                if (locName) locName.textContent = city || '未知位置';
+            });
+        })
+        .catch(() => fetchWeatherByIP(el));
+}
+
+// IP定位获取天气（兜底方案）
+function fetchWeatherByIP(el) {
     fetch('https://wttr.in/?format=j1')
         .then(res => {
             if (!res.ok) throw new Error('wttr.in request failed');
@@ -578,21 +617,48 @@ function loadWeather() {
             const weather = data.current_condition[0].weatherDesc[0].value;
             const area = data.nearest_area[0]?.areaName[0]?.value || '';
             el.innerHTML = `<i class="fas fa-cloud"></i><span> ${area ? area + ' ' : ''}${temp}℃ ${weather}</span>`;
-            // 同步更新location-name
             const locName = document.getElementById('location-name');
             if (locName && area) locName.textContent = area;
         })
         .catch(() => {
-            // wttr.in失败，尝试高德天气API（如果配置了key）
             if (CONFIG.amapKey) {
                 tryAmapWeather(el);
             } else {
-                // 显示默认天气（不影响使用）
                 el.innerHTML = `<i class="fas fa-cloud"></i><span> 天气加载失败</span>`;
                 const locFail = document.getElementById('location-name');
                 if (locFail) locFail.textContent = '未知';
             }
         });
+}
+
+// 反向地理编码（获取城市名）
+async function fetchLocationName(lat, lon) {
+    try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=zh`);
+        if (res.ok) {
+            const data = await res.json();
+            const addr = data.address || {};
+            return addr.city || addr.town || addr.county || addr.state || '';
+        }
+    } catch (e) { /* ignore */ }
+    return '';
+}
+
+// 天气代码转文字
+function weatherCodeToText(code) {
+    const map = {0:'晴',1:'晴',2:'多云',3:'多云',45:'雾',48:'雾',51:'小雨',53:'小雨',55:'大雨',61:'小雨',63:'中雨',65:'大雨',71:'小雪',73:'中雪',75:'大雪',80:'阵雨',81:'阵雨',82:'暴雨',95:'雷暴',96:'雷暴'};
+    return map[code] || '未知';
+}
+
+// 天气代码转图标
+function weatherCodeToIcon(code) {
+    if (code <= 1) return 'sun';
+    if (code <= 3) return 'cloud-sun';
+    if (code <= 48) return 'smog';
+    if (code <= 65) return 'cloud-rain';
+    if (code <= 75) return 'snowflake';
+    if (code <= 82) return 'cloud-showers-heavy';
+    return 'bolt';
 }
 
 function tryAmapWeather(el) {
@@ -824,15 +890,13 @@ async function buildMenu() {
 // 从侧边栏点击具体单词/短句/对话 → 通过StudyModule加载学习
 function loadCourseWord(levelId, unitId, type, index) {
     if (!courseMenuData) return;
-    // 切换到学习页面
-    switchMainPage('study');
-    // 设置StudyModule的目标单元并跳转到学习Tab
-    StudyModule.selectedLevelId = String(levelId);
-    StudyModule.selectedUnitId = unitId;
-    StudyModule.currentSubTab = 'learn';
-    StudyModule._pendingType = type;
-    StudyModule._pendingIndex = parseInt(index) || 0;
-    StudyModule.render();
+    const level = courseMenuData.levels.find(l => String(l.id) === String(levelId));
+    if (!level) return;
+    const unit = level.units.find(u => u.id === unitId);
+    if (!unit) return;
+    const items = unit[type] || [];
+    if (items.length === 0) return;
+    loadCourseItemsToCard(items, index);
 }
 
 // 显示单词（适配 indonesian/chinese 字段）
@@ -923,43 +987,50 @@ function googleSpeech(word) {
     });
 }
 
-// 语音播放 - 修复语速控制 + 优先谷歌发音
+// 语音播放 - 优先谷歌TTS，兜底浏览器speechSynthesis
 function toggleSpeech() {
     const word = document.getElementById('disp-indo').innerText;
     const synth = window.speechSynthesis;
+    const playIco = document.getElementById('play-ico');
     
     // 停止当前播放
     if (synth.speaking) {
         synth.cancel();
-        document.getElementById('play-ico').className = 'fas fa-play';
+        if (playIco) playIco.className = 'fas fa-play';
         return;
     }
 
     // 优先使用谷歌翻译发音
-    googleSpeech(word, _rate).catch(() => {
-        // 兜底：本地合成
+    googleSpeech(word).then(() => {
+        // 谷歌发音成功结束
+        if (playIco) playIco.className = 'fas fa-play';
+    }).catch(() => {
+        // 谷歌发音失败，兜底浏览器本地合成
         const currentRate = parseFloat(_rate) || 0.8;
-        const utterThis = new SpeechSynthesisUtterance(word);
-        utterThis.lang = 'id-ID';
-        utterThis.rate = currentRate;
-        synth.speak(utterThis);
-        // 循环播放逻辑
         const loopTimes = parseInt(_loop) || 1;
         let loopCount = 1;
-        utterThis.onend = function() {
-            if (loopCount < loopTimes) {
-                loopCount++;
-                const newUtter = new SpeechSynthesisUtterance(word);
-                newUtter.lang = 'id-ID';
-                newUtter.rate = currentRate;
-                synth.speak(newUtter);
-            } else {
-                document.getElementById('play-ico').className = 'fas fa-play';
-            }
-        };
+        
+        function speakOnce() {
+            const utterThis = new SpeechSynthesisUtterance(word);
+            utterThis.lang = 'id-ID';
+            utterThis.rate = currentRate;
+            utterThis.onend = function() {
+                if (loopCount < loopTimes) {
+                    loopCount++;
+                    speakOnce();
+                } else {
+                    if (playIco) playIco.className = 'fas fa-play';
+                }
+            };
+            utterThis.onerror = function() {
+                if (playIco) playIco.className = 'fas fa-play';
+            };
+            synth.speak(utterThis);
+        }
+        speakOnce();
     });
 
-    document.getElementById('play-ico').className = 'fas fa-pause';
+    if (playIco) playIco.className = 'fas fa-pause';
 }
 
 // 隐藏答案
