@@ -974,32 +974,21 @@ function clearAllFavs(e) {
 // 谷歌翻译发音（优先）
 function googleSpeech(word) {
     return new Promise((resolve, reject) => {
-        const endpoints = [
-            `https://translate.googleapis.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(word)}&tl=id&client=gtx`,
-            `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(word)}&tl=id&client=atelier`
-        ];
-        let idx = 0;
-        function tryEndpoint() {
-            if (idx >= endpoints.length) {
-                reject('谷歌发音失败，切换本地合成');
-                return;
-            }
-            const url = endpoints[idx++];
-            fetch(url)
-                .then(resp => {
-                    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-                    return resp.blob();
-                })
-                .then(blob => {
-                    const blobUrl = URL.createObjectURL(blob);
-                    const audio = new Audio(blobUrl);
-                    audio.onended = () => { URL.revokeObjectURL(blobUrl); resolve(true); };
-                    audio.onerror = () => { URL.revokeObjectURL(blobUrl); tryEndpoint(); };
-                    audio.play().catch(() => { URL.revokeObjectURL(blobUrl); tryEndpoint(); });
-                })
-                .catch(() => tryEndpoint());
-        }
-        tryEndpoint();
+        // 通过自建 Cloudflare Function 代理，绕过浏览器 CORS 限制
+        const proxyUrl = `/api/tts/google?q=${encodeURIComponent(word)}&tl=id`;
+        fetch(proxyUrl)
+            .then(resp => {
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                return resp.blob();
+            })
+            .then(blob => {
+                const blobUrl = URL.createObjectURL(blob);
+                const audio = new Audio(blobUrl);
+                audio.onended = () => { URL.revokeObjectURL(blobUrl); resolve(true); };
+                audio.onerror = () => { URL.revokeObjectURL(blobUrl); reject('谷歌发音失败'); };
+                audio.play().catch(() => { URL.revokeObjectURL(blobUrl); reject('谷歌发音失败'); });
+            })
+            .catch(err => reject(err));
     });
 }
 
