@@ -1010,9 +1010,18 @@ function toggleSpeech() {
         const loopTimes = parseInt(_loop) || 1;
         let loopCount = 1;
         
+        function getIdVoice() {
+            const voices = speechSynthesis.getVoices();
+            let v = voices.find(x => x.lang && x.lang.startsWith('id'));
+            if (v) return v;
+            v = voices.find(x => x.lang && (x.lang.startsWith('ms') || x.lang.startsWith('msa')));
+            return v || null;
+        }
         function speakOnce() {
             const utterThis = new SpeechSynthesisUtterance(word);
             utterThis.lang = 'id-ID';
+            const idVoice = getIdVoice();
+            if (idVoice) utterThis.voice = idVoice;
             utterThis.rate = currentRate;
             utterThis.onend = function() {
                 if (loopCount < loopTimes) {
@@ -1813,6 +1822,10 @@ function stopHeartbeat() {
 async function loadOnlineDisplay() {
     try {
         const info = await API.getSystemInfo();
+        if (!info.error) {
+            // 缓存系统信息供访客闯天关等逻辑使用
+            window._systemInfo = info;
+        }
         if (info.error) return;
         let badge = document.getElementById('online-badge-main');
         if (!badge) {
@@ -2816,6 +2829,12 @@ async function loadBroadcasts() {
         }
     } catch(e) {}
 }
+// 预加载浏览器语音列表（speechSynthesis.getVoices 首次可能返回空数组）
+if (window.speechSynthesis) {
+    speechSynthesis.getVoices();
+    speechSynthesis.onvoiceschanged = function() { speechSynthesis.getVoices(); };
+}
+
 window.onload = async function() {
     // 自动初始化默认管理员（仅首次）
     try { await fetch(API_BASE + 'admin/init-users', { method: 'POST' }); } catch(e) {}
@@ -3049,9 +3068,13 @@ window.speak = function(encodedText) {
     }).catch(() => {
         // 兜底浏览器speechSynthesis
         let count = 0;
+        const voices = speechSynthesis.getVoices();
+        let idVoice = voices.find(v => v.lang && v.lang.startsWith('id'));
+        if (!idVoice) idVoice = voices.find(v => v.lang && (v.lang.startsWith('ms') || v.lang.startsWith('msa')));
         function synthOnce() {
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'id-ID';
+            if (idVoice) utterance.voice = idVoice;
             utterance.rate = rate;
             utterance.onend = function() {
                 count++;
