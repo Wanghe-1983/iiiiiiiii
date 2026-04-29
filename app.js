@@ -972,7 +972,7 @@ function clearAllFavs(e) {
 }
 
 // 谷歌翻译发音（优先）
-function googleSpeech(word) {
+function googleSpeech(word, rate) {
     return new Promise((resolve, reject) => {
         // 通过自建 Cloudflare Function 代理，绕过浏览器 CORS 限制
         const proxyUrl = `/api/tts/google?q=${encodeURIComponent(word)}&tl=id`;
@@ -984,6 +984,7 @@ function googleSpeech(word) {
             .then(blob => {
                 const blobUrl = URL.createObjectURL(blob);
                 const audio = new Audio(blobUrl);
+                if (rate && rate > 0) audio.playbackRate = rate;
                 audio.onended = () => { URL.revokeObjectURL(blobUrl); resolve(true); };
                 audio.onerror = () => { URL.revokeObjectURL(blobUrl); reject('谷歌发音失败'); };
                 audio.play().catch(() => { URL.revokeObjectURL(blobUrl); reject('谷歌发音失败'); });
@@ -1006,7 +1007,7 @@ function toggleSpeech() {
     }
 
     // 优先使用谷歌翻译发音
-    googleSpeech(word).then(() => {
+    googleSpeech(word, currentRate).then(() => {
         // 谷歌发音成功结束
         if (playIco) playIco.className = 'fas fa-play';
     }).catch(() => {
@@ -3059,14 +3060,14 @@ window.speak = function(encodedText) {
     const loopCount = parseInt(localStorage.getItem('fmi_loop') || '1');
     speechSynthesis.cancel();
     // 优先谷歌TTS
-    googleSpeech(text).then(() => {
+    googleSpeech(text, rate).then(() => {
         // 谷歌成功，如需循环则继续
         if (loopCount > 1) {
             let count = 1;
             function speakLoop() {
                 if (count >= loopCount) return;
                 count++;
-                googleSpeech(text).then(speakLoop).catch(() => {});
+                googleSpeech(text, rate).then(speakLoop).catch(() => {});
             }
             speakLoop();
         }
