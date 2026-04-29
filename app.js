@@ -2051,10 +2051,13 @@ function switchMainPage(page) {
         const sysInfo = window._systemInfo || {};
         if (isVisitor && sysInfo.allowVisitorChallenge === false) {
             if (window._showCustomConfirm) {
-                window._showCustomConfirm('访客无法使用闯天关功能', '请注册账号后体验完整功能', '我知道了', null, function() {});
+                window._showCustomConfirm('访客无法使用闯天关功能', '请注册账号后体验完整功能', '我知道了', null, function() {
+                    switchMainPage('home');
+                });
             } else {
                 alert('访客无法使用闯天关功能，请注册账号后体验。');
             }
+            switchMainPage('home');
             return;
         }
         // 闯天关：隐藏侧边栏，导航栏改为返回+标题
