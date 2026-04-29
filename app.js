@@ -232,7 +232,7 @@ function showLogoutConfirmDialog() {
 }
 
 // 初始化页面（核心：先渲染DOM，再加载数据）
-function initUI() {
+async function initUI() {
     // 随机学习小贴士 - 修改为从公网获取
     const studyTipApi = (typeof CONFIG !== 'undefined' && CONFIG.studyTipApi) ? CONFIG.studyTipApi : "https://v1.hitokoto.cn/?c=i";
     fetch(studyTipApi)
@@ -545,7 +545,7 @@ function initUI() {
     loadWeather();
 
     // 加载词库（DOM渲染完成后再加载）
-    loadDB();
+    await loadDB();
 }
 
 // 加载随机推荐单词
