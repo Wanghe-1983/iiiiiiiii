@@ -25,8 +25,26 @@ async function loadWhitelist() {
     try {
         const res = await fetch('whitelist.json');
         if (res.ok) {
-            whitelist = await res.json();
+            whitelist = await res.json();        } else if (String(lv.id) === '3') {
+            // 3级：按篇章分组
+            for (const ch of level3Chapters) {
+                let chUnitsHTML = '';
+                for (const uIdx of ch.unitIndices) {
+                    if (uIdx < lv.units.length) {
+                        chUnitsHTML += buildUnitHTML(lv.id, lv.units[uIdx], uIdx);
+                    }
+                }
+                if (chUnitsHTML) {
+                    unitsHTML += `
+                    <div style="padding:8px 10px;font-size:13px;color:${ch.color};font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="this.nextElementSibling.classList.toggle('active')">
+                        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${ch.color};flex-shrink:0;"></span> ${ch.name}
+                        <i class="fas fa-chevron-right" style="font-size:9px;margin-left:auto;opacity:0.4;transition:transform 0.2s;"></i>
+                    </div>
+                    <div class="sub-menu" style="padding-left:6px;">${chUnitsHTML}</div>`;
+                }
+            }
         } else {
+            // 其他级别：直接列出单元（无篇章分组）else {
             whitelist = JSON.parse(localStorage.getItem('fmi_whitelist') || JSON.stringify([
                 { username: "admin", password: "admin123", name: "超级管理员" },
                 { username: "user01", password: "123456", name: "普通用户" }
@@ -265,9 +283,11 @@ async function initUI() {
         <button class="nav-tab" onclick="switchMainPage('study')" data-tab="study"><i class="fas fa-book-open"></i> 勤学苦练</button>
         <button class="nav-tab" onclick="switchMainPage('challenge')" data-tab="challenge"><i class="fas fa-gamepad"></i> 闯天关</button>
     </div>
-    <header class="app-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-            <div class="date-time" id="date-time-header" style="color:#94a3b8;font-size:0.82rem;">${new Date().toLocaleString()}</div>
+    <header class="app-header" style="display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:12px;">
+        <div class="user-status" id="user-status" style="font-size:0.9rem;">
+            欢迎，管理员
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
             <div class="weather-location" id="weather-location">
                 <i class="fas fa-cloud"></i>
                 <span>加载中...</span>
@@ -276,9 +296,7 @@ async function initUI() {
                 <i class="fas fa-map-marker-alt" style="font-size:0.75rem;"></i>
                 <span id="location-name">定位中...</span>
             </div>
-        </div>
-        <div class="user-status" id="user-status" style="font-size:0.9rem;">
-            欢迎，管理员
+            <div class="date-time" id="date-time-header" style="color:#94a3b8;font-size:0.82rem;">${new Date().toLocaleString()}</div>
         </div>
     </header>
 
@@ -783,27 +801,48 @@ async function buildMenu() {
 
         // 0级课程：按篇章(chapter)分组展示
         const level0Chapters = [
-            { name: '基础发音篇', icon: 'fa-microphone', color: '#f472b6', unitIndices: [0,1,2,3] },
-            { name: '问候语与祝福篇', icon: 'fa-handshake', color: '#34d399', unitIndices: [4,5,6,7,8,9] },
-            { name: '个人信息与交流篇', icon: 'fa-user-circle', color: '#60a5fa', unitIndices: [10,11,12,13] },
-            { name: '同事交流与文化篇', icon: 'fa-building', color: '#fbbf24', unitIndices: [14,15] },
-            { name: '饮食与日常用语篇', icon: 'fa-utensils', color: '#fb923c', unitIndices: [16,17,18,19] },
-            { name: '购物与交通篇', icon: 'fa-shopping-cart', color: '#a78bfa', unitIndices: [20,21,22,23] },
-            { name: '同事交流与时间篇', icon: 'fa-clock', color: '#2dd4bf', unitIndices: [24,25,26,27] },
-            { name: '天气形状与形容词篇', icon: 'fa-cloud-sun', color: '#38bdf8', unitIndices: [28,29,30,31,32] },
-            { name: '医院与安全篇', icon: 'fa-hospital', color: '#f87171', unitIndices: [33,34,35] },
+            { name: '基础发音篇', color: '#f472b6', unitIndices: [0,1,2,3] },
+            { name: '问候语与祝福篇', color: '#34d399', unitIndices: [4,5,6,7,8,9] },
+            { name: '个人信息与交流篇', color: '#60a5fa', unitIndices: [10,11,12,13] },
+            { name: '同事交流与文化篇', color: '#fbbf24', unitIndices: [14,15] },
+            { name: '饮食与日常用语篇', color: '#fb923c', unitIndices: [16,17,18,19] },
+            { name: '购物与交通篇', color: '#a78bfa', unitIndices: [20,21,22,23] },
+            { name: '同事交流与时间篇', color: '#2dd4bf', unitIndices: [24,25,26,27] },
+            { name: '天气形状与形容词篇', color: '#38bdf8', unitIndices: [28,29,30,31,32] },
+            { name: '医院与安全篇', color: '#f87171', unitIndices: [33,34,35] },
         ];
 
         // 1级课程（BIPA 1）：按主题篇章分组
         const level1Chapters = [
-            { name: '问候与数字篇', icon: 'fa-hand-peace', color: '#f472b6', unitIndices: [0,1] },
-            { name: '时间与家庭篇', icon: 'fa-hourglass-half', color: '#34d399', unitIndices: [2,3] },
-            { name: '饮食与购物篇', icon: 'fa-utensils', color: '#fb923c', unitIndices: [4,5] },
-            { name: '交通与天气篇', icon: 'fa-cloud-sun', color: '#38bdf8', unitIndices: [6,7] },
-            { name: '工作与健康篇', icon: 'fa-briefcase', color: '#fbbf24', unitIndices: [8,9] },
-            { name: '疑问与日常活动篇', icon: 'fa-person-running', color: '#a78bfa', unitIndices: [10,11] },
+            { name: '问候与数字篇', color: '#f472b6', unitIndices: [0,1] },
+            { name: '时间与家庭篇', color: '#34d399', unitIndices: [2,3] },
+            { name: '饮食与购物篇', color: '#fb923c', unitIndices: [4,5] },
+            { name: '交通与天气篇', color: '#38bdf8', unitIndices: [6,7] },
+            { name: '工作与健康篇', color: '#fbbf24', unitIndices: [8,9] },
+            { name: '疑问与日常活动篇', color: '#a78bfa', unitIndices: [10,11] },
+        ];
+        // 2级课程（BIPA 2 Menengah）
+        const level2Chapters = [
+            { name: '日常活动与居家篇', color: '#fb923c', unitIndices: [0,1] },
+            { name: '购物与交通篇', color: '#34d399', unitIndices: [2,3] },
+            { name: '家庭与饮食篇', color: '#f472b6', unitIndices: [4,5] },
+            { name: '天气与职业篇', color: '#38bdf8', unitIndices: [6,7] },
+            { name: '教育与医疗篇', color: '#fbbf24', unitIndices: [8,9] },
+            { name: '科技与休闲篇', color: '#a78bfa', unitIndices: [10,11] },
+        ];
+        // 3级课程（BIPA 3 Menengah Atas）
+        const level3Chapters = [
+            { name: '社交与商业篇', color: '#f472b6', unitIndices: [0,1] },
+            { name: '住房与旅行篇', color: '#34d399', unitIndices: [2,3] },
+            { name: '环境与媒体篇', color: '#38bdf8', unitIndices: [4,5] },
+            { name: '科技与文化篇', color: '#a78bfa', unitIndices: [6,7] },
+            { name: '体育与法律篇', color: '#fbbf24', unitIndices: [8,9] },
+            { name: '社会与国际篇', color: '#fb923c', unitIndices: [10,11] },
         ];
 
+
+
+        
         // 生成单元HTML的通用函数
         function buildUnitHTML(lvId, unit, unitIndex) {
             const showIndex = String(lvId) === '0';
@@ -854,7 +893,7 @@ async function buildMenu() {
                 if (chUnitsHTML) {
                     unitsHTML += `
                     <div style="padding:8px 10px;font-size:13px;color:${ch.color};font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="this.nextElementSibling.classList.toggle('active')">
-                        <i class="fas ${ch.icon}" style="font-size:12px;opacity:0.8;"></i> ${ch.name}
+                        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${ch.color};flex-shrink:0;"></span> ${ch.name}
                         <i class="fas fa-chevron-right" style="font-size:9px;margin-left:auto;opacity:0.4;transition:transform 0.2s;"></i>
                     </div>
                     <div class="sub-menu" style="padding-left:6px;">${chUnitsHTML}</div>`;
@@ -872,7 +911,25 @@ async function buildMenu() {
                 if (chUnitsHTML) {
                     unitsHTML += `
                     <div style="padding:8px 10px;font-size:13px;color:${ch.color};font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="this.nextElementSibling.classList.toggle('active')">
-                        <i class="fas ${ch.icon}" style="font-size:12px;opacity:0.8;"></i> ${ch.name}
+                        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${ch.color};flex-shrink:0;"></span> ${ch.name}
+                        <i class="fas fa-chevron-right" style="font-size:9px;margin-left:auto;opacity:0.4;transition:transform 0.2s;"></i>
+                    </div>
+                    <div class="sub-menu" style="padding-left:6px;">${chUnitsHTML}</div>`;
+                }
+            }
+        } else if (String(lv.id) === '2') {
+            // 2级：按篇章分组
+            for (const ch of level2Chapters) {
+                let chUnitsHTML = '';
+                for (const uIdx of ch.unitIndices) {
+                    if (uIdx < lv.units.length) {
+                        chUnitsHTML += buildUnitHTML(lv.id, lv.units[uIdx], uIdx);
+                    }
+                }
+                if (chUnitsHTML) {
+                    unitsHTML += `
+                    <div style="padding:8px 10px;font-size:13px;color:${ch.color};font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="this.nextElementSibling.classList.toggle('active')">
+                        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${ch.color};flex-shrink:0;"></span> ${ch.name}
                         <i class="fas fa-chevron-right" style="font-size:9px;margin-left:auto;opacity:0.4;transition:transform 0.2s;"></i>
                     </div>
                     <div class="sub-menu" style="padding-left:6px;">${chUnitsHTML}</div>`;
@@ -896,16 +953,7 @@ async function buildMenu() {
         </div>`;
     }
 
-    // 未建设的级别 (2~7)
-    for (let n = levels.length; n <= 7; n++) {
-        courseMenuHTML += `
-        <div class="cat-item">
-            <div class="cat-head" style="opacity:0.4;cursor:default;">
-                <span><i class="fas fa-lock" style="margin-right:4px;"></i> ${n}级课程</span>
-                <span style="font-size:11px;color:#64748b;">建设中</span>
-            </div>
-        </div>`;
-    }
+
 
     // 替换占位
     const ph = document.getElementById('course-menu-placeholder');
