@@ -13,50 +13,14 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=202604251635">
+    <link rel="stylesheet" href="style.css?v=202604302000">
     <link rel="stylesheet" href="modules.css?v=202604261200">
 </head>
 <body>
-    <div id="visitor-timer" class="visitor-timer" style="display:none;position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:100;background:rgba(17,24,39,0.95);color:#f59e0b;padding:8px 16px;border-radius:20px;font-size:0.85rem;font-weight:600;border:1px solid rgba(245,158,11,0.3);backdrop-filter:blur(10px);box-shadow:0 4px 20px rgba(0,0,0,0.3);">
-        <i class="fas fa-clock"></i> 访客剩余 <span id="visitor-remaining">--:--</span>
-    </div>
-    <script>
-    (function(){
-        var isVisitor = localStorage.getItem('fmi_visitor_login');
-        var expire = parseInt(localStorage.getItem('fmi_visitor_expire') || '0');
-        if (isVisitor && expire > Date.now()) {
-            var timer = document.getElementById('visitor-timer');
-            var remaining = document.getElementById('visitor-remaining');
-            timer.style.display = '';
-            var endTime = expire;
-            setInterval(function(){
-                var left = endTime - Date.now();
-                if (left <= 0) {
-                    timer.style.display = 'none';
-                    localStorage.removeItem('fmi_token');
-                    localStorage.removeItem('fmi_user');
-                    localStorage.removeItem('fmi_login_status');
-                    localStorage.removeItem('fmi_visitor_login');
-                    localStorage.removeItem('fmi_visitor_expire');
-                    alert('访客体验时间已到，感谢使用！如需继续学习，请注册账号。');
-                    location.href = 'login.html';
-                    return;
-                }
-                var min = Math.floor(left / 60000);
-                var sec = Math.floor((left % 60000) / 1000);
-                remaining.textContent = (min < 10 ? '0' : '') + min + ':' + (sec < 10 ? '0' : '') + sec;
-                if (left < 300000) {
-                    timer.style.color = '#ef4444';
-                    timer.style.borderColor = 'rgba(239,68,68,0.3)';
-                }
-            }, 1000);
-        }
-    })();
-    </script>
     <div id="app"></div>
-    <script src="config.js?v=202604251635"></script>
+    <script src="config.js?v=202604302000"></script>
     <!-- 旧版功能（侧边栏、统计页、管理后台等兼容保留） -->
-    <script src="app.js?v=202604301515"></script>
+    <script src="app.js?v=202604302000"></script>
     <!-- 新版模块 -->
     <script src="course-content-loader.js?v=202604261200"></script>
     <script src="module-study.js?v=202604261200"></script>

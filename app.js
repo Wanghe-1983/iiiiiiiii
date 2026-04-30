@@ -2229,13 +2229,13 @@ function renderHomeUserBar() {
                         </div>` : ''}`;
         // 管理员也隐藏注销账号
         const finalLogoutHTML = isAdmin ? logoutHTML.replace(/<div id="home-delete-account-item"[^>]*>[\s\S]*?<\/div>\s*$/, '') : logoutHTML;
-        const visitorTimerHTML = isVisitor ? '<span id="home-visitor-timer" style="display:flex;align-items:center;gap:5px;font-size:0.8rem;color:#f59e0b;"><i class="fas fa-clock" style="font-size:0.72rem;"></i> 访客剩余 <span id="home-visitor-remaining">--:--</span></span>' : '';
+        // visitorTimer removed - using header timer only
         bar.innerHTML = `
             <div style="display:flex;align-items:center;justify-content:space-between;width:100%;padding:8px 4px;">
                 <div style="display:flex;align-items:center;gap:14px;color:#94a3b8;font-size:0.82rem;flex-wrap:wrap;">
                     <span id="home-date-time">${new Date().toLocaleString()}</span>
                     <span id="home-weather-location"><i class="fas fa-cloud"></i> <span id="home-weather-text">加载中...</span></span>
-                    ${visitorTimerHTML}
+
                 </div>
                 <div style="position:relative;">
                     <span onclick="toggleUserMenu()" style="cursor:pointer;display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:8px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
@@ -2248,8 +2248,7 @@ function renderHomeUserBar() {
                     </div>
                 </div>
             </div>`;
-        // 访客倒计时同步到主页
-        if (isVisitor) syncHomeVisitorTimer();
+// visitorTimer sync removed - using header timer only
         // 同步天气信息到主页
         syncHomeWeather();
     } else {
