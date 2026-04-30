@@ -290,26 +290,34 @@ const ChallengeModule = {
                     <div class="vslider-box">
                         <div class="vslider-label"><i class="fas fa-gauge-high"></i> 语速</div>
                         <div class="vslider-track-wrap">
-                            <input type="range" class="vslider vslider-rate" id="ch-rate-slider" min="1" max="15" value="10" step="1"
+                            <input type="range" class="vslider vslider-rate" id="ch-rate-slider" min="1" max="15" value="${localStorage.getItem('fmi_rate') ? (RATE_LEVELS || []).indexOf(parseFloat(localStorage.getItem('fmi_rate'))) + 1 || 10 : 10}" step="1"
                                 oninput="ChallengeModule.setRate(this.value)" title="拖动调整语速">
                             <div class="vslider-fill" id="ch-rate-fill"></div>
-                            <div class="vslider-thumb" id="ch-rate-thumb"><span id="ch-val-rate">1.0x</span></div>
+                            <div class="vslider-thumb" id="ch-rate-thumb"><span id="ch-val-rate">${localStorage.getItem('fmi_rate') || '1.0'}x</span></div>
                         </div>
                         <div class="vslider-range"><span>0.1x</span><span>1.5x</span></div>
                     </div>
                     <div class="vslider-box">
                         <div class="vslider-label"><i class="fas fa-redo"></i> 重复</div>
                         <div class="vslider-track-wrap">
-                            <input type="range" class="vslider vslider-loop" id="ch-loop-slider" min="0" max="5" value="0" step="1"
+                            <input type="range" class="vslider vslider-loop" id="ch-loop-slider" min="0" max="14" value="${(LOOP_LEVELS || []).indexOf(parseInt(localStorage.getItem('fmi_loop') || '1')) >= 0 ? (LOOP_LEVELS || []).indexOf(parseInt(localStorage.getItem('fmi_loop') || '1')) : 0}" step="1"
                                 oninput="ChallengeModule.setLoop(this.value)" title="拖动调整重复次数">
                             <div class="vslider-fill" id="ch-loop-fill"></div>
-                            <div class="vslider-thumb" id="ch-loop-thumb"><span id="ch-val-loop">1次</span></div>
+                            <div class="vslider-thumb" id="ch-loop-thumb"><span id="ch-val-loop">${localStorage.getItem('fmi_loop') || '1'}次</span></div>
                         </div>
-                        <div class="vslider-range"><span>1次</span><span>5次</span></div>
+                        <div class="vslider-range"><span>1次</span><span>无限</span></div>
                     </div>
                 </div>
             </div>
         `;
+
+        // 同步滑块位置和填充条
+        setTimeout(() => {
+            const rateSlider = document.getElementById('ch-rate-slider');
+            const loopSlider = document.getElementById('ch-loop-slider');
+            if (rateSlider && typeof updateSliderFill === 'function') updateSliderFill(rateSlider);
+            if (loopSlider && typeof updateSliderFill === 'function') updateSliderFill(loopSlider);
+        }, 50);
 
         // 更新计时器
         this._timerInterval = setInterval(() => {
@@ -585,27 +593,23 @@ const ChallengeModule = {
 
     // ========== 工具 ==========
     setRate(val) {
-        const rate = val / 10;
-        localStorage.setItem('fmi_rate', rate.toFixed(1));
+        const idx = parseInt(val) - 1;
+        const rate = (typeof RATE_LEVELS !== 'undefined' && RATE_LEVELS[idx] !== undefined) ? RATE_LEVELS[idx] : val / 10;
+        localStorage.setItem('fmi_rate', String(rate));
         const thumb = document.getElementById('ch-val-rate');
         if (thumb) thumb.textContent = rate.toFixed(1) + 'x';
-        // 同步更新主页面滑块
-        const mainSlider = document.getElementById('rate-slider');
-        const mainThumb = document.getElementById('val-rate');
-        if (mainSlider) mainSlider.value = val;
-        if (mainThumb) mainThumb.textContent = rate.toFixed(1) + 'x';
+        // 同步全局滑块
+        if (typeof setRateFromSlider === 'function') setRateFromSlider(val);
     },
 
     setLoop(val) {
         const count = parseInt(val);
-        localStorage.setItem('fmi_loop', count);
+        const loopCount = (typeof LOOP_LEVELS !== 'undefined' && LOOP_LEVELS[count] !== undefined) ? LOOP_LEVELS[count] : count;
+        localStorage.setItem('fmi_loop', String(loopCount));
         const thumb = document.getElementById('ch-val-loop');
-        if (thumb) thumb.textContent = count === 0 ? '1次' : (count + '次');
-        // 同步更新主页面滑块
-        const mainSlider = document.getElementById('loop-slider');
-        const mainThumb = document.getElementById('val-loop');
-        if (mainSlider) mainSlider.value = val;
-        if (mainThumb) mainThumb.textContent = count === 0 ? '1次' : (count + '次');
+        if (thumb) thumb.textContent = loopCount === 0 ? '无限' : (loopCount + '次');
+        // 同步全局滑块
+        if (typeof setLoopFromSlider === 'function') setLoopFromSlider(val);
     },
 
     _shuffle(arr) {
