@@ -380,7 +380,7 @@ async function initUI() {
                         <div class="vslider-fill" id="rate-fill"></div>
                         <div class="vslider-thumb" id="rate-thumb"><span id="val-rate">1.0x</span></div>
                     </div>
-                    <div class="vslider-range"><span>0.1x</span><span>1.5x</span></div>
+                    <div class="vslider-range"><span>0.5x</span><span>1.5x</span></div>
                 </div>
                 <div class="vslider-box">
                     <div class="vslider-label"><i class="fas fa-repeat"></i> 循环</div>
@@ -794,6 +794,16 @@ async function buildMenu() {
             { name: '医院与安全篇', icon: 'fa-hospital', color: '#f87171', unitIndices: [33,34,35] },
         ];
 
+        // 1级课程（BIPA 1）：按主题篇章分组
+        const level1Chapters = [
+            { name: '问候与数字篇', icon: 'fa-hand-peace', color: '#f472b6', unitIndices: [0,1] },
+            { name: '时间与家庭篇', icon: 'fa-hourglass-half', color: '#34d399', unitIndices: [2,3] },
+            { name: '饮食与购物篇', icon: 'fa-utensils', color: '#fb923c', unitIndices: [4,5] },
+            { name: '交通与天气篇', icon: 'fa-cloud-sun', color: '#38bdf8', unitIndices: [6,7] },
+            { name: '工作与健康篇', icon: 'fa-briefcase', color: '#fbbf24', unitIndices: [8,9] },
+            { name: '疑问与日常活动篇', icon: 'fa-person-running', color: '#a78bfa', unitIndices: [10,11] },
+        ];
+
         // 生成单元HTML的通用函数
         function buildUnitHTML(lvId, unit, unitIndex) {
             const showIndex = String(lvId) === '0';
@@ -835,6 +845,24 @@ async function buildMenu() {
         if (String(lv.id) === '0') {
             // 0级：按篇章分组
             for (const ch of level0Chapters) {
+                let chUnitsHTML = '';
+                for (const uIdx of ch.unitIndices) {
+                    if (uIdx < lv.units.length) {
+                        chUnitsHTML += buildUnitHTML(lv.id, lv.units[uIdx], uIdx);
+                    }
+                }
+                if (chUnitsHTML) {
+                    unitsHTML += `
+                    <div style="padding:8px 10px;font-size:13px;color:${ch.color};font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;" onclick="this.nextElementSibling.classList.toggle('active')">
+                        <i class="fas ${ch.icon}" style="font-size:12px;opacity:0.8;"></i> ${ch.name}
+                        <i class="fas fa-chevron-right" style="font-size:9px;margin-left:auto;opacity:0.4;transition:transform 0.2s;"></i>
+                    </div>
+                    <div class="sub-menu" style="padding-left:6px;">${chUnitsHTML}</div>`;
+                }
+            }
+        } else if (String(lv.id) === '1') {
+            // 1级：按主题篇章分组
+            for (const ch of level1Chapters) {
                 let chUnitsHTML = '';
                 for (const uIdx of ch.unitIndices) {
                     if (uIdx < lv.units.length) {
@@ -979,76 +1007,20 @@ function googleSpeech(word, rate) {
         fetch(proxyUrl)
             .then(resp => {
                 if (!resp.ok) throw new Error('HTTP ' + resp.status);
-                return resp.arrayBuffer();
+                return resp.blob();
             })
-            .then(buffer => {
-                if (!rate || rate === 1) {
-                    // 原速直接播放
-                    const blob = new Blob([buffer], { type: 'audio/mpeg' });
-                    const url = URL.createObjectURL(blob);
-                    const audio = new Audio(url);
-                    audio.onended = () => { URL.revokeObjectURL(url); resolve(true); };
-                    audio.onerror = () => { URL.revokeObjectURL(url); reject('播放失败'); };
-                    audio.play().catch(() => { URL.revokeObjectURL(url); reject('播放失败'); });
-                } else {
-                    // 变速播放：用 Web Audio API 重编码，避免低语速破音
-                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                    audioCtx.decodeAudioData(buffer).then(audioBuffer => {
-                        const newLen = Math.ceil(audioBuffer.length * (1 / rate));
-                        const offCtx = new OfflineAudioContext(audioBuffer.numberOfChannels, newLen, audioBuffer.sampleRate);
-                        const src = offCtx.createBufferSource();
-                        src.buffer = audioBuffer;
-                        src.playbackRate.value = rate;
-                        src.connect(offCtx.destination);
-                        src.start(0);
-                        offCtx.startRendering().then(rendered => {
-                            const wav = audioBufferToWav(rendered);
-                            const url = URL.createObjectURL(wav);
-                            const audio = new Audio(url);
-                            audio.onended = () => { URL.revokeObjectURL(url); audioCtx.close(); resolve(true); };
-                            audio.onerror = () => { URL.revokeObjectURL(url); audioCtx.close(); reject('播放失败'); };
-                            audio.play().catch(() => { URL.revokeObjectURL(url); audioCtx.close(); reject('播放失败'); });
-                        }).catch(() => { audioCtx.close(); reject('渲染失败'); });
-                    }).catch(() => { audioCtx.close(); reject('解码失败'); });
-                }
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                const audio = new Audio(url);
+                // playbackRate 直接变速，保持音色统一（0.5x以上不会破音）
+                if (rate && rate > 0) audio.playbackRate = rate;
+                audio.onended = () => { URL.revokeObjectURL(url); resolve(true); };
+                audio.onerror = () => { URL.revokeObjectURL(url); reject('播放失败'); };
+                audio.play().catch(() => { URL.revokeObjectURL(url); reject('播放失败'); });
             })
             .catch(err => reject(err));
     });
 }
-
-// AudioBuffer → WAV Blob（Web Audio API 重编码后输出）
-function audioBufferToWav(buffer) {
-    const numCh = buffer.numberOfChannels;
-    const sr = buffer.sampleRate;
-    const len = buffer.length;
-    const out = new DataView(new ArrayBuffer(44 + len * numCh * 2));
-    const ch = [];
-    for (let i = 0; i < numCh; i++) ch.push(buffer.getChannelData(i));
-    // WAV header
-    writeStr(out, 0, 'RIFF');
-    out.setUint32(4, 36 + len * numCh * 2, true);
-    writeStr(out, 8, 'WAVE');
-    writeStr(out, 12, 'fmt ');
-    out.setUint32(16, 16, true);
-    out.setUint16(20, 1, true);
-    out.setUint16(22, numCh, true);
-    out.setUint32(24, sr, true);
-    out.setUint32(28, sr * numCh * 2, true);
-    out.setUint16(32, numCh * 2, true);
-    out.setUint16(34, 16, true);
-    writeStr(out, 36, 'data');
-    out.setUint32(40, len * numCh * 2, true);
-    let off = 44;
-    for (let i = 0; i < len; i++) {
-        for (let c = 0; c < numCh; c++) {
-            let s = Math.max(-1, Math.min(1, ch[c][i]));
-            out.setInt16(off, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-            off += 2;
-        }
-    }
-    return new Blob([out], { type: 'audio/wav' });
-}
-function writeStr(view, offset, str) { for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i)); }
 
 // 语音播放 - 优先谷歌TTS，兜底浏览器speechSynthesis
 let _isSpeechPlaying = false; // 当前是否正在播放语音
@@ -1139,7 +1111,7 @@ function updateSetting(k, v) {
 
 // 圆环控件：语速 1-20 对应 0.1-2.0
 // 语速级别：0.5, 0.8, 1.0, 1.2, 1.5, 2.0
-const RATE_LEVELS = [0.5, 0.6, 0.8, 1.0, 1.2, 1.5];
+const RATE_LEVELS = [0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5];
 let _rateIdx = 2; // 默认 0.8 (在 RATE_LEVELS 中索引2)
 const LOOP_LEVELS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 0]; // 0 = 无限循环
 let _loopIdx = 0; // 默认 1次
@@ -2262,7 +2234,7 @@ function initPracticePage() {
                         <div class="vslider-fill" id="p-rate-fill"></div>
                         <div class="vslider-thumb" id="p-rate-thumb"><span id="p-val-rate">1.0x</span></div>
                     </div>
-                    <div class="vslider-range"><span>0.1x</span><span>1.5x</span></div>
+                    <div class="vslider-range"><span>0.5x</span><span>1.5x</span></div>
                 </div>
                 <div class="vslider-box">
                     <div class="vslider-label"><i class="fas fa-repeat"></i> 循环</div>

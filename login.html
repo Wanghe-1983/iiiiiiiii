@@ -371,12 +371,15 @@
                     btn.innerHTML = '<i class="fas fa-user-secret"></i> 访客体验（无需注册）';
                     return;
                 }
-                localStorage.setItem('fmi_token', data.token);
-                localStorage.setItem('fmi_user', JSON.stringify(data.user));
-                localStorage.setItem('fmi_login_status', JSON.stringify({ isLogin: true, user: data.user, backend: true }));
+                // API返回 { success, visitor, expire(绝对时间戳), username, password }
+                var visitorUser = { username: data.username, name: '访客', role: 'user', userType: 'visitor' };
+                var visitorExpire = data.expire || (Date.now() + 3 * 60 * 1000);
+                localStorage.setItem('fmi_token', data.token || '');
+                localStorage.setItem('fmi_user', JSON.stringify(visitorUser));
+                localStorage.setItem('fmi_login_status', JSON.stringify({ isLogin: true, user: visitorUser, backend: true }));
                 localStorage.setItem('fmi_visitor_login', '1');
-                localStorage.setItem('fmi_visitor_expire', String(Date.now() + data.user.visitDuration * 60 * 1000));
-                startVisitorTimer(data.user.visitDuration * 60 * 1000);
+                localStorage.setItem('fmi_visitor_expire', String(visitorExpire));
+                startVisitorTimer(visitorExpire - Date.now());
                 showTip('login-tip', '登录成功，正在跳转...', 'success');
                 setTimeout(function() { location.href = 'index.html'; }, 600);
             } catch(e) {
