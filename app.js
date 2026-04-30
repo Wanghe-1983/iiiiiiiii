@@ -91,8 +91,71 @@ function checkLoginStatus() {
                 if (delItem) delItem.style.display = 'none';
                 if (delSep) delSep.style.display = 'none';
             }
+            // 访客倒计时
+            if (isVisitor) {
+                startAppVisitorTimer();
+            }
         }
     }
+}
+
+// 全局变量
+let appVisitorTimerInterval = null;
+
+function startAppVisitorTimer() {
+    if (appVisitorTimerInterval) clearInterval(appVisitorTimerInterval);
+    const expireStr = localStorage.getItem('fmi_visitor_expire');
+    if (!expireStr) return;
+    const expireMs = parseInt(expireStr);
+    if (isNaN(expireMs) || expireMs <= Date.now()) {
+        // 已过期
+        localStorage.removeItem('fmi_token');
+        localStorage.removeItem('fmi_user');
+        localStorage.removeItem('fmi_login_status');
+        localStorage.removeItem('fmi_visitor_login');
+        localStorage.removeItem('fmi_visitor_expire');
+        location.href = 'login.html';
+        return;
+    }
+    // 在 header 中创建倒计时元素
+    let timerEl = document.getElementById('app-visitor-timer');
+    if (!timerEl) {
+        timerEl = document.createElement('div');
+        timerEl.id = 'app-visitor-timer';
+        timerEl.style.cssText = 'display:flex;align-items:center;gap:6px;font-size:0.82rem;color:#f59e0b;padding:4px 12px;border-radius:8px;border:1px solid rgba(245,158,11,0.2);background:rgba(245,158,11,0.05);';
+        timerEl.innerHTML = '<i class="fas fa-clock" style="font-size:0.75rem;"></i> 访客剩余 <span id="app-visitor-remaining">00:00</span>';
+        const userStatus = document.getElementById('user-status');
+        if (userStatus) {
+            userStatus.parentElement.insertBefore(timerEl, userStatus);
+        }
+    }
+    timerEl.style.display = 'flex';
+    function updateTimer() {
+        const left = expireMs - Date.now();
+        if (left <= 0) {
+            clearInterval(appVisitorTimerInterval);
+            appVisitorTimerInterval = null;
+            localStorage.removeItem('fmi_token');
+            localStorage.removeItem('fmi_user');
+            localStorage.removeItem('fmi_login_status');
+            localStorage.removeItem('fmi_visitor_login');
+            localStorage.removeItem('fmi_visitor_expire');
+            alert('访客体验时间已到，感谢使用！');
+            location.href = 'login.html';
+            return;
+        }
+        const min = Math.floor(left / 60000);
+        const sec = Math.floor((left % 60000) / 1000);
+        const remainingEl = document.getElementById('app-visitor-remaining');
+        if (remainingEl) remainingEl.textContent = String(min).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+        if (left < 300000 && timerEl) {
+            timerEl.style.color = '#ef4444';
+            timerEl.style.borderColor = 'rgba(239,68,68,0.3)';
+            timerEl.style.background = 'rgba(239,68,68,0.05)';
+        }
+    }
+    updateTimer();
+    appVisitorTimerInterval = setInterval(updateTimer, 1000);
 }
 
 // 用户菜单切换
