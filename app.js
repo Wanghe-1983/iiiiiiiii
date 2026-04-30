@@ -357,6 +357,16 @@ async function initUI() {
     <!-- 主页 -->
     <div id="page-home">
         <div class="home-container">
+                        <div id="broadcast-bar" style="display:none;margin:10px 0;padding:12px 18px;background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.12));border:1px solid rgba(99,102,241,0.2);border-radius:12px;overflow:hidden;position:relative;">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <span style="color:#a78bfa;font-size:0.8rem;flex-shrink:0;"><i class="fas fa-bullhorn"></i></span>
+            <div style="flex:1;min-width:0;overflow:hidden;">
+                <div id="broadcast-text" style="font-size:0.88rem;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+                <div id="broadcast-title" style="font-size:0.75rem;color:#64748b;margin-top:2px;"></div>
+            </div>
+
+        </div>
+    </div>
             <div class="home-user-bar" id="home-user-bar">
                 <span style="color:#94a3b8;font-size:0.9rem;">加载中...</span>
             </div>
@@ -390,20 +400,7 @@ async function initUI() {
         <button class="sub-tab active" data-stab="learn" onclick="switchStudySubTab('learn')"><i class="fas fa-book-open"></i> 学习</button>
         <button class="sub-tab" data-stab="practice" onclick="switchStudySubTab('practice')"><i class="fas fa-pen-fancy"></i> 练习</button>
         <button class="sub-tab" data-stab="stats" onclick="switchStudySubTab('stats')"><i class="fas fa-chart-line"></i> 统计</button>
-    </div>
-
-    <div id="broadcast-bar" style="display:none;margin:10px 0;padding:12px 18px;background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(168,85,247,0.12));border:1px solid rgba(99,102,241,0.2);border-radius:12px;overflow:hidden;position:relative;">
-        <div style="display:flex;align-items:center;gap:10px;">
-            <span style="color:#a78bfa;font-size:0.8rem;flex-shrink:0;"><i class="fas fa-bullhorn"></i></span>
-            <div style="flex:1;min-width:0;overflow:hidden;">
-                <div id="broadcast-text" style="font-size:0.88rem;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
-                <div id="broadcast-title" style="font-size:0.75rem;color:#64748b;margin-top:2px;"></div>
-            </div>
-
-        </div>
-    </div>
-
-    <div id="page-study" style="display:none;">
+    </div><div id="page-study" style="display:none;">
 
     
 
@@ -2158,8 +2155,6 @@ function switchMainPage(page) {
     if (studyArea) studyArea.style.display = 'none';
     const homeBar = document.getElementById('home-user-bar');
     if (homeBar) homeBar.style.display = 'none';
-    const broadcastBar = document.getElementById('broadcast-bar');
-    if (broadcastBar) broadcastBar.style.display = 'none';
     if (pageStudy) pageStudy.style.display = 'none';
     if (pagePractice) pagePractice.style.display = 'none';
     if (pageStats) pageStats.style.display = 'none';
@@ -2201,8 +2196,6 @@ function switchMainPage(page) {
         if (subTab === 'practice' && pagePractice) pagePractice.style.display = '';
         if (subTab === 'stats' && pageStats) pageStats.style.display = '';
         if (subTab === 'learn' && ctrl) ctrl.style.display = 'flex';
-        const bBar = document.getElementById('broadcast-bar');
-        if (bBar) bBar.style.display = '';
         if (sidebar) sidebar.style.display = '';
         if (toggleTab) toggleTab.style.display = '';
         if (copyRight) copyRight.style.display = '';
@@ -2237,8 +2230,6 @@ function switchMainPage(page) {
         if (sidebar) sidebar.style.display = 'none';
         if (toggleTab) toggleTab.style.display = 'none';
         if (copyRight) copyRight.style.display = '';
-        const cBar = document.getElementById('broadcast-bar');
-        if (cBar) cBar.style.display = '';
         // 延迟初始化
         initChallengePage();
     }
