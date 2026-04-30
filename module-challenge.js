@@ -224,8 +224,13 @@ const ChallengeModule = {
         const ss = String(elapsed % 60).padStart(2, '0');
 
         const isDialogue = q.lines !== undefined;
-        const allOptions = state.questions.map(item => item.chinese || (item.lines ? item.title : '')).filter(Boolean);
-        const correctAnswer = q.chinese || q.title_id || '';
+        // 对话题：正确答案为中文标题(q.title)，选项池只用中文
+        // 非对话：正确答案为中文释义(q.chinese)
+        const allOptions = state.questions.map(item => {
+            if (item.lines !== undefined) return item.title || '';
+            return item.chinese || '';
+        }).filter(Boolean);
+        const correctAnswer = isDialogue ? (q.title || '') : (q.chinese || '');
 
         // 生成选项
         const wrongOptions = allOptions.filter(o => o !== correctAnswer);
