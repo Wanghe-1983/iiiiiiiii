@@ -216,11 +216,7 @@
     };
 
     // ========== 启动 ==========
-    // 在 window.onload 中旧版会调用 initUI()（已被覆盖为空函数）
-    // 我们需要自己的启动逻辑
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initV2);
-    } else {
-        initV2();
-    }
+    // [已禁用] app-v2 自动启动已由 app.js 统一管理
+    // initV2 不再自动执行，避免覆盖 app.js 的 app.innerHTML
+    // 旧版功能（speak, toggleSidebar）已集成到 app.js 中
 })();
