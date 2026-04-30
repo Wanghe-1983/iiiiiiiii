@@ -95,28 +95,59 @@ const ChallengeModule = {
         const totalScore = stages.reduce((sum, s) => sum + (this.serverProgress[s.id]?.bestScore || 0), 0);
         const maxStars = stages.reduce((sum, s) => sum + (this.serverProgress[s.id]?.stars || 0), 0);
 
-        let stageGrid = stages.map((stage, i) => {
-            const p = this.serverProgress[stage.id];
-            const isCleared = p && p.cleared;
-            const isCurrent = i === nextAvailable;
-            const isLocked = i > nextAvailable;
-            const stars = p?.stars || 0;
+        // 按关卡所属等级分组，并标记地狱模式
+        const HELL_LEVELS = (window._systemInfo && window._systemInfo.hellLevels) || [];
+        const levelNames = {};
+        this.allStages.forEach(s => {
+            if (!levelNames[s.levelId]) levelNames[s.levelId] = s.levelId === '0' ? '通用印尼语学习手册' : '';
+        });
+        // 从 course-content 获取 level 名称
+        const levels = (typeof CourseContent !== 'undefined' && CourseContent.getLevels) ? CourseContent.getLevels() : [];
+        levels.forEach(lv => { levelNames[lv.id] = lv.name; });
 
-            let statusClass = isLocked ? 'locked' : isCleared ? 'cleared' : isCurrent ? 'current' : 'available';
-            let statusIcon = isLocked ? '<i class="fas fa-lock"></i>'
-                : isCleared ? this._renderStars(stars)
-                : isCurrent ? '<i class="fas fa-play-circle"></i>'
-                : '';
+        // 分组
+        const groups = [];
+        let currentLevelId = null;
+        let currentGroup = null;
+        stages.forEach((stage, i) => {
+            const lid = String(stage.levelId);
+            if (lid !== currentLevelId) {
+                currentLevelId = lid;
+                currentGroup = { levelId: lid, levelName: levelNames[lid] || ('Level ' + lid), isHell: HELL_LEVELS.includes(Number(lid)), stages: [] };
+                groups.push(currentGroup);
+            }
+            currentGroup.stages.push({ stage, index: i });
+        });
 
-            return `<div class="stage-card ${statusClass}" onclick="${isLocked ? '' : `ChallengeModule.enterStage('${stage.id}')`}">
-                <div class="stage-number">${i + 1}</div>
-                <div class="stage-icon">${statusIcon}</div>
-                <div class="stage-name">${stage.name}</div>
-                <div class="stage-type">${stage.type === 'words' ? '单词' : stage.type === 'sentences' ? '短句' : '对话'}</div>
-                ${isCleared ? `<div class="stage-best">最佳 ${p.bestScore.toFixed(0)}分</div>` : ''}
-                ${isCurrent ? '<div class="stage-hint">可挑战</div>' : ''}
-            </div>`;
-        }).join('');
+        let stageGrid = '';
+        groups.forEach(group => {
+            const hellTag = group.isHell ? `<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);border-radius:6px;font-size:0.7rem;font-weight:600;"><i class="fas fa-skull-crossbones"></i> 地狱模式</span>` : '';
+            stageGrid += `<div style="grid-column:1/-1;padding:8px 4px 2px;display:flex;align-items:center;gap:8px;"><span style="font-size:0.75rem;color:#64748b;font-weight:600;">${group.levelName}</span>${hellTag}</div>`;
+            group.stages.forEach(({stage, index: i}) => {
+                const p = this.serverProgress[stage.id];
+                const isCleared = p && p.cleared;
+                const isCurrent = i === nextAvailable;
+                // 地狱模式关卡：未解锁且后端未开放地狱权限时锁定
+                const isHellLocked = group.isHell && i > nextAvailable;
+                const isLocked = isHellLocked;
+                const stars = p?.stars || 0;
+
+                let statusClass = isLocked ? 'locked' : isCleared ? 'cleared' : isCurrent ? 'current' : 'available';
+                let statusIcon = isLocked ? '<i class="fas fa-lock"></i>'
+                    : isCleared ? this._renderStars(stars)
+                    : isCurrent ? '<i class="fas fa-play-circle"></i>'
+                    : '';
+
+                stageGrid += `<div class="stage-card ${statusClass} ${group.isHell ? 'stage-hell' : ''}" onclick="${isLocked ? '' : `ChallengeModule.enterStage('${stage.id}')`}">
+                    <div class="stage-number">${i + 1}</div>
+                    <div class="stage-icon">${statusIcon}</div>
+                    <div class="stage-name">${stage.name}</div>
+                    <div class="stage-type">${stage.type === 'words' ? '单词' : stage.type === 'sentences' ? '短句' : '对话'}</div>
+                    ${isCleared ? `<div class="stage-best">最佳 ${p.bestScore.toFixed(0)}分</div>` : ''}
+                    ${isCurrent ? '<div class="stage-hint">可挑战</div>' : ''}
+                </div>`;
+            });
+        });
 
         container.innerHTML = `
             <div class="stages-page">

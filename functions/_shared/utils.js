@@ -118,6 +118,7 @@ function defaultSettings() {
         showOnlineCount: true,
         showRegCount: true,
         allowVisitorChallenge: false,
+        hellLevels: [5, 6, 7], // 地狱模式关卡等级（BIPA 5/6/7）
     };
 }
 

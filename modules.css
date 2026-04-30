@@ -951,6 +951,30 @@
     cursor: not-allowed;
 }
 
+.stage-card.stage-hell {
+    border-color: rgba(239, 68, 68, 0.25);
+}
+.stage-card.stage-hell.available {
+    background: rgba(239, 68, 68, 0.06);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+.stage-card.stage-hell.available:hover {
+    border-color: rgba(239, 68, 68, 0.6);
+}
+.stage-card.stage-hell.current {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #ef4444;
+    animation: pulse-border-hell 2s ease-in-out infinite;
+}
+.stage-card.stage-hell.cleared {
+    background: rgba(239, 68, 68, 0.05);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+@keyframes pulse-border-hell {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+}
+
 .stage-number {
     font-size: 1.1rem;
     font-weight: 800;
@@ -1367,6 +1391,7 @@
         gap: 6px;
     }
     .stage-card { padding: 10px 4px; min-height: 70px; }
+    .stage-card.stage-hell { border-color: rgba(239, 68, 68, 0.2); }
     .stage-number { font-size: 0.9rem; }
     .stage-name { font-size: 0.6rem; max-width: 60px; }
     .card-indo { font-size: 1.4rem; }
