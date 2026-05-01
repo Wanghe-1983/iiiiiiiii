@@ -102,8 +102,10 @@
         .panel-title i { color: #a78bfa; }
 
         /* Cards */
-        .card { background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; margin-bottom: 20px; width: 100%; }
-        .tab-panel .card { max-width: 100%; width: 100%; }
+        .card { background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 20px; margin-bottom: 20px; width: 100%; box-sizing: border-box; }
+        .tab-panel .card { max-width: 100% !important; width: 100% !important; }
+        .tab-panel { display: none; width: 100%; }
+        .tab-panel.active { display: block; width: 100%; }
         .card-title { font-size: 0.95rem; color: #cbd5e1; margin-bottom: 15px; font-weight: 600; }
 
         /* Stats row */
