@@ -214,6 +214,7 @@ const ChallengeModule = {
         };
 
         this._inChallenge = true;
+        this._chIsPlaying = false;
         this._beforeUnloadHandler = function(e) {
             e.preventDefault();
             e.returnValue = '闯关进行中，确定要离开吗？成绩将不会保存。';
@@ -267,7 +268,7 @@ const ChallengeModule = {
         } else {
             questionContent = `
                 <div class="challenge-q-type">${q.type === 'words' ? '单词' : '短句'}</div>
-                <div class="challenge-q-indo" onclick="speak('${encodeURIComponent(q.indonesian)}')">
+                <div class="challenge-q-indo" onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.indonesian)}')" class="ch-speak-btn">
                     ${q.indonesian}
                     <i class="fas fa-volume-up" style="margin-left:8px;color:var(--accent);"></i>
                 </div>
@@ -283,8 +284,11 @@ const ChallengeModule = {
                     </button>
                     <div class="challenge-play-title">第${this.allStages.findIndex(s => s.id === state.stageId) + 1}关</div>
                     <div class="challenge-timer"><i class="fas fa-clock"></i> ${mm}:${ss}</div>
-                    <button style="background:rgba(248,113,113,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.3);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;gap:6px;" onclick="ChallengeModule.confirmFinish()">
-                        <i class="fas fa-flag-checkered"></i> 结束闯关
+                    <button style="background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;gap:6px;" onclick="ChallengeModule.confirmFinish()">
+                        <i class="fas fa-file-alt"></i> 交卷
+                    </button>
+                    <button style="background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;gap:6px;" onclick="ChallengeModule.exitWithoutSave()">
+                        <i class="fas fa-sign-out-alt"></i> 退出
                     </button>
                 </div>
 
@@ -331,10 +335,12 @@ const ChallengeModule = {
 
         // 同步滑块位置和填充条
         setTimeout(() => {
-            const rateSlider = document.getElementById('ch-rate-slider');
-            const loopSlider = document.getElementById('ch-loop-slider');
-            if (rateSlider && typeof updateSliderFill === 'function') updateSliderFill(rateSlider);
-            if (loopSlider && typeof updateSliderFill === 'function') updateSliderFill(loopSlider);
+            if (typeof updateSliderFill === 'function') {
+                const rateVal = parseInt(document.getElementById('ch-rate-slider').value) - 1;
+                const loopVal = parseInt(document.getElementById('ch-loop-slider').value);
+                updateSliderFill('ch-rate', rateVal / ((typeof RATE_LEVELS !== 'undefined' ? RATE_LEVELS.length : 15) - 1));
+                updateSliderFill('ch-loop', loopVal / 14);
+            }
         }, 50);
 
         // 更新计时器
@@ -462,6 +468,21 @@ const ChallengeModule = {
         } catch (e) {
             console.warn('Failed to submit score:', e);
         }
+    },
+
+    // 退出闯关（不保存成绩），适用于只是进来看看的用户
+    exitWithoutSave() {
+        this._chIsPlaying = false;
+        window.speechSynthesis.cancel();
+        if (this._timerInterval) clearInterval(this._timerInterval);
+        if (this._beforeUnloadHandler) {
+            window.removeEventListener('beforeunload', this._beforeUnloadHandler);
+            this._beforeUnloadHandler = null;
+        }
+        this.currentStageId = null;
+        this.challengeState = null;
+        this._inChallenge = false;
+        this.render();
     },
 
     confirmExit() {
@@ -617,8 +638,14 @@ const ChallengeModule = {
         const idx = parseInt(val) - 1;
         const rate = (typeof RATE_LEVELS !== 'undefined' && RATE_LEVELS[idx] !== undefined) ? RATE_LEVELS[idx] : val / 10;
         localStorage.setItem('fmi_rate', String(rate));
+        const display = rate.toFixed(rate < 1 ? 2 : 1) + 'x';
         const thumb = document.getElementById('ch-val-rate');
-        if (thumb) thumb.textContent = rate.toFixed(1) + 'x';
+        if (thumb) thumb.textContent = display;
+        // 更新滑块填充条和thumb位置
+        if (typeof updateSliderFill === 'function') {
+            const maxIdx = (typeof RATE_LEVELS !== 'undefined' ? RATE_LEVELS.length : 15) - 1;
+            updateSliderFill('ch-rate', idx / maxIdx);
+        }
         // 同步全局滑块
         if (typeof setRateFromSlider === 'function') setRateFromSlider(val);
     },
@@ -629,8 +656,77 @@ const ChallengeModule = {
         localStorage.setItem('fmi_loop', String(loopCount));
         const thumb = document.getElementById('ch-val-loop');
         if (thumb) thumb.textContent = loopCount === 0 ? '无限' : (loopCount + '次');
+        // 更新滑块填充条和thumb位置
+        if (typeof updateSliderFill === 'function') {
+            updateSliderFill('ch-loop', count / 14);
+        }
         // 同步全局滑块
         if (typeof setLoopFromSlider === 'function') setLoopFromSlider(val);
+    },
+
+    // 闯天关播放切换：首次点击播放，再次点击停止
+    challengeToggleSpeak(encodedText) {
+        if (this._chIsPlaying) {
+            this._chIsPlaying = false;
+            window.speechSynthesis.cancel();
+            // 更新所有闯天关播放按钮图标为播放状态
+            document.querySelectorAll('.ch-speak-btn').forEach(btn => {
+                btn.innerHTML = '<i class="fas fa-volume-up" style="margin-left:8px;color:var(--accent);"></i>';
+            });
+            return;
+        }
+        const text = decodeURIComponent(encodedText);
+        if (!text) return;
+        this._chIsPlaying = true;
+        const rate = parseFloat(localStorage.getItem('fmi_rate') || '0.8');
+        const loopCount = parseInt(localStorage.getItem('fmi_loop') || '1');
+        const self = this;
+        let count = 0;
+
+        function doPlay() {
+            if (!self._chIsPlaying) return;
+            window.speechSynthesis.cancel();
+            if (typeof googleSpeech === 'function') {
+                googleSpeech(text, rate).then(() => {
+                    if (!self._chIsPlaying) return;
+                    count++;
+                    if (count < loopCount) doPlay();
+                    else { self._chIsPlaying = false; self._resetChSpeakIcons(); }
+                }).catch(() => { synthFallback(); });
+            } else {
+                synthFallback();
+            }
+        }
+
+        function synthFallback() {
+            if (!self._chIsPlaying) return;
+            const voices = window.speechSynthesis.getVoices();
+            let idVoice = voices.find(v => v.lang && v.lang.startsWith('id'));
+            if (!idVoice) idVoice = voices.find(v => v.lang && (v.lang.startsWith('ms') || v.lang.startsWith('msa')));
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID';
+            if (idVoice) utterance.voice = idVoice;
+            utterance.rate = rate;
+            utterance.onend = function() {
+                count++;
+                if (self._chIsPlaying && count < loopCount) doPlay();
+                else { self._chIsPlaying = false; self._resetChSpeakIcons(); }
+            };
+            utterance.onerror = function() { self._chIsPlaying = false; self._resetChSpeakIcons(); };
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // 更新图标为暂停状态
+        document.querySelectorAll('.ch-speak-btn').forEach(btn => {
+            btn.innerHTML = '<i class="fas fa-pause" style="margin-left:8px;color:var(--accent);"></i>';
+        });
+        doPlay();
+    },
+
+    _resetChSpeakIcons() {
+        document.querySelectorAll('.ch-speak-btn').forEach(btn => {
+            btn.innerHTML = '<i class="fas fa-volume-up" style="margin-left:8px;color:var(--accent);"></i>';
+        });
     },
 
     _shuffle(arr) {
