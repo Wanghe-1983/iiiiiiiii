@@ -262,7 +262,7 @@ const ChallengeModule = {
             questionContent = `
                 <div class="challenge-q-type">对话题</div>
                 <div class="challenge-q-title">${q.title || ''}</div>
-                <div class="challenge-q-indo" ${q.title_id ? `onclick="speak('${encodeURIComponent(q.title_id)}')" style="cursor:pointer;"` : ''}>${q.title_id || ''} ${q.title_id ? '<i class="fas fa-volume-up" style="margin-left:8px;color:var(--accent);"></i>' : ''}</div>
+                <div class="challenge-q-indo" ${q.title_id ? `onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.title_id)}')" style="cursor:pointer;" class="ch-speak-btn"` : ''}>${q.title_id || ''} ${q.title_id ? '<i class="fas fa-volume-up" style="margin-left:8px;color:var(--accent);"></i>' : ''}</div>
                 <div class="challenge-q-prompt">这个对话的主题是什么？</div>
             `;
         } else {
@@ -284,12 +284,7 @@ const ChallengeModule = {
                     </button>
                     <div class="challenge-play-title">第${this.allStages.findIndex(s => s.id === state.stageId) + 1}关</div>
                     <div class="challenge-timer"><i class="fas fa-clock"></i> ${mm}:${ss}</div>
-                    <button style="background:rgba(251,191,36,0.15);color:#fbbf24;border:1px solid rgba(251,191,36,0.3);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;gap:6px;" onclick="ChallengeModule.confirmFinish()">
-                        <i class="fas fa-file-alt"></i> 交卷
-                    </button>
-                    <button style="background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;gap:6px;" onclick="ChallengeModule.exitWithoutSave()">
-                        <i class="fas fa-sign-out-alt"></i> 退出
-                    </button>
+                    
                 </div>
 
                 <div class="challenge-progress-bar">
@@ -467,6 +462,13 @@ const ChallengeModule = {
             });
         } catch (e) {
             console.warn('Failed to submit score:', e);
+        }
+    },
+
+    // 退出闯关确认（带提示，不保存成绩）
+    confirmExitWithoutSave() {
+        if (confirm('确定要退出闯关吗？\n退出后将不记录答题时间和成绩。')) {
+            this.exitWithoutSave();
         }
     },
 
