@@ -1571,7 +1571,7 @@
     font-size: 0.7rem;
 }
 
-/* 闯天关滑块需要独立ID避免与主页面滑块冲突 */
+/* 闯天关滑块样式 */
 #ch-rate-slider,
 #ch-loop-slider {
     position: absolute;
@@ -1580,7 +1580,7 @@
     -webkit-appearance: none;
     appearance: none;
     background: transparent;
-    pointer-events: none;
+    cursor: pointer;
     z-index: 2;
     margin: 0;
 }

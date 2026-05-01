@@ -877,11 +877,7 @@ let allUsers = [];
         document.getElementById('visitor-duration-row').style.display = s.allowVisitor ? '' : 'none';
         document.getElementById('setAllowVisitorChallenge').checked = s.allowVisitorChallenge === true;
         var vcHint = document.getElementById('visitor-challenge-hint');
-        if (vcHint) vcHint.textContent = document.getElementById('setAllowVisitorChallenge').checked ? '已开启' : '已关闭';
-        var ceHint = document.getElementById('challenge-enabled-hint');
-        if (ceHint) ceHint.textContent = document.getElementById('setChallengeEnabled').checked ? '已启用' : '已关闭';
-        var hmHint = document.getElementById('hell-mode-hint');
-        if (hmHint) hmHint.textContent = document.getElementById('setHellModeEnabled').checked ? '已启用' : '已关闭';= s.allowVisitorChallenge === true ? '已开启' : '已关闭';
+        if (vcHint) vcHint.textContent = s.allowVisitorChallenge === true ? '已开启' : '已关闭';
         document.getElementById('setAdminPassword').value = s.adminPanelPassword || '';
         document.getElementById('setShowOnlineCount').checked = s.showOnlineCount !== false;
         document.getElementById('showOnlineCount-hint').textContent = s.showOnlineCount !== false ? '显示中' : '已隐藏';
@@ -988,7 +984,7 @@ let allUsers = [];
         var ceHint = document.getElementById('challenge-enabled-hint');
         if (ceHint) ceHint.textContent = document.getElementById('setChallengeEnabled').checked ? '已启用' : '已关闭';
         var hmHint = document.getElementById('hell-mode-hint');
-        if (hmHint) hmHint.textContent = document.getElementById('setHellModeEnabled').checked ? '已启用' : '已关闭';= settings.allowVisitorChallenge ? '已开启' : '已关闭';
+        if (hmHint) hmHint.textContent = document.getElementById('setHellModeEnabled').checked ? '已启用' : '已关闭';
         if (result1 && result1.success && result2 && result2.success) {
             showAdminToast('所有设置已保存', 'success');
         } else {
