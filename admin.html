@@ -1691,5 +1691,24 @@ let allUsers = [];
             setTimeout(function() { toast.style.transform = 'translateX(120%)'; setTimeout(function() { toast.remove(); }, 400); }, 2500);
         }
         </script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        var panels = document.querySelectorAll('.tab-panel');
+        panels.forEach(function(p) {
+            p.style.display = 'block';
+            var cards = p.querySelectorAll('.card');
+            cards.forEach(function(c, i) {
+                console.log('[DEBUG] Panel #' + p.id + ' Card ' + i + ': offsetWidth=' + c.offsetWidth + ' clientWidth=' + c.clientWidth + ' computed width=' + getComputedStyle(c).width + ' computed max-width=' + getComputedStyle(c).maxWidth);
+            });
+            if (!p.classList.contains('active')) p.style.display = 'none';
+        });
+        var content = document.querySelector('.admin-content');
+        console.log('[DEBUG] admin-content: offsetWidth=' + content.offsetWidth + ' computed width=' + getComputedStyle(content).width + ' computed flex=' + getComputedStyle(content).flex);
+        var nav = document.querySelector('.admin-nav');
+        console.log('[DEBUG] admin-nav: offsetWidth=' + nav.offsetWidth);
+    }, 500);
+});
+</script>
 </body>
 </html>
