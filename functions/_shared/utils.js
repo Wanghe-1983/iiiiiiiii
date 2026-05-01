@@ -118,6 +118,8 @@ function defaultSettings() {
         showOnlineCount: true,
         showRegCount: true,
         allowVisitorChallenge: false,
+        mainVersion: '2.2',              // 主界面版本号
+        mainChangelog: '',             // 主界面更新日志内容
         hellLevels: [5, 6, 7], // 地狱模式关卡等级（BIPA 5/6/7）
         // 闯天关配置
         challengeEnabled: true,        // 启用闯天关功能
@@ -510,8 +512,11 @@ async function handleAdminGetSettings(context) {
 
 async function handleAdminPutSettings(context) {
     await requireAdmin(context);
-    const settings = await context.request.json();
-    await setSettings(context.env, settings);
+    const updates = await context.request.json();
+    // 合并模式：读取现有设置，仅更新传入的字段，防止部分面板保存时覆盖其他面板数据
+    const existing = await getSettings(context.env) || defaultSettings();
+    const merged = { ...existing, ...updates };
+    await setSettings(context.env, merged);
     return jsonOK({ message: '设置已保存' });
 }
 

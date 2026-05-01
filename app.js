@@ -499,7 +499,7 @@ async function initUI() {
     <div class="copyright" id="copyright">
         仅供学习・禁止商用 © 2026｜联系：
         <span style="color:var(--accent);cursor:pointer;" onclick="openQrModal()">王鹤</span> 
-        Ver 2.2 <span class="clickable" onclick="showVersionChangelog()" style="font-size:0.75rem;margin-left:5px;" title="查看更新日志">[更新日志]</span>
+        Ver <span id="main-version-num">2.2</span> <span class="clickable" onclick="showVersionChangelog()" style="font-size:0.75rem;margin-left:5px;" title="查看更新日志">[更新日志]</span>
         <span class="clickable" onclick="openAdminModal()" style="font-size:0.72rem;margin-left:8px;cursor:pointer;opacity:0.5;" title="管理员入口"><i class="fas fa-cog" style="font-size:0.8rem;"></i></span>
     </div>
 </main>
@@ -3017,43 +3017,32 @@ function showVersionChangelog() {
                 <h3 style="color:#fff;font-size:1.2rem;">📋 更新日志</h3>
                 <button onclick="document.body.removeChild(document.getElementById('version-changelog-dialog'))" style="background:none;border:none;color:#94a3b8;font-size:1.5rem;cursor:pointer;padding:0 5px;">&times;</button>
             </div>
-            <div style="border-left:3px solid #f59e0b;padding:15px 20px;margin-bottom:15px;border-radius:0 10px 10px 0;">
-                <div style="color:#fbbf24;font-weight:700;margin-bottom:8px;">Ver 2.2 (2026-04-30)</div>
-                <ul style="color:#cbd5e1;font-size:0.9rem;line-height:1.8;padding-left:18px;">
-                    <li>新增：WSOLA 时间拉伸算法，变速不变调（服务端处理）</li>
-                    <li>新增：TTS 音频 KV 缓存，减少重复请求</li>
-                    <li>修复：主页/勤学苦练页重复的登录者信息和倒计时</li>
-                    <li>修复：3~7级课程目录样式统一（彩色圆形+中文篇名分组）</li>
-                    <li>修复：2~7级课程点击无法加载内容</li>
-                    <li>修复：header 布局（天气/日期在左，登录信息在右）</li>
-                    <li>修复：统计页底部重复版权栏</li>
-                    <li>优化：禁用 app-v2.js 自动启动，统一由 app.js 管理</li>
-                </ul>
-            </div>
-            <div style="border-left:3px solid #10b981;padding:15px 20px;margin-bottom:15px;border-radius:0 10px 10px 0;">
-                <div style="color:#34d399;font-weight:700;margin-bottom:8px;">Ver 1.2 (2026-04-20)</div>
-                <ul style="color:#cbd5e1;font-size:0.9rem;line-height:1.8;padding-left:18px;">
-                    <li>新增：练习模式（选择题 / 填空题 / 听力题）</li>
-                    <li>新增：学习统计仪表盘（掌握率 / 练习历史）</li>
-                    <li>新增：深色/浅色主题切换</li>
-                    <li>新增：PWA 离线支持（断网也能学习）</li>
-                    <li>新增：收藏夹逐个删除</li>
-                    <li>新增：登出确认弹窗 + 跨天自动清空</li>
-                    <li>新增：后台名单解析（上传文件/粘贴文本/一键复制）</li>
-                    <li>新增：点击版本号查看更新日志</li>
-                    <li>优化：界面全面美化</li>
-                </ul>
-            </div>
-            <div style="border-left:3px solid #475569;padding:15px 20px;">
-                <div style="color:#94a3b8;font-weight:700;margin-bottom:8px;">Ver 1.0</div>
-                <ul style="color:#64748b;font-size:0.85rem;line-height:1.8;padding-left:18px;">
-                    <li>初始版本发布</li>
-                </ul>
-            </div>
+            <div id="version-changelog-body" style="color:#94a3b8;font-size:0.9rem;text-align:center;padding:30px 0;">加载中...</div>
         </div>
     `;
     document.body.appendChild(dialog);
     dialog.addEventListener('click', function(e) { if (e.target === dialog) document.body.removeChild(dialog); });
+
+    // 从后端动态获取版本号和更新日志
+    fetch((CONFIG.apiBase || location.origin) + '/api/system/info').then(r => r.json()).then(data => {
+        var ver = data.mainVersion || '2.2';
+        var changelog = data.mainChangelog || '';
+        var body = document.getElementById('version-changelog-body');
+        if (!body) return;
+        if (!changelog) {
+            body.innerHTML = '<div style="color:#64748b;">暂无更新日志</div>';
+            return;
+        }
+        // 将每行转为列表项
+        var lines = changelog.split('\n').filter(l => l.trim());
+        var listHtml = lines.map(l => '<li style="margin-bottom:4px;">' + l.replace(/^[-*]\s*/, '') + '</li>').join('');
+        body.innerHTML = '<div style="border-left:3px solid #f59e0b;padding:15px 20px;border-radius:0 10px 10px 0;">' +
+            '<div style="color:#fbbf24;font-weight:700;margin-bottom:10px;">Ver ' + ver + '</div>' +
+            '<ul style="color:#cbd5e1;font-size:0.9rem;line-height:1.8;padding-left:18px;">' + listHtml + '</ul></div>';
+    }).catch(() => {
+        var body = document.getElementById('version-changelog-body');
+        if (body) body.innerHTML = '<div style="color:#64748b;">加载失败</div>';
+    });
 }
 
 // 绑定版权区双击打开后台（兼容原逻辑）
@@ -3063,6 +3052,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (copyright) {
             // admin entry moved to ⚙ gear icon
         }
+        // 从后端加载版本号
+        fetch((CONFIG.apiBase || location.origin) + '/api/system/info').then(r => r.json()).then(data => {
+            var verEl = document.getElementById('main-version-num');
+            if (verEl && data.mainVersion) verEl.textContent = data.mainVersion;
+        }).catch(() => {});
     }, 1000);
 });
 

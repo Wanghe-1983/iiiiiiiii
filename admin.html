@@ -243,7 +243,7 @@
     <div id="admin-version-tag" style="position:fixed;bottom:10px;left:10px;z-index:99999;background:rgba(52,211,153,0.15);color:#34d399;border:1px solid rgba(52,211,153,0.3);padding:3px 10px;border-radius:6px;font-size:0.7rem;cursor:pointer;" onclick="location.href=location.pathname+'?v='+Date.now()">v2.25 · 点击刷新</div>
     <!-- 固定右上角操作按钮 -->
     <div class="admin-float-actions">
-        <button class="hdr-btn ghost" onclick="location.href='index.html'"><i class="fas fa-arrow-left"></i> 返回学习</button>
+        <button class="hdr-btn ghost" onclick="location.href='index.html'"><i class="fas fa-home"></i> 返回主页</button>
         <button class="hdr-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button>
     </div>
 
@@ -252,14 +252,13 @@
         <div class="admin-nav">
             <div class="nav-item active" onclick="switchTab('overview', this)"><i class="fas fa-chart-pie"></i> 运行概览</div>
             <div class="nav-item" onclick="switchTab('users', this)"><i class="fas fa-users-gear"></i> 用户管理</div>
-            <div class="nav-item" onclick="switchTab('settings', this)"><i class="fas fa-sliders"></i> 系统设置</div>
-                        <div class="nav-divider"></div>
             <div class="nav-item" onclick="switchTab('whitelist', this)"><i class="fas fa-user-check"></i> 白名单</div>
-            <div class="nav-divider"></div>
-            <div class="nav-item" onclick="switchTab('study', this)"><i class="fas fa-chart-bar"></i> 学习统计</div>
-            <div class="nav-divider"></div>
+            <div class="nav-item" onclick="switchTab('settings', this)"><i class="fas fa-sliders"></i> 系统设置</div>
+            <div class="nav-item" onclick="switchTab('visitor', this)"><i class="fas fa-user-secret"></i> 访客设置</div>
+            <div class="nav-item" onclick="switchTab('study', this)"><i class="fas fa-book-open"></i> 勤学苦练设置</div>
+            <div class="nav-item" onclick="switchTab('challenge', this)"><i class="fas fa-gamepad"></i> 闯天关设置</div>
+            <div class="nav-item" onclick="switchTab('broadcast', this)"><i class="fas fa-bullhorn"></i> 广播设置</div>
             <div class="nav-item" onclick="switchTab('changelog', this)"><i class="fas fa-code-branch"></i> 版本说明</div>
-            <div class="nav-item" onclick="switchTab('broadcast', this)"><i class="fas fa-bullhorn"></i> 广播管理</div>
         </div>
 
         <!-- Content -->
@@ -324,21 +323,7 @@
                         <div class="setting-info"><div class="setting-label">允许自助注册</div><div class="setting-desc">关闭后用户无法自行注册，只能由管理员创建</div></div>
                         <div class="setting-control"><label class="toggle"><input type="checkbox" id="setAllowRegister" checked><span class="slider"></span></label></div>
                     </div>
-                    <div class="setting-row" style="border-top:1px solid rgba(255,255,255,0.06);padding-top:14px;margin-top:6px;">
-                        <div class="setting-info">
-                            <div class="setting-label" style="display:flex;align-items:center;gap:6px;"><i class="fas fa-user-secret" style="color:#a78bfa;font-size:0.9rem;"></i> 访客体验模式</div>
-                            <div class="setting-desc">允许未注册用户以访客身份限时体验学习，到期自动退出。员工登录优先。</div>
-                        </div>
-                        <div class="setting-control"><label class="toggle"><input type="checkbox" id="setAllowVisitor" onchange="document.getElementById('visitor-duration-row').style.display=this.checked?'':'none'"><span class="slider"></span></label></div>
-                    </div>
-                    <div class="setting-row" id="visitor-duration-row" style="display:none;">
-                        <div class="setting-info"><div class="setting-label">访客体验时长</div><div class="setting-desc">访客登录后可使用的最长时间（分钟），到期自动退出</div></div>
-                        <div class="setting-control"><input type="number" class="setting-input" id="setVisitorDuration" min="5" max="480" value="3" style="width:100px;"><span style="color:#64748b;font-size:0.8rem;">分钟</span></div>
-                    </div>
-                    <div class="setting-row" id="visitor-challenge-row">
-                        <div class="setting-info"><div class="setting-label">允许访客闯天关</div><div class="setting-desc">允许访客使用"闯天关"功能，关闭后访客无法进入闯天关模式 <span id="visitor-challenge-hint" style="color:#22c55e;margin-left:8px;font-size:0.8rem;">已关闭</span></div></div>
-                        <div class="setting-control"><label class="toggle"><input type="checkbox" id="setAllowVisitorChallenge"><span class="slider"></span></label></div>
-                    </div>
+
                     <div class="setting-row" style="border-top:1px solid rgba(245,158,11,0.15);padding-top:14px;margin-top:6px;">
                         <div class="setting-info">
                             <div class="setting-label" style="display:flex;align-items:center;gap:6px;"><i class="fas fa-key" style="color:#f59e0b;font-size:0.9rem;"></i> 后台管理密码</div>
@@ -374,80 +359,11 @@
                         <div class="setting-info"><div class="setting-label">登录页注册人数显示</div><div class="setting-desc">控制登录页面是否显示已注册人数 <span id="showRegCount-hint" style="color:#22c55e;margin-left:8px;font-size:0.8rem;">显示中</span></div></div>
                         <div class="setting-control"><label class="toggle"><input type="checkbox" id="setShowRegCount" checked><span class="slider"></span></label></div>
                     </div>
-                    <!-- ===== 闯天关配置 ===== -->
-                    <div style="border-top:1px solid rgba(99,102,241,0.15);padding-top:18px;margin-top:18px;">
-                        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
-                            <i class="fas fa-gamepad" style="color:#a78bfa;font-size:1rem;"></i>
-                            <span style="color:#fff;font-size:1rem;font-weight:600;">闯天关配置</span>
-                        </div>
-                        <div class="setting-row">
-                            <div class="setting-info"><div class="setting-label">启用闯天关</div><div class="setting-desc">关闭后所有用户无法进入闯天关模式 <span id="challenge-enabled-hint" style="color:#22c55e;margin-left:8px;font-size:0.8rem;">已启用</span></div></div>
-                            <div class="setting-control"><label class="toggle"><input type="checkbox" id="setChallengeEnabled" checked><span class="slider"></span></label></div>
-                        </div>
-                        <div class="setting-row">
-                            <div class="setting-info"><div class="setting-label">每关时间限制</div><div class="setting-desc">每关答题最长时限（秒），设为 0 表示不限制</div></div>
-                            <div class="setting-control"><input type="number" class="setting-input" id="setChallengeTimeLimit" min="0" max="600" value="0" style="width:100px;"><span style="color:#64748b;font-size:0.8rem;">秒 (0=不限)</span></div>
-                        </div>
-                        <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:8px;margin-bottom:12px;">
-                            <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-star" style="color:#fbbf24;margin-right:4px;"></i> 星级评定分数线</div>
-                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-                                <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">3星 (满分)</label><input type="number" id="setChallengeStar3" min="1" max="100" value="90" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"><span style="font-size:0.75rem;color:#64748b;">分以上</span></div>
-                                <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">2星</label><input type="number" id="setChallengeStar2" min="1" max="100" value="70" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"><span style="font-size:0.75rem;color:#64748b;">分以上</span></div>
-                                <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">1星 (及格)</label><input type="number" id="setChallengeStar1" min="1" max="100" value="50" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"><span style="font-size:0.75rem;color:#64748b;">分以上</span></div>
-                            </div>
-                        </div>
-                        <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:8px;margin-bottom:12px;">
-                            <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-calculator" style="color:#a78bfa;margin-right:4px;"></i> 计分权重</div>
-                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-                                <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">准确率权重</label><input type="number" id="setChallengeAccuracyWeight" min="0" max="1" step="0.1" value="0.9" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"></div>
-                                <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">用时权重</label><input type="number" id="setChallengeTimeWeight" min="0" max="1" step="0.1" value="0.1" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"></div>
-                                <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">时间宽容度</label><input type="number" id="setChallengeTimeMultiplier" min="1" max="20" step="1" value="5" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"><span style="font-size:0.7rem;color:#64748b;">越大越宽容</span></div>
-                            </div>
-                        </div>
-                        <!-- 排行榜配置 -->
-                        <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:8px;margin-bottom:12px;">
-                            <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-trophy" style="color:#fbbf24;margin-right:4px;"></i> 排行榜配置</div>
-                            <div class="setting-row">
-                                <div class="setting-info"><div class="setting-label">启用排行榜</div><div class="setting-desc">开启后用户可在闯天关结束后提交成绩到排行榜</div></div>
-                                <div class="setting-control"><label class="toggle"><input type="checkbox" id="lbEnabled"><span class="slider"></span></label></div>
-                            </div>
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;">
-                                <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">打榜名称</label><input id="lbTitle" placeholder="例：每日单词挑战" style="padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"></div>
-                                <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">题目数量</label><input type="number" id="lbQuestionCount" min="5" max="100" value="20" style="padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"></div>
-                            </div>
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;">
-                                <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">课件分类</label><select id="lbCategory" style="padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"><option value="all">全部</option></select></div>
-                                <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">题目类型</label><select id="lbType" style="padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"><option value="indo2cn">印尼语→中文</option><option value="cn2indo">中文→印尼语</option><option value="mixed">混合模式</option></select></div>
-                            </div>
-                        </div>
-                        <!-- 地狱模式 -->
-                        <div style="border-top:1px solid rgba(239,68,68,0.12);padding-top:14px;margin-top:10px;">
-                            <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-skull-crossbones" style="color:#f87171;margin-right:4px;"></i> 地狱模式</div>
-                            <div class="setting-row">
-                                <div class="setting-info"><div class="setting-label">启用地狱模式</div><div class="setting-desc">关闭后地狱关卡将隐藏，用户无法看到或挑战 <span id="hell-mode-hint" style="color:#22c55e;margin-left:8px;font-size:0.8rem;">已启用</span></div></div>
-                                <div class="setting-control"><label class="toggle"><input type="checkbox" id="setHellModeEnabled" checked><span class="slider"></span></label></div>
-                            </div>
-                            <div class="setting-row">
-                                <div class="setting-info">
-                                    <div class="setting-label" style="display:flex;align-items:center;gap:6px;">地狱模式关卡等级</div>
-                                    <div class="setting-desc">勾选的 BIPA 等级将标记为地狱模式，需按顺序通关后解锁</div>
-                                </div>
-                                <div class="setting-control" style="display:flex;flex-wrap:wrap;gap:8px;">
-                                    <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="1"> BIPA 1</label>
-                                    <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="2"> BIPA 2</label>
-                                    <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="3"> BIPA 3</label>
-                                    <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="4"> BIPA 4</label>
-                                    <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="5"> BIPA 5</label>
-                                    <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="6"> BIPA 6</label>
-                                    <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="7"> BIPA 7</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ===== 闯天关配置结束 ===== -->
+
+
+
                     <div style="margin-top:20px;display:flex;gap:10px;">
-                        <button class="hdr-btn primary" onclick="saveAllSettings()"><i class="fas fa-save"></i> 保存所有设置</button>
-                        <button class="hdr-btn ghost" onclick="loadLbConfig()"><i class="fas fa-refresh"></i> 刷新闯天关配置</button>
+                        <button class="hdr-btn primary" onclick="saveSystemSettings()"><i class="fas fa-save"></i> 保存系统设置</button>
                     </div>
                 </div>
             </div>
@@ -491,7 +407,7 @@
             </div>
             <!-- 学习统计管理面板 -->
             <div class="tab-panel" id="tab-study">
-                <div class="panel-title"><i class="fas fa-chart-bar"></i> 学习统计</div>
+                <div class="panel-title"><i class="fas fa-book-open"></i> 勤学苦练设置</div>
                 <div class="card">
                     <p style="color:#94a3b8;font-size:0.85rem;margin-bottom:15px;">查看所有用户的学习数据和累计统计</p>
                     <div class="table-wrap">
@@ -507,16 +423,35 @@
             <!-- 版本说明面板 -->
             <div class="tab-panel" id="tab-changelog">
                 <div class="panel-title"><i class="fas fa-code-branch"></i> 版本说明</div>
-                <button class="btn-accent" onclick="showVersionEditor()" style="margin-bottom:15px;"><i class="fas fa-plus"></i> 新增版本</button>
-                <div id="changelog-list"></div>
-                <div id="changelog-empty" style="text-align:center;padding:40px 0;color:#64748b;">
-                    <i class="fas fa-inbox" style="font-size:2rem;margin-bottom:12px;display:block;"></i>
-                    暂无版本记录
+                <!-- 主界面版本号和更新日志设置 -->
+                <div class="card" style="margin-bottom:20px;">
+                    <div class="card-title" style="margin-bottom:15px;"><i class="fas fa-info-circle" style="color:#60a5fa;"></i> 主界面版本信息</div>
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block;font-size:0.85rem;color:#94a3b8;margin-bottom:6px;">版本号（显示在学习页面底部）</label>
+                        <input type="text" id="setMainVersion" placeholder="例如: 2.2" style="width:200px;padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;outline:none;">
+                    </div>
+                    <div style="margin-bottom:14px;">
+                        <label style="display:block;font-size:0.85rem;color:#94a3b8;margin-bottom:6px;">更新日志内容（用户点击版本号时显示）</label>
+                        <textarea id="setMainChangelog" rows="6" placeholder="请输入更新日志内容，每行一个条目&#10;例如:&#10;- 新增：访客体验模式&#10;- 修复：闯天关滑块无法拖动&#10;- 优化：界面布局调整" style="width:100%;padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;outline:none;resize:vertical;line-height:1.6;font-family:inherit;"></textarea>
+                    </div>
+                    <div style="display:flex;gap:10px;">
+                        <button class="hdr-btn primary" onclick="saveMainVersionInfo()"><i class="fas fa-save"></i> 保存版本信息</button>
+                    </div>
+                </div>
+                <!-- 更新日志管理 -->
+                <div class="card">
+                    <div class="card-title" style="margin-bottom:15px;"><i class="fas fa-history" style="color:#a78bfa;"></i> 更新日志记录</div>
+                    <button class="btn-accent" onclick="showVersionEditor()" style="margin-bottom:15px;"><i class="fas fa-plus"></i> 新增版本</button>
+                    <div id="changelog-list"></div>
+                    <div id="changelog-empty" style="text-align:center;padding:40px 0;color:#64748b;">
+                        <i class="fas fa-inbox" style="font-size:2rem;margin-bottom:12px;display:block;"></i>
+                        暂无版本记录
+                    </div>
                 </div>
             </div>
 <!-- 广播管理面板 -->
             <div class="tab-panel" id="tab-broadcast">
-                <div class="panel-title"><i class="fas fa-bullhorn"></i> 广播管理</div>
+                <div class="panel-title"><i class="fas fa-bullhorn"></i> 广播设置</div>
 
                 <!-- 广播播放配置 -->
                 <div class="card" style="margin-bottom:20px;">
@@ -600,7 +535,107 @@
                 </div>
             </div>
 
-        </div><!-- /admin-content -->
+        
+            <!-- 访客设置 -->
+            <div class="tab-panel" id="tab-visitor">
+                <div class="panel-title"><i class="fas fa-user-secret"></i> 访客设置</div>
+                <div class="card">
+                    <div class="setting-row">
+                        <div class="setting-info">
+                            <div class="setting-label" style="display:flex;align-items:center;gap:6px;"><i class="fas fa-user-secret" style="color:#a78bfa;font-size:0.9rem;"></i> 访客体验模式</div>
+                            <div class="setting-desc">允许未注册用户以访客身份限时体验学习，到期自动退出。员工登录优先。</div>
+                        </div>
+                        <div class="setting-control"><label class="toggle"><input type="checkbox" id="setAllowVisitor" onchange="document.getElementById('visitor-duration-row').style.display=this.checked?'':'none'"><span class="slider"></span></label></div>
+                    </div>
+                    <div class="setting-row" id="visitor-duration-row" style="display:none;">
+                        <div class="setting-info"><div class="setting-label">访客体验时长</div><div class="setting-desc">访客登录后可使用的最长时间（分钟），到期自动退出</div></div>
+                        <div class="setting-control"><input type="number" class="setting-input" id="setVisitorDuration" min="5" max="480" value="3" style="width:100px;"><span style="color:#64748b;font-size:0.8rem;">分钟</span></div>
+                    </div>
+                    <div class="setting-row" id="visitor-challenge-row">
+                        <div class="setting-info"><div class="setting-label">允许访客闯天关</div><div class="setting-desc">允许访客使用"闯天关"功能，关闭后访客无法进入闯天关模式 <span id="visitor-challenge-hint" style="color:#22c55e;margin-left:8px;font-size:0.8rem;">已关闭</span></div></div>
+                        <div class="setting-control"><label class="toggle"><input type="checkbox" id="setAllowVisitorChallenge"><span class="slider"></span></label></div>
+                    </div>
+                    <div style="margin-top:20px;">
+                        <button class="hdr-btn primary" onclick="saveVisitorSettings()"><i class="fas fa-save"></i> 保存访客设置</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 闯天关设置 -->
+            <div class="tab-panel" id="tab-challenge">
+                <div class="panel-title"><i class="fas fa-gamepad"></i> 闯天关设置</div>
+                <div class="card">
+                    <div class="setting-row">
+                        <div class="setting-info"><div class="setting-label">启用闯天关</div><div class="setting-desc">关闭后所有用户无法进入闯天关模式 <span id="challenge-enabled-hint" style="color:#22c55e;margin-left:8px;font-size:0.8rem;">已启用</span></div></div>
+                        <div class="setting-control"><label class="toggle"><input type="checkbox" id="setChallengeEnabled" checked><span class="slider"></span></label></div>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info"><div class="setting-label">每关时间限制</div><div class="setting-desc">每关答题最长时限（秒），设为 0 表示不限制</div></div>
+                        <div class="setting-control"><input type="number" class="setting-input" id="setChallengeTimeLimit" min="0" max="600" value="0" style="width:100px;"><span style="color:#64748b;font-size:0.8rem;">秒 (0=不限)</span></div>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:8px;margin-bottom:12px;">
+                        <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-star" style="color:#fbbf24;margin-right:4px;"></i> 星级评定分数线</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+                            <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">3星 (满分)</label><input type="number" id="setChallengeStar3" min="1" max="100" value="90" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"><span style="font-size:0.75rem;color:#64748b;">分以上</span></div>
+                            <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">2星</label><input type="number" id="setChallengeStar2" min="1" max="100" value="70" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"><span style="font-size:0.75rem;color:#64748b;">分以上</span></div>
+                            <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">1星 (及格)</label><input type="number" id="setChallengeStar1" min="1" max="100" value="50" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"><span style="font-size:0.75rem;color:#64748b;">分以上</span></div>
+                        </div>
+                    </div>
+                    <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:8px;margin-bottom:12px;">
+                        <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-calculator" style="color:#a78bfa;margin-right:4px;"></i> 计分权重</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+                            <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">准确率权重</label><input type="number" id="setChallengeAccuracyWeight" min="0" max="1" step="0.1" value="0.9" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"></div>
+                            <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">用时权重</label><input type="number" id="setChallengeTimeWeight" min="0" max="1" step="0.1" value="0.1" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"></div>
+                            <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">时间宽容度</label><input type="number" id="setChallengeTimeMultiplier" min="1" max="20" step="1" value="5" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"><span style="font-size:0.7rem;color:#64748b;">越大越宽容</span></div>
+                        </div>
+                    </div>
+                    <!-- 排行榜配置 -->
+                    <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:8px;margin-bottom:12px;">
+                        <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-trophy" style="color:#fbbf24;margin-right:4px;"></i> 排行榜配置</div>
+                        <div class="setting-row">
+                            <div class="setting-info"><div class="setting-label">启用排行榜</div><div class="setting-desc">开启后用户可在闯天关结束后提交成绩到排行榜</div></div>
+                            <div class="setting-control"><label class="toggle"><input type="checkbox" id="lbEnabled"><span class="slider"></span></label></div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;">
+                            <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">打榜名称</label><input id="lbTitle" placeholder="例：每日单词挑战" style="padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"></div>
+                            <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">题目数量</label><input type="number" id="lbQuestionCount" min="5" max="100" value="20" style="padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"></div>
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;">
+                            <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">课件分类</label><select id="lbCategory" style="padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"><option value="all">全部</option></select></div>
+                            <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">题目类型</label><select id="lbType" style="padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"><option value="indo2cn">印尼语→中文</option><option value="cn2indo">中文→印尼语</option><option value="mixed">混合模式</option></select></div>
+                        </div>
+                    </div>
+                    <!-- 地狱模式 -->
+                    <div style="border-top:1px solid rgba(239,68,68,0.12);padding-top:14px;margin-top:10px;">
+                        <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-skull-crossbones" style="color:#f87171;margin-right:4px;"></i> 地狱模式</div>
+                        <div class="setting-row">
+                            <div class="setting-info"><div class="setting-label">启用地狱模式</div><div class="setting-desc">关闭后地狱关卡将隐藏，用户无法看到或挑战 <span id="hell-mode-hint" style="color:#22c55e;margin-left:8px;font-size:0.8rem;">已启用</span></div></div>
+                            <div class="setting-control"><label class="toggle"><input type="checkbox" id="setHellModeEnabled" checked><span class="slider"></span></label></div>
+                        </div>
+                        <div class="setting-row">
+                            <div class="setting-info">
+                                <div class="setting-label" style="display:flex;align-items:center;gap:6px;">地狱模式关卡等级</div>
+                                <div class="setting-desc">勾选的 BIPA 等级将标记为地狱模式，需按顺序通关后解锁</div>
+                            </div>
+                            <div class="setting-control" style="display:flex;flex-wrap:wrap;gap:8px;">
+                                <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="1"> BIPA 1</label>
+                                <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="2"> BIPA 2</label>
+                                <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="3"> BIPA 3</label>
+                                <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="4"> BIPA 4</label>
+                                <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="5"> BIPA 5</label>
+                                <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="6"> BIPA 6</label>
+                                <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="7"> BIPA 7</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:20px;display:flex;gap:10px;">
+                        <button class="hdr-btn primary" onclick="saveChallengeSettings()"><i class="fas fa-save"></i> 保存闯天关设置</button>
+                        <button class="hdr-btn ghost" onclick="loadLbConfig()"><i class="fas fa-refresh"></i> 刷新排行榜配置</button>
+                    </div>
+                </div>
+            </div>
+
+</div><!-- /admin-content -->
     <!-- 版本编辑弹窗 -->
     <div id="version-modal" class="modal-overlay admin-modal" style="display:none;">
         <div class="modal-card">
@@ -860,7 +895,8 @@ let allUsers = [];
     }
 
     // ========== 系统设置 ==========
-    async function loadSettings() {
+    // ========== 各面板独立加载 ==========
+    async function loadSystemSettings() {
         const s = await adminFetch('admin/settings', { method: 'GET' });
         if (s.error) return;
         document.getElementById('setMaxOnline').value = s.maxOnline || 0;
@@ -871,19 +907,27 @@ let allUsers = [];
         document.getElementById('setAllowMultiDevice').checked = s.allowMultiDevice !== false;
         document.getElementById('setRequireEmployeeVerify').checked = s.requireEmployeeVerify !== false;
         document.getElementById('setWhitelistEnabled').checked = s.whitelistEnabled === true;
-        // 访客设置
+        document.getElementById('setAdminPassword').value = s.adminPanelPassword || '';
+        document.getElementById('setShowOnlineCount').checked = s.showOnlineCount !== false;
+        document.getElementById('showOnlineCount-hint').textContent = s.showOnlineCount !== false ? '显示中' : '已隐藏';
+        document.getElementById('setShowRegCount').checked = s.showRegCount !== false;
+        document.getElementById('showRegCount-hint').textContent = s.showRegCount !== false ? '显示中' : '已隐藏';
+    }
+
+    async function loadVisitorSettings() {
+        const s = await adminFetch('admin/settings', { method: 'GET' });
+        if (s.error) return;
         document.getElementById('setAllowVisitor').checked = s.allowVisitor === true;
         document.getElementById('setVisitorDuration').value = s.visitorDuration || 3;
         document.getElementById('visitor-duration-row').style.display = s.allowVisitor ? '' : 'none';
         document.getElementById('setAllowVisitorChallenge').checked = s.allowVisitorChallenge === true;
         var vcHint = document.getElementById('visitor-challenge-hint');
         if (vcHint) vcHint.textContent = s.allowVisitorChallenge === true ? '已开启' : '已关闭';
-        document.getElementById('setAdminPassword').value = s.adminPanelPassword || '';
-        document.getElementById('setShowOnlineCount').checked = s.showOnlineCount !== false;
-        document.getElementById('showOnlineCount-hint').textContent = s.showOnlineCount !== false ? '显示中' : '已隐藏';
-        document.getElementById('setShowRegCount').checked = s.showRegCount !== false;
-        document.getElementById('showRegCount-hint').textContent = s.showRegCount !== false ? '显示中' : '已隐藏';
-        // 闯天关配置
+    }
+
+    async function loadChallengeSettings() {
+        const s = await adminFetch('admin/settings', { method: 'GET' });
+        if (s.error) return;
         document.getElementById('setChallengeEnabled').checked = s.challengeEnabled !== false;
         document.getElementById('challenge-enabled-hint').textContent = s.challengeEnabled !== false ? '已启用' : '已关闭';
         document.getElementById('setChallengeTimeLimit').value = s.challengeTimeLimit || 0;
@@ -893,7 +937,6 @@ let allUsers = [];
         document.getElementById('setChallengeAccuracyWeight').value = s.challengeAccuracyWeight || 0.9;
         document.getElementById('setChallengeTimeWeight').value = s.challengeTimeWeight || 0.1;
         document.getElementById('setChallengeTimeMultiplier').value = s.challengeTimeMultiplier || 5;
-        // 地狱模式
         document.getElementById('setHellModeEnabled').checked = s.hellModeEnabled !== false;
         document.getElementById('hell-mode-hint').textContent = s.hellModeEnabled !== false ? '已启用' : '已关闭';
         const hellLevels = s.hellLevels || [5, 6, 7];
@@ -903,46 +946,25 @@ let allUsers = [];
         loadLbConfig();
     }
 
-    async function saveSettings() {
-        const settings = {
-            maxOnline: parseInt(document.getElementById('setMaxOnline').value) || 0,
-            maxRegistered: parseInt(document.getElementById('setMaxRegistered').value) || 0,
-            allowRegister: document.getElementById('setAllowRegister').checked,
-            showOnlineMain: document.getElementById('setShowOnlineMain').checked,
-            showOnlineLogin: document.getElementById('setShowOnlineLogin').checked,
-            allowMultiDevice: document.getElementById('setAllowMultiDevice').checked,
-            requireEmployeeVerify: document.getElementById('setRequireEmployeeVerify').checked,
-            whitelistEnabled: document.getElementById('setWhitelistEnabled').checked,
-            allowVisitor: document.getElementById('setAllowVisitor').checked,
-            visitorDuration: parseInt(document.getElementById('setVisitorDuration').value) || 3,
-            allowVisitorChallenge: document.getElementById('setAllowVisitorChallenge').checked,
-            adminPanelPassword: document.getElementById('setAdminPassword').value || 'admin123',
-            showOnlineCount: document.getElementById('setShowOnlineCount').checked,
-            showRegCount: document.getElementById('setShowRegCount').checked,
-            // 闯天关配置
-            challengeEnabled: document.getElementById('setChallengeEnabled').checked,
-            challengeTimeLimit: parseInt(document.getElementById('setChallengeTimeLimit').value) || 0,
-            challengeStar3: parseInt(document.getElementById('setChallengeStar3').value) || 90,
-            challengeStar2: parseInt(document.getElementById('setChallengeStar2').value) || 70,
-            challengeStar1: parseInt(document.getElementById('setChallengeStar1').value) || 50,
-            challengeAccuracyWeight: parseFloat(document.getElementById('setChallengeAccuracyWeight').value) || 0.9,
-            challengeTimeWeight: parseFloat(document.getElementById('setChallengeTimeWeight').value) || 0.1,
-            challengeTimeMultiplier: parseInt(document.getElementById('setChallengeTimeMultiplier').value) || 5,
-            hellModeEnabled: document.getElementById('setHellModeEnabled').checked,
-            hellLevels: Array.from(document.querySelectorAll('.hell-level-cb:checked')).map(cb => parseInt(cb.value)),
-        };
-        const result = await adminFetch('admin/settings', { method: 'PUT', body: JSON.stringify(settings) });
-        if (typeof showAdminToast === 'function') {
-            if (result && result.success) showAdminToast('设置已保存', 'success');
-            else if (result && result.error) showAdminToast(result.error, 'error');
-            else showAdminToast('保存失败，请检查网络', 'error');
-        } else {
-            alert(result && result.success ? '设置已保存' : (result && result.error ? result.error : '保存失败，请检查网络'));
-        }
+    async function loadMainVersionInfo() {
+        const s = await adminFetch('admin/settings', { method: 'GET' });
+        if (s.error) return;
+        document.getElementById('setMainVersion').value = s.mainVersion || '2.2';
+        document.getElementById('setMainChangelog').value = s.mainChangelog || '';
     }
 
-    // ========== 统一保存（系统设置 + 闯天关配置）==========
-    async function saveAllSettings() {
+    // 兼容旧调用
+    async function loadSettings() {
+        await loadSystemSettings();
+    }
+
+    async function saveSettings() {
+        await saveSystemSettings();
+    }
+
+    // ========== 各面板独立保存 ==========
+
+    async function saveSystemSettings() {
         var settings = {
             maxOnline: parseInt(document.getElementById('setMaxOnline').value) || 0,
             maxRegistered: parseInt(document.getElementById('setMaxRegistered').value) || 0,
@@ -952,13 +974,30 @@ let allUsers = [];
             allowMultiDevice: document.getElementById('setAllowMultiDevice').checked,
             requireEmployeeVerify: document.getElementById('setRequireEmployeeVerify').checked,
             whitelistEnabled: document.getElementById('setWhitelistEnabled').checked,
-            allowVisitor: document.getElementById('setAllowVisitor').checked,
-            visitorDuration: parseInt(document.getElementById('setVisitorDuration').value) || 3,
-            allowVisitorChallenge: document.getElementById('setAllowVisitorChallenge').checked,
             adminPanelPassword: document.getElementById('setAdminPassword').value || 'admin123',
             showOnlineCount: document.getElementById('setShowOnlineCount').checked,
             showRegCount: document.getElementById('setShowRegCount').checked,
-            // 闯天关配置
+        };
+        var result = await adminFetch('admin/settings', { method: 'PUT', body: JSON.stringify(settings) });
+        if (result && result.success) showAdminToast('系统设置已保存', 'success');
+        else showAdminToast((result && result.error) || '保存失败', 'error');
+    }
+
+    async function saveVisitorSettings() {
+        var settings = {
+            allowVisitor: document.getElementById('setAllowVisitor').checked,
+            visitorDuration: parseInt(document.getElementById('setVisitorDuration').value) || 3,
+            allowVisitorChallenge: document.getElementById('setAllowVisitorChallenge').checked,
+        };
+        var result = await adminFetch('admin/settings', { method: 'PUT', body: JSON.stringify(settings) });
+        var vcHint = document.getElementById('visitor-challenge-hint');
+        if (vcHint) vcHint.textContent = settings.allowVisitorChallenge ? '已开启' : '已关闭';
+        if (result && result.success) showAdminToast('访客设置已保存', 'success');
+        else showAdminToast((result && result.error) || '保存失败', 'error');
+    }
+
+    async function saveChallengeSettings() {
+        var settings = {
             challengeEnabled: document.getElementById('setChallengeEnabled').checked,
             challengeTimeLimit: parseInt(document.getElementById('setChallengeTimeLimit').value) || 0,
             challengeStar3: parseInt(document.getElementById('setChallengeStar3').value) || 90,
@@ -979,18 +1018,30 @@ let allUsers = [];
             type: document.getElementById('lbType').value,
         };
         var result2 = await adminFetch('admin/leaderboard-config', { method: 'PUT', body: JSON.stringify(lbConfig) });
-        var vcHint = document.getElementById('visitor-challenge-hint');
-        if (vcHint) vcHint.textContent = document.getElementById('setAllowVisitorChallenge').checked ? '已开启' : '已关闭';
         var ceHint = document.getElementById('challenge-enabled-hint');
-        if (ceHint) ceHint.textContent = document.getElementById('setChallengeEnabled').checked ? '已启用' : '已关闭';
+        if (ceHint) ceHint.textContent = settings.challengeEnabled ? '已启用' : '已关闭';
         var hmHint = document.getElementById('hell-mode-hint');
-        if (hmHint) hmHint.textContent = document.getElementById('setHellModeEnabled').checked ? '已启用' : '已关闭';
+        if (hmHint) hmHint.textContent = settings.hellModeEnabled ? '已启用' : '已关闭';
         if (result1 && result1.success && result2 && result2.success) {
-            showAdminToast('所有设置已保存', 'success');
+            showAdminToast('闯天关设置已保存', 'success');
         } else {
-            var errMsg = (result1 && result1.error) || (result2 && result2.error) || '保存失败';
-            showAdminToast(errMsg, 'error');
+            showAdminToast((result1 && result1.error) || (result2 && result2.error) || '保存失败', 'error');
         }
+    }
+
+    async function saveMainVersionInfo() {
+        var settings = {
+            mainVersion: document.getElementById('setMainVersion').value.trim() || '2.2',
+            mainChangelog: document.getElementById('setMainChangelog').value.trim(),
+        };
+        var result = await adminFetch('admin/settings', { method: 'PUT', body: JSON.stringify(settings) });
+        if (result && result.success) showAdminToast('版本信息已保存', 'success');
+        else showAdminToast((result && result.error) || '保存失败', 'error');
+    }
+
+    // 兼容旧调用
+    async function saveAllSettings() {
+        await saveSystemSettings();
     }
 
     // ========== 闯天关配置加载 ==========
@@ -1559,7 +1610,11 @@ let allUsers = [];
             origSwitchTab(tab, el);
             if (tab === 'users') loadUsers();
             if (tab === 'whitelist') { loadEmployees(); }
-            if (tab === 'changelog') loadChangelog();
+            if (tab === 'settings') loadSystemSettings();
+            if (tab === 'visitor') loadVisitorSettings();
+            if (tab === 'challenge') loadChallengeSettings();
+            if (tab === 'study') loadStudyStats();
+            if (tab === 'changelog') { loadChangelog(); loadMainVersionInfo(); }
             if (tab === 'broadcast') { loadBroadcastList(); loadBroadcastConfig(); }
         };
     // ========== 学习统计管理 ==========
