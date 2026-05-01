@@ -235,6 +235,8 @@ const ChallengeModule = {
         }
 
         const q = state.questions[state.currentIndex];
+        const currentStage = this.allStages.find(s => s.id === state.stageId);
+        const stageType = currentStage ? currentStage.type : 'words';
         const total = state.totalQuestions;
         const current = state.currentIndex + 1;
         const progressPct = Math.round(current / total * 100);
@@ -262,15 +264,18 @@ const ChallengeModule = {
             questionContent = `
                 <div class="challenge-q-type">对话题</div>
                 <div class="challenge-q-title">${q.title || ''}</div>
-                <div class="challenge-q-indo" ${q.title_id ? `onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.title_id)}')" style="cursor:pointer;" class="ch-speak-btn"` : ''}>${q.title_id || ''} ${q.title_id ? '<i class="fas fa-volume-up" style="margin-left:8px;color:var(--accent);"></i>' : ''}</div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div class="challenge-q-indo ch-speak-btn" ${q.title_id ? `onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.title_id)}')" style="cursor:pointer;"` : ''} style="flex:1;">${q.title_id || ''}</div>
+                    ${q.title_id ? `<button class="circle-btn play-btn ch-speak-btn" onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.title_id)}')" style="flex-shrink:0;width:42px;height:42px;font-size:1rem;"><i class="fas fa-play ch-play-ico"></i></button>` : ''}
+                </div>
                 <div class="challenge-q-prompt">这个对话的主题是什么？</div>
             `;
         } else {
             questionContent = `
-                <div class="challenge-q-type">${q.type === 'words' ? '单词' : '短句'}</div>
-                <div class="challenge-q-indo" onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.indonesian)}')" class="ch-speak-btn">
-                    ${q.indonesian}
-                    <i class="fas fa-volume-up" style="margin-left:8px;color:var(--accent);"></i>
+                <div class="challenge-q-type">${stageType === 'words' ? '生词' : stageType === 'sentences' ? '短句' : '对话'}</div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <div class="challenge-q-indo ch-speak-btn" onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.indonesian)}')" style="cursor:pointer;flex:1;">${q.indonesian}</div>
+                    <button class="circle-btn play-btn ch-speak-btn" onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.indonesian)}')" style="flex-shrink:0;width:42px;height:42px;font-size:1rem;"><i class="fas fa-play ch-play-ico"></i></button>
                 </div>
                 <div class="challenge-q-prompt">请选择正确的中文释义：</div>
             `;
@@ -672,8 +677,8 @@ const ChallengeModule = {
             this._chIsPlaying = false;
             window.speechSynthesis.cancel();
             // 更新所有闯天关播放按钮图标为播放状态
-            document.querySelectorAll('.ch-speak-btn').forEach(btn => {
-                btn.innerHTML = '<i class="fas fa-volume-up" style="margin-left:8px;color:var(--accent);"></i>';
+            document.querySelectorAll('.ch-play-ico').forEach(ico => {
+                ico.className = 'fas fa-play ch-play-ico';
             });
             return;
         }
@@ -719,15 +724,15 @@ const ChallengeModule = {
         }
 
         // 更新图标为暂停状态
-        document.querySelectorAll('.ch-speak-btn').forEach(btn => {
-            btn.innerHTML = '<i class="fas fa-pause" style="margin-left:8px;color:var(--accent);"></i>';
+        document.querySelectorAll('.ch-play-ico').forEach(ico => {
+            ico.className = 'fas fa-pause ch-play-ico';
         });
         doPlay();
     },
 
     _resetChSpeakIcons() {
-        document.querySelectorAll('.ch-speak-btn').forEach(btn => {
-            btn.innerHTML = '<i class="fas fa-volume-up" style="margin-left:8px;color:var(--accent);"></i>';
+        document.querySelectorAll('.ch-play-ico').forEach(ico => {
+            ico.className = 'fas fa-play ch-play-ico';
         });
     },
 

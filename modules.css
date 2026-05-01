@@ -1585,6 +1585,30 @@
     margin: 0;
 }
 
+/* 闯天关滑块填充色 - 与学习界面一致 */
+#ch-rate-fill {
+    background: linear-gradient(to right, #6366f1, #a78bfa, #c084fc) !important;
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.3) !important;
+}
+#ch-loop-fill {
+    background: linear-gradient(to right, #10b981, #34d399, #2dd4bf) !important;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.3) !important;
+}
+
+/* 闯天关滑块 thumb - 与学习界面一致 */
+#ch-rate-thumb {
+    color: #c4b5fd !important;
+    background: rgba(99, 102, 241, 0.2) !important;
+    border: 1px solid rgba(99, 102, 241, 0.3) !important;
+    text-shadow: 0 0 10px rgba(129, 140, 248, 0.5) !important;
+}
+#ch-loop-thumb {
+    color: #6ee7b7 !important;
+    background: rgba(16, 185, 129, 0.2) !important;
+    border: 1px solid rgba(16, 185, 129, 0.3) !important;
+    text-shadow: 0 0 10px rgba(52, 211, 153, 0.5) !important;
+}
+
 @media (max-width: 640px) {
     .challenge-controls { flex-direction: column; gap: 12px; }
 }
