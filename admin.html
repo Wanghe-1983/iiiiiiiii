@@ -1693,8 +1693,9 @@ let allUsers = [];
         </script>
 
 
+    
     <script>
-    // ========== [DEBUG] 宽度诊断 - 对比 computed style ==========
+    // ========== [DEBUG] 宽度诊断 v2 ==========
     (function() {
         const props = ['width','max-width','min-width','display','position','box-sizing',
             'margin-left','margin-right','padding-left','padding-right',
@@ -1710,41 +1711,72 @@ let allUsers = [];
             let out = '=== ' + panelId + ' ===\n';
             out += 'Panel: display=' + getComputedStyle(panel).display + 
                    ', width=' + getComputedStyle(panel).width +
-                   ', computedWidth=' + panel.offsetWidth + 'px\n';
+                   ', offsetWidth=' + panel.offsetWidth + 'px\n';
             cards.forEach((c, i) => {
                 const cs = getComputedStyle(c);
-                out += '  card[' + i + ']: offsetWidth=' + c.offsetWidth + 'px, clientWidth=' + c.clientWidth + 'px, scrollWidth=' + c.scrollWidth + 'px\n';
-                out += '    parentElement: ' + c.parentElement.tagName + '#' + c.parentElement.id + '.' + c.parentElement.className + 
+                out += '  card[' + i + ']: offsetWidth=' + c.offsetWidth + 'px, clientWidth=' + c.clientWidth + 'px\n';
+                out += '    parent: ' + c.parentElement.tagName + '#' + c.parentElement.id + '.' + c.parentElement.className + 
                        ' offsetWidth=' + c.parentElement.offsetWidth + 'px\n';
                 props.forEach(p => {
                     out += '    ' + p + ': ' + cs.getPropertyValue(p) + '\n';
                 });
             });
-            // Also check stats-row if exists
-            const sr = panel.querySelector('.stats-row');
-            if (sr) {
-                out += '  stats-row: offsetWidth=' + sr.offsetWidth + 'px\n';
-            }
             return out;
         }
         
-        let report = diagPanel('tab-overview') + '\n\n' + diagPanel('tab-changelog');
-        // Also check admin-content
-        const ac = document.querySelector('.admin-content');
-        if (ac) {
-            const acs = getComputedStyle(ac);
-            report = '=== admin-content ===\noffsetWidth=' + ac.offsetWidth + 'px, clientWidth=' + ac.clientWidth + 'px\n' +
-                     '  width=' + acs.width + ', flex=' + acs.flex + '\n\n' + report;
+        function runDiag() {
+            // 先收集当前面板（运行概览）
+            let report = diagPanel('tab-overview') + '\n\n';
+            // 保存当前激活的面板
+            const activePanel = document.querySelector('.tab-panel.active');
+            const activeId = activePanel ? activePanel.id : '';
+            // 切换到版本说明
+            if (activeId === 'tab-changelog') {
+                report += diagPanel('tab-changelog');
+            } else {
+                // 触发 switchTab
+                const navItems = document.querySelectorAll('.nav-item');
+                navItems.forEach(n => {
+                    if (n.textContent.includes('版本说明')) n.click();
+                });
+                // 等待渲染
+                setTimeout(function() {
+                    report += diagPanel('tab-changelog') + '\n\n';
+                    // 切回原面板
+                    if (activeId && activeId !== 'tab-changelog') {
+                        navItems.forEach(n => {
+                            if (n.textContent.includes('运行概览')) n.click();
+                        });
+                        setTimeout(function() {
+                            report += '=== After switch back ===\n';
+                            report += diagPanel('tab-overview');
+                            showDiag(report);
+                        }, 500);
+                    } else {
+                        showDiag(report);
+                    }
+                }, 500);
+            }
         }
         
-        console.log('[DEBUG-COMPUTED] report:\n' + report);
+        function showDiag(report) {
+            const ac = document.querySelector('.admin-content');
+            if (ac) {
+                report = '=== admin-content ===\noffsetWidth=' + ac.offsetWidth + 'px\n  width=' + getComputedStyle(ac).width + ', flex=' + getComputedStyle(ac).flex + '\n\n' + report;
+            }
+            console.log('[DEBUG-V2] report:\n' + report);
+            const dbg = document.getElementById('debug-computed');
+            if (dbg) { dbg.textContent = report; dbg.style.display = ''; }
+            else {
+                const d = document.createElement('div');
+                d.id = 'debug-computed';
+                d.style.cssText = 'position:fixed;top:40px;right:10px;z-index:999999;background:#000;color:#0f0;font-size:11px;padding:10px;border:2px solid #0f0;max-height:80vh;overflow:auto;width:420px;white-space:pre-wrap;';
+                d.textContent = report;
+                document.body.appendChild(d);
+            }
+        }
         
-        // Also make it visible on page
-        const dbg = document.createElement('div');
-        dbg.id = 'debug-computed';
-        dbg.style.cssText = 'position:fixed;top:40px;right:10px;z-index:999999;background:#000;color:#0f0;font-size:11px;padding:10px;border:2px solid #0f0;max-height:80vh;overflow:auto;width:400px;white-space:pre-wrap;';
-        dbg.textContent = report;
-        document.body.appendChild(dbg);
+        setTimeout(runDiag, 1000);
     })();
     </script>
 
