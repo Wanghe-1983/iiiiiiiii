@@ -243,7 +243,7 @@ const ChallengeModule = {
         window.addEventListener('beforeunload', this._beforeUnloadHandler);
 
         this.render();
-    }
+    },
 
     /**
      * 动态抽样：从关卡所属unit的题库中按类型和数量随机抽取题目
@@ -405,7 +405,6 @@ const ChallengeModule = {
 
         // 更新计时器（支持时间限制倒计时）
         const HELL_LEVELS = (window._systemInfo && window._systemInfo.hellLevels) || [5, 6, 7];
-        const currentStage = this.allStages.find(s => s.id === state.stageId);
         const isHell = currentStage ? HELL_LEVELS.includes(Number(currentStage.levelId)) : false;
         const timeLimit = isHell
             ? (window._systemInfo && window._systemInfo.hellTimeLimit) || 0
