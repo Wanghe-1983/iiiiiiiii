@@ -29,10 +29,6 @@ export async function onRequest(context) {
         'study/save':                   { post: handleStudySave },
         'study/stats':                  { get: handleStudyStats },
 
-        // ========== 排行榜 ==========
-        'leaderboard':                  { get: handleGetLeaderboard },
-        'leaderboard/submit':           { post: handleLeaderboardSubmit },
-
         // ========== 管理后台 ==========
         'admin/settings':               { get: handleAdminGetSettings, put: handleAdminPutSettings },
         'admin/users':                  { get: handleAdminGetUsers, put: handleAdminPutUsers, delete: handleAdminDeleteUser },
@@ -42,7 +38,6 @@ export async function onRequest(context) {
         'admin/whitelist':              { get: handleAdminGetWhitelist, put: handleAdminPutWhitelist },
         'admin/study-stats':            { get: handleAdminStudyStats },
         'admin/study-clear':            { post: handleAdminStudyClear },
-        'admin/leaderboard-config':     { get: handleAdminGetLBConfig, put: handleAdminPutLBConfig },
         'admin/verify':                 { post: handleAdminVerify },
         'admin/init-users':             { post: handleAdminInitUsers },
 
@@ -131,6 +126,13 @@ function defaultSettings() {
         challengeTimeWeight: 0.1,      // 用时权重
         challengeTimeMultiplier: 5,    // 时间惩罚系数（越大对慢答题越宽容）
         hellModeEnabled: true,         // 地狱模式总开关
+        // 每关题目配置
+        challengeQuestionCount: 10,     // 普通模式每关题目数量
+        challengeQuestionType: 'words', // 题目类型: words(单词)/sentences(短句)/dialogues(对话)/mixed(混合)
+        // 地狱模式独立配置
+        hellQuestionCount: 15,          // 地狱模式每关题目数量
+        hellQuestionType: 'mixed',      // 地狱模式题目类型
+        hellTimeLimit: 120,             // 地狱模式每关时间限制（秒），0=不限时
     };
 }
 
@@ -458,50 +460,6 @@ async function handleStudyStats(context) {
     });
 }
 
-// ========== 排行榜 ==========
-
-async function handleGetLeaderboard(context) {
-    const { env } = context;
-    const url = new URL(context.request.url);
-    const date = url.searchParams.get('date') || new Date().toISOString().slice(0, 10);
-
-    const entries = await dbAll(env,
-        `SELECT u.name, SUM(s.words_learned) as score
-         FROM study_stats s JOIN users u ON s.username = u.username
-         WHERE s.date LIKE ?
-         GROUP BY s.username ORDER BY score DESC LIMIT 50`,
-        [date.slice(0, 7) + '%']
-    );
-
-    return json({ entries });
-}
-
-async function handleLeaderboardSubmit(context) {
-    const { env, username } = await requireAuth(context);
-    const { score, period } = await context.request.json();
-
-    // 计算周期 key
-    let periodKey;
-    const now = new Date();
-    if (period === 'weekly') {
-        const weekStart = new Date(now);
-        weekStart.setDate(now.getDate() - now.getDay());
-        periodKey = weekStart.toISOString().slice(0, 10);
-    } else if (period === 'monthly') {
-        periodKey = now.toISOString().slice(0, 7);
-    } else {
-        periodKey = now.toISOString().slice(0, 10);
-    }
-
-    const user = await dbGet(env, 'SELECT name FROM users WHERE username = ?', [username]);
-    await dbRun(env,
-        'INSERT INTO leaderboard_entries (username, name, score, period, period_key) VALUES (?, ?, ?, ?, ?)',
-        [username, user?.name || username, score || 0, period || 'weekly', periodKey]
-    );
-
-    return jsonOK();
-}
-
 // ========== 管理后台 ==========
 
 async function handleAdminGetSettings(context) {
@@ -684,21 +642,6 @@ async function handleAdminStudyClear(context) {
     await dbRun(context.env, 'DELETE FROM study_stats');
     await dbRun(context.env, 'DELETE FROM study_records');
     return jsonOK({ message: '已清空' });
-}
-
-// ========== 排行榜配置 ==========
-
-async function handleAdminGetLBConfig(context) {
-    await requireAdmin(context);
-    const data = await context.env.INDO_LEARN_KV.get('lb_config');
-    return json(data ? JSON.parse(data) : { enabled: false, title: '学习排行', period: 'weekly' });
-}
-
-async function handleAdminPutLBConfig(context) {
-    await requireAdmin(context);
-    const config = await context.request.json();
-    await context.env.INDO_LEARN_KV.put('lb_config', JSON.stringify(config));
-    return jsonOK({ message: '已保存' });
 }
 
 // ========== 初始化用户 ==========

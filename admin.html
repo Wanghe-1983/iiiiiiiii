@@ -591,20 +591,25 @@
                             <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">时间宽容度</label><input type="number" id="setChallengeTimeMultiplier" min="1" max="20" step="1" value="5" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"><span style="font-size:0.7rem;color:#64748b;">越大越宽容</span></div>
                         </div>
                     </div>
-                    <!-- 排行榜配置 -->
+                    <!-- 题目配置 -->
                     <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:8px;margin-bottom:12px;">
-                        <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-trophy" style="color:#fbbf24;margin-right:4px;"></i> 排行榜配置</div>
-                        <div class="setting-row">
-                            <div class="setting-info"><div class="setting-label">启用排行榜</div><div class="setting-desc">开启后用户可在闯天关结束后提交成绩到排行榜</div></div>
-                            <div class="setting-control"><label class="toggle"><input type="checkbox" id="lbEnabled"><span class="slider"></span></label></div>
-                        </div>
+                        <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-list-ol" style="color:#60a5fa;margin-right:4px;"></i> 题目配置</div>
                         <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;">
-                            <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">打榜名称</label><input id="lbTitle" placeholder="例：每日单词挑战" style="padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"></div>
-                            <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">题目数量</label><input type="number" id="lbQuestionCount" min="5" max="100" value="20" style="padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"></div>
-                        </div>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;">
-                            <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">课件分类</label><select id="lbCategory" style="padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"><option value="all">全部</option></select></div>
-                            <div class="form-group"><label style="font-size:0.8rem;color:#64748b;">题目类型</label><select id="lbType" style="padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;"><option value="indo2cn">印尼语→中文</option><option value="cn2indo">中文→印尼语</option><option value="mixed">混合模式</option></select></div>
+                            <div class="form-group">
+                                <label style="font-size:0.8rem;color:#64748b;">每关题目数量</label>
+                                <input type="number" id="setChallengeQuestionCount" min="5" max="100" value="10" style="padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
+                                <div style="font-size:0.72rem;color:#475569;margin-top:4px;">普通模式每关随机抽取的题目数量</div>
+                            </div>
+                            <div class="form-group">
+                                <label style="font-size:0.8rem;color:#64748b;">题目类型</label>
+                                <select id="setChallengeQuestionType" style="padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
+                                    <option value="words">单词</option>
+                                    <option value="sentences">短句</option>
+                                    <option value="dialogues">对话</option>
+                                    <option value="mixed">混合模式</option>
+                                </select>
+                                <div style="font-size:0.72rem;color:#475569;margin-top:4px;">从关卡所属课件的题库中随机抽取</div>
+                            </div>
                         </div>
                     </div>
                     <!-- 地狱模式 -->
@@ -629,10 +634,32 @@
                                 <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="7"> BIPA 7</label>
                             </div>
                         </div>
+                        <!-- 地狱模式独立配置 -->
+                        <div style="border-top:1px solid rgba(239,68,68,0.08);padding-top:10px;margin-top:4px;">
+                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;">
+                                <div class="form-group">
+                                    <label style="font-size:0.8rem;color:#64748b;">每关时间限制</label>
+                                    <input type="number" id="setHellTimeLimit" min="0" max="600" value="120" style="padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
+                                    <span style="font-size:0.72rem;color:#475569;">秒 (0=不限时)</span>
+                                </div>
+                                <div class="form-group">
+                                    <label style="font-size:0.8rem;color:#64748b;">每关题目数量</label>
+                                    <input type="number" id="setHellQuestionCount" min="5" max="100" value="15" style="padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
+                                </div>
+                                <div class="form-group">
+                                    <label style="font-size:0.8rem;color:#64748b;">题目类型</label>
+                                    <select id="setHellQuestionType" style="padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
+                                        <option value="words">单词</option>
+                                        <option value="sentences">短句</option>
+                                        <option value="dialogues">对话</option>
+                                        <option value="mixed" selected>混合模式</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div style="margin-top:20px;display:flex;gap:10px;">
                         <button class="hdr-btn primary" onclick="saveChallengeSettings()"><i class="fas fa-save"></i> 保存闯天关设置</button>
-                        <button class="hdr-btn ghost" onclick="loadLbConfig()"><i class="fas fa-refresh"></i> 刷新排行榜配置</button>
                     </div>
                 </div>
             </div>
@@ -939,13 +966,17 @@ let allUsers = [];
         document.getElementById('setChallengeAccuracyWeight').value = s.challengeAccuracyWeight || 0.9;
         document.getElementById('setChallengeTimeWeight').value = s.challengeTimeWeight || 0.1;
         document.getElementById('setChallengeTimeMultiplier').value = s.challengeTimeMultiplier || 5;
+        document.getElementById('setChallengeQuestionCount').value = s.challengeQuestionCount || 10;
+        document.getElementById('setChallengeQuestionType').value = s.challengeQuestionType || 'words';
         document.getElementById('setHellModeEnabled').checked = s.hellModeEnabled !== false;
         document.getElementById('hell-mode-hint').textContent = s.hellModeEnabled !== false ? '已启用' : '已关闭';
         const hellLevels = s.hellLevels || [5, 6, 7];
         document.querySelectorAll('.hell-level-cb').forEach(cb => {
             cb.checked = hellLevels.includes(parseInt(cb.value));
         });
-        loadLbConfig();
+        document.getElementById('setHellTimeLimit').value = s.hellTimeLimit || 0;
+        document.getElementById('setHellQuestionCount').value = s.hellQuestionCount || 15;
+        document.getElementById('setHellQuestionType').value = s.hellQuestionType || 'mixed';
     }
 
     async function loadMainVersionInfo() {
@@ -1008,26 +1039,23 @@ let allUsers = [];
             challengeAccuracyWeight: parseFloat(document.getElementById('setChallengeAccuracyWeight').value) || 0.9,
             challengeTimeWeight: parseFloat(document.getElementById('setChallengeTimeWeight').value) || 0.1,
             challengeTimeMultiplier: parseInt(document.getElementById('setChallengeTimeMultiplier').value) || 5,
+            challengeQuestionCount: parseInt(document.getElementById('setChallengeQuestionCount').value) || 10,
+            challengeQuestionType: document.getElementById('setChallengeQuestionType').value || 'words',
             hellModeEnabled: document.getElementById('setHellModeEnabled').checked,
             hellLevels: Array.from(document.querySelectorAll('.hell-level-cb:checked')).map(cb => parseInt(cb.value)),
+            hellTimeLimit: parseInt(document.getElementById('setHellTimeLimit').value) || 0,
+            hellQuestionCount: parseInt(document.getElementById('setHellQuestionCount').value) || 15,
+            hellQuestionType: document.getElementById('setHellQuestionType').value || 'mixed',
         };
-        var result1 = await adminFetch('admin/settings', { method: 'PUT', body: JSON.stringify(settings) });
-        var lbConfig = {
-            enabled: document.getElementById('lbEnabled').checked,
-            title: document.getElementById('lbTitle').value,
-            questionCount: parseInt(document.getElementById('lbQuestionCount').value) || 20,
-            category: document.getElementById('lbCategory').value,
-            type: document.getElementById('lbType').value,
-        };
-        var result2 = await adminFetch('admin/leaderboard-config', { method: 'PUT', body: JSON.stringify(lbConfig) });
+        var result = await adminFetch('admin/settings', { method: 'PUT', body: JSON.stringify(settings) });
         var ceHint = document.getElementById('challenge-enabled-hint');
         if (ceHint) ceHint.textContent = settings.challengeEnabled ? '已启用' : '已关闭';
         var hmHint = document.getElementById('hell-mode-hint');
         if (hmHint) hmHint.textContent = settings.hellModeEnabled ? '已启用' : '已关闭';
-        if (result1 && result1.success && result2 && result2.success) {
+        if (result && result.success) {
             showAdminToast('闯天关设置已保存', 'success');
         } else {
-            showAdminToast((result1 && result1.error) || (result2 && result2.error) || '保存失败', 'error');
+            showAdminToast((result && result.error) || '保存失败', 'error');
         }
     }
 
@@ -1046,25 +1074,7 @@ let allUsers = [];
         await saveSystemSettings();
     }
 
-    // ========== 闯天关配置加载 ==========
-    async function loadLbConfig() {
-        // Load category list from learning data
-        try {
-            const resp = await fetch('./indonesian_learning_data.json');
-            const data = await resp.json();
-            const sel = document.getElementById('lbCategory');
-            const cats = [...new Set(data.words.map(w => w.category).filter(Boolean))];
-            sel.innerHTML = '<option value="all">全部</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
-        } catch(e) {}
 
-        const config = await adminFetch('admin/leaderboard-config', { method: 'GET' });
-        if (!config || config.error) return;
-        document.getElementById('lbEnabled').checked = config.enabled || false;
-        document.getElementById('lbTitle').value = config.title || '';
-        document.getElementById('lbQuestionCount').value = config.questionCount || 20;
-        document.getElementById('lbCategory').value = config.category || 'all';
-        document.getElementById('lbType').value = config.type || 'indo2cn';
-    }
 
     async function saveLbConfig() {
         const config = {

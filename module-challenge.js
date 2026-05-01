@@ -20,6 +20,12 @@ const ChallengeModule = {
     // ========== 初始化 ==========
     async init(container) {
         this.container = container;
+        // 检查闯天关是否启用
+        const sysInfo = window._systemInfo || {};
+        if (sysInfo.challengeEnabled === false) {
+            container.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#94a3b8;"><i class="fas fa-lock" style="font-size:2rem;margin-bottom:12px;display:block;"></i>闯天关功能尚未开放</div>';
+            return;
+        }
         const data = await CourseContent.load();
         if (!data) {
             container.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#f87171;">数据加载失败</div>';
@@ -203,14 +209,28 @@ const ChallengeModule = {
             return;
         }
 
+        // 动态抽样：根据后台配置决定题目数量和类型
+        const sysInfo = window._systemInfo || {};
+        const isHell = HELL_LEVELS.includes(Number(stage.levelId));
+        const questionCount = isHell
+            ? (sysInfo.hellQuestionCount || 15)
+            : (sysInfo.challengeQuestionCount || 10);
+        const questionType = isHell
+            ? (sysInfo.hellQuestionType || 'mixed')
+            : (sysInfo.challengeQuestionType || 'words');
+
+        // 从关卡所属的unit数据中收集题目池
+        const levelData = CourseContent.getLevel(stage.levelId);
+        const questions = this._sampleQuestions(levelData, stage.unitId, questionType, questionCount);
+
         this.challengeState = {
             stageId,
-            questions: stage.questions,
+            questions: questions,
             currentIndex: 0,
             correct: 0,
             answers: [],
             startTime: Date.now(),
-            totalQuestions: stage.totalQuestions,
+            totalQuestions: questions.length,
         };
 
         this._inChallenge = true;
@@ -223,6 +243,38 @@ const ChallengeModule = {
         window.addEventListener('beforeunload', this._beforeUnloadHandler);
 
         this.render();
+    }
+
+    /**
+     * 动态抽样：从关卡所属unit的题库中按类型和数量随机抽取题目
+     */
+    _sampleQuestions(levelData, unitId, questionType, count) {
+        if (!levelData) return [];
+        const unit = (levelData.units || []).find(u => u.id === unitId);
+        if (!unit) return [];
+
+        let pool = [];
+        if (questionType === 'words') {
+            pool = (unit.words || []).slice();
+        } else if (questionType === 'sentences') {
+            pool = (unit.sentences || []).slice();
+        } else if (questionType === 'dialogues') {
+            pool = (unit.dialogues || []).slice();
+        } else {
+            // mixed: 从所有类型中均匀抽样
+            const all = [];
+            (unit.words || []).forEach(w => all.push(w));
+            (unit.sentences || []).forEach(s => all.push(s));
+            (unit.dialogues || []).forEach(d => all.push(d));
+            pool = all;
+        }
+
+        // Fisher-Yates 洗牌后取前count个
+        for (let i = pool.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [pool[i], pool[j]] = [pool[j], pool[i]];
+        }
+        return pool.slice(0, count);
     },
 
     _renderPlayArea(container) {
@@ -351,12 +403,33 @@ const ChallengeModule = {
             }
         }, 50);
 
-        // 更新计时器
+        // 更新计时器（支持时间限制倒计时）
+        const HELL_LEVELS = (window._systemInfo && window._systemInfo.hellLevels) || [5, 6, 7];
+        const currentStage = this.allStages.find(s => s.id === state.stageId);
+        const isHell = currentStage ? HELL_LEVELS.includes(Number(currentStage.levelId)) : false;
+        const timeLimit = isHell
+            ? (window._systemInfo && window._systemInfo.hellTimeLimit) || 0
+            : (window._systemInfo && window._systemInfo.challengeTimeLimit) || 0;
+
         this._timerInterval = setInterval(() => {
             const el = document.querySelector('.challenge-timer');
             if (!el) { clearInterval(this._timerInterval); return; }
-            const e = Math.floor((Date.now() - state.startTime) / 1000);
-            el.innerHTML = `<i class="fas fa-clock"></i> ${String(Math.floor(e / 60)).padStart(2, '0')}:${String(e % 60).padStart(2, '0')}`;
+            const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+            if (timeLimit > 0) {
+                const remaining = Math.max(0, timeLimit - elapsed);
+                const mm = String(Math.floor(remaining / 60)).padStart(2, '0');
+                const ss = String(remaining % 60).padStart(2, '0');
+                const isWarning = remaining <= 10;
+                el.innerHTML = `<i class="fas fa-clock" style="color:${isWarning ? '#f87171' : ''}"></i> <span style="color:${isWarning ? '#f87171' : ''}">${mm}:${ss}</span>`;
+                if (remaining <= 0) {
+                    clearInterval(this._timerInterval);
+                    this.confirmFinish();
+                }
+            } else {
+                const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
+                const ss = String(elapsed % 60).padStart(2, '0');
+                el.innerHTML = `<i class="fas fa-clock"></i> ${mm}:${ss}`;
+            }
         }, 1000);
     },
 
