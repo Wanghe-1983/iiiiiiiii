@@ -1692,5 +1692,61 @@ let allUsers = [];
         }
         </script>
 
+
+    <script>
+    // ========== [DEBUG] 宽度诊断 - 对比 computed style ==========
+    (function() {
+        const props = ['width','max-width','min-width','display','position','box-sizing',
+            'margin-left','margin-right','padding-left','padding-right',
+            'border-left-width','border-right-width',
+            'flex-grow','flex-shrink','flex-basis','flex',
+            'float','clear','overflow','overflow-x',
+            'transform','will-change','contain'];
+        
+        function diagPanel(panelId) {
+            const panel = document.getElementById(panelId);
+            if (!panel) return 'Panel not found: ' + panelId;
+            const cards = panel.querySelectorAll('.card');
+            let out = '=== ' + panelId + ' ===\n';
+            out += 'Panel: display=' + getComputedStyle(panel).display + 
+                   ', width=' + getComputedStyle(panel).width +
+                   ', computedWidth=' + panel.offsetWidth + 'px\n';
+            cards.forEach((c, i) => {
+                const cs = getComputedStyle(c);
+                out += '  card[' + i + ']: offsetWidth=' + c.offsetWidth + 'px, clientWidth=' + c.clientWidth + 'px, scrollWidth=' + c.scrollWidth + 'px\n';
+                out += '    parentElement: ' + c.parentElement.tagName + '#' + c.parentElement.id + '.' + c.parentElement.className + 
+                       ' offsetWidth=' + c.parentElement.offsetWidth + 'px\n';
+                props.forEach(p => {
+                    out += '    ' + p + ': ' + cs.getPropertyValue(p) + '\n';
+                });
+            });
+            // Also check stats-row if exists
+            const sr = panel.querySelector('.stats-row');
+            if (sr) {
+                out += '  stats-row: offsetWidth=' + sr.offsetWidth + 'px\n';
+            }
+            return out;
+        }
+        
+        let report = diagPanel('tab-overview') + '\n\n' + diagPanel('tab-changelog');
+        // Also check admin-content
+        const ac = document.querySelector('.admin-content');
+        if (ac) {
+            const acs = getComputedStyle(ac);
+            report = '=== admin-content ===\noffsetWidth=' + ac.offsetWidth + 'px, clientWidth=' + ac.clientWidth + 'px\n' +
+                     '  width=' + acs.width + ', flex=' + acs.flex + '\n\n' + report;
+        }
+        
+        console.log('[DEBUG-COMPUTED] report:\n' + report);
+        
+        // Also make it visible on page
+        const dbg = document.createElement('div');
+        dbg.id = 'debug-computed';
+        dbg.style.cssText = 'position:fixed;top:40px;right:10px;z-index:999999;background:#000;color:#0f0;font-size:11px;padding:10px;border:2px solid #0f0;max-height:80vh;overflow:auto;width:400px;white-space:pre-wrap;';
+        dbg.textContent = report;
+        document.body.appendChild(dbg);
+    })();
+    </script>
+
 </body>
 </html>
