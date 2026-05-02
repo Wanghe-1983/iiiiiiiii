@@ -849,13 +849,6 @@ async function buildMenu() {
         return;
     }
 
-    // 根据后台设置过滤可见等级
-    const sysInfo = window._systemInfo || {};
-    const userInfo = JSON.parse(localStorage.getItem('fmi_user') || '{}');
-    const isVisitor = userInfo.role === 'visitor';
-    const visibleLevels = isVisitor
-        ? (sysInfo.studyVisibleLevelsVisitor || [0])
-        : (sysInfo.studyVisibleLevelsUser || [0,1,2,3,4,5,6,7]);
     const allLevels = courseData.levels || [];
 
     // 主动获取systemInfo确保有最新设置（不依赖loadOnlineDisplay的时序）
