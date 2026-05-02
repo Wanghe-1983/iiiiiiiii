@@ -411,13 +411,7 @@ async function initUI() {
     </div>
 
     <div class="learn-cards-row">
-        <div style="flex:1;min-width:200px;background:var(--glass);padding:15px;border-radius:15px;border:1px solid rgba(255,255,255,0.05);">
-            <div style="font-size:14px;color:var(--text-muted);margin-bottom:8px;">今日学习进度</div>
-            <div style="height:8px;background:rgba(30,41,59,0.5);border-radius:4px;overflow:hidden;margin-bottom:8px;">
-                <div id="progress-bar" style="height:100%;width:${studyStats.todayWords > 0 ? Math.min(100, (studyStats.todayWords/dailyGoal)*100) : 0}%;background:linear-gradient(90deg,var(--accent),#a78bfa);border-radius:4px;transition:width 0.6s ease;"></div>
-            </div>
-            <div style="font-size:12px;color:#94a3b8;cursor:pointer;" onclick="showGoalSetting()" title="点击设置学习目标">${studyStats.todayWords}/${dailyGoal} 目标单词 <i class="fas fa-edit" style="font-size:10px;margin-left:3px;"></i></div>
-        </div>
+
         <div style="flex:1;min-width:200px;background:var(--glass);padding:15px;border-radius:15px;border:1px solid rgba(255,255,255,0.05);">
             <div style="font-size:14px;color:var(--text-muted);margin-bottom:8px;">随机推荐单词</div>
             <div id="random-word" style="font-size:18px;color:#a5b4fc;font-weight:600;">加载中...</div>
@@ -862,7 +856,28 @@ async function buildMenu() {
     const visibleLevels = isVisitor
         ? (sysInfo.studyVisibleLevelsVisitor || [0])
         : (sysInfo.studyVisibleLevelsUser || [0,1,2,3,4,5,6,7]);
-    const levels = (courseData.levels || []).filter(l => visibleLevels.includes(Number(l.id)));
+    const allLevels = courseData.levels || [];
+
+    // 主动获取systemInfo确保有最新设置（不依赖loadOnlineDisplay的时序）
+    let visibleLevels;
+    try {
+        const sysResp = await fetch('/api/system/info');
+        const sysData = await sysResp.json();
+        if (!sysData.error) {
+            window._systemInfo = sysData; // 同步缓存
+        }
+        const sysInfo = sysData.error ? {} : sysData;
+        const userInfo = JSON.parse(localStorage.getItem('fmi_user') || '{}');
+        const isVisitor = userInfo.role === 'visitor';
+        visibleLevels = isVisitor
+            ? (sysInfo.studyVisibleLevelsVisitor || [0])
+            : (sysInfo.studyVisibleLevelsUser || [0,1,2,3,4,5,6,7]);
+    } catch(e) {
+        console.warn('获取系统设置失败，显示所有课程:', e);
+        visibleLevels = [0,1,2,3,4,5,6,7];
+    }
+
+    const levels = allLevels.filter(l => visibleLevels.includes(Number(l.id)));
     let courseMenuHTML = '';
 
     // 已存在的级别
