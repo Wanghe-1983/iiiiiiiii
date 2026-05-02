@@ -96,7 +96,7 @@
 
         /* Content */
         .admin-content { flex: 1; padding: 0 30px 24px 30px; overflow-y: auto; min-width: 0; max-width: 100%; }
-        .panel-title { font-size: 1.2rem; color: #fff; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; padding: 14px 30px; border-bottom: 1px solid rgba(255,255,255,0.06); background: var(--bg-main, #0b1120); width: auto !important; max-width: none !important; margin-left: -30px; margin-right: -30px; box-sizing: border-box; } .panel-title .title-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .panel-title { font-size: 1.2rem; color: #fff; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; padding: 14px 30px; border-bottom: 1px solid rgba(255,255,255,0.06); background: var(--bg-main, #0b1120); margin-left: -30px; margin-right: -30px; } .panel-title .title-actions { display: flex; gap: 8px; flex-shrink: 0; }
         .panel-title i { color: #a78bfa; }
 
         /* Cards */
@@ -104,7 +104,7 @@
         .tab-panel .card { max-width: 100% !important; width: 100% !important; }
         .tab-panel { display: none; width: 100%; }
         .tab-panel.active { display: block; width: 100%; max-width: 100%; }
-        .tab-panel.active > * { max-width: 100% !important; width: 100% !important; }
+        .tab-panel.active > *:not(.panel-title) { max-width: 100% !important; width: 100% !important; }
         .card-title { font-size: 0.95rem; color: #cbd5e1; margin-bottom: 15px; font-weight: 600; }
 
         /* Stats row */
