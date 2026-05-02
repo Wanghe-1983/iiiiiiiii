@@ -238,7 +238,110 @@
     .btn-accent:hover { background:#4f46e5; }
     .btn-cancel { padding:8px 20px;background:rgba(255,255,255,0.06);color:#94a3b8;border:1px solid rgba(255,255,255,0.1);border-radius:8px;cursor:pointer;font-size:0.85rem; }
     .btn-cancel:hover { background:rgba(255,255,255,0.1);color:#fff; }
-</style>
+
+    /* ===== 勤学苦练设置面板样式 ===== */
+    .card-section-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #e2e8f0;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .study-config-group {
+        margin-bottom: 20px;
+        padding: 16px;
+        background: rgba(30, 41, 59, 0.5);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .study-config-label {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: #94a3b8;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .study-level-checkboxes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .level-cb {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        background: rgba(30, 41, 59, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.2s;
+        font-size: 0.85rem;
+        color: #cbd5e1;
+    }
+    .level-cb:hover {
+        border-color: rgba(99, 102, 241, 0.4);
+        background: rgba(99, 102, 241, 0.1);
+    }
+    .level-cb input[type="checkbox"] {
+        accent-color: #6366f1;
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+    .level-cb-desc {
+        font-size: 0.72rem;
+        color: #64748b;
+        margin-left: 2px;
+    }
+    .study-toggle-group {
+        margin-bottom: 18px;
+    }
+    .study-toggle-section {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #a78bfa;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+        padding-left: 2px;
+    }
+    .toggle-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 12px;
+        margin-bottom: 4px;
+        border-radius: 6px;
+        transition: 0.15s;
+        cursor: pointer;
+    }
+    .toggle-row:hover {
+        background: rgba(255, 255, 255, 0.03);
+    }
+    .toggle-label {
+        flex: 1;
+        font-size: 0.85rem;
+        color: #e2e8f0;
+    }
+    .toggle-hint {
+        font-size: 0.75rem;
+        color: #64748b;
+        max-width: 280px;
+        text-align: right;
+    }
+    .toggle-row input[type="checkbox"] {
+        accent-color: #6366f1;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    </style>
 </head>
 <body>
     <!-- 版本标识 v20260422c -->
@@ -410,15 +513,133 @@
             <!-- 学习统计管理面板 -->
             <div class="tab-panel" id="tab-study">
                 <div class="panel-title"><i class="fas fa-book-open"></i> 勤学苦练设置<div class="title-actions"><button class="hdr-btn ghost" onclick="location.href='index.html'"><i class="fas fa-home"></i> 返回主页</button><button class="hdr-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button></div></div>
+
+                <!-- ===== 模块一：课程可学习性控制 ===== -->
                 <div class="card">
-                    <p style="color:#94a3b8;font-size:0.85rem;margin-bottom:15px;">查看所有用户的学习数据和累计统计</p>
+                    <div class="card-section-title"><i class="fas fa-layer-group" style="color:#a78bfa;"></i> 课程可学习性控制</div>
+                    <p style="color:#94a3b8;font-size:0.82rem;margin-bottom:18px;">勾选的BIPA等级将在前端"勤学苦练"课程页显示，未勾选则隐藏</p>
+
+                    <div class="study-config-group">
+                        <div class="study-config-label">已登录用户</div>
+                        <div class="study-level-checkboxes" id="studyLevelsUser">
+                            <label class="level-cb"><input type="checkbox" value="0" onchange="studyPreviewLevels()"><span>BIPA 0</span><span class="level-cb-desc">通用印尼语</span></label>
+                            <label class="level-cb"><input type="checkbox" value="1" onchange="studyPreviewLevels()"><span>BIPA 1</span></label>
+                            <label class="level-cb"><input type="checkbox" value="2" onchange="studyPreviewLevels()"><span>BIPA 2</span></label>
+                            <label class="level-cb"><input type="checkbox" value="3" onchange="studyPreviewLevels()"><span>BIPA 3</span></label>
+                            <label class="level-cb"><input type="checkbox" value="4" onchange="studyPreviewLevels()"><span>BIPA 4</span></label>
+                            <label class="level-cb"><input type="checkbox" value="5" onchange="studyPreviewLevels()"><span>BIPA 5</span></label>
+                            <label class="level-cb"><input type="checkbox" value="6" onchange="studyPreviewLevels()"><span>BIPA 6</span></label>
+                            <label class="level-cb"><input type="checkbox" value="7" onchange="studyPreviewLevels()"><span>BIPA 7</span></label>
+                        </div>
+                    </div>
+
+                    <div class="study-config-group">
+                        <div class="study-config-label">访客</div>
+                        <div class="study-level-checkboxes" id="studyLevelsVisitor">
+                            <label class="level-cb"><input type="checkbox" value="0" onchange="studyPreviewLevels()"><span>BIPA 0</span><span class="level-cb-desc">通用印尼语</span></label>
+                            <label class="level-cb"><input type="checkbox" value="1" onchange="studyPreviewLevels()"><span>BIPA 1</span></label>
+                            <label class="level-cb"><input type="checkbox" value="2" onchange="studyPreviewLevels()"><span>BIPA 2</span></label>
+                            <label class="level-cb"><input type="checkbox" value="3" onchange="studyPreviewLevels()"><span>BIPA 3</span></label>
+                            <label class="level-cb"><input type="checkbox" value="4" onchange="studyPreviewLevels()"><span>BIPA 4</span></label>
+                            <label class="level-cb"><input type="checkbox" value="5" onchange="studyPreviewLevels()"><span>BIPA 5</span></label>
+                            <label class="level-cb"><input type="checkbox" value="6" onchange="studyPreviewLevels()"><span>BIPA 6</span></label>
+                            <label class="level-cb"><input type="checkbox" value="7" onchange="studyPreviewLevels()"><span>BIPA 7</span></label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== 模块二：练习功能配置 - 用户 ===== -->
+                <div class="card">
+                    <div class="card-section-title"><i class="fas fa-sliders-h" style="color:#6366f1;"></i> 练习功能配置 - 已登录用户</div>
+                    <p style="color:#94a3b8;font-size:0.82rem;margin-bottom:18px;">控制已登录用户在练习页面的功能选项</p>
+
+                    <div class="study-toggle-group">
+                        <div class="study-toggle-section">题库设置</div>
+                        <label class="toggle-row"><span class="toggle-label">练习题库包含"已掌握"内容</span><span class="toggle-hint">关闭后，已标记掌握的词汇不会出现在练习题中</span><input type="checkbox" id="sp_user_includeMastered" checked></label>
+                    </div>
+
+                    <div class="study-toggle-group">
+                        <div class="study-toggle-section">错题集</div>
+                        <label class="toggle-row"><span class="toggle-label">启用错题集</span><span class="toggle-hint">练习答错时自动加入错题集</span><input type="checkbox" id="sp_user_enableWrongBook" checked></label>
+                        <label class="toggle-row"><span class="toggle-label">允许删除单条错题</span><input type="checkbox" id="sp_user_allowDeleteWrong" checked></label>
+                        <label class="toggle-row"><span class="toggle-label">允许清空错题集</span><input type="checkbox" id="sp_user_allowClearWrong" checked></label>
+                    </div>
+
+                    <div class="study-toggle-group">
+                        <div class="study-toggle-section">掌握标记</div>
+                        <label class="toggle-row"><span class="toggle-label">允许用户取消"已掌握"标记</span><span class="toggle-hint">关闭后，已勾选掌握的内容不可再取消</span><input type="checkbox" id="sp_user_allowUnmarkMastered" checked></label>
+                    </div>
+
+                    <div class="study-toggle-group">
+                        <div class="study-toggle-section">学习统计</div>
+                        <label class="toggle-row"><span class="toggle-label">统计学习时长</span><span class="toggle-hint">记录用户在"学习"页面的停留时间</span><input type="checkbox" id="sp_user_trackStudyTime" checked></label>
+                        <label class="toggle-row"><span class="toggle-label">统计练习准确率</span><span class="toggle-hint">记录每次练习的得分</span><input type="checkbox" id="sp_user_trackAccuracy" checked></label>
+                    </div>
+
+                    <div class="study-toggle-group">
+                        <div class="study-toggle-section">界面控件</div>
+                        <label class="toggle-row"><span class="toggle-label">显示倍速滑块</span><input type="checkbox" id="sp_user_showRateSlider" checked></label>
+                        <label class="toggle-row"><span class="toggle-label">允许调节倍速</span><span class="toggle-hint">关闭后倍速固定为默认值1.0x</span><input type="checkbox" id="sp_user_allowAdjustRate" checked></label>
+                        <label class="toggle-row"><span class="toggle-label">显示循环滑块</span><input type="checkbox" id="sp_user_showLoopSlider" checked></label>
+                        <label class="toggle-row"><span class="toggle-label">允许调节循环</span><span class="toggle-hint">关闭后循环固定为默认值1次</span><input type="checkbox" id="sp_user_allowAdjustLoop" checked></label>
+                    </div>
+                </div>
+
+                <!-- ===== 模块三：练习功能配置 - 访客 ===== -->
+                <div class="card">
+                    <div class="card-section-title"><i class="fas fa-sliders-h" style="color:#f59e0b;"></i> 练习功能配置 - 访客</div>
+                    <p style="color:#94a3b8;font-size:0.82rem;margin-bottom:18px;">控制访客在练习页面的功能选项（与用户独立配置）</p>
+
+                    <div class="study-toggle-group">
+                        <div class="study-toggle-section">题库设置</div>
+                        <label class="toggle-row"><span class="toggle-label">练习题库包含"已掌握"内容</span><span class="toggle-hint">关闭后，已标记掌握的词汇不会出现在练习题中</span><input type="checkbox" id="sp_visitor_includeMastered"></label>
+                    </div>
+
+                    <div class="study-toggle-group">
+                        <div class="study-toggle-section">错题集</div>
+                        <label class="toggle-row"><span class="toggle-label">启用错题集</span><span class="toggle-hint">练习答错时自动加入错题集</span><input type="checkbox" id="sp_visitor_enableWrongBook"></label>
+                        <label class="toggle-row"><span class="toggle-label">允许删除单条错题</span><input type="checkbox" id="sp_visitor_allowDeleteWrong"></label>
+                        <label class="toggle-row"><span class="toggle-label">允许清空错题集</span><input type="checkbox" id="sp_visitor_allowClearWrong"></label>
+                    </div>
+
+                    <div class="study-toggle-group">
+                        <div class="study-toggle-section">掌握标记</div>
+                        <label class="toggle-row"><span class="toggle-label">允许访客取消"已掌握"标记</span><span class="toggle-hint">关闭后，已勾选掌握的内容不可再取消</span><input type="checkbox" id="sp_visitor_allowUnmarkMastered" checked></label>
+                    </div>
+
+                    <div class="study-toggle-group">
+                        <div class="study-toggle-section">学习统计</div>
+                        <label class="toggle-row"><span class="toggle-label">统计学习时长</span><span class="toggle-hint">访客不统计时长</span><input type="checkbox" id="sp_visitor_trackStudyTime"></label>
+                        <label class="toggle-row"><span class="toggle-label">统计练习准确率</span><span class="toggle-hint">访客不统计准确率</span><input type="checkbox" id="sp_visitor_trackAccuracy"></label>
+                    </div>
+
+                    <div class="study-toggle-group">
+                        <div class="study-toggle-section">界面控件</div>
+                        <label class="toggle-row"><span class="toggle-label">显示倍速滑块</span><input type="checkbox" id="sp_visitor_showRateSlider" checked></label>
+                        <label class="toggle-row"><span class="toggle-label">允许调节倍速</span><span class="toggle-hint">关闭后倍速固定为默认值1.0x</span><input type="checkbox" id="sp_visitor_allowAdjustRate" checked></label>
+                        <label class="toggle-row"><span class="toggle-label">显示循环滑块</span><input type="checkbox" id="sp_visitor_showLoopSlider" checked></label>
+                        <label class="toggle-row"><span class="toggle-label">允许调节循环</span><span class="toggle-hint">关闭后循环固定为默认值1次</span><input type="checkbox" id="sp_visitor_allowAdjustLoop" checked></label>
+                    </div>
+                </div>
+
+                <!-- ===== 保存按钮 ===== -->
+                <div style="text-align:center;margin:24px 0;">
+                    <button class="hdr-btn primary" style="padding:12px 40px;font-size:0.95rem;border-radius:10px;" onclick="saveStudySettings()">
+                        <i class="fas fa-save"></i> 保存勤学苦练设置
+                    </button>
+                </div>
+
+                <!-- ===== 学习数据统计（原功能保留） ===== -->
+                <div class="card">
+                    <div class="card-section-title"><i class="fas fa-chart-bar" style="color:#34d399;"></i> 学习数据统计</div>
+                    <p style="color:#94a3b8;font-size:0.82rem;margin-bottom:15px;">查看所有用户的学习数据和累计统计</p>
                     <div class="table-wrap">
                         <table class="data-table">
                             <thead><tr><th>用户名</th><th>昵称</th><th>角色</th><th>今日学习</th><th>累计词汇</th><th>学习时长</th><th>操作</th></tr></thead>
-                            <tbody id="studyStatsList"></tbody>
+                            <tbody id="studySettingsList"></tbody>
                         </table>
                     </div>
-                    <div id="studyStatsEmpty" style="display:none;text-align:center;color:#64748b;padding:30px;">暂无学习数据</div>
+                    <div id="studySettingsEmpty" style="display:none;text-align:center;color:#64748b;padding:30px;">暂无学习数据</div>
                 </div>
             </div>
 
@@ -766,7 +987,7 @@ let allUsers = [];
         if (name === 'leaderboard') loadLbConfig();
         if (name === 'employees') loadEmployees();
         if (name === 'whitelist') { loadWhitelist(); loadEmployees(); }
-        if (name === 'study') loadStudyStats();
+        if (name === 'study') { loadStudySettings(); loadStudyStats(); }
         if (name === 'changelog') loadChangelog();
     }
 
@@ -929,6 +1150,7 @@ let allUsers = [];
     async function loadSystemSettings() {
         const s = await adminFetch('admin/settings', { method: 'GET' });
         if (s.error) return;
+        window._adminSettings = s;  // 缓存全局设置
         document.getElementById('setMaxOnline').value = s.maxOnline || 0;
         document.getElementById('setMaxRegistered').value = s.maxRegistered || 0;
         document.getElementById('setAllowRegister').checked = s.allowRegister !== false;
@@ -1632,12 +1854,103 @@ let allUsers = [];
             if (tab === 'broadcast') { loadBroadcastList(); loadBroadcastConfig(); }
         };
     // ========== 学习统计管理 ==========
+    
+    // ========== 勤学苦练设置 - 加载 ==========
+    function loadStudySettings() {
+        // 从当前settings对象中读取（settings已在loadSystemSettings时加载）
+        // 使用全局缓存的settings
+        const s = window._adminSettings || {};
+        
+        // 课程可见性 - 用户
+        const userLevels = s.studyVisibleLevelsUser || [0,1,2,3,4,5,6,7];
+        document.querySelectorAll('#studyLevelsUser input[type="checkbox"]').forEach(cb => {
+            cb.checked = userLevels.includes(parseInt(cb.value));
+        });
+        
+        // 课程可见性 - 访客
+        const visitorLevels = s.studyVisibleLevelsVisitor || [0];
+        document.querySelectorAll('#studyLevelsVisitor input[type="checkbox"]').forEach(cb => {
+            cb.checked = visitorLevels.includes(parseInt(cb.value));
+        });
+        
+        // 练习功能配置 - 用户
+        const pu = s.studyPracticeUser || {};
+        const userKeys = ['includeMastered','enableWrongBook','allowDeleteWrong','allowClearWrong',
+                          'allowUnmarkMastered','trackStudyTime','trackAccuracy',
+                          'showRateSlider','allowAdjustRate','showLoopSlider','allowAdjustLoop'];
+        userKeys.forEach(key => {
+            const el = document.getElementById('sp_user_' + key);
+            if (el) el.checked = pu[key] !== false;
+        });
+        
+        // 练习功能配置 - 访客
+        const pv = s.studyPracticeVisitor || {};
+        const visitorKeys = ['includeMastered','enableWrongBook','allowDeleteWrong','allowClearWrong',
+                             'allowUnmarkMastered','trackStudyTime','trackAccuracy',
+                             'showRateSlider','allowAdjustRate','showLoopSlider','allowAdjustLoop'];
+        visitorKeys.forEach(key => {
+            const el = document.getElementById('sp_visitor_' + key);
+            if (el) el.checked = !!pv[key];
+        });
+    }
+
+    // ========== 勤学苦练设置 - 保存 ==========
+    async function saveStudySettings() {
+        // 收集课程可见性 - 用户
+        const studyVisibleLevelsUser = Array.from(
+            document.querySelectorAll('#studyLevelsUser input[type="checkbox"]:checked')
+        ).map(cb => parseInt(cb.value));
+        
+        // 收集课程可见性 - 访客
+        const studyVisibleLevelsVisitor = Array.from(
+            document.querySelectorAll('#studyLevelsVisitor input[type="checkbox"]:checked')
+        ).map(cb => parseInt(cb.value));
+        
+        // 收集练习配置 - 用户
+        const userKeys = ['includeMastered','enableWrongBook','allowDeleteWrong','allowClearWrong',
+                          'allowUnmarkMastered','trackStudyTime','trackAccuracy',
+                          'showRateSlider','allowAdjustRate','showLoopSlider','allowAdjustLoop'];
+        const studyPracticeUser = {};
+        userKeys.forEach(key => {
+            const el = document.getElementById('sp_user_' + key);
+            if (el) studyPracticeUser[key] = el.checked;
+        });
+        
+        // 收集练习配置 - 访客
+        const studyPracticeVisitor = {};
+        userKeys.forEach(key => {
+            const el = document.getElementById('sp_visitor_' + key);
+            if (el) studyPracticeVisitor[key] = el.checked;
+        });
+        
+        const settings = {
+            studyVisibleLevelsUser,
+            studyVisibleLevelsVisitor,
+            studyPracticeUser,
+            studyPracticeVisitor,
+        };
+        
+        var result = await adminFetch('admin/settings', { method: 'PUT', body: JSON.stringify(settings) });
+        if (result && result.success) {
+            showAdminToast('勤学苦练设置已保存', 'success');
+            // 同步更新全局缓存
+            Object.assign(window._adminSettings || {}, settings);
+        } else {
+            showAdminToast((result && result.error) || '保存失败', 'error');
+        }
+    }
+
+    // 预览勾选等级（可选，用于高亮已选）
+    function studyPreviewLevels() {
+        // 仅视觉反馈，无需额外逻辑
+    }
+
     async function loadStudyStats() {
         try {
             const data = await adminFetch('admin/study-stats', { method: 'GET' });
             if (!data || data.error) { console.warn('loadStudyStats error:', data ? data.error : 'no data'); return; }
-            const tbody = document.getElementById('studyStatsList');
-            const empty = document.getElementById('studyStatsEmpty');
+            const tbody = document.getElementById('studySettingsList');
+            const empty = document.getElementById('studySettingsEmpty');
             const stats = data.stats || {};
             const keys = Object.keys(stats);
 

@@ -12,6 +12,29 @@ const StudyModule = {
     studyIndex: 0,    // 当前卡片索引
     speechRate: 1.0,
     hideChinese: false,
+    _studyConfig: null,  // 缓存的勤学苦练配置
+
+    // 获取当前用户的练习配置（用户/访客）
+    _getPracticeConfig() {
+        if (this._studyConfig) return this._studyConfig;
+        const sysInfo = window._systemInfo || {};
+        const userInfo = JSON.parse(localStorage.getItem('fmi_user') || '{}');
+        const isVisitor = userInfo.role === 'visitor';
+        this._studyConfig = isVisitor
+            ? (sysInfo.studyPracticeVisitor || {})
+            : (sysInfo.studyPracticeUser || {});
+        return this._studyConfig;
+    },
+
+    // 获取当前用户可见的课程等级
+    _getVisibleLevels() {
+        const sysInfo = window._systemInfo || {};
+        const userInfo = JSON.parse(localStorage.getItem('fmi_user') || '{}');
+        const isVisitor = userInfo.role === 'visitor';
+        return isVisitor
+            ? (sysInfo.studyVisibleLevelsVisitor || [0])
+            : (sysInfo.studyVisibleLevelsUser || [0,1,2,3,4,5,6,7]);
+    },
 
     // ========== 初始化 ==========
     async init(container) {
@@ -21,8 +44,14 @@ const StudyModule = {
             container.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#f87171;">课程数据加载失败，请检查网络连接</div>';
             return;
         }
-        // 默认选中第一个级别的第一个单元
-        const firstLevel = data.levels[0];
+        // 默认选中第一个可见级别的第一个单元
+        const visibleLevels = this._getVisibleLevels();
+        const visibleData = data.levels.filter(l => visibleLevels.includes(Number(l.id)));
+        if (visibleData.length === 0) {
+            container.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#f87171;">当前没有可学习的课程</div>';
+            return;
+        }
+        const firstLevel = visibleData[0];
         this.selectedLevelId = String(firstLevel.id);
         if (firstLevel.units && firstLevel.units.length > 0) {
             this.selectedUnitId = firstLevel.units[0].id;
@@ -61,7 +90,9 @@ const StudyModule = {
 
     // ========== 课程选择页 ==========
     renderCourse(container) {
-        const levels = CourseContent.getLevels();
+        const allLevels = CourseContent.getLevels();
+        const visibleLevels = this._getVisibleLevels();
+        const levels = allLevels.filter(l => visibleLevels.includes(Number(l.id)));
         let levelTabs = levels.map(l => {
             const active = String(l.id) === this.selectedLevelId;
             const mastery = CourseContent.getLevelMastery(l.id);
@@ -381,6 +412,14 @@ const StudyModule = {
         if (checked) {
             CourseContent.markMastered(this.selectedLevelId, this.selectedUnitId, type);
         } else {
+            // 检查是否允许取消掌握标记
+            const config = this._getPracticeConfig();
+            if (config.allowUnmarkMastered === false) {
+                // 不允许取消，恢复勾选状态
+                document.getElementById('mastery-' + type).checked = true;
+                alert('管理员已禁止取消"已掌握"标记');
+                return;
+            }
             CourseContent.unmarkMastered(this.selectedLevelId, this.selectedUnitId, type);
         }
     },

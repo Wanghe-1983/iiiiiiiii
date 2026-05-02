@@ -1625,3 +1625,81 @@
     right: 24px;
     z-index: 100;
 }
+
+/* ===== 错题集样式 ===== */
+.wrong-book-panel {
+    padding: 16px 0;
+}
+.wrong-book-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.wrong-book-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    transition: 0.2s;
+}
+.wrong-book-item:hover {
+    border-color: rgba(248, 113, 113, 0.2);
+}
+.wrong-book-num {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(248, 113, 113, 0.12);
+    color: #f87171;
+    border-radius: 50%;
+    font-size: 0.78rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+.wrong-book-content {
+    flex: 1;
+    min-width: 0;
+}
+.wrong-book-indo {
+    font-size: 0.95rem;
+    color: #e2e8f0;
+    cursor: pointer;
+    word-break: break-word;
+}
+.wrong-book-zh {
+    font-size: 0.82rem;
+    color: #94a3b8;
+    margin-top: 2px;
+}
+.wrong-book-del {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 1px solid rgba(248, 113, 113, 0.15);
+    border-radius: 6px;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: 0.2s;
+    flex-shrink: 0;
+}
+.wrong-book-del:hover {
+    color: #f87171;
+    border-color: rgba(248, 113, 113, 0.4);
+    background: rgba(248, 113, 113, 0.08);
+}
+.result-btn.wrong-book-btn {
+    background: rgba(248, 113, 113, 0.12);
+    color: #f87171;
+    border: 1px solid rgba(248, 113, 113, 0.2);
+}
+.result-btn.wrong-book-btn:hover {
+    background: rgba(248, 113, 113, 0.2);
+}

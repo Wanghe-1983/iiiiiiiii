@@ -11,21 +11,85 @@ const StudyPractice = {
     answered: false,
     isFinished: false,
     practiceType: 'choice', // choice | fill
+    wrongBook: [],  // 本次练习的错题记录
+
+    // 获取练习配置
+    _getConfig() {
+        const sysInfo = window._systemInfo || {};
+        const userInfo = JSON.parse(localStorage.getItem('fmi_user') || '{}');
+        const isVisitor = userInfo.role === 'visitor';
+        return isVisitor
+            ? (sysInfo.studyPracticeVisitor || {})
+            : (sysInfo.studyPracticeUser || {});
+    },
+
+    // 添加错题到localStorage
+    _addToWrongBook(item) {
+        const config = this._getConfig();
+        if (!config.enableWrongBook) return;
+        
+        const key = 'fmi_wrong_book';
+        let book = JSON.parse(localStorage.getItem(key) || '[]');
+        // 去重（按indonesian）
+        if (!book.find(b => b.indonesian === item.indo)) {
+            book.unshift({
+                indo: item.indo,
+                zh: item.zh,
+                type: item.type,
+                unitId: StudyModule.selectedUnitId,
+                levelId: StudyModule.selectedLevelId,
+                timestamp: Date.now()
+            });
+            // 最多保留200条
+            if (book.length > 200) book = book.slice(0, 200);
+            localStorage.setItem(key, JSON.stringify(book));
+        }
+    },
+
+    // 获取错题集
+    getWrongBook() {
+        return JSON.parse(localStorage.getItem('fmi_wrong_book') || '[]');
+    },
+
+    // 删除单条错题
+    deleteWrongItem(indonesian) {
+        const config = this._getConfig();
+        if (!config.allowDeleteWrong) return;
+        let book = JSON.parse(localStorage.getItem('fmi_wrong_book') || '[]');
+        book = book.filter(b => b.indonesian !== indonesian);
+        localStorage.setItem('fmi_wrong_book', JSON.stringify(book));
+    },
+
+    // 清空错题集
+    clearWrongBook() {
+        const config = this._getConfig();
+        if (!config.allowClearWrong) return;
+        localStorage.setItem('fmi_wrong_book', JSON.stringify([]));
+    },
 
     // ========== 选择题 ==========
     startChoice(wordCount, sentenceCount) {
         this.practiceType = 'choice';
+        this.wrongBook = [];  // 重置本次错题
         const studyContent = CourseContent.getStudyContent(StudyModule.selectedLevelId, StudyModule.selectedUnitId);
+        const config = this._getConfig();
+        const includeMastered = config.includeMastered !== false;  // 默认包含
         const pool = [];
         for (const section of studyContent) {
             const unit = section.unit;
             for (const type of section.types) {
-                if (type === 'words') pool.push(...(unit.words || []).map(w => ({ indo: w.indonesian, zh: w.chinese, type: 'word' })));
-                if (type === 'sentences') pool.push(...(unit.sentences || []).map(s => ({ indo: s.indonesian, zh: s.chinese, type: 'sentence' })));
+                const items = type === 'words' ? (unit.words || []) : (unit.sentences || []);
+                const masteredType = type === 'words' ? 'words' : 'sentences';
+                const isTypeMastered = CourseContent.isMastered(StudyModule.selectedLevelId, StudyModule.selectedUnitId, masteredType);
+                if (includeMastered || !isTypeMastered) {
+                    for (const item of items) {
+                        pool.push({ indo: item.indonesian, zh: item.chinese, type: type === 'words' ? 'word' : 'sentence' });
+                    }
+                }
             }
         }
         if (pool.length < 4) {
-            alert('题目数量不足，至少需要4道题');
+            alert('题目数量不足（部分内容已掌握已被排除），请先学习其他单元');
             return;
         }
         // 打乱取最多20题
@@ -89,6 +153,11 @@ const StudyPractice = {
         const isCorrect = correct === selected;
 
         if (isCorrect) this.score++;
+        else {
+            // 记录错题
+            const q = this.questions[this.currentIndex];
+            if (q) this._addToWrongBook(q);
+        }
 
         // 高亮正确/错误
         const allBtns = btnEl.parentElement.querySelectorAll('.quiz-option');
@@ -112,16 +181,25 @@ const StudyPractice = {
     // ========== 填空题 ==========
     startFill(sentenceCount) {
         this.practiceType = 'fill';
+        this.wrongBook = [];  // 重置本次错题
         const studyContent = CourseContent.getStudyContent(StudyModule.selectedLevelId, StudyModule.selectedUnitId);
+        const config = this._getConfig();
+        const includeMastered = config.includeMastered !== false;
         const pool = [];
         for (const section of studyContent) {
             const unit = section.unit;
             for (const type of section.types) {
-                if (type === 'words') pool.push(...(unit.words || []).map(w => ({ indo: w.indonesian, zh: w.chinese, type: 'word' })));
-                if (type === 'sentences') pool.push(...(unit.sentences || []).map(s => ({ indo: s.indonesian, zh: s.chinese, type: 'sentence' })));
+                const items = type === 'words' ? (unit.words || []) : (unit.sentences || []);
+                const masteredType = type === 'words' ? 'words' : 'sentences';
+                const isTypeMastered = CourseContent.isMastered(StudyModule.selectedLevelId, StudyModule.selectedUnitId, masteredType);
+                if (includeMastered || !isTypeMastered) {
+                    for (const item of items) {
+                        pool.push({ indo: item.indonesian, zh: item.chinese, type: type === 'words' ? 'word' : 'sentence' });
+                    }
+                }
             }
         }
-        if (pool.length === 0) { alert('没有可练习的内容'); return; }
+        if (pool.length === 0) { alert('没有可练习的内容（已掌握内容已被排除）'); return; }
         this.questions = this._shuffle(pool).slice(0, 10);
         this.currentIndex = 0;
         this.score = 0;
@@ -179,6 +257,10 @@ const StudyPractice = {
         const q = this.questions[this.currentIndex];
         const isCorrect = answer === q.zh;
         if (isCorrect) this.score++;
+        else {
+            // 记录错题
+            this._addToWrongBook(q);
+        }
 
         const feedback = document.getElementById('fill-feedback');
         const actions = document.getElementById('fill-actions');
@@ -204,6 +286,9 @@ const StudyPractice = {
         const emoji = pct >= 90 ? 'star' : pct >= 70 ? 'thumbs-up' : pct >= 50 ? 'meh' : 'redo';
         const msg = pct >= 90 ? '太棒了！' : pct >= 70 ? '不错！' : pct >= 50 ? '继续努力！' : '需要多加练习';
 
+        const wrongCount = this.getWrongBook().length;
+        const config = this._getConfig();
+        const showWrongEntry = config.enableWrongBook && wrongCount > 0;
         area.innerHTML = `
             <div class="quiz-result">
                 <div class="result-icon"><i class="fas fa-${emoji}"></i></div>
@@ -214,12 +299,76 @@ const StudyPractice = {
                     <button class="result-btn retry" onclick="StudyModule.switchSubTab('practice')">
                         <i class="fas fa-redo"></i> 再练一次
                     </button>
+                    ${showWrongEntry ? '<button class="result-btn wrong-book-btn" onclick="StudyPractice.renderWrongBook()"><i class="fas fa-book"></i> 查看错题集 (' + wrongCount + ')</button>' : ''}
                     <button class="result-btn back" onclick="StudyModule.switchSubTab('course')">
                         <i class="fas fa-book-open"></i> 返回课程
                     </button>
                 </div>
             </div>
         `;
+    },
+
+    // ========== 错题集 ==========
+    renderWrongBook() {
+        const area = document.getElementById('practice-area');
+        if (!area) return;
+        const config = this._getConfig();
+        const book = this.getWrongBook();
+        
+        let html = '<div class="wrong-book-panel">';
+        html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">';
+        html += '<div style="font-size:1rem;font-weight:700;color:#e2e8f0;"><i class="fas fa-book" style="color:#f87171;margin-right:6px;"></i> 错题集 (' + book.length + '题)</div>';
+        html += '<div style="display:flex;gap:8px;">';
+        if (book.length > 0 && config.allowClearWrong) {
+            html += '<button class="ptype-btn" onclick="if(confirm(\'确认清空所有错题？\')){StudyPractice.clearWrongBook();StudyPractice.renderWrongBook();}" style="color:#f87171;border-color:rgba(248,113,113,0.3);"><i class="fas fa-trash"></i> 清空</button>';
+        }
+        html += '<button class="ptype-btn" onclick="StudyModule.switchSubTab(\'practice\')"><i class="fas fa-arrow-left"></i> 返回</button>';
+        html += '</div></div>';
+        
+        if (book.length === 0) {
+            html += '<div style="text-align:center;padding:40px;color:var(--text-muted);">暂无错题，继续保持！</div>';
+        } else {
+            html += '<div class="wrong-book-list">';
+            book.forEach((item, idx) => {
+                const dateStr = new Date(item.timestamp).toLocaleDateString('zh-CN');
+                html += '<div class="wrong-book-item">';
+                html += '<div class="wrong-book-num">' + (idx + 1) + '</div>';
+                html += '<div class="wrong-book-content">';
+                html += '<div class="wrong-book-indo" onclick="speak(\'' + encodeURIComponent(item.indo) + '\')">' + item.indo + ' <i class="fas fa-volume-up" style="color:var(--accent);cursor:pointer;margin-left:6px;"></i></div>';
+                html += '<div class="wrong-book-zh">' + item.zh + '</div>';
+                html += '</div>';
+                if (config.allowDeleteWrong) {
+                    html += '<button class="wrong-book-del" onclick="StudyPractice.deleteWrongItem(\'' + item.indo.replace(/'/g, "\\'") + '\');StudyPractice.renderWrongBook();" title="删除"><i class="fas fa-times"></i></button>';
+                }
+                html += '</div>';
+            });
+            html += '</div>';
+            
+            // 重做按钮
+            if (book.length >= 4) {
+                html += '<div style="text-align:center;margin-top:20px;">';
+                html += '<button class="ptype-btn" onclick="StudyPractice.startWrongBookPractice()" style="padding:10px 24px;font-size:0.9rem;"><i class="fas fa-redo"></i> 从错题中出题</button>';
+                html += '</div>';
+            }
+        }
+        html += '</div>';
+        area.innerHTML = html;
+    },
+
+    startWrongBookPractice() {
+        const book = this.getWrongBook();
+        if (book.length < 4) {
+            alert('错题不足4道，无法开始练习');
+            return;
+        }
+        this.practiceType = 'choice';
+        this.wrongBook = [];
+        this.questions = this._shuffle(book.map(b => ({ indo: b.indo, zh: b.zh, type: b.type || 'word' }))).slice(0, 20);
+        this.currentIndex = 0;
+        this.score = 0;
+        this.answered = false;
+        this.isFinished = false;
+        this._renderChoiceQuestion();
     },
 
     // ========== 工具 ==========

@@ -133,6 +133,41 @@ function defaultSettings() {
         hellQuestionCount: 15,          // 地狱模式每关题目数量
         hellQuestionType: 'mixed',      // 地狱模式题目类型
         hellTimeLimit: 120,             // 地狱模式每关时间限制（秒），0=不限时
+
+        // ========== 勤学苦练配置 ==========
+        // 课程可见性
+        studyVisibleLevelsUser: [0, 1, 2, 3, 4, 5, 6, 7],   // 用户可见的BIPA等级
+        studyVisibleLevelsVisitor: [0],                        // 访客可见的BIPA等级
+
+        // 练习功能配置 - 用户
+        studyPracticeUser: {
+            includeMastered: true,       // 练习题库包含已掌握内容
+            enableWrongBook: true,       // 启用错题集
+            allowDeleteWrong: true,      // 允许删除单条错题
+            allowClearWrong: true,       // 允许清空错题集
+            allowUnmarkMastered: true,   // 允许取消已掌握标记
+            trackStudyTime: true,        // 统计学习时长
+            trackAccuracy: true,         // 统计练习准确率
+            showRateSlider: true,        // 显示倍速滑块
+            allowAdjustRate: true,       // 允许调节倍速
+            showLoopSlider: true,        // 显示循环滑块
+            allowAdjustLoop: true,       // 允许调节循环
+        },
+
+        // 练习功能配置 - 访客
+        studyPracticeVisitor: {
+            includeMastered: false,      // 访客练习不包含已掌握内容
+            enableWrongBook: false,      // 访客不启用错题集
+            allowDeleteWrong: false,
+            allowClearWrong: false,
+            allowUnmarkMastered: true,   // 访客可取消掌握标记
+            trackStudyTime: false,       // 访客不统计时长
+            trackAccuracy: false,        // 访客不统计准确率
+            showRateSlider: true,        // 访客可调倍速
+            allowAdjustRate: true,
+            showLoopSlider: true,
+            allowAdjustLoop: true,
+        },
     };
 }
 
