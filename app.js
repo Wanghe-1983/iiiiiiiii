@@ -1793,10 +1793,12 @@ function updateStats() {
     
     // 新增：更新进度条
     const progressPercent = studyStats.todayWords > 0 ? Math.min(100, (studyStats.todayWords/dailyGoal)*100) : 0;
-    document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+    const progressBar = document.getElementById('progress-bar');
+    if (progressBar) progressBar.style.width = `${progressPercent}%`;
     
     // 更新分享弹窗统计
-    document.getElementById('share-stats').innerHTML = `
+    const shareStatsEl = document.getElementById('share-stats');
+    if (shareStatsEl) shareStatsEl.innerHTML = `
         <div style="margin:10px 0;line-height:1.6;font-size:14px;color:#cbd5e1;">
             📅 日期：${today}<br>
             📚 今日学习：${studyStats.todayWords} 个单词<br>
@@ -2757,7 +2759,8 @@ function clearStudyData() {
         if (rsti) rsti.innerText = '0分0秒';
         const rstr = document.getElementById('stat-rate');
         if (rstr) rstr.innerText = '0%';
-        document.getElementById('progress-bar').style.width = '0%';
+        const pb = document.getElementById('progress-bar');
+        if (pb) pb.style.width = '0%';
     };
 }
 
