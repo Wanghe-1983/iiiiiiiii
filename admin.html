@@ -96,7 +96,7 @@
 
         /* Content */
         .admin-content { flex: 1; padding: 24px 30px; overflow-y: auto; min-width: 0; max-width: 100%; }
-        .panel-title { font-size: 1.2rem; color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .panel-title { font-size: 1.2rem; color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 50; background: rgba(11,17,32,0.95); backdrop-filter: blur(12px); padding: 10px 0; margin-top: -10px; }
         .panel-title i { color: #a78bfa; }
 
         /* Cards */
@@ -128,7 +128,7 @@
 
         /* Table */
         .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; table-layout: fixed; }
-        .data-table th { text-align: left; padding: 12px 10px; color: #64748b; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); white-space: nowrap; }
+        .data-table th { text-align: left; padding: 12px 10px; color: #64748b; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.08); white-space: nowrap; position: sticky; top: 46px; z-index: 40; background: rgba(30,41,59,0.98); backdrop-filter: blur(8px); }
         .data-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #cbd5e1; }
         .data-table tr:hover td { background: rgba(99,102,241,0.05); }
 
