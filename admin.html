@@ -74,7 +74,7 @@
         .admin-header { background: rgba(17,24,39,0.95); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(15px); }
         .admin-header h1 { font-size: 1.3rem; color: #fff; display: flex; align-items: center; gap: 10px; }
         .admin-header h1 i { color: #a78bfa; }
-        .admin-float-actions { position:fixed;top:12px;right:20px;z-index:200;display:flex;gap:8px; }
+        .admin-float-actions { display: none; }
         .header-actions { display: flex; gap: 10px; }
         .hdr-btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: 0.2s; display: flex; align-items: center; gap: 6px; }
         .hdr-btn.primary { background: #6366f1; color: #fff; }
@@ -96,7 +96,7 @@
 
         /* Content */
         .admin-content { flex: 1; padding: 0 30px 24px 30px; overflow-y: auto; min-width: 0; max-width: 100%; }
-        .panel-title { font-size: 1.2rem; color: #fff; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; position: sticky; top: 0; z-index: 50; padding: 14px 30px; border-bottom: 1px solid rgba(255,255,255,0.06); background: var(--bg-main, #0b1120); width: auto !important; max-width: none !important; margin-left: -30px; margin-right: -30px; box-sizing: border-box; }
+        .panel-title { font-size: 1.2rem; color: #fff; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; padding: 14px 30px; border-bottom: 1px solid rgba(255,255,255,0.06); background: var(--bg-main, #0b1120); width: auto !important; max-width: none !important; margin-left: -30px; margin-right: -30px; box-sizing: border-box; } .panel-title .title-actions { display: flex; gap: 8px; flex-shrink: 0; }
         .panel-title i { color: #a78bfa; }
 
         /* Cards */
@@ -267,7 +267,7 @@
         <div class="admin-content">
             <!-- 概览 -->
             <div class="tab-panel active" id="tab-overview">
-                <div class="panel-title"><i class="fas fa-chart-pie"></i> 运行概览</div>
+                <div class="panel-title"><i class="fas fa-chart-pie"></i> 运行概览<div class="title-actions"><button class="hdr-btn ghost" onclick="location.href='index.html'"><i class="fas fa-home"></i> 返回主页</button><button class="hdr-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button></div></div>
                 <div class="stats-row" id="statsRow"></div>
                 <div class="card">
                     <div class="card-title"><i class="fas fa-wifi" style="color:#34d399;"></i> 当前在线用户</div>
@@ -277,7 +277,7 @@
 
             <!-- 用户管理 -->
             <div class="tab-panel" id="tab-users">
-                <div class="panel-title"><i class="fas fa-users-gear"></i> 用户管理</div>
+                <div class="panel-title"><i class="fas fa-users-gear"></i> 用户管理<div class="title-actions"><button class="hdr-btn ghost" onclick="location.href='index.html'"><i class="fas fa-home"></i> 返回主页</button><button class="hdr-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button></div></div>
                 <div class="card">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px;">
                         <input type="text" id="userSearch" placeholder="搜索用户名/昵称..." oninput="filterUsers()" style="padding:8px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.85rem;width:250px;">
@@ -311,7 +311,7 @@
 
             <!-- 系统设置 -->
             <div class="tab-panel" id="tab-settings">
-                <div class="panel-title"><i class="fas fa-sliders"></i> 系统设置</div>
+                <div class="panel-title"><i class="fas fa-sliders"></i> 系统设置<div class="title-actions"><button class="hdr-btn ghost" onclick="location.href='index.html'"><i class="fas fa-home"></i> 返回主页</button><button class="hdr-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button></div></div>
                 <div class="card">
                     <div class="setting-row">
                         <div class="setting-info"><div class="setting-label">最大同时在线人数</div><div class="setting-desc">0 表示不限制</div></div>
@@ -372,7 +372,7 @@
 
             <!-- 白名单管理 -->
             <div class="tab-panel" id="tab-whitelist">
-                <div class="panel-title"><i class="fas fa-user-check"></i> 白名单</div>
+                <div class="panel-title"><i class="fas fa-user-check"></i> 白名单<div class="title-actions"><button class="hdr-btn ghost" onclick="location.href='index.html'"><i class="fas fa-home"></i> 返回主页</button><button class="hdr-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button></div></div>
                 <div class="card">
                     <p style="color:#94a3b8;font-size:0.85rem;margin-bottom:15px;">管理可注册登录的用户白名单，上传名单文件自动解析并导入</p>
                     <div style="display:flex;gap:10px;align-items:center;margin-bottom:15px;">
@@ -409,7 +409,7 @@
             </div>
             <!-- 学习统计管理面板 -->
             <div class="tab-panel" id="tab-study">
-                <div class="panel-title"><i class="fas fa-book-open"></i> 勤学苦练设置</div>
+                <div class="panel-title"><i class="fas fa-book-open"></i> 勤学苦练设置<div class="title-actions"><button class="hdr-btn ghost" onclick="location.href='index.html'"><i class="fas fa-home"></i> 返回主页</button><button class="hdr-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button></div></div>
                 <div class="card">
                     <p style="color:#94a3b8;font-size:0.85rem;margin-bottom:15px;">查看所有用户的学习数据和累计统计</p>
                     <div class="table-wrap">
@@ -424,7 +424,7 @@
 
             <!-- 版本说明面板 -->
             <div class="tab-panel" id="tab-changelog">
-                <div class="panel-title"><i class="fas fa-code-branch"></i> 版本说明</div>
+                <div class="panel-title"><i class="fas fa-code-branch"></i> 版本说明<div class="title-actions"><button class="hdr-btn ghost" onclick="location.href='index.html'"><i class="fas fa-home"></i> 返回主页</button><button class="hdr-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button></div></div>
                 <!-- 主界面版本号和更新日志设置 -->
                 <div class="card" style="margin-bottom:20px;">
                     <div class="card-title" style="margin-bottom:15px;"><i class="fas fa-info-circle" style="color:#60a5fa;"></i> 主界面版本信息</div>
@@ -453,7 +453,7 @@
             </div>
 <!-- 广播管理面板 -->
             <div class="tab-panel" id="tab-broadcast">
-                <div class="panel-title"><i class="fas fa-bullhorn"></i> 广播设置</div>
+                <div class="panel-title"><i class="fas fa-bullhorn"></i> 广播设置<div class="title-actions"><button class="hdr-btn ghost" onclick="location.href='index.html'"><i class="fas fa-home"></i> 返回主页</button><button class="hdr-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button></div></div>
 
                 <!-- 广播播放配置 -->
                 <div class="card" style="margin-bottom:20px;">
@@ -540,7 +540,7 @@
         
             <!-- 访客设置 -->
             <div class="tab-panel" id="tab-visitor">
-                <div class="panel-title"><i class="fas fa-user-secret"></i> 访客设置</div>
+                <div class="panel-title"><i class="fas fa-user-secret"></i> 访客设置<div class="title-actions"><button class="hdr-btn ghost" onclick="location.href='index.html'"><i class="fas fa-home"></i> 返回主页</button><button class="hdr-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button></div></div>
                 <div class="card">
                     <div class="setting-row">
                         <div class="setting-info">
@@ -565,7 +565,7 @@
 
             <!-- 闯天关设置 -->
             <div class="tab-panel" id="tab-challenge">
-                <div class="panel-title"><i class="fas fa-gamepad"></i> 闯天关设置</div>
+                <div class="panel-title"><i class="fas fa-gamepad"></i> 闯天关设置<div class="title-actions"><button class="hdr-btn ghost" onclick="location.href='index.html'"><i class="fas fa-home"></i> 返回主页</button><button class="hdr-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button></div></div>
                 <div class="card">
                     <div class="setting-row">
                         <div class="setting-info"><div class="setting-label">启用闯天关</div><div class="setting-desc">关闭后所有用户无法进入闯天关模式 <span id="challenge-enabled-hint" style="color:#22c55e;margin-left:8px;font-size:0.8rem;">已启用</span></div></div>
