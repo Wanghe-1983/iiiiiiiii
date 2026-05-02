@@ -34,6 +34,12 @@ export async function onRequestPost(context) {
         cleared INTEGER DEFAULT 0, updated_at TEXT DEFAULT (datetime('now')),
         PRIMARY KEY (username, stage_id)
     )`).run();
+    await env.INDO_LEARN_DB.prepare(`CREATE TABLE IF NOT EXISTS challenge_weekly (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, name TEXT NOT NULL DEFAULT '',
+        week_key TEXT NOT NULL, total_score REAL NOT NULL DEFAULT 0, stages_cleared INTEGER NOT NULL DEFAULT 0,
+        best_accuracy REAL NOT NULL DEFAULT 0, updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+        UNIQUE(username, week_key)
+    )`).run();
 
     const now = new Date().toISOString();
 
