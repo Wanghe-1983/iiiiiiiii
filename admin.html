@@ -536,6 +536,7 @@
                     </div>
                     <div class="parsed-header" id="parsed-header" style="display:none;">
                         <span class="parsed-count" id="parsed-count">已解析 0 条</span>
+                        <button class="action-btn danger" onclick="clearParsedData()" style="margin-left:auto;font-size:0.75rem;padding:3px 10px;"><i class="fas fa-trash-alt"></i> 清空</button>
                         <button class="copy-all-btn" onclick="copyAllJSON()"><i class="fas fa-copy"></i> 一键复制 JSON</button>
                     </div>
                     <div class="parsed-list" id="parsed-list" style="display:none;"></div>
@@ -1516,6 +1517,17 @@ let allUsers = [];
     // ========== 名单解析 ==========
     let parsedRawData = [];
     let parsedResult = [];
+
+    function clearParsedData() {
+        parsedResult = [];
+        parsedRawData = [];
+        document.getElementById('file-input').value = '';
+        document.getElementById('parsed-header').style.display = 'none';
+        document.getElementById('parsed-list').style.display = 'none';
+        document.getElementById('parsed-count').textContent = '已解析 0 条';
+        document.getElementById('json-output-box').style.display = 'none';
+        document.getElementById('column-mapping-area').style.display = 'none';
+    }
 
     function parseFile() {
         const fileInput = document.getElementById('file-input');
