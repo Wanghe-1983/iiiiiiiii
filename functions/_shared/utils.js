@@ -117,7 +117,15 @@ function defaultSettings() {
         allowVisitorChallenge: false,
         visitorMultiDevice: true,
         mainVersion: '2.26',              // 主界面版本号
-        mainChangelog: '',             // 主界面更新日志内容
+        mainChangelog: `- 新增：使用说明弹窗（主页底部问号图标）
+- 新增：个人设置（修改昵称/密码）
+- 新增：访客体验模式、多设备登录分别控制
+- 新增：白名单批量导入、模板下载
+- 新增：闯天关顺序闯关模式、等级配置
+- 新增：注册用户总数展示、管理员账户保护
+- 优化：二维码弹窗样式统一
+- 修复：白名单首行解析、多设备登录判断
+- 清理：移除每日学习目标设定功能`,             // 主界面更新日志内容
         userGuide: `## 欢迎使用印尼语学习助手
 
 本平台是基于 **BIPA（Bahasa Indonesia bagi Penutur Asing）** 课程体系开发的在线学习工具，专为印尼语学习者设计。
