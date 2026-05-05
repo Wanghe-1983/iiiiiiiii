@@ -523,6 +523,10 @@
                     <div id="column-mapping-area" style="display:none;margin-top:12px;">
                         <div style="color:#fff;font-size:0.85rem;margin-bottom:6px;">列映射：</div>
                         <div class="column-mapping">
+                            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+                                <input type="checkbox" id="has-header-row" style="accent-color:#8b5cf6;">
+                                <span>首行为标题</span>
+                            </label>
                             <label>username列：</label><select id="map-username"></select>
                             <label>name列：</label><select id="map-name"></select>
                             <label>password列：</label><select id="map-password"></select>
@@ -1551,8 +1555,11 @@ let allUsers = [];
                     const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
                     const ws = wb.Sheets[wb.SheetNames[0]];
                     parsedRawData = XLSX.utils.sheet_to_json(ws, { header: 1 });
-                    if (parsedRawData.length > 0) setupColumnMapping(parsedRawData[0].map((_, i) => '列' + (i + 1)));
-                    parseWithMapping(1);
+                    if (parsedRawData.length > 0) {
+                        document.getElementById('has-header-row').checked = false;
+                        setupColumnMapping(parsedRawData[0].map((_, i) => '列' + (i + 1)));
+                        parseWithMapping();
+                    }
                 } catch(err) { alert('Excel 解析失败: ' + err.message); }
             };
             reader.readAsArrayBuffer(file);
@@ -1600,21 +1607,23 @@ let allUsers = [];
         if (map.password !== undefined) document.getElementById('map-password').value = map.password;
     }
 
-    function parseWithMapping(startRow) {
+    function parseWithMapping() {
         const ui = parseInt(document.getElementById('map-username').value);
         const ni = parseInt(document.getElementById('map-name').value);
         const pi = parseInt(document.getElementById('map-password').value);
+        const hasHeader = document.getElementById('has-header-row').checked;
+        const startRow = hasHeader ? 1 : 0;
         parsedResult = [];
         for (let i = startRow; i < parsedRawData.length; i++) {
             const row = parsedRawData[i];
-            if (row && row[ui] && row[ui].trim()) {
-                parsedResult.push({ username: row[ui].trim(), name: row[ni] ? row[ni].trim() : '', password: row[pi] ? row[pi].trim() : '' });
+            if (row && row[ui] !== undefined && String(row[ui]).trim()) {
+                parsedResult.push({ username: String(row[ui]).trim(), name: row[ni] !== undefined ? String(row[ni]).trim() : '', password: row[pi] !== undefined ? String(row[pi]).trim() : '' });
             }
         }
         displayParsedResult();
     }
 
-    function reparseWithMapping() { parseWithMapping(1); }
+    function reparseWithMapping() { parseWithMapping(); }
 
     function displayParsedResult() {
         document.getElementById('parsed-header').style.display = 'flex';
