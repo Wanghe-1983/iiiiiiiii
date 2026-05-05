@@ -95,6 +95,13 @@ function checkLoginStatus() {
                 if (delItem) delItem.style.display = 'none';
                 if (delSep) delSep.style.display = 'none';
             }
+            // 访客模式隐藏个人设置
+            if (isVisitor) {
+                const profileItem = document.querySelector('[onclick*="showProfileDialog"]');
+                if (profileItem) profileItem.style.display = 'none';
+                const profileSep = profileItem ? profileItem.nextElementSibling : null;
+                if (profileSep && profileSep.style.height === '1px') profileSep.style.display = 'none';
+            }
             // 访客倒计时
             if (isVisitor) {
                 startAppVisitorTimer();
