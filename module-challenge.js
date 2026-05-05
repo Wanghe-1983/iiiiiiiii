@@ -17,6 +17,36 @@ const ChallengeModule = {
     get TIME_MULTIPLIER() { return (window._systemInfo && window._systemInfo.challengeTimeMultiplier) || 5; },
     get CHALLENGE_TIME_LIMIT() { return (window._systemInfo && window._systemInfo.challengeTimeLimit) || 0; },
 
+    // ========== 等级控制 ==========
+    _getChallengeLevelConfig() {
+        const sysInfo = window._systemInfo || {};
+        const userInfo = JSON.parse(sessionStorage.getItem('fmi_user') || '{}');
+        const isVisitor = userInfo.role === 'visitor';
+        let config = isVisitor
+            ? sysInfo.challengeLevelConfigVisitor
+            : sysInfo.challengeLevelConfigUser;
+        if (!config || typeof config !== 'object' || Array.isArray(config)) {
+            config = {};
+            for (let i = 0; i <= 7; i++) config[i] = 2;
+        }
+        return config;
+    },
+
+    _applyChallengeLevelFilter() {
+        const config = this._getChallengeLevelConfig();
+        // 过滤掉隐藏等级(state=0)的关卡，标记仅展示等级(state=1)
+        this.allStages = this.allStages.filter(s => {
+            const state = config[Number(s.levelId)];
+            if (state === undefined || state === 2) return true; // 可闯关
+            if (state === 0) return false; // 隐藏
+            return true; // 仅展示：保留但标记
+        });
+        // 标记仅展示等级
+        this.allStages.forEach(s => {
+            s._readonly = config[Number(s.levelId)] === 1;
+        });
+    },
+
     // ========== 初始化 ==========
     async init(container) {
         this.container = container;
@@ -32,6 +62,8 @@ const ChallengeModule = {
             return;
         }
         this.allStages = CourseContent.getAllStages();
+        // 按闯天关等级控制过滤关卡
+        this._applyChallengeLevelFilter();
         await this.loadProgress();
         this.render();
     },
@@ -139,22 +171,24 @@ const ChallengeModule = {
                 const isCurrent = i === nextAvailable;
                 // 地狱模式关卡：地狱模式下按顺序解锁
                 const isHellLocked = group.isHell && i > nextAvailable;
-                const isLocked = isHellLocked;
+                const isReadonly = stage._readonly === true;
+                const isLocked = isHellLocked || isReadonly;
                 const stars = p?.stars || 0;
 
                 let statusClass = isLocked ? 'locked' : isCleared ? 'cleared' : isCurrent ? 'current' : 'available';
-                let statusIcon = isLocked ? '<i class="fas fa-lock"></i>'
+                let statusIcon = isLocked
+                    ? (isReadonly ? '<i class="fas fa-lock" style="color:#f59e0b;"></i>' : '<i class="fas fa-lock"></i>')
                     : isCleared ? this._renderStars(stars)
                     : isCurrent ? '<i class="fas fa-play-circle"></i>'
                     : '';
 
-                stageGrid += `<div class="stage-card ${statusClass} ${group.isHell ? 'stage-hell' : ''}" onclick="${isLocked ? '' : `ChallengeModule.enterStage('${stage.id}')`}">
+                stageGrid += `<div class="stage-card ${statusClass} ${group.isHell ? 'stage-hell' : ''}" onclick="${isLocked ? '' : `ChallengeModule.enterStage('${stage.id}')`}" ${isReadonly ? 'title="该课程暂未开放"' : ''}>
                     <div class="stage-number">${i + 1}</div>
                     <div class="stage-icon">${statusIcon}</div>
                     <div class="stage-name">${stage.name}</div>
                     <div class="stage-type">${stage.type === 'words' ? '单词' : stage.type === 'sentences' ? '短句' : '对话'}</div>
                     ${isCleared ? `<div class="stage-best">最佳 ${p.bestScore.toFixed(0)}分</div>` : ''}
-                    ${isCurrent ? '<div class="stage-hint">可挑战</div>' : ''}
+                    ${isCurrent && !isLocked ? '<div class="stage-hint">可挑战</div>' : ''}
                 </div>`;
             });
         });
@@ -196,9 +230,14 @@ const ChallengeModule = {
             alert('闯天关功能尚未开放');
             return;
         }
-        this.currentStageId = stageId;
+        // 检查关卡是否为仅展示（锁定）
         const stage = this.allStages.find(s => s.id === stageId);
         if (!stage) return;
+        if (stage._readonly) {
+            alert('该课程暂未开放闯关，请耐心等待');
+            return;
+        }
+        this.currentStageId = stageId;
         // 检查地狱模式关卡是否开放
         const HELL_LEVELS = (window._systemInfo && window._systemInfo.hellLevels) || [5, 6, 7];
         const hellEnabled = window._systemInfo ? window._systemInfo.hellModeEnabled !== false : true;

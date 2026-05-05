@@ -832,6 +832,26 @@
                         <div class="setting-info"><div class="setting-label">启用闯天关</div><div class="setting-desc">关闭后所有用户无法进入闯天关模式 <span id="challenge-enabled-hint" style="color:#22c55e;margin-left:8px;font-size:0.8rem;">已启用</span></div></div>
                         <div class="setting-control"><label class="toggle"><input type="checkbox" id="setChallengeEnabled" checked><span class="slider"></span></label></div>
                     </div>
+                    <!-- 关卡等级可见性与访问控制 -->
+                    <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:8px;margin-bottom:12px;">
+                        <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:6px;"><i class="fas fa-layer-group" style="color:#34d399;margin-right:4px;"></i> 关卡等级控制</div>
+                        <div style="font-size:0.75rem;color:#475569;margin-bottom:10px;">控制前端闯天关关卡列表的显示与访问权限</div>
+                        <div style="font-size:0.72rem;color:#64748b;margin-bottom:10px;display:flex;gap:12px;">
+                            <span><i class="fas fa-eye-slash" style="color:#64748b;"></i> 隐藏 = 不显示</span>
+                            <span><i class="fas fa-eye" style="color:#f59e0b;"></i> 仅展示 = 显示但不可闯关</span>
+                            <span><i class="fas fa-book-open" style="color:#22c55e;"></i> 可闯关 = 显示且可进入</span>
+                        </div>
+                        <div style="margin-bottom:14px;">
+                            <div style="font-size:0.8rem;color:#cbd5e1;font-weight:600;margin-bottom:6px;">已登录用户</div>
+                            <div id="challengeLevelsUser"></div>
+                            <div style="text-align:right;margin-top:6px;"><button class="hdr-btn ghost" style="font-size:0.75rem;padding:4px 10px;" onclick="batchSetLevels('challengeLevelsUser',2)">全部设为可闯关</button> <button class="hdr-btn ghost" style="font-size:0.75rem;padding:4px 10px;" onclick="batchSetLevels('challengeLevelsUser',1)">全部设为仅展示</button> <button class="hdr-btn ghost" style="font-size:0.75rem;padding:4px 10px;" onclick="batchSetLevels('challengeLevelsUser',0)">全部隐藏</button></div>
+                        </div>
+                        <div>
+                            <div style="font-size:0.8rem;color:#cbd5e1;font-weight:600;margin-bottom:6px;">访客</div>
+                            <div id="challengeLevelsVisitor"></div>
+                            <div style="text-align:right;margin-top:6px;"><button class="hdr-btn ghost" style="font-size:0.75rem;padding:4px 10px;" onclick="batchSetLevels('challengeLevelsVisitor',2)">全部设为可闯关</button> <button class="hdr-btn ghost" style="font-size:0.75rem;padding:4px 10px;" onclick="batchSetLevels('challengeLevelsVisitor',1)">全部设为仅展示</button> <button class="hdr-btn ghost" style="font-size:0.75rem;padding:4px 10px;" onclick="batchSetLevels('challengeLevelsVisitor',0)">全部隐藏</button></div>
+                        </div>
+                    </div>
                     <div class="setting-row">
                         <div class="setting-info"><div class="setting-label">每关时间限制</div><div class="setting-desc">每关答题最长时限（秒），设为 0 表示不限制</div></div>
                         <div class="setting-control"><input type="number" class="setting-input" id="setChallengeTimeLimit" min="0" max="600" value="0" style="width:100px;"><span style="color:#64748b;font-size:0.8rem;">秒 (0=不限)</span></div>
@@ -1241,6 +1261,10 @@ let allUsers = [];
         document.getElementById('setHellTimeLimit').value = s.hellTimeLimit || 0;
         document.getElementById('setHellQuestionCount').value = s.hellQuestionCount || 15;
         document.getElementById('setHellQuestionType').value = s.hellQuestionType || 'mixed';
+
+        // 闯天关等级控制 - 渲染三态选择器
+        renderLevelSelectors('challengeLevelsUser', s.challengeLevelConfigUser);
+        renderLevelSelectors('challengeLevelsVisitor', s.challengeLevelConfigVisitor);
     }
 
     async function loadMainVersionInfo() {
@@ -1296,7 +1320,12 @@ let allUsers = [];
     }
 
     async function saveChallengeSettings() {
+        // 收集关卡等级控制
+        const challengeLevelConfigUser = collectLevelSelectors('challengeLevelsUser');
+        const challengeLevelConfigVisitor = collectLevelSelectors('challengeLevelsVisitor');
         var settings = {
+            challengeLevelConfigUser,
+            challengeLevelConfigVisitor,
             challengeEnabled: document.getElementById('setChallengeEnabled').checked,
             challengeTimeLimit: parseInt(document.getElementById('setChallengeTimeLimit').value) || 0,
             challengeStar3: parseInt(document.getElementById('setChallengeStar3').value) || 90,

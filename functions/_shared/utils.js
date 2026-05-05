@@ -135,6 +135,10 @@ function defaultSettings() {
         hellQuestionType: 'mixed',      // 地狱模式题目类型
         hellTimeLimit: 120,             // 地狱模式每关时间限制（秒），0=不限时
 
+        // ========== 闯天关关卡等级控制 ==========
+        challengeLevelConfigUser: {0:2,1:2,2:2,3:2,4:2,5:2,6:2,7:2},  // 用户关卡控制(2=可闯关,1=仅展示,0=隐藏)
+        challengeLevelConfigVisitor: {0:2,1:0,2:0,3:0,4:0,5:0,6:0,7:0}, // 访客关卡控制
+
         // ========== 勤学苦练配置 ==========
         // 课程可见性
         studyLevelConfigUser: {0:2,1:2,2:2,3:2,4:2,5:2,6:2,7:2},  // 用户等级控制(2=可学习,1=仅展示,0=隐藏)
