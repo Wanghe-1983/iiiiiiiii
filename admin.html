@@ -1141,9 +1141,9 @@ let allUsers = [];
             <td style="color:#64748b;font-size:0.8rem;">${u.createdAt ? u.createdAt.split('T')[0] : '-'}</td>
             <td style="white-space:nowrap;">
                 ${u.isOnline ? `<button class="action-btn kick" onclick="kickUser('${esc(u.username)}')" title="踢下线"><i class="fas fa-right-from-bracket"></i></button>` : ''}
-                ${u.isBanned ? `<button class="action-btn unban" onclick="toggleBan('${esc(u.username)}', false)" title="解封"><i class="fas fa-lock-open"></i></button>` : `<button class="action-btn ban" onclick="toggleBan('${esc(u.username)}', true)" title="封禁"><i class="fas fa-ban"></i></button>`}
+                ${u.role !== 'admin' ? (u.isBanned ? `<button class="action-btn unban" onclick="toggleBan('${esc(u.username)}', false)" title="解封"><i class="fas fa-lock-open"></i></button>` : `<button class="action-btn ban" onclick="toggleBan('${esc(u.username)}', true)" title="封禁"><i class="fas fa-ban"></i></button>`) : ''}
                 <button class="action-btn edit" onclick="editUser('${esc(u.username)}')" title="编辑"><i class="fas fa-pen"></i></button>
-                <button class="action-btn del" onclick="deleteUser('${esc(u.username)}')" title="删除"><i class="fas fa-trash"></i></button>
+                ${u.role !== 'admin' ? `<button class="action-btn del" onclick="deleteUser('${esc(u.username)}')" title="删除"><i class="fas fa-trash"></i></button>` : ''}
             </td>
         </tr>`).join('');
     }
