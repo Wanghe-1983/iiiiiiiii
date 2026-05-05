@@ -842,24 +842,28 @@
                             <span><i class="fas fa-book-open" style="color:#22c55e;"></i> 可闯关 = 显示且可进入</span>
                         </div>
                         <div style="margin-bottom:14px;">
-                            <div style="font-size:0.8rem;color:#cbd5e1;font-weight:600;margin-bottom:6px;">已登录用户</div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                                <div style="font-size:0.8rem;color:#cbd5e1;font-weight:600;">已登录用户</div>
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <span class="batch-label">批量:</span>
+                                    <button type="button" class="batch-btn batch-btn-all" onclick="batchSetLevels('challengeLevelsUser',2)" title="全部可闯关"><i class="fas fa-book-open"></i> 可闯关</button>
+                                    <button type="button" class="batch-btn batch-btn-readonly" onclick="batchSetLevels('challengeLevelsUser',1)" title="全部仅展示"><i class="fas fa-eye"></i> 仅展示</button>
+                                    <button type="button" class="batch-btn batch-btn-hidden" onclick="batchSetLevels('challengeLevelsUser',0)" title="全部隐藏"><i class="fas fa-eye-slash"></i> 隐藏</button>
+                                </div>
+                            </div>
                             <div id="challengeLevelsUser"></div>
-                            <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
-                    <span class="batch-label">批量:</span>
-                    <button type="button" class="batch-btn batch-btn-all" onclick="batchSetLevels('challengeLevelsUser',2)" title="全部可闯关"><i class="fas fa-book-open"></i> 可闯关</button>
-                    <button type="button" class="batch-btn batch-btn-readonly" onclick="batchSetLevels('challengeLevelsUser',1)" title="全部仅展示"><i class="fas fa-eye"></i> 仅展示</button>
-                    <button type="button" class="batch-btn batch-btn-hidden" onclick="batchSetLevels('challengeLevelsUser',0)" title="全部隐藏"><i class="fas fa-eye-slash"></i> 隐藏</button>
-                </div>
                         </div>
                         <div>
-                            <div style="font-size:0.8rem;color:#cbd5e1;font-weight:600;margin-bottom:6px;">访客</div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                                <div style="font-size:0.8rem;color:#cbd5e1;font-weight:600;">访客</div>
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    <span class="batch-label">批量:</span>
+                                    <button type="button" class="batch-btn batch-btn-all" onclick="batchSetLevels('challengeLevelsVisitor',2)" title="全部可闯关"><i class="fas fa-book-open"></i> 可闯关</button>
+                                    <button type="button" class="batch-btn batch-btn-readonly" onclick="batchSetLevels('challengeLevelsVisitor',1)" title="全部仅展示"><i class="fas fa-eye"></i> 仅展示</button>
+                                    <button type="button" class="batch-btn batch-btn-hidden" onclick="batchSetLevels('challengeLevelsVisitor',0)" title="全部隐藏"><i class="fas fa-eye-slash"></i> 隐藏</button>
+                                </div>
+                            </div>
                             <div id="challengeLevelsVisitor"></div>
-                            <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
-                    <span class="batch-label">批量:</span>
-                    <button type="button" class="batch-btn batch-btn-all" onclick="batchSetLevels('challengeLevelsVisitor',2)" title="全部可闯关"><i class="fas fa-book-open"></i> 可闯关</button>
-                    <button type="button" class="batch-btn batch-btn-readonly" onclick="batchSetLevels('challengeLevelsVisitor',1)" title="全部仅展示"><i class="fas fa-eye"></i> 仅展示</button>
-                    <button type="button" class="batch-btn batch-btn-hidden" onclick="batchSetLevels('challengeLevelsVisitor',0)" title="全部隐藏"><i class="fas fa-eye-slash"></i> 隐藏</button>
-                </div>
                         </div>
                     </div>
                     <div class="setting-row">
