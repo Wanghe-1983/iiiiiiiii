@@ -504,7 +504,8 @@ async function initUI() {
     <div class="copyright" id="copyright">
         仅供学习・禁止商用 © 2026｜联系：
         <span style="color:var(--accent);cursor:pointer;" onclick="openQrModal()">王鹤</span> 
-        Ver <span id="main-version-num">2.2</span> <span class="clickable" onclick="showVersionChangelog()" style="font-size:0.75rem;margin-left:5px;" title="查看更新日志">[更新日志]</span>
+        Ver <span id="main-version-num">2.26</span> <span class="clickable" onclick="showVersionChangelog()" style="font-size:0.75rem;margin-left:5px;" title="查看更新日志">[更新日志]</span>
+        <span class="clickable" onclick="showUserGuide()" style="font-size:0.75rem;margin-left:5px;" title="使用说明"><i class="fas fa-question-circle"></i></span>
         <span class="clickable" onclick="openAdminModal()" style="font-size:0.72rem;margin-left:8px;cursor:pointer;opacity:0.5;" title="管理员入口"><i class="fas fa-cog" style="font-size:0.8rem;"></i></span>
     </div>
 </main>
@@ -3184,6 +3185,50 @@ window.onload = async function() {
     });
 };
 
+// 【使用说明弹窗】
+function showUserGuide() {
+    var dialog = document.createElement('div');
+    dialog.id = 'user-guide-dialog';
+    dialog.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(5px);';
+    dialog.innerHTML = '<div style="background:rgba(15,23,42,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:16px;max-width:700px;width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 25px 60px rgba(0,0,0,0.5);">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px 15px;border-bottom:1px solid rgba(255,255,255,0.06);">' +
+        '<h3 style="margin:0;color:#e2e8f0;font-size:1.1rem;"><i class="fas fa-book" style="color:#a78bfa;margin-right:8px;"></i>使用说明</h3>' +
+        '<button onclick="this.closest(\'#user-guide-dialog\').remove()" style="background:none;border:none;color:#94a3b8;font-size:1.3rem;cursor:pointer;padding:4px 8px;line-height:1;">×</button>' +
+        '</div>' +
+        '<div id="user-guide-body" style="padding:24px;overflow-y:auto;flex:1;color:#cbd5e1;font-size:0.9rem;line-height:1.8;">' +
+        '<div style="text-align:center;color:#64748b;padding:40px 0;"><i class="fas fa-spinner fa-spin"></i> 加载中...</div>' +
+        '</div>' +
+        '</div>';
+    dialog.addEventListener('click', function(e) { if (e.target === dialog) dialog.remove(); });
+    document.body.appendChild(dialog);
+
+    // 从后端加载使用说明内容
+    fetch((CONFIG.apiBase || location.origin) + '/api/system/info').then(function(r) { return r.json(); }).then(function(data) {
+        var body = document.getElementById('user-guide-body');
+        if (!body) return;
+        var guide = data.userGuide || '';
+        if (!guide) {
+            body.innerHTML = '<div style="text-align:center;color:#64748b;padding:40px 0;">暂无使用说明</div>';
+            return;
+        }
+        // 将换行转为段落
+        var html = guide.split('\n').map(function(line) {
+            if (!line.trim()) return '<br>';
+            // 支持 **粗体** 语法
+            line = line.replace(/\*\*(.+?)\*\*/g, '<strong style="color:#e2e8f0;">$1</strong>');
+            // 支持 ### 标题
+            if (line.trim().startsWith('### ')) return '<h4 style="color:#a5b4fc;margin:20px 0 8px;font-size:1rem;">' + line.trim().slice(4) + '</h4>';
+            // 支持 ## 标题
+            if (line.trim().startsWith('## ')) return '<h3 style="color:#a78bfa;margin:24px 0 10px;font-size:1.05rem;">' + line.trim().slice(3) + '</h3>';
+            return '<div style="margin:4px 0;">' + line + '</div>';
+        }).join('');
+        body.innerHTML = html;
+    }).catch(function() {
+        var body = document.getElementById('user-guide-body');
+        if (body) body.innerHTML = '<div style="text-align:center;color:#ef4444;padding:40px 0;">加载失败</div>';
+    });
+}
+
 // 【功能⑤】点击版本号展示更新日志
 
 function showVersionChangelog() {
@@ -3204,7 +3249,7 @@ function showVersionChangelog() {
 
     // 从后端动态获取版本号和更新日志
     fetch((CONFIG.apiBase || location.origin) + '/api/system/info').then(r => r.json()).then(data => {
-        var ver = data.mainVersion || '2.2';
+        var ver = data.mainVersion || '2.26';
         var changelog = data.mainChangelog || '';
         var body = document.getElementById('version-changelog-body');
         if (!body) return;

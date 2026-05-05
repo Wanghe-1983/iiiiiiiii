@@ -401,6 +401,7 @@
             <div class="nav-item" onclick="switchTab('challenge', this)"><i class="fas fa-gamepad"></i> 闯天关设置</div>
             <div class="nav-item" onclick="switchTab('broadcast', this)"><i class="fas fa-bullhorn"></i> 广播设置</div>
             <div class="nav-item" onclick="switchTab('changelog', this)"><i class="fas fa-code-branch"></i> 版本说明</div>
+            <div class="nav-item" onclick="switchTab('userguide', this)"><i class="fas fa-book"></i> 使用说明</div>
         </div>
 
         <!-- Content -->
@@ -700,7 +701,7 @@
                     <div class="card-title" style="margin-bottom:15px;"><i class="fas fa-info-circle" style="color:#60a5fa;"></i> 主界面版本信息</div>
                     <div style="margin-bottom:14px;">
                         <label style="display:block;font-size:0.85rem;color:#94a3b8;margin-bottom:6px;">版本号（显示在学习页面底部）</label>
-                        <input type="text" id="setMainVersion" placeholder="例如: 2.2" style="width:200px;padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;outline:none;">
+                        <input type="text" id="setMainVersion" placeholder="例如: 2.26" style="width:200px;padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;outline:none;">
                     </div>
                     <div style="margin-bottom:14px;">
                         <label style="display:block;font-size:0.85rem;color:#94a3b8;margin-bottom:6px;">更新日志内容（用户点击版本号时显示）</label>
@@ -718,6 +719,19 @@
                     <div id="changelog-empty" style="text-align:center;padding:40px 0;color:#64748b;">
                         <i class="fas fa-inbox" style="font-size:2rem;margin-bottom:12px;display:block;"></i>
                         暂无版本记录
+                    </div>
+                </div>
+            </div>
+<!-- 使用说明面板 -->
+            <div class="tab-panel" id="tab-userguide">
+                <div class="panel-title"><i class="fas fa-book"></i> 使用说明<div class="title-actions"><button class="hdr-btn ghost" onclick="location.href='index.html'"><i class="fas fa-home"></i> 返回主页</button><button class="hdr-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button></div></div>
+                <div class="card" style="margin-bottom:20px;">
+                    <div class="card-title" style="margin-bottom:15px;"><i class="fas fa-info-circle" style="color:#a78bfa;"></i> 前端使用说明编辑</div>
+                    <p style="font-size:0.82rem;color:#64748b;margin-bottom:12px;">用户可在主页底部点击 <i class="fas fa-question-circle"></i> 查看此说明。支持简易Markdown语法（## 标题、### 子标题、**粗体**）。</p>
+                    <textarea id="setUserGuide" rows="25" placeholder="请输入使用说明内容..." style="width:100%;padding:12px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.85rem;outline:none;resize:vertical;line-height:1.7;font-family:inherit;"></textarea>
+                    <div style="display:flex;gap:10px;margin-top:14px;">
+                        <button class="hdr-btn primary" onclick="saveUserGuide()"><i class="fas fa-save"></i> 保存使用说明</button>
+                        <button class="hdr-btn ghost" onclick="previewUserGuide()" style="color:#a78bfa;"><i class="fas fa-eye"></i> 预览</button>
                     </div>
                 </div>
             </div>
@@ -1309,6 +1323,7 @@ let allUsers = [];
         if (s.error) return;
         document.getElementById('setMainVersion').value = s.mainVersion || '2.2';
         document.getElementById('setMainChangelog').value = s.mainChangelog || '';
+        document.getElementById('setUserGuide').value = s.userGuide || '';
     }
 
     // 兼容旧调用
@@ -1407,6 +1422,30 @@ let allUsers = [];
         var result = await adminFetch('admin/settings', { method: 'PUT', body: JSON.stringify(settings) });
         if (result && result.success) showAdminToast('版本信息已保存', 'success');
         else showAdminToast((result && result.error) || (result === null ? '网络请求失败，请检查连接' : '保存失败'), 'error');
+    }
+
+    async function saveUserGuide() {
+        var guide = document.getElementById('setUserGuide').value.trim();
+        var result = await adminFetch('admin/settings', { method: 'PUT', body: JSON.stringify({ userGuide: guide }) });
+        if (result && result.success) showAdminToast('使用说明已保存', 'success');
+        else showAdminToast((result && result.error) || '保存失败', 'error');
+    }
+
+    function previewUserGuide() {
+        var guide = document.getElementById('setUserGuide').value.trim();
+        if (!guide) { showAdminToast('请先输入使用说明内容', 'warning'); return; }
+        var html = guide.split('\n').map(function(line) {
+            if (!line.trim()) return '<br>';
+            line = line.replace(/\*\*(.+?)\*\*/g, '<strong style="color:#e2e8f0;">$1</strong>');
+            if (line.trim().startsWith('### ')) return '<h4 style="color:#a5b4fc;margin:16px 0 6px;font-size:0.95rem;">' + line.trim().slice(4) + '</h4>';
+            if (line.trim().startsWith('## ')) return '<h3 style="color:#a78bfa;margin:20px 0 8px;font-size:1rem;">' + line.trim().slice(3) + '</h3>';
+            return '<div style="margin:3px 0;">' + line + '</div>';
+        }).join('');
+        var preview = document.createElement('div');
+        preview.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(5px);';
+        preview.innerHTML = '<div style="background:rgba(15,23,42,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:16px;max-width:700px;width:100%;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 25px 60px rgba(0,0,0,0.5);"><div style="display:flex;justify-content:space-between;align-items:center;padding:20px 24px 15px;border-bottom:1px solid rgba(255,255,255,0.06);"><h3 style="margin:0;color:#e2e8f0;font-size:1.1rem;"><i class="fas fa-eye" style="color:#a78bfa;margin-right:8px;"></i>使用说明预览</h3><button onclick="this.closest(\'div[style*=fixed]\').remove()" style="background:none;border:none;color:#94a3b8;font-size:1.3rem;cursor:pointer;padding:4px 8px;">×</button></div><div style="padding:24px;overflow-y:auto;flex:1;color:#cbd5e1;font-size:0.9rem;line-height:1.8;">' + html + '</div></div>';
+        preview.addEventListener('click', function(e) { if (e.target === preview) preview.remove(); });
+        document.body.appendChild(preview);
     }
 
     // 兼容旧调用
