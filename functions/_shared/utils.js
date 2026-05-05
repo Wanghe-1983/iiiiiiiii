@@ -92,7 +92,22 @@ function jsonErr(msg, status = 400) { return json({ error: msg }, status); }
 // 读取 KV 配置
 async function getSettings(env) {
     const data = await env.INDO_LEARN_KV.get('system_settings');
-    return data ? JSON.parse(data) : null;
+    if (!data) return null;
+    const stored = JSON.parse(data);
+    // 与默认值合并，确保新增字段自动补齐
+    const defaults = defaultSettings();
+    const merged = { ...defaults, ...stored };
+    // 数组类型字段不覆盖（如 hellLevels、等级配置等）
+    if (stored.hellLevels) merged.hellLevels = stored.hellLevels;
+    if (stored.challengeLevelConfigUser) merged.challengeLevelConfigUser = stored.challengeLevelConfigUser;
+    if (stored.challengeLevelConfigVisitor) merged.challengeLevelConfigVisitor = stored.challengeLevelConfigVisitor;
+    if (stored.studyLevelConfigUser) merged.studyLevelConfigUser = stored.studyLevelConfigUser;
+    if (stored.studyLevelConfigVisitor) merged.studyLevelConfigVisitor = stored.studyLevelConfigVisitor;
+    if (stored.studyVisibleLevelsUser) merged.studyVisibleLevelsUser = stored.studyVisibleLevelsUser;
+    if (stored.studyVisibleLevelsVisitor) merged.studyVisibleLevelsVisitor = stored.studyVisibleLevelsVisitor;
+    if (stored.studyPracticeUser) merged.studyPracticeUser = { ...defaults.studyPracticeUser, ...stored.studyPracticeUser };
+    if (stored.studyPracticeVisitor) merged.studyPracticeVisitor = { ...defaults.studyPracticeVisitor, ...stored.studyPracticeVisitor };
+    return merged;
 }
 
 // 写入 KV 配置
