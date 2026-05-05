@@ -210,6 +210,7 @@ function defaultSettings() {
         // 练习功能配置 - 用户
         studyPracticeUser: {
             includeMastered: true,       // 练习题库包含已掌握内容
+            includeCurrentLesson: true,  // 练习题库包含当前课本全部内容
             enableWrongBook: true,       // 启用错题集
             allowDeleteWrong: true,      // 允许删除单条错题
             allowClearWrong: true,       // 允许清空错题集
@@ -225,6 +226,7 @@ function defaultSettings() {
         // 练习功能配置 - 访客
         studyPracticeVisitor: {
             includeMastered: false,      // 访客练习不包含已掌握内容
+            includeCurrentLesson: true,  // 访客练习包含当前课本全部内容
             enableWrongBook: false,      // 访客不启用错题集
             allowDeleteWrong: false,
             allowClearWrong: false,

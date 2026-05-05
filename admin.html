@@ -606,6 +606,7 @@
                     <div class="study-toggle-group">
                         <div class="study-toggle-section">题库设置</div>
                         <label class="toggle-row"><span class="toggle-label">练习题库包含"已掌握"内容</span><span class="toggle-hint">关闭后，已标记掌握的词汇不会出现在练习题中</span><input type="checkbox" id="sp_user_includeMastered" checked></label>
+                        <label class="toggle-row"><span class="toggle-label">练习题库包含"当前课本全部内容"</span><span class="toggle-hint">开启后，当前正在学习的课本中的所有词汇都会出现在练习题中</span><input type="checkbox" id="sp_user_includeCurrentLesson" checked></label>
                     </div>
 
                     <div class="study-toggle-group">
@@ -643,6 +644,7 @@
                     <div class="study-toggle-group">
                         <div class="study-toggle-section">题库设置</div>
                         <label class="toggle-row"><span class="toggle-label">练习题库包含"已掌握"内容</span><span class="toggle-hint">关闭后，已标记掌握的词汇不会出现在练习题中</span><input type="checkbox" id="sp_visitor_includeMastered"></label>
+                        <label class="toggle-row"><span class="toggle-label">练习题库包含"当前课本全部内容"</span><span class="toggle-hint">开启后，当前正在学习的课本中的所有词汇都会出现在练习题中</span><input type="checkbox" id="sp_visitor_includeCurrentLesson"></label>
                     </div>
 
                     <div class="study-toggle-group">
@@ -2108,7 +2110,7 @@ async function loadStudySettings() {
         
         // 练习功能配置 - 用户
         const pu = s.studyPracticeUser || {};
-        const userKeys = ['includeMastered','enableWrongBook','allowDeleteWrong','allowClearWrong',
+        const userKeys = ['includeMastered','includeCurrentLesson','enableWrongBook','allowDeleteWrong','allowClearWrong',
                           'allowUnmarkMastered','trackStudyTime','trackAccuracy',
                           'showRateSlider','allowAdjustRate','showLoopSlider','allowAdjustLoop'];
         userKeys.forEach(key => {
@@ -2134,7 +2136,7 @@ async function loadStudySettings() {
         const studyLevelConfigVisitor = collectLevelSelectors('studyLevelsVisitor');
         
         // 收集练习配置 - 用户
-        const userKeys = ['includeMastered','enableWrongBook','allowDeleteWrong','allowClearWrong',
+        const userKeys = ['includeMastered','includeCurrentLesson','enableWrongBook','allowDeleteWrong','allowClearWrong',
                           'allowUnmarkMastered','trackStudyTime','trackAccuracy',
                           'showRateSlider','allowAdjustRate','showLoopSlider','allowAdjustLoop'];
         const studyPracticeUser = {};
