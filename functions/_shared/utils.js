@@ -118,7 +118,7 @@ function defaultSettings() {
         visitorMultiDevice: true,
         mainVersion: '2.26',              // 主界面版本号
         mainChangelog: '',             // 主界面更新日志内容
-        userGuide: '''## 欢迎使用印尼语学习助手
+        userGuide: `## 欢迎使用印尼语学习助手
 
 本平台是基于 **BIPA（Bahasa Indonesia bagi Penutur Asing）** 课程体系开发的在线学习工具，专为印尼语学习者设计。
 
@@ -152,7 +152,7 @@ function defaultSettings() {
 - **v2.0**：新增闯天关模块
 - **v2.2**：新增访客体验模式
 - **v2.26**：完善管理后台、个人设置、多设备控制等功能
-''',  // 使用说明内容（支持Markdown简易语法）
+`,  // 使用说明内容（支持Markdown简易语法）
         hellLevels: [5, 6, 7], // 地狱模式关卡等级（BIPA 5/6/7）
         // 闯天关配置
         challengeEnabled: true,
