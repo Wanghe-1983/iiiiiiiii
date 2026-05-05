@@ -482,7 +482,7 @@
                         <div class="setting-control"><label class="toggle"><input type="checkbox" id="setShowOnlineLogin" checked><span class="slider"></span></label></div>
                     </div>
                     <div class="setting-row">
-                        <div class="setting-info"><div class="setting-label">同账号多设备登录</div><div class="setting-desc">开启后同一账号可在多个设备同时在线；关闭后新登录将踢掉旧设备</div></div>
+                        <div class="setting-info"><div class="setting-label">同账号多设备登录</div><div class="setting-desc">仅对注册用户生效。开启后同一账号可在多个设备同时在线；关闭后新登录将踢掉旧设备</div></div>
                         <div class="setting-control"><label class="toggle"><input type="checkbox" id="setAllowMultiDevice" checked><span class="slider"></span></label></div>
                     </div>
                     <div class="setting-row">
@@ -823,6 +823,10 @@
                     <div class="setting-row" id="visitor-challenge-row">
                         <div class="setting-info"><div class="setting-label">允许访客闯天关</div><div class="setting-desc">允许访客使用"闯天关"功能，关闭后访客无法进入闯天关模式 <span id="visitor-challenge-hint" style="color:#22c55e;margin-left:8px;font-size:0.8rem;">已关闭</span></div></div>
                         <div class="setting-control"><label class="toggle"><input type="checkbox" id="setAllowVisitorChallenge"><span class="slider"></span></label></div>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info"><div class="setting-label">访客多设备登录</div><div class="setting-desc">关闭后仅允许一个访客在线体验，新访客登录将踢掉旧访客 <span id="visitor-multi-hint" style="color:#22c55e;margin-left:8px;font-size:0.8rem;">已开启</span></div></div>
+                        <div class="setting-control"><label class="toggle"><input type="checkbox" id="setVisitorMultiDevice" checked><span class="slider"></span></label></div>
                     </div>
                     <div style="margin-top:20px;">
                         <button class="hdr-btn primary" onclick="saveVisitorSettings()"><i class="fas fa-save"></i> 保存访客设置</button>
@@ -1260,6 +1264,9 @@ let allUsers = [];
         document.getElementById('setAllowVisitorChallenge').checked = s.allowVisitorChallenge === true;
         var vcHint = document.getElementById('visitor-challenge-hint');
         if (vcHint) vcHint.textContent = s.allowVisitorChallenge === true ? '已开启' : '已关闭';
+        document.getElementById('setVisitorMultiDevice').checked = s.visitorMultiDevice !== false;
+        var vmHint = document.getElementById('visitor-multi-hint');
+        if (vmHint) vmHint.textContent = s.visitorMultiDevice !== false ? '已开启' : '已关闭';
     }
 
     async function loadChallengeSettings() {
@@ -1336,11 +1343,14 @@ let allUsers = [];
             allowVisitor: document.getElementById('setAllowVisitor').checked,
             visitorDuration: parseInt(document.getElementById('setVisitorDuration').value) || 3,
             allowVisitorChallenge: document.getElementById('setAllowVisitorChallenge').checked,
+            visitorMultiDevice: document.getElementById('setVisitorMultiDevice').checked,
         };
         console.log('[StudySettings] 正在保存:', JSON.stringify(settings).substring(0,200));
         var result = await adminFetch('admin/settings', { method: 'PUT', body: JSON.stringify(settings) });
         var vcHint = document.getElementById('visitor-challenge-hint');
         if (vcHint) vcHint.textContent = settings.allowVisitorChallenge ? '已开启' : '已关闭';
+        var vmHint = document.getElementById('visitor-multi-hint');
+        if (vmHint) vmHint.textContent = settings.visitorMultiDevice ? '已开启' : '已关闭';
         if (result && result.success) showAdminToast('访客设置已保存', 'success');
         else showAdminToast((result && result.error) || (result === null ? '网络请求失败，请检查连接' : '保存失败'), 'error');
     }

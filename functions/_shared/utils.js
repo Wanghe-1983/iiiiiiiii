@@ -115,6 +115,7 @@ function defaultSettings() {
         showOnlineCount: true,
         showRegCount: true,
         allowVisitorChallenge: false,
+        visitorMultiDevice: true,
         mainVersion: '2.2',              // 主界面版本号
         mainChangelog: '',             // 主界面更新日志内容
         hellLevels: [5, 6, 7], // 地狱模式关卡等级（BIPA 5/6/7）
@@ -247,14 +248,21 @@ async function handleLogin(context) {
         }
     }
 
-    // 多设备检测
+    // 多设备检测（按用户类型分别判断）
     const settings = await getSettings(env) || defaultSettings();
-    if (!settings.allowMultiDevice) {
-        // 踢掉旧设备
-        const onlineData = await env.INDO_LEARN_KV.get('online_users');
-        const onlineUsers = onlineData ? JSON.parse(onlineData) : [];
-        const filtered = onlineUsers.filter(u => u.username !== username);
-        await env.INDO_LEARN_KV.put('online_users', JSON.stringify(filtered));
+    const isVisitor = user.user_type === 'visitor';
+    if (isVisitor) {
+        if (!settings.visitorMultiDevice) {
+            const onlineData = await env.INDO_LEARN_KV.get('online_users');
+            const onlineUsers = onlineData ? JSON.parse(onlineData) : [];
+            await env.INDO_LEARN_KV.put('online_users', JSON.stringify(onlineUsers.filter(u => u.username !== username)));
+        }
+    } else {
+        if (!settings.allowMultiDevice) {
+            const onlineData = await env.INDO_LEARN_KV.get('online_users');
+            const onlineUsers = onlineData ? JSON.parse(onlineData) : [];
+            await env.INDO_LEARN_KV.put('online_users', JSON.stringify(onlineUsers.filter(u => u.username !== username)));
+        }
     }
 
     // 生成 token（简单实现：base64(username|timestamp|sig)）
