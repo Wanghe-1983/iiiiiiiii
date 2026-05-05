@@ -844,12 +844,22 @@
                         <div style="margin-bottom:14px;">
                             <div style="font-size:0.8rem;color:#cbd5e1;font-weight:600;margin-bottom:6px;">已登录用户</div>
                             <div id="challengeLevelsUser"></div>
-                            <div style="text-align:right;margin-top:6px;"><button class="hdr-btn ghost" style="font-size:0.75rem;padding:4px 10px;" onclick="batchSetLevels('challengeLevelsUser',2)">全部设为可闯关</button> <button class="hdr-btn ghost" style="font-size:0.75rem;padding:4px 10px;" onclick="batchSetLevels('challengeLevelsUser',1)">全部设为仅展示</button> <button class="hdr-btn ghost" style="font-size:0.75rem;padding:4px 10px;" onclick="batchSetLevels('challengeLevelsUser',0)">全部隐藏</button></div>
+                            <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+                    <span class="batch-label">批量:</span>
+                    <button type="button" class="batch-btn batch-btn-all" onclick="batchSetLevels('challengeLevelsUser',2)" title="全部可闯关"><i class="fas fa-book-open"></i> 可闯关</button>
+                    <button type="button" class="batch-btn batch-btn-readonly" onclick="batchSetLevels('challengeLevelsUser',1)" title="全部仅展示"><i class="fas fa-eye"></i> 仅展示</button>
+                    <button type="button" class="batch-btn batch-btn-hidden" onclick="batchSetLevels('challengeLevelsUser',0)" title="全部隐藏"><i class="fas fa-eye-slash"></i> 隐藏</button>
+                </div>
                         </div>
                         <div>
                             <div style="font-size:0.8rem;color:#cbd5e1;font-weight:600;margin-bottom:6px;">访客</div>
                             <div id="challengeLevelsVisitor"></div>
-                            <div style="text-align:right;margin-top:6px;"><button class="hdr-btn ghost" style="font-size:0.75rem;padding:4px 10px;" onclick="batchSetLevels('challengeLevelsVisitor',2)">全部设为可闯关</button> <button class="hdr-btn ghost" style="font-size:0.75rem;padding:4px 10px;" onclick="batchSetLevels('challengeLevelsVisitor',1)">全部设为仅展示</button> <button class="hdr-btn ghost" style="font-size:0.75rem;padding:4px 10px;" onclick="batchSetLevels('challengeLevelsVisitor',0)">全部隐藏</button></div>
+                            <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+                    <span class="batch-label">批量:</span>
+                    <button type="button" class="batch-btn batch-btn-all" onclick="batchSetLevels('challengeLevelsVisitor',2)" title="全部可闯关"><i class="fas fa-book-open"></i> 可闯关</button>
+                    <button type="button" class="batch-btn batch-btn-readonly" onclick="batchSetLevels('challengeLevelsVisitor',1)" title="全部仅展示"><i class="fas fa-eye"></i> 仅展示</button>
+                    <button type="button" class="batch-btn batch-btn-hidden" onclick="batchSetLevels('challengeLevelsVisitor',0)" title="全部隐藏"><i class="fas fa-eye-slash"></i> 隐藏</button>
+                </div>
                         </div>
                     </div>
                     <div class="setting-row">
@@ -892,6 +902,10 @@
                                 <div style="font-size:0.72rem;color:#475569;margin-top:4px;">从关卡所属课件的题库中随机抽取</div>
                             </div>
                         </div>
+                    </div>
+                    <div class="setting-row">
+                        <div class="setting-info"><div class="setting-label">顺序闯关</div><div class="setting-desc">开启后所有关卡需按顺序逐关解锁，关闭后可自由选择任意关卡闯关 <span id="sequential-hint" style="color:#22c55e;margin-left:8px;font-size:0.8rem;">已关闭</span></div></div>
+                        <div class="setting-control"><label class="toggle"><input type="checkbox" id="setSequentialMode"><span class="slider"></span></label></div>
                     </div>
                     <!-- 地狱模式 -->
                     <div style="border-top:1px solid rgba(239,68,68,0.12);padding-top:14px;margin-top:10px;">
@@ -1252,6 +1266,8 @@ let allUsers = [];
         document.getElementById('setChallengeTimeMultiplier').value = s.challengeTimeMultiplier || 5;
         document.getElementById('setChallengeQuestionCount').value = s.challengeQuestionCount || 10;
         document.getElementById('setChallengeQuestionType').value = s.challengeQuestionType || 'words';
+        document.getElementById('setSequentialMode').checked = s.challengeSequentialMode === true;
+        document.getElementById('sequential-hint').textContent = s.challengeSequentialMode === true ? '已开启' : '已关闭';
         document.getElementById('setHellModeEnabled').checked = s.hellModeEnabled !== false;
         document.getElementById('hell-mode-hint').textContent = s.hellModeEnabled !== false ? '已启用' : '已关闭';
         const hellLevels = s.hellLevels || [5, 6, 7];
@@ -1336,6 +1352,7 @@ let allUsers = [];
             challengeTimeMultiplier: parseInt(document.getElementById('setChallengeTimeMultiplier').value) || 5,
             challengeQuestionCount: parseInt(document.getElementById('setChallengeQuestionCount').value) || 10,
             challengeQuestionType: document.getElementById('setChallengeQuestionType').value || 'words',
+            challengeSequentialMode: document.getElementById('setSequentialMode').checked,
             hellModeEnabled: document.getElementById('setHellModeEnabled').checked,
             hellLevels: Array.from(document.querySelectorAll('.hell-level-cb:checked')).map(cb => parseInt(cb.value)),
             hellTimeLimit: parseInt(document.getElementById('setHellTimeLimit').value) || 0,
@@ -1346,6 +1363,8 @@ let allUsers = [];
         var result = await adminFetch('admin/settings', { method: 'PUT', body: JSON.stringify(settings) });
         var ceHint = document.getElementById('challenge-enabled-hint');
         if (ceHint) ceHint.textContent = settings.challengeEnabled ? '已启用' : '已关闭';
+        var sqHint = document.getElementById('sequential-hint');
+        if (sqHint) sqHint.textContent = settings.challengeSequentialMode ? '已开启' : '已关闭';
         var hmHint = document.getElementById('hell-mode-hint');
         if (hmHint) hmHint.textContent = settings.hellModeEnabled ? '已启用' : '已关闭';
         if (result && result.success) {

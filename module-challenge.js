@@ -169,8 +169,9 @@ const ChallengeModule = {
                 const p = this.serverProgress[stage.id];
                 const isCleared = p && p.cleared;
                 const isCurrent = i === nextAvailable;
-                // 地狱模式关卡：地狱模式下按顺序解锁
-                const isHellLocked = group.isHell && i > nextAvailable;
+                // 顺序闯关：全局开启或地狱模式下按顺序解锁
+                const sequentialMode = window._systemInfo && window._systemInfo.challengeSequentialMode === true;
+                const isHellLocked = (group.isHell || sequentialMode) && i > nextAvailable;
                 const isReadonly = stage._readonly === true;
                 const isLocked = isHellLocked || isReadonly;
                 const stars = p?.stars || 0;

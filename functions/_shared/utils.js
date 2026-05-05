@@ -118,7 +118,8 @@ function defaultSettings() {
         mainChangelog: '',             // 主界面更新日志内容
         hellLevels: [5, 6, 7], // 地狱模式关卡等级（BIPA 5/6/7）
         // 闯天关配置
-        challengeEnabled: true,        // 启用闯天关功能
+        challengeEnabled: true,
+        challengeSequentialMode: false,        // 启用闯天关功能
         challengeTimeLimit: 0,         // 每关时间限制（秒），0=不限时
         challengeStar3: 90,            // 3星分数线
         challengeStar2: 70,            // 2星分数线
