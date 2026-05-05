@@ -23,6 +23,7 @@ export async function onRequest(context) {
         'user/me':                      { get: handleGetMe },
         'user/heartbeat':               { post: handleHeartbeat },
         'user/password':                { put: handleChangePassword },
+        'user/profile':                 { put: handleChangeProfile },
         'user/delete':                  { post: handleDeleteUser },
 
         // ========== 学习 ==========
@@ -374,6 +375,15 @@ async function handleChangePassword(context) {
     const hashed = await hashPassword(newPassword);
     await dbRun(env, 'UPDATE users SET password = ? WHERE username = ?', [hashed, username]);
     return jsonOK({ message: '密码修改成功' });
+}
+
+async function handleChangeProfile(context) {
+    const { env, username } = await requireAuth(context);
+    const { name } = await context.request.json();
+    if (!name || !name.trim()) return jsonErr('昵称不能为空');
+    const trimmed = name.trim().substring(0, 20);
+    await dbRun(env, 'UPDATE users SET name = ? WHERE username = ?', [trimmed, username]);
+    return jsonOK({ message: '昵称修改成功', name: trimmed });
 }
 
 async function handleDeleteUser(context) {

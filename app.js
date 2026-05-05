@@ -70,6 +70,10 @@ function checkLoginStatus() {
                             <i class="fas fa-chevron-down" style="font-size:0.65rem;color:#64748b;"></i>
                         </span>
                         <div id="user-dropdown" style="display:none;position:absolute;top:100%;right:0;margin-top:8px;background:rgba(30,41,59,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px;min-width:150px;z-index:9999;backdrop-filter:blur(20px);box-shadow:0 10px 40px rgba(0,0,0,0.6);">
+                            <div onclick="showProfileDialog();toggleUserMenu();" style="padding:10px 14px;border-radius:8px;cursor:pointer;color:#e2e8f0;font-size:0.85rem;display:flex;align-items:center;gap:8px;transition:background 0.2s;" onmouseover="this.style.background='rgba(99,102,241,0.1)'" onmouseout="this.style.background='transparent'">
+                                <i class="fas fa-user-pen" style="color:#a5b4fc;width:16px;text-align:center;"></i> 个人设置
+                            </div>
+                            <div style="height:1px;background:rgba(255,255,255,0.05);margin:4px 8px;"></div>
                             <div onclick="logout()" style="padding:10px 14px;border-radius:8px;cursor:pointer;color:#e2e8f0;font-size:0.85rem;display:flex;align-items:center;gap:8px;transition:background 0.2s;" onmouseover="this.style.background='rgba(248,113,113,0.1)'" onmouseout="this.style.background='transparent'">
                                 <i class="fas fa-sign-out-alt" style="color:#f87171;width:16px;text-align:center;"></i> 退出登录
                             </div>
@@ -584,10 +588,10 @@ async function initUI() {
 </div>
 
 <div id="qr-modal" class="modal-overlay" onclick="this.style.display='none'">
-    <div class="modal-content" style="width:350px; padding:20px;" onclick="event.stopPropagation()">
-        <h3 style="margin-bottom:20px; color:var(--accent);">联系王鹤</h3>
-        <img src="Wang_he.jpg" style="width:280px; height:280px; border-radius:10px; margin:0 auto; display:block;" alt="二维码">
-        <p style="margin-top:20px; text-align:center; color:#cbd5e1;">扫码添加微信/联系方式</p>
+    <div class="modal-content" style="width:300px; padding:24px; text-align:center;" onclick="event.stopPropagation()">
+        <h3 style="margin-bottom:16px; color:#fff; font-size:1.1rem;">联系作者</h3>
+        <img src="Wang_he.jpg" style="width:220px; height:220px; border-radius:12px; margin:0 auto; display:block;" alt="二维码">
+        <p style="margin-top:16px; color:var(--accent); cursor:pointer; font-size:0.85rem;" onclick="this.closest('.modal-overlay').style.display='none'">点击关闭</p>
     </div>
 </div>
     `;
@@ -1990,6 +1994,93 @@ function showFavWord(catId, idx, lessonId = "1") {
     curIdx = idx;
     curLesson = lessonId;
     showWord(catId, idx, lessonId);
+}
+
+// 打开个人设置弹窗
+function showProfileDialog() {
+    const userInfo = JSON.parse(sessionStorage.getItem('fmi_user') || '{}');
+    const dialog = document.createElement('div');
+    dialog.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;justify-content:center;align-items:center;backdrop-filter:blur(15px);';
+    dialog.id = 'profile-dialog';
+    dialog.innerHTML = `
+        <div style="background:#111827;padding:30px 35px;border-radius:20px;border:1px solid rgba(99,102,241,0.3);width:380px;max-width:90%;" onclick="event.stopPropagation()">
+            <h3 style="color:#fff;margin-bottom:20px;font-size:1.05rem;display:flex;align-items:center;gap:8px;">
+                <i class="fas fa-user-pen" style="color:#a5b4fc;"></i> 个人设置
+            </h3>
+            <div style="margin-bottom:16px;">
+                <label style="display:block;color:#94a3b8;font-size:0.8rem;margin-bottom:6px;">工号（不可修改）</label>
+                <input type="text" id="profile-username" value="${userInfo.username || ''}" disabled style="width:100%;padding:10px 14px;background:rgba(15,23,42,0.8);color:#64748b;border:1px solid rgba(255,255,255,0.06);border-radius:10px;font-size:0.9rem;outline:none;cursor:not-allowed;">
+            </div>
+            <div style="margin-bottom:16px;">
+                <label style="display:block;color:#94a3b8;font-size:0.8rem;margin-bottom:6px;">昵称</label>
+                <input type="text" id="profile-name" value="${userInfo.name || ''}" maxlength="20" style="width:100%;padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:10px;font-size:0.9rem;outline:none;" onfocus="this.style.borderColor='rgba(99,102,241,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,0.06);margin:20px 0;padding-top:18px;">
+                <label style="display:block;color:#94a3b8;font-size:0.8rem;margin-bottom:12px;">修改密码</label>
+                <div style="margin-bottom:10px;">
+                    <input type="password" id="profile-old-pw" placeholder="旧密码" style="width:100%;padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:10px;font-size:0.9rem;outline:none;" onfocus="this.style.borderColor='rgba(99,102,241,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+                </div>
+                <div style="margin-bottom:10px;">
+                    <input type="password" id="profile-new-pw" placeholder="新密码（至少4位，留空不修改）" style="width:100%;padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:10px;font-size:0.9rem;outline:none;" onfocus="this.style.borderColor='rgba(99,102,241,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+                </div>
+            </div>
+            <div id="profile-msg" style="min-height:20px;font-size:0.8rem;margin-bottom:10px;"></div>
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+                <button id="profile-cancel-btn" style="background:#475569;color:white;border:none;padding:9px 22px;border-radius:10px;cursor:pointer;font-size:0.9rem;">取消</button>
+                <button id="profile-save-btn" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;border:none;padding:9px 22px;border-radius:10px;cursor:pointer;font-size:0.9rem;">保存</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(dialog);
+
+    dialog.querySelector('#profile-cancel-btn').onclick = () => document.body.removeChild(dialog);
+    dialog.onclick = (e) => { if (e.target === dialog) document.body.removeChild(dialog); };
+
+    dialog.querySelector('#profile-save-btn').onclick = async () => {
+        const msgEl = dialog.querySelector('#profile-msg');
+        const newName = dialog.querySelector('#profile-name').value.trim();
+        const oldPw = dialog.querySelector('#profile-old-pw').value;
+        const newPw = dialog.querySelector('#profile-new-pw').value;
+
+        // 至少修改一项
+        if (!newName && !newPw) { msgEl.innerHTML = '<span style="color:#f59e0b;">请至少修改一项</span>'; return; }
+
+        msgEl.innerHTML = '<span style="color:#94a3b8;">保存中...</span>';
+        dialog.querySelector('#profile-save-btn').disabled = true;
+
+        try {
+            // 修改昵称
+            if (newName && newName !== userInfo.name) {
+                const res = await API.request('user/profile', { method: 'PUT', body: JSON.stringify({ name: newName }) });
+                if (!res.success) { msgEl.innerHTML = `<span style="color:#f87171;">${res.error || '昵称修改失败'}</span>`; dialog.querySelector('#profile-save-btn').disabled = false; return; }
+                userInfo.name = newName;
+                sessionStorage.setItem('fmi_user', JSON.stringify(userInfo));
+                // 更新 header 显示
+                const userStatusEl = document.getElementById('user-status');
+                if (userStatusEl) {
+                    const welcomeSpan = userStatusEl.querySelector('span[onclick]');
+                    if (welcomeSpan) {
+                        welcomeSpan.innerHTML = welcomeSpan.innerHTML.replace(/欢迎，.*/, '欢迎，' + newName + ' <i class="fas fa-chevron-down" style="font-size:0.65rem;color:#64748b;"></i>');
+                    }
+                }
+            }
+            // 修改密码
+            if (newPw) {
+                if (!oldPw) { msgEl.innerHTML = '<span style="color:#f59e0b;">请输入旧密码</span>'; dialog.querySelector('#profile-save-btn').disabled = false; return; }
+                if (newPw.length < 4) { msgEl.innerHTML = '<span style="color:#f59e0b;">新密码至少4位</span>'; dialog.querySelector('#profile-save-btn').disabled = false; return; }
+                const res = await API.request('user/password', { method: 'PUT', body: JSON.stringify({ oldPassword: oldPw, newPassword: newPw }) });
+                if (!res.success) { msgEl.innerHTML = `<span style="color:#f87171;">${res.error || '密码修改失败'}</span>`; dialog.querySelector('#profile-save-btn').disabled = false; return; }
+                dialog.querySelector('#profile-old-pw').value = '';
+                dialog.querySelector('#profile-new-pw').value = '';
+            }
+
+            msgEl.innerHTML = '<span style="color:#22c55e;">保存成功</span>';
+            setTimeout(() => document.body.removeChild(dialog), 800);
+        } catch (e) {
+            msgEl.innerHTML = '<span style="color:#f87171;">网络错误，请重试</span>';
+            dialog.querySelector('#profile-save-btn').disabled = false;
+        }
+    };
 }
 
 // 打开二维码弹窗
