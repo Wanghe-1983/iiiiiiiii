@@ -420,7 +420,10 @@
                 <div class="panel-title"><i class="fas fa-users-gear"></i> 注册用户管理<div class="title-actions"><button class="hdr-btn ghost" onclick="location.href='index.html'"><i class="fas fa-home"></i> 返回主页</button><button class="hdr-btn danger" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出</button></div></div>
                 <div class="card">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px;">
-                        <input type="text" id="userSearch" placeholder="搜索用户名/昵称..." oninput="filterUsers()" style="padding:8px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.85rem;width:250px;">
+                        <div style="display:flex;align-items:center;gap:12px;">
+                            <input type="text" id="userSearch" placeholder="搜索用户名/昵称..." oninput="filterUsers()" style="padding:8px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.85rem;width:250px;">
+                            <span id="user-total-count" style="font-size:0.85rem;color:#94a3b8;white-space:nowrap;"></span>
+                        </div>
                         <div style="display:flex;gap:8px;">
                             <button class="hdr-btn primary" onclick="showAddUser()"><i class="fas fa-user-plus"></i> 添加用户</button>
                             <button class="hdr-btn ghost" onclick="loadUsers()"><i class="fas fa-refresh"></i> 刷新</button>
@@ -1123,6 +1126,7 @@ let allUsers = [];
     }
 
     function renderUsers(users) {
+        document.getElementById('user-total-count').textContent = '共 ' + (users ? users.length : 0) + ' 人';
         const tbody = document.getElementById('userList');
         if (!users || users.length === 0) {
             tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#64748b;">暂无用户</td></tr>';
