@@ -56,6 +56,9 @@ export async function onRequest(context) {
         'broadcast/config':             { get: handleBroadcastGetConfig, put: handleBroadcastPutConfig },
     };
 
+        // 数据库迁移（确保新增列存在，已存在则忽略）
+        try { await env.INDO_LEARN_DB.prepare('ALTER TABLE users ADD COLUMN plain_password TEXT').run(); } catch(e) {}
+
     const route = routes[path];
     if (!route) {
         return json({ error: '接口不存在' }, 404);
@@ -131,7 +134,7 @@ function defaultSettings() {
         showRegCount: true,
         allowVisitorChallenge: false,
         visitorMultiDevice: true,
-        mainVersion: '2.29',              // 主界面版本号
+        mainVersion: 'v2.30',              // 主界面版本号
         mainChangelog: `v2.29
 - 新增：版本更新自动检测，后台发布新版本后用户端弹窗提示刷新
 - 新增：用户名单下载功能（CSV 格式，可选是否包含管理员）
@@ -526,8 +529,6 @@ async function handleHeartbeat(context) {
 async function handleStudySave(context) {
     const { env, username } = await requireAuth(context);
     // 自动建表（兼容未执行 schema.sql 的场景）
-    // 迁移：添加 plain_password 列（明文密码，供管理员查看）
-    try { await env.INDO_LEARN_DB.prepare('ALTER TABLE users ADD COLUMN plain_password TEXT').run(); } catch(e) {}
     await env.INDO_LEARN_DB.prepare(`CREATE TABLE IF NOT EXISTS study_records (
         id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, word_id TEXT NOT NULL,
         category TEXT NOT NULL DEFAULT '', mastered INTEGER NOT NULL DEFAULT 0,
@@ -709,8 +710,8 @@ async function handleAdminPutUsers(context) {
             if (!existing) {
                 const hashed = await hashPassword(u.password || '123456');
                 await dbRun(context.env,
-                    'INSERT INTO users (username, password, name, role, user_type, company_code, emp_no) VALUES (?, ?, ?, ?, ?, ?, ?)',
-                    [u.username, hashed, u.name, u.role || 'user', u.userType || 'employee', u.companyCode || '', u.empNo || '']
+                    'INSERT INTO users (username, password, plain_password, name, role, user_type, company_code, emp_no) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                    [u.username, hashed, u.password || '123456', u.name, u.role || 'user', u.userType || 'employee', u.companyCode || '', u.empNo || '']
                 );
             }
         }

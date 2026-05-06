@@ -1467,7 +1467,10 @@ let allUsers = [];
             }
         }
         const nEl = document.getElementById('cmNormalAutoStageCount');
-        if (nEl) { nEl.textContent = nStages + ' 关'; nEl.style.color = '#60a5fa'; }
+        if (nEl) {
+            if (nStages > 0) { nEl.textContent = nStages + ' 关'; nEl.style.color = '#60a5fa'; }
+            else { nEl.textContent = '0 关（课程数据未加载或无可用内容）'; nEl.style.color = '#f87171'; }
+        }
 
         // 地狱模式
         const hSplit = document.getElementById('cmHellAuto').style.display !== 'none' ? 'auto' : 'manual';
@@ -1496,7 +1499,10 @@ let allUsers = [];
             }
         }
         const hEl = document.getElementById('cmHellAutoStageCount');
-        if (hEl) { hEl.textContent = hStages + ' 关'; hEl.style.color = '#f87171'; }
+        if (hEl) {
+            if (hStages > 0) { hEl.textContent = hStages + ' 关'; hEl.style.color = '#f87171'; }
+            else { hEl.textContent = '0 关（未勾选等级或课程数据未加载）'; hEl.style.color = '#64748b'; }
+        }
     }
 
     // 监听切分参数变更实时更新关卡数
@@ -1516,7 +1522,13 @@ let allUsers = [];
             try {
                 const cRes = await fetch('./course-content.json?t=' + Date.now());
                 if (cRes.ok) window._adminCourseData = await cRes.json();
-            } catch(e) { console.warn('Failed to load course data:', e); }
+            } catch(e) { 
+            console.error('Failed to load course data:', e); 
+            const nEl = document.getElementById('cmNormalAutoStageCount');
+            const hEl = document.getElementById('cmHellAutoStageCount');
+            if (nEl) { nEl.textContent = '课程数据加载失败'; nEl.style.color = '#f87171'; }
+            if (hEl) { hEl.textContent = '课程数据加载失败'; hEl.style.color = '#f87171'; }
+        }
         }
         const s = await adminFetch('admin/settings', { method: 'GET' });
         if (s.error) return;
