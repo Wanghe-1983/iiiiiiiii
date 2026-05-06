@@ -901,11 +901,32 @@ async function buildMenu() {
             '<button onclick="deleteFav(' + ri + ', event)" style="background:rgba(248,113,113,0.1);color:#f87171;border:none;padding:2px 6px;border-radius:4px;cursor:pointer;font-size:11px;margin-left:6px;"><i class="fas fa-times"></i></button></div>';
     }).join('') : '<div style="padding:8px;font-size:13px;color:#64748b;">暂无收藏</div>';
 
+    // 构建已掌握词汇导航列表
+    const masteredList = JSON.parse(localStorage.getItem('fmi_all_words') || '[]');
+    const masteredWordMap = {};
+    const mAllW = getAllWords();
+    mAllW.forEach(w => { masteredWordMap[w.indonesian] = { zh: w.chinese || '' }; });
+    let masteredHTML = '';
+    if (masteredList.length === 0) {
+        masteredHTML = '<div style="padding:8px 10px;font-size:13px;color:#64748b;">暂无已掌握词汇</div>';
+    } else {
+        for (const word of masteredList) {
+            const info = masteredWordMap[word] || {};
+            const ew = word.replace(/'/g, "\\'");
+            masteredHTML += '<div style="padding:6px 10px;font-size:13px;color:#c4b5fd;display:flex;justify-content:space-between;align-items:center;">' +
+                '<span style="cursor:pointer;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" onclick="navigateToMasteredWord(\'' + ew + '\')">' + word + (info.zh ? ' - ' + info.zh : '') + '</span>' +
+                '<button onclick="removeMasteredFromNav(\'' + ew + '\',event)" style="background:rgba(248,113,113,0.1);color:#f87171;border:none;padding:2px 6px;border-radius:4px;cursor:pointer;font-size:11px;margin-left:6px;"><i class="fas fa-times"></i></button></div>';
+        }
+        masteredHTML += '<div style="padding:6px 10px;margin-top:6px;"><button onclick="clearAllMastered()" style="background:rgba(248,113,113,0.1);color:#f87171;border:none;padding:4px 10px;border-radius:5px;cursor:pointer;font-size:11px;"><i class="fas fa-trash-alt"></i> 一键清空</button></div>';
+    }
+
     let menuHTML = `
     <div class="cat-item">
-        <div class="cat-head" style="color:#818cf8" onclick="switchStudySubTab('practice')">
-            <span><i class="fas fa-list-check" style="margin-right:4px;"></i> 已掌握词汇</span>
-            <i class="fas fa-chevron-right"></i>
+        <div class="cat-head" style="color:#818cf8" onclick="this.nextElementSibling.classList.toggle('active')">
+            <span><i class="fas fa-list-check" style="margin-right:4px;"></i> 已掌握 (${masteredList.length})</span>
+            <i class="fas fa-chevron-down"></i> </div>
+        <div class="sub-menu">
+            ${masteredHTML}
         </div>
     </div>
     <div class="cat-item">
@@ -2826,10 +2847,10 @@ function updatePracticeWordCount() {
             // 兜底：从旧 db 中获取
             items = catId === 'all' ? getAllWords() : getWordsByCategory(catId);
         }
-        // 已掌握过滤
+        // 已掌握过滤（仅匹配词汇类型）
         if (masterdOnly) {
             const mastered = getMasteredWords();
-            items = items.filter(i => mastered.includes(i.indonesian));
+            items = items.filter(i => i.type === 'word' && mastered.includes(i.indonesian));
         }
         const count = selectedPracticeCount === 0 ? items.length : Math.min(selectedPracticeCount, items.length);
         // 统计词/句/对话
@@ -2854,10 +2875,10 @@ function startPractice() {
         // 兜底
         words = catId === 'all' ? getAllWords() : getWordsByCategory(catId);
     }
-    // 已掌握过滤
+    // 已掌握过滤（仅匹配词汇类型，排除句子和对话）
     if (masterdOnly) {
         const mastered = getMasteredWords();
-        words = words.filter(i => mastered.includes(i.indonesian));
+        words = words.filter(i => i.type === 'word' && mastered.includes(i.indonesian));
     }
     if (words.length < 4) {
         if (window._showCustomConfirm) {
@@ -3359,6 +3380,61 @@ function showMasteredList() {
 // 获取已掌握词汇列表
 function getMasteredWords() {
     return JSON.parse(localStorage.getItem('fmi_all_words') || '[]');
+}
+
+// 从侧边栏已掌握列表点击词汇，定位到学习界面
+function navigateToMasteredWord(word) {
+    switchStudySubTab('learn');
+    let found = false;
+    for (const catId in db) {
+        for (const lid in db[catId].lessons) {
+            const words = db[catId].lessons[lid].words;
+            for (let wi = 0; wi < words.length; wi++) {
+                if (words[wi].indonesian === word) {
+                    curCat = catId; curLesson = lid; curIdx = wi;
+                    showWord(catId, wi, lid);
+                    found = true; break;
+                }
+            }
+            if (found) break;
+        }
+        if (found) break;
+    }
+    if (!found && window._courseMenuData && window._courseMenuData.levels) {
+        for (const lv of window._courseMenuData.levels) {
+            for (const unit of (lv.units || [])) {
+                for (const w of (unit.words || [])) {
+                    if (w.indonesian === word) {
+                        document.getElementById('disp-indo').innerText = w.indonesian;
+                        document.getElementById('disp-zh').innerText = w.chinese || '';
+                        document.getElementById('word-idx').innerText = '--';
+                        found = true; break;
+                    }
+                }
+                if (found) break;
+            }
+            if (found) break;
+        }
+    }
+    if (!found) {
+        document.getElementById('disp-indo').innerText = word;
+        document.getElementById('disp-zh').innerText = '(未在词库中找到)';
+    }
+}
+
+// 从侧边栏已掌握列表删除单条词汇
+function removeMasteredFromNav(word, event) {
+    if (event) event.stopPropagation();
+    let learned = JSON.parse(localStorage.getItem('fmi_all_words') || '[]');
+    learned = learned.filter(w => w !== word);
+    localStorage.setItem('fmi_all_words', JSON.stringify(learned));
+    if (typeof studyStats !== 'undefined') studyStats.totalWords = learned.length;
+    if (event && event.target) {
+        const row = event.target.closest('div[style*="padding:6px 10px"]');
+        if (row) row.remove();
+    }
+    updatePracticeWordCount();
+    buildMenu();
 }
 
 function removeMasteredWord(word, btnEl) {
