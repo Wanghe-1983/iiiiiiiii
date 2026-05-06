@@ -33,8 +33,8 @@ const StudyModule = {
         const userInfo = JSON.parse(sessionStorage.getItem('fmi_user') || '{}');
         const isVisitor = userInfo.role === 'visitor';
         let config = isVisitor
-            ? sysInfo.studyLevelConfigVisitor
-            : sysInfo.studyLevelConfigUser;
+            ? sysInfo.levelConfigVisitor || sysInfo.studyLevelConfigVisitor
+            : sysInfo.levelConfigUser || sysInfo.studyLevelConfigUser;
         if (!config || typeof config !== 'object' || Array.isArray(config)) {
             // 兼容旧版数组格式
             const oldArray = isVisitor

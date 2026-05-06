@@ -990,12 +990,14 @@ function buildLevelConfig(config, oldArray) {
         const userInfo = JSON.parse(sessionStorage.getItem('fmi_user') || '{}');
         const isVisitor = userInfo.role === 'visitor';
         if (isVisitor) {
-            levelConfig = sysInfo.studyLevelConfigVisitor || sysInfo.studyVisibleLevelsVisitor 
-                ? buildLevelConfig(sysInfo.studyLevelConfigVisitor, sysInfo.studyVisibleLevelsVisitor)
+            const vCfg = sysInfo.levelConfigVisitor || sysInfo.studyLevelConfigVisitor || sysInfo.studyVisibleLevelsVisitor;
+            levelConfig = vCfg
+                ? buildLevelConfig(sysInfo.levelConfigVisitor || sysInfo.studyLevelConfigVisitor, sysInfo.studyVisibleLevelsVisitor)
                 : {0:2,1:0,2:0,3:0,4:0,5:0,6:0,7:0};
         } else {
-            levelConfig = sysInfo.studyLevelConfigUser || sysInfo.studyVisibleLevelsUser
-                ? buildLevelConfig(sysInfo.studyLevelConfigUser, sysInfo.studyVisibleLevelsUser)
+            const uCfg = sysInfo.levelConfigUser || sysInfo.studyLevelConfigUser || sysInfo.studyVisibleLevelsUser;
+            levelConfig = uCfg
+                ? buildLevelConfig(sysInfo.levelConfigUser || sysInfo.studyLevelConfigUser, sysInfo.studyVisibleLevelsUser)
                 : {0:2,1:2,2:2,3:2,4:2,5:2,6:2,7:2};
         }
     } catch(e) {
@@ -2631,8 +2633,8 @@ function initPracticePage() {
                         const userInfo = JSON.parse(sessionStorage.getItem('fmi_user') || '{}');
                         const isVisitor = userInfo.role === 'visitor';
                         const lc = isVisitor
-                            ? (sysData.studyLevelConfigVisitor || sysData.studyVisibleLevelsVisitor)
-                            : (sysData.studyLevelConfigUser || sysData.studyVisibleLevelsUser);
+                            ? (sysData.levelConfigVisitor || sysData.studyLevelConfigVisitor || sysData.studyVisibleLevelsVisitor)
+                            : (sysData.levelConfigUser || sysData.studyLevelConfigUser || sysData.studyVisibleLevelsUser);
                         if (Array.isArray(lc)) {
                             window._levelConfig = {};
                             for (let i = 0; i <= 7; i++) window._levelConfig[i] = lc.includes(i) ? 2 : 0;

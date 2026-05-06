@@ -23,8 +23,8 @@ const ChallengeModule = {
         const userInfo = JSON.parse(sessionStorage.getItem('fmi_user') || '{}');
         const isVisitor = userInfo.role === 'visitor';
         let config = isVisitor
-            ? sysInfo.challengeLevelConfigVisitor
-            : sysInfo.challengeLevelConfigUser;
+            ? sysInfo.levelConfigVisitor || sysInfo.challengeLevelConfigVisitor
+            : sysInfo.levelConfigUser || sysInfo.challengeLevelConfigUser;
         if (!config || typeof config !== 'object' || Array.isArray(config)) {
             config = {};
             for (let i = 0; i <= 7; i++) config[i] = 2;
@@ -170,7 +170,9 @@ const ChallengeModule = {
                 const isCleared = p && p.cleared;
                 const isCurrent = i === nextAvailable;
                 // 顺序闯关：全局开启或地狱模式下按顺序解锁
-                const sequentialMode = window._systemInfo && window._systemInfo.challengeSequentialMode === true;
+                // 读取顺序闯关设置：普通模式读取 normalSettings.sequentialMode，地狱模式强制顺序
+            const ns = window._systemInfo && (window._systemInfo.normalSettings || {});
+            const sequentialMode = group.isHell || (ns.sequentialMode === true) || (window._systemInfo && window._systemInfo.challengeSequentialMode === true);
                 const isHellLocked = (group.isHell || sequentialMode) && i > nextAvailable;
                 const isReadonly = stage._readonly === true;
                 const isLocked = isHellLocked || isReadonly;
@@ -252,16 +254,33 @@ const ChallengeModule = {
         // 动态抽样：根据后台配置决定题目数量和类型
         const sysInfo = window._systemInfo || {};
         const isHell = HELL_LEVELS.includes(Number(stage.levelId));
-        const questionCount = isHell
-            ? (sysInfo.hellQuestionCount || 15)
-            : (sysInfo.challengeQuestionCount || 10);
-        const questionType = isHell
+
+        // 优先读取新结构 normalSettings/hellSettings，fallback 到旧字段
+        const modeSettings = isHell
+            ? (sysInfo.hellSettings || {})
+            : (sysInfo.normalSettings || {});
+        const fallbackQC = isHell
+            ? (sysInfo.hellQuestionCount || 10)
+            : (sysInfo.challengeQuestionCount || 5);
+        const fallbackQT = isHell
             ? (sysInfo.hellQuestionType || 'mixed')
-            : (sysInfo.challengeQuestionType || 'words');
+            : (sysInfo.challengeQuestionType || 'mixed');
+        const questionCount = modeSettings.questionCount || fallbackQC;
+        const questionType = modeSettings.questionType || fallbackQT;
 
         // 从关卡所属的unit数据中收集题目池
         const levelData = CourseContent.getLevel(stage.levelId);
-        const questions = this._sampleQuestions(levelData, stage.unitId, questionType, questionCount);
+        // 题目收集：优先使用 stage 预切分的 questions（自动分配模式下内容已混合切好）
+        // 如果 stage 有 questions 且管理员设置了混合类型，直接使用 stage 预切分内容
+        let questions;
+        if (stage.questions && stage.questions.length > 0 && (questionType === 'mixed' || questionType === stage.type)) {
+            // 使用预切分内容，按 questionCount 洗牌后截取
+            const shuffled = this._shuffle(stage.questions.slice());
+            questions = shuffled.slice(0, questionCount);
+        } else {
+            // 从 unit 全量重新抽样（手动分配模式下 questionType 可能与 stage.type 不同）
+            questions = this._sampleQuestions(levelData, stage.unitId, questionType, questionCount);
+        }
 
         this.challengeState = {
             stageId,
@@ -329,6 +348,8 @@ const ChallengeModule = {
         const q = state.questions[state.currentIndex];
         const currentStage = this.allStages.find(s => s.id === state.stageId);
         const stageType = currentStage ? currentStage.type : 'words';
+        const HELL_LEVELS_PRE = (window._systemInfo && window._systemInfo.hellLevels) || [5, 6, 7];
+        const _isHellStage = currentStage ? HELL_LEVELS_PRE.includes(Number(currentStage.levelId)) : false;
         const total = state.totalQuestions;
         const current = state.currentIndex + 1;
         const progressPct = Math.round(current / total * 100);
@@ -398,10 +419,10 @@ const ChallengeModule = {
                         `).join('')}
                     </div>
                 </div>
-                <div style="margin:16px 0;padding:16px 20px;border-radius:14px;border:1px dashed var(--border-subtle);background:var(--accent-subtle);display:flex;align-items:center;gap:16px;">
+                ${_isHellStage ? '' : `<div style="margin:16px 0;padding:16px 20px;border-radius:14px;border:1px dashed var(--border-subtle);background:var(--accent-subtle);display:flex;align-items:center;gap:16px;">
                     <div class="sliders-col" style="flex:1;min-width:0;">
                         <div class="vslider-box">
-                            <div class="vslider-label"><i class="fas fa-gauge-high"></i> 语速</div>
+                            <div class="vslider-label"><i class="fas fa-gauge-high"></i> 语速</div>`}
                             <div class="vslider-track-wrap">
                                 <input type="range" class="vslider vslider-rate" id="ch-rate-slider" min="1" max="15" value="${localStorage.getItem('fmi_rate') ? (RATE_LEVELS || []).indexOf(parseFloat(localStorage.getItem('fmi_rate'))) + 1 || 10 : 10}" step="1"
                                     oninput="ChallengeModule.setRate(this.value)" title="拖动调整语速">
@@ -420,8 +441,7 @@ const ChallengeModule = {
                             </div>
                             <div class="vslider-range"><span>1次</span><span>无限</span></div>
                         </div>
-                    </div>
-                </div>
+                ${_isHellStage ? '' : '</div></div>'}
                 <div style="margin-top:16px;display:flex;align-items:center;justify-content:flex-end;gap:10px;">
                     <button style="background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:0.78rem;display:flex;align-items:center;gap:5px;" onclick="ChallengeModule.confirmExitWithoutSave()">
                         <i class="fas fa-sign-out-alt"></i> 退出
@@ -433,21 +453,25 @@ const ChallengeModule = {
             </div>
         `;
 
-        // 同步滑块位置和填充条
+        // 同步滑块位置和填充条（地狱模式下跳过，因滑块已隐藏）
         setTimeout(() => {
-            if (typeof updateSliderFill === 'function') {
-                const rateVal = parseInt(document.getElementById('ch-rate-slider').value) - 1;
-                const loopVal = parseInt(document.getElementById('ch-loop-slider').value);
-                updateSliderFill('ch-rate', rateVal / ((typeof RATE_LEVELS !== 'undefined' ? RATE_LEVELS.length : 15) - 1));
-                updateSliderFill('ch-loop', loopVal / 14);
+            if (!_isHellStage && typeof updateSliderFill === 'function') {
+                const rateSlider = document.getElementById('ch-rate-slider');
+                const loopSlider = document.getElementById('ch-loop-slider');
+                if (rateSlider) {
+                    const rateVal = parseInt(rateSlider.value) - 1;
+                    updateSliderFill('ch-rate', rateVal / ((typeof RATE_LEVELS !== 'undefined' ? RATE_LEVELS.length : 15) - 1));
+                }
+                if (loopSlider) {
+                    const loopVal = parseInt(loopSlider.value);
+                    updateSliderFill('ch-loop', loopVal / 14);
+                }
             }
         }, 50);
 
         // 更新计时器（支持时间限制倒计时）
-        const HELL_LEVELS = (window._systemInfo && window._systemInfo.hellLevels) || [5, 6, 7];
-        const isHell = currentStage ? HELL_LEVELS.includes(Number(currentStage.levelId)) : false;
-        const timeLimit = isHell
-            ? (window._systemInfo && window._systemInfo.hellTimeLimit) || 0
+        const timeLimit = _isHellStage
+            ? (window._systemInfo && (window._systemInfo.hellSettings?.timeLimit || window._systemInfo.hellTimeLimit)) || 120
             : (window._systemInfo && window._systemInfo.challengeTimeLimit) || 0;
 
         this._timerInterval = setInterval(() => {

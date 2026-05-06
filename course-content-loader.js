@@ -154,58 +154,124 @@ const CourseContent = {
     },
 
     // 闯天关：生成关卡列表
+    // 支持两种切分模式：
+    //   auto: 按单元混合切分，每个单元内的单词/短句/对话混合后按 autoContentCount 分组
+    //   manual: 按类型分别切分，使用 wordsPerStage/sentencesPerStage/dialoguesPerStage
     generateStages(levelId) {
         const level = this.getLevel(levelId);
         if (!level) return [];
         const stages = [];
-        let stageNum = 1;
-        for (let uIdx = 0; uIdx < level.units.length; uIdx++) {
-            const unit = level.units[uIdx];
-            const words = unit.words || [];
-            const sentences = unit.sentences || [];
-            const dialogues = unit.dialogues || [];
-            // BIPA 0 "基础发音篇"（前4个单元）的短句为语音知识说明，不适合闯天关
-            const skipSentences = String(levelId) === '0' && uIdx < 4;
-            const WORDS_PER_STAGE = 20;
-            const SENTENCES_PER_STAGE = 10;
-            const DIALOGUES_PER_STAGE = 5;
+        const sysInfo = window._systemInfo || {};
 
-            for (let i = 0; i < words.length; i += WORDS_PER_STAGE) {
-                const chunk = words.slice(i, i + WORDS_PER_STAGE);
-                if (chunk.length > 0) {
+        // 判断切分模式：wordsPerStage === 0 表示自动模式
+        const isAutoMode = (sysInfo.wordsPerStage === 0 || sysInfo.autoContentCount > 0)
+            && !(sysInfo.wordsPerStage > 0 || sysInfo.sentencesPerStage > 0 || sysInfo.dialoguesPerStage > 0);
+
+        if (isAutoMode) {
+            // ===== 自动分配模式：按单元混合切分 =====
+            const autoContentCount = sysInfo.autoContentCount || 5;
+            for (let uIdx = 0; uIdx < level.units.length; uIdx++) {
+                const unit = level.units[uIdx];
+                const words = unit.words || [];
+                const sentences = unit.sentences || [];
+                const dialogues = unit.dialogues || [];
+                // BIPA 0 "基础发音篇"（前4个单元）的短句为语音知识说明，不适合闯天关
+                const skipSentences = String(levelId) === '0' && uIdx < 4;
+
+                // 将单元内所有内容混合到一个池子中，带类型标记
+                const pool = [];
+                words.forEach(w => pool.push({ data: w, type: 'words' }));
+                if (!skipSentences) {
+                    sentences.forEach(s => pool.push({ data: s, type: 'sentences' }));
+                }
+                dialogues.forEach(d => pool.push({ data: d, type: 'dialogues' }));
+
+                // 如果池子为空则跳过
+                if (pool.length === 0) continue;
+
+                // 按 autoContentCount 切分，每关尽量均匀
+                // 先确定关卡数
+                const stageCount = Math.ceil(pool.length / autoContentCount);
+                for (let sIdx = 0; sIdx < stageCount; sIdx++) {
+                    const chunk = pool.slice(sIdx * autoContentCount, (sIdx + 1) * autoContentCount);
+                    if (chunk.length === 0) continue;
+
+                    // 按类型分组（用于统计和标签显示）
+                    const wItems = chunk.filter(c => c.type === 'words').map(c => c.data);
+                    const sItems = chunk.filter(c => c.type === 'sentences').map(c => c.data);
+                    const dItems = chunk.filter(c => c.type === 'dialogues').map(c => c.data);
+
+                    // 确定主导类型
+                    let mainType = 'mixed';
+                    if (wItems.length > 0 && sItems.length === 0 && dItems.length === 0) mainType = 'words';
+                    else if (wItems.length === 0 && sItems.length > 0 && dItems.length === 0) mainType = 'sentences';
+                    else if (wItems.length === 0 && sItems.length === 0 && dItems.length > 0) mainType = 'dialogues';
+
+                    // 构建标签
+                    let label = '';
+                    if (wItems.length > 0) label += wItems.length + '词';
+                    if (sItems.length > 0) label += (label ? '+' : '') + sItems.length + '句';
+                    if (dItems.length > 0) label += (label ? '+' : '') + dItems.length + '对话';
+
                     stages.push({
-                        id: `${levelId}-${unit.id}-words-${Math.floor(i / WORDS_PER_STAGE) + 1}`,
-                        levelId, unitId: unit.id, type: 'words',
-                        name: unit.name + ' - ' + (i > 0 ? '(下)' : ''),
-                        questions: chunk,
+                        id: `${levelId}-${unit.id}-auto-${sIdx + 1}`,
+                        levelId, unitId: unit.id, type: mainType,
+                        name: unit.name + (stageCount > 1 ? ' (' + (sIdx + 1) + '/' + stageCount + ')' : ''),
+                        label: label,
+                        questions: chunk.map(c => c.data),
                         totalQuestions: chunk.length,
                     });
                 }
             }
-            if (!skipSentences) {
-            for (let i = 0; i < sentences.length; i += SENTENCES_PER_STAGE) {
-                const chunk = sentences.slice(i, i + SENTENCES_PER_STAGE);
-                if (chunk.length > 0) {
-                    stages.push({
-                        id: `${levelId}-${unit.id}-sentences-${Math.floor(i / SENTENCES_PER_STAGE) + 1}`,
-                        levelId, unitId: unit.id, type: 'sentences',
-                        name: unit.name,
-                        questions: chunk,
-                        totalQuestions: chunk.length,
-                    });
+        } else {
+            // ===== 手动分配模式：按类型分别切分 =====
+            const WORDS_PER_STAGE = sysInfo.wordsPerStage || 3;
+            const SENTENCES_PER_STAGE = sysInfo.sentencesPerStage || 1;
+            const DIALOGUES_PER_STAGE = sysInfo.dialoguesPerStage || 1;
+            for (let uIdx = 0; uIdx < level.units.length; uIdx++) {
+                const unit = level.units[uIdx];
+                const words = unit.words || [];
+                const sentences = unit.sentences || [];
+                const dialogues = unit.dialogues || [];
+                const skipSentences = String(levelId) === '0' && uIdx < 4;
+
+                for (let i = 0; i < words.length; i += WORDS_PER_STAGE) {
+                    const chunk = words.slice(i, i + WORDS_PER_STAGE);
+                    if (chunk.length > 0) {
+                        stages.push({
+                            id: `${levelId}-${unit.id}-words-${Math.floor(i / WORDS_PER_STAGE) + 1}`,
+                            levelId, unitId: unit.id, type: 'words',
+                            name: unit.name + ' - ' + (i > 0 ? '(下)' : ''),
+                            questions: chunk,
+                            totalQuestions: chunk.length,
+                        });
+                    }
                 }
-            }
-            }
-            for (let i = 0; i < dialogues.length; i += DIALOGUES_PER_STAGE) {
-                const chunk = dialogues.slice(i, i + DIALOGUES_PER_STAGE);
-                if (chunk.length > 0) {
-                    stages.push({
-                        id: `${levelId}-${unit.id}-dialogues-${Math.floor(i / DIALOGUES_PER_STAGE) + 1}`,
-                        levelId, unitId: unit.id, type: 'dialogues',
-                        name: unit.name,
-                        questions: chunk,
-                        totalQuestions: chunk.length,
-                    });
+                if (!skipSentences) {
+                    for (let i = 0; i < sentences.length; i += SENTENCES_PER_STAGE) {
+                        const chunk = sentences.slice(i, i + SENTENCES_PER_STAGE);
+                        if (chunk.length > 0) {
+                            stages.push({
+                                id: `${levelId}-${unit.id}-sentences-${Math.floor(i / SENTENCES_PER_STAGE) + 1}`,
+                                levelId, unitId: unit.id, type: 'sentences',
+                                name: unit.name,
+                                questions: chunk,
+                                totalQuestions: chunk.length,
+                            });
+                        }
+                    }
+                }
+                for (let i = 0; i < dialogues.length; i += DIALOGUES_PER_STAGE) {
+                    const chunk = dialogues.slice(i, i + DIALOGUES_PER_STAGE);
+                    if (chunk.length > 0) {
+                        stages.push({
+                            id: `${levelId}-${unit.id}-dialogues-${Math.floor(i / DIALOGUES_PER_STAGE) + 1}`,
+                            levelId, unitId: unit.id, type: 'dialogues',
+                            name: unit.name,
+                            questions: chunk,
+                            totalQuestions: chunk.length,
+                        });
+                    }
                 }
             }
         }
