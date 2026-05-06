@@ -131,15 +131,14 @@ function defaultSettings() {
         showRegCount: true,
         allowVisitorChallenge: false,
         visitorMultiDevice: true,
-        mainVersion: '2.28',              // 主界面版本号
-        mainChangelog: `v2.28
-- 新增：闯天关前端拆分为普通/地狱两个独立页面，各自独立展示关卡和统计
-- 新增：地狱模式闯关顺序、限时答题改为可选项（默认开启），管理员灵活控制
-- 新增：预计关卡总数实时计算，参数变更时自动更新
-- 优化：地狱模式顺序/限时读取 hellSettings 配置，不再硬编码
-- 优化：普通模式限时读取 normalSettings 配置，结构统一
-- 修复：admin 后台 course-content.json 加载路径错误
-- 修复：关卡数显示为 0 的 bug（课程数据未加载）`,             // 主界面更新日志内容
+        mainVersion: '2.29',              // 主界面版本号
+        mainChangelog: `v2.29
+- 新增：版本更新自动检测，后台发布新版本后用户端弹窗提示刷新
+- 新增：用户名单下载功能（CSV 格式，可选是否包含管理员）
+- 新增：用户列表显示明文密码，支持管理员查看和修改
+- 新增：闯天关普通/地狱模式独立保存按钮，互不干扰
+- 修复：刷新后台页面后预计关卡总数显示 0 的问题
+- 修复：course-content.json 路径在部署环境中不正确`,             // 主界面更新日志内容
         userGuide: `## 欢迎使用印尼语学习助手
 
 本平台是基于 **BIPA（Bahasa Indonesia bagi Penutur Asing）** 课程体系开发的在线学习工具，专为印尼语学习者设计。
@@ -388,8 +387,8 @@ async function handleRegister(context) {
 
     const hashedPw = await hashPassword(password);
     await dbRun(env,
-        'INSERT INTO users (username, password, name, role, user_type, company_code, emp_no) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [username, hashedPw, name, 'user', userType || 'employee', companyCode || '', empNo || '']
+        'INSERT INTO users (username, password, plain_password, name, role, user_type, company_code, emp_no) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [username, hashedPw, password, name, 'user', userType || 'employee', companyCode || '', empNo || '']
     );
 
     return jsonOK({ message: '注册成功' });
@@ -409,8 +408,8 @@ async function handleVisitorLogin(context) {
     const hashedPw = await hashPassword('guest');
 
     await dbRun(env,
-        'INSERT INTO users (username, password, name, role, user_type, company_code, emp_no) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [guestId, hashedPw, '访客', 'user', 'visitor', 'GUEST', String(expire)]
+        'INSERT INTO users (username, password, plain_password, name, role, user_type, company_code, emp_no) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [guestId, hashedPw, 'guest', '访客', 'user', 'visitor', 'GUEST', String(expire)]
     );
 
     return json({
@@ -442,7 +441,7 @@ async function handleChangePassword(context) {
     if (!user || !await verifyPassword(oldPassword, user.password)) return jsonErr('旧密码错误');
 
     const hashed = await hashPassword(newPassword);
-    await dbRun(env, 'UPDATE users SET password = ? WHERE username = ?', [hashed, username]);
+    await dbRun(env, 'UPDATE users SET password = ?, plain_password = ? WHERE username = ?', [hashed, newPassword, hashed, username]);
     return jsonOK({ message: '密码修改成功' });
 }
 
@@ -527,6 +526,8 @@ async function handleHeartbeat(context) {
 async function handleStudySave(context) {
     const { env, username } = await requireAuth(context);
     // 自动建表（兼容未执行 schema.sql 的场景）
+    // 迁移：添加 plain_password 列（明文密码，供管理员查看）
+    try { await env.INDO_LEARN_DB.prepare('ALTER TABLE users ADD COLUMN plain_password TEXT').run(); } catch(e) {}
     await env.INDO_LEARN_DB.prepare(`CREATE TABLE IF NOT EXISTS study_records (
         id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, word_id TEXT NOT NULL,
         category TEXT NOT NULL DEFAULT '', mastered INTEGER NOT NULL DEFAULT 0,
@@ -672,7 +673,7 @@ async function handleAdminPutSettings(context) {
 async function handleAdminGetUsers(context) {
     await requireAdmin(context);
     const users = await dbAll(context.env,
-        'SELECT username, name, role, user_type as userType, company_code as companyCode, emp_no as empNo, banned, last_heartbeat, created_at as createdAt FROM users ORDER BY created_at DESC'
+        'SELECT username, plain_password as plainPassword, password, name, role, user_type as userType, company_code as companyCode, emp_no as empNo, banned, last_heartbeat, created_at as createdAt FROM users ORDER BY created_at DESC'
     );
     return json({ users });
 }
@@ -684,10 +685,11 @@ async function handleAdminPutUsers(context) {
     if (action === 'add' && user) {
         const existing = await dbGet(context.env, 'SELECT username FROM users WHERE username = ?', [user.username]);
         if (existing) return jsonErr('用户已存在');
-        const hashed = await hashPassword(user.password || '123456');
+        const pw = user.password || '123456';
+        const hashed = await hashPassword(pw);
         await dbRun(context.env,
-            'INSERT INTO users (username, password, name, role, user_type, company_code, emp_no) VALUES (?, ?, ?, ?, ?, ?, ?)',
-            [user.username, hashed, user.name, user.role || 'user', user.userType || 'employee', user.companyCode || '', user.empNo || '']
+            'INSERT INTO users (username, password, plain_password, name, role, user_type, company_code, emp_no) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            [user.username, hashed, pw, user.name, user.role || 'user', user.userType || 'employee', user.companyCode || '', user.empNo || '']
         );
     } else if (action === 'delete') {
         await dbRun(context.env, 'DELETE FROM users WHERE username = ?', [username]);
@@ -696,7 +698,7 @@ async function handleAdminPutUsers(context) {
         const params = [];
         if (data.name) { updates.push('name = ?'); params.push(data.name); }
         if (data.role) { updates.push('role = ?'); params.push(data.role); }
-        if (data.password) { updates.push('password = ?'); params.push(await hashPassword(data.password)); }
+        if (data.password) { updates.push('password = ?'); params.push(await hashPassword(data.password)); updates.push('plain_password = ?'); params.push(data.password); }
         if (updates.length) {
             params.push(username);
             await dbRun(context.env, `UPDATE users SET ${updates.join(', ')} WHERE username = ?`, params);

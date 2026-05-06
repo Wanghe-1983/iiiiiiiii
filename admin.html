@@ -428,6 +428,7 @@
                         <div style="display:flex;gap:8px;">
                             <button class="hdr-btn primary" onclick="showAddUser()"><i class="fas fa-user-plus"></i> 添加用户</button>
                             <button class="hdr-btn ghost" onclick="loadUsers()"><i class="fas fa-refresh"></i> 刷新</button>
+                            <button class="hdr-btn ghost" onclick="downloadUserList()"><i class="fas fa-download"></i> 下载名单</button>
                         </div>
                     </div>
                     <div class="table-wrap">
@@ -1108,7 +1109,8 @@
                     </div>
 
                     <div style="margin-top:20px;display:flex;gap:10px;">
-                        <button class="hdr-btn primary" onclick="saveChallengeSettings()"><i class="fas fa-save"></i> 保存闯天关设置</button>
+                        <button class="hdr-btn primary" onclick="saveNormalChallengeSettings()" style="flex:1;"><i class="fas fa-shield-halved"></i> 保存普通模式</button>
+                        <button class="hdr-btn" onclick="saveHellChallengeSettings()" style="flex:1;background:rgba(248,113,113,0.2);color:#f87171;border:1px solid rgba(248,113,113,0.4);"><i class="fas fa-skull-crossbones"></i> 保存地狱模式</button>
                     </div>
                 </div>
             </div>
@@ -1273,7 +1275,7 @@ let allUsers = [];
             <td>${esc(u.name || '-')}</td>
             <td><span class="badge ${u.role === 'admin' ? 'badge-admin' : ''}">${u.role === 'admin' ? '<i class="fas fa-crown"></i> 管理员' : '用户'}</span></td>
             <td>${u.isBanned ? '<span class="badge badge-banned"><i class="fas fa-ban"></i> 已封禁</span>' : u.isOnline ? '<span class="badge badge-online"><i class="fas fa-circle"></i> 在线</span>' : '<span class="badge badge-offline">离线</span>'}</td>
-            <td style="font-family:monospace;color:#64748b;font-size:0.8rem;">${esc(u.password || '***')}</td>
+            <td style="font-family:monospace;color:#e2e8f0;font-size:0.8rem;">${esc(u.plainPassword || '未记录')}</td>
             <td style="color:#64748b;font-size:0.8rem;">${u.createdAt ? u.createdAt.split('T')[0] : '-'}</td>
             <td style="white-space:nowrap;">
                 ${u.isOnline ? `<button class="action-btn kick" onclick="kickUser('${esc(u.username)}')" title="踢下线"><i class="fas fa-right-from-bracket"></i></button>` : ''}
@@ -1282,6 +1284,29 @@ let allUsers = [];
                 ${u.role !== 'admin' ? `<button class="action-btn del" onclick="deleteUser('${esc(u.username)}')" title="删除"><i class="fas fa-trash"></i></button>` : ''}
             </td>
         </tr>`).join('');
+    }
+
+    function downloadUserList() {
+        const includeAdmin = confirm('是否包含管理员账号？\n\n确定 = 包含管理员\n取消 = 仅普通用户');
+        const list = includeAdmin ? allUsers : allUsers.filter(u => u.role !== 'admin');
+        if (!list.length) { alert('暂无用户数据'); return; }
+        // 生成 CSV
+        const headers = ['用户名', '昵称', '角色', '密码', '状态', '注册时间'];
+        const rows = list.map(u => [
+            u.username, u.name || '', u.role === 'admin' ? '管理员' : '用户',
+            u.plainPassword || '未记录',
+            u.isBanned ? '已封禁' : '正常',
+            u.createdAt ? u.createdAt.split('T')[0] : ''
+        ]);
+        const bom = '\uFEFF';
+        const csv = bom + [headers, ...rows].map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '用户名单_' + new Date().toISOString().slice(0,10) + '.csv';
+        a.click();
+        URL.revokeObjectURL(url);
     }
 
     function filterUsers() {
@@ -1312,7 +1337,7 @@ let allUsers = [];
         document.getElementById('ufUsername').value = u.username;
         document.getElementById('ufUsername').disabled = true;
         document.getElementById('ufName').value = u.name || '';
-        document.getElementById('ufPassword').value = u.password || '';
+        document.getElementById('ufPassword').value = u.plainPassword || u.password || '';
         document.getElementById('ufRole').value = u.role || 'user';
     }
 
@@ -1591,6 +1616,9 @@ let allUsers = [];
         document.getElementById('setHellWordsPerStage').value = hs.wordsPerStage || 6;
         document.getElementById('setHellSentencesPerStage').value = hs.sentencesPerStage || 2;
         document.getElementById('setHellDialoguesPerStage').value = hs.dialoguesPerStage || 2;
+
+        // 初始化完成后计算关卡数
+        updateStageCountEstimate();
     }
 
 
@@ -1704,41 +1732,21 @@ let allUsers = [];
         }
     });
 
-    async function saveChallengeSettings() {
-        // 确定切分模式
-        const normalSplitMode = document.getElementById('cmNormalAuto').style.display !== 'none' ? 'auto' : 'manual';
-        const hellSplitMode = document.getElementById('cmHellAuto').style.display !== 'none' ? 'auto' : 'manual';
-
-        // 先收集切分参数（questionCount 需要依赖这些值）
-        let normalWordsPerStage = 0, normalSentencesPerStage = 0, normalDialoguesPerStage = 0, normalAutoContentCount = 5;
-        if (normalSplitMode === 'auto') {
-            normalAutoContentCount = parseInt(document.getElementById('setNormalAutoContentCount').value) || 5;
+    async function saveNormalChallengeSettings() {
+        const splitMode = document.getElementById('cmNormalAuto').style.display !== 'none' ? 'auto' : 'manual';
+        let wordsPerStage = 0, sentencesPerStage = 0, dialoguesPerStage = 0, autoContentCount = 5;
+        if (splitMode === 'auto') {
+            autoContentCount = parseInt(document.getElementById('setNormalAutoContentCount').value) || 5;
         } else {
-            normalWordsPerStage = parseInt(document.getElementById('setNormalWordsPerStage').value) || 3;
-            normalSentencesPerStage = parseInt(document.getElementById('setNormalSentencesPerStage').value) || 1;
-            normalDialoguesPerStage = parseInt(document.getElementById('setNormalDialoguesPerStage').value) || 1;
+            wordsPerStage = parseInt(document.getElementById('setNormalWordsPerStage').value) || 3;
+            sentencesPerStage = parseInt(document.getElementById('setNormalSentencesPerStage').value) || 1;
+            dialoguesPerStage = parseInt(document.getElementById('setNormalDialoguesPerStage').value) || 1;
         }
-        const normalQuestionCount = normalSplitMode === 'auto'
-            ? normalAutoContentCount
-            : (normalWordsPerStage + normalSentencesPerStage + normalDialoguesPerStage);
-
-        let hellWordsPerStage = 0, hellSentencesPerStage = 0, hellDialoguesPerStage = 0, hellAutoContentCount = 10;
-        if (hellSplitMode === 'auto') {
-            hellAutoContentCount = parseInt(document.getElementById('setHellAutoContentCount').value) || 10;
-        } else {
-            hellWordsPerStage = parseInt(document.getElementById('setHellWordsPerStage').value) || 6;
-            hellSentencesPerStage = parseInt(document.getElementById('setHellSentencesPerStage').value) || 2;
-            hellDialoguesPerStage = parseInt(document.getElementById('setHellDialoguesPerStage').value) || 2;
-        }
-        const hellQuestionCount = hellSplitMode === 'auto'
-            ? hellAutoContentCount
-            : (hellWordsPerStage + hellSentencesPerStage + hellDialoguesPerStage);
+        const questionCount = splitMode === 'auto' ? autoContentCount : (wordsPerStage + sentencesPerStage + dialoguesPerStage);
 
         const normalSettings = {
-            splitMode: normalSplitMode,
-            questionType: document.getElementById('setNormalQuestionType').value || 'mixed',
-            questionCount: normalQuestionCount,
-            sequentialMode: document.getElementById('setNormalSequentialMode').checked,
+            splitMode, questionType: document.getElementById('setNormalQuestionType').value || 'mixed',
+            questionCount, sequentialMode: document.getElementById('setNormalSequentialMode').checked,
             timeLimitEnabled: document.getElementById('setNormalTimeLimitEnabled').checked,
             timeLimit: document.getElementById('setNormalTimeLimitEnabled').checked ? (parseInt(document.getElementById('setNormalTimeLimit').value) || 60) : 0,
             speedControl: document.getElementById('setNormalSpeedControl').checked,
@@ -1749,123 +1757,13 @@ let allUsers = [];
             accuracyWeight: parseFloat(document.getElementById('setNormalAccuracyWeight').value) || 0.9,
             timeWeight: parseFloat(document.getElementById('setNormalTimeWeight').value) || 0.1,
             timeMultiplier: parseInt(document.getElementById('setNormalTimeMultiplier').value) || 5,
-            autoContentCount: normalAutoContentCount,
-            wordsPerStage: normalWordsPerStage,
-            sentencesPerStage: normalSentencesPerStage,
-            dialoguesPerStage: normalDialoguesPerStage,
+            autoContentCount, wordsPerStage, sentencesPerStage, dialoguesPerStage,
         };
-
-        const hellSettings = {
-            enabled: document.getElementById('setHellModeEnabled').checked,
-            splitMode: hellSplitMode,
-            levels: Array.from(document.querySelectorAll('.hell-level-cb:checked')).map(cb => parseInt(cb.value)),
-            questionType: document.getElementById('setHellQuestionType').value || 'mixed',
-            questionCount: hellQuestionCount,
-            timeLimit: document.getElementById('setHellTimeLimitEnabled').checked ? (parseInt(document.getElementById('setHellTimeLimit').value) || 120) : 0,
-            sequentialMode: document.getElementById('setHellSequentialMode').checked,
-            timeLimitEnabled: document.getElementById('setHellTimeLimitEnabled').checked,
-            star3: parseInt(document.getElementById('setHellStar3').value) || 90,
-            star2: parseInt(document.getElementById('setHellStar2').value) || 70,
-            star1: parseInt(document.getElementById('setHellStar1').value) || 50,
-            accuracyWeight: parseFloat(document.getElementById('setHellAccuracyWeight').value) || 0.9,
-            timeWeight: parseFloat(document.getElementById('setHellTimeWeight').value) || 0.1,
-            timeMultiplier: parseInt(document.getElementById('setHellTimeMultiplier').value) || 3,
-            autoContentCount: hellAutoContentCount,
-            wordsPerStage: hellWordsPerStage,
-            sentencesPerStage: hellSentencesPerStage,
-            dialoguesPerStage: hellDialoguesPerStage,
-        };
-
-        // 计算关卡总数并弹出确认框
-        const courseData = window._adminCourseData || {};
-        const allLevels = courseData.levels || [];
-
-        // 计算普通模式关卡数
-        let normalStages = 0;
-        const visibleLevelConfig = window._adminSettings || {};
-        const lvlCfgUser = visibleLevelConfig.levelConfigUser || visibleLevelConfig.studyLevelConfigUser;
-        const hellLevelSet = new Set(hellSettings.levels);
-        for (const level of allLevels) {
-            const state = lvlCfgUser ? (lvlCfgUser[Number(level.id)] !== undefined ? lvlCfgUser[Number(level.id)] : 2) : 2;
-            if (state === 0) continue;
-            for (const unit of (level.units || [])) {
-                const wC = (unit.words || []).length;
-                const sC = (unit.sentences || []).length;
-                const dC = (unit.dialogues || []).length;
-                const skipS = String(level.id) === '0' && (level.units || []).indexOf(unit) < 4;
-                if (normalSplitMode === 'auto') {
-                    const total = wC + (skipS ? 0 : sC) + dC;
-                    normalStages += total > 0 ? Math.ceil(total / normalAutoContentCount) : 0;
-                } else {
-                    normalStages += Math.ceil(wC / normalWordsPerStage);
-                    if (!skipS) normalStages += Math.ceil(sC / normalSentencesPerStage);
-                    normalStages += Math.ceil(dC / normalDialoguesPerStage);
-                }
-            }
-        }
-
-        // 计算地狱模式关卡数
-        let hellStages = 0;
-        for (const level of allLevels) {
-            if (!hellLevelSet.has(Number(level.id))) continue;
-            const state = lvlCfgUser ? (lvlCfgUser[Number(level.id)] !== undefined ? lvlCfgUser[Number(level.id)] : 2) : 2;
-            if (state === 0) continue;
-            for (const unit of (level.units || [])) {
-                const wC = (unit.words || []).length;
-                const sC = (unit.sentences || []).length;
-                const dC = (unit.dialogues || []).length;
-                const skipS = String(level.id) === '0' && (level.units || []).indexOf(unit) < 4;
-                if (hellSplitMode === 'auto') {
-                    const total = wC + (skipS ? 0 : sC) + dC;
-                    hellStages += total > 0 ? Math.ceil(total / hellAutoContentCount) : 0;
-                } else {
-                    hellStages += Math.ceil(wC / hellWordsPerStage);
-                    if (!skipS) hellStages += Math.ceil(sC / hellSentencesPerStage);
-                    hellStages += Math.ceil(dC / hellDialoguesPerStage);
-                }
-            }
-        }
-
-        const confirmed = await new Promise(resolve => {
-            const overlay = document.createElement('div');
-            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:99999;';
-            const normalDesc = normalSplitMode === 'auto'
-                ? ('auto ' + normalAutoContentCount + '/关')
-                : (normalWordsPerStage + '词+' + normalSentencesPerStage + '句+' + normalDialoguesPerStage + '对话/关');
-            const hellDesc = hellSplitMode === 'auto'
-                ? ('auto ' + hellAutoContentCount + '/关')
-                : (hellWordsPerStage + '词+' + hellSentencesPerStage + '句+' + hellDialoguesPerStage + '对话/关');
-            overlay.innerHTML = '<div style="background:#1e293b;border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px 32px;max-width:520px;width:90%;text-align:center;">'
-                + '<div style="font-size:1.1rem;font-weight:600;color:#e2e8f0;margin-bottom:16px;"><i class="fas fa-calculator" style="color:#f472b6;margin-right:6px;"></i>关卡总数确认</div>'
-                + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">'
-                + '<div style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);border-radius:12px;padding:16px;">'
-                + '<div style="font-size:0.8rem;color:#60a5fa;font-weight:600;margin-bottom:8px;"><i class="fas fa-gamepad"></i> 普通闯关</div>'
-                + '<div style="font-size:0.75rem;color:#64748b;margin-bottom:6px;">' + normalDesc + '</div>'
-                + '<div style="font-size:1.8rem;font-weight:700;color:#60a5fa;">' + normalStages + ' 关</div>'
-                + '</div>'
-                + '<div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:16px;">'
-                + '<div style="font-size:0.8rem;color:#f87171;font-weight:600;margin-bottom:8px;"><i class="fas fa-skull-crossbones"></i> 地狱闯关</div>'
-                + '<div style="font-size:0.75rem;color:#64748b;margin-bottom:6px;">' + hellDesc + '</div>'
-                + '<div style="font-size:1.8rem;font-weight:700;color:#f87171;">' + hellStages + ' 关</div>'
-                + '</div></div>'
-                + '<div style="font-size:0.8rem;color:#64748b;margin-bottom:16px;">保存后前端将根据新配置重新生成关卡</div>'
-                + '<div style="display:flex;gap:12px;justify-content:center;">'
-                + '<button id="_stageConfirmCancel" style="padding:10px 24px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#94a3b8;cursor:pointer;font-size:0.9rem;">取消</button>'
-                + '<button id="_stageConfirmOk" style="padding:10px 24px;border-radius:8px;border:none;background:#6366f1;color:#fff;cursor:pointer;font-size:0.9rem;font-weight:600;">确认保存</button>'
-                + '</div></div>';
-            document.body.appendChild(overlay);
-            overlay.querySelector('#_stageConfirmCancel').onclick = function() { document.body.removeChild(overlay); resolve(false); };
-            overlay.querySelector('#_stageConfirmOk').onclick = function() { document.body.removeChild(overlay); resolve(true); };
-        });
-        if (!confirmed) return;
 
         var settings = {
             challengeEnabled: document.getElementById('setChallengeEnabled').checked,
             normalSettings,
-            hellSettings,
         };
-
-        // Backward compat: derive old fields for frontend that hasn't updated yet
         settings.challengeSequentialMode = normalSettings.sequentialMode;
         settings.challengeQuestionCount = normalSettings.questionCount;
         settings.challengeQuestionType = normalSettings.questionType;
@@ -1876,45 +1774,85 @@ let allUsers = [];
         settings.challengeAccuracyWeight = normalSettings.accuracyWeight;
         settings.challengeTimeWeight = normalSettings.timeWeight;
         settings.challengeTimeMultiplier = normalSettings.timeMultiplier;
+        if (splitMode === 'manual') {
+            settings.wordsPerStage = normalSettings.wordsPerStage;
+            settings.sentencesPerStage = normalSettings.sentencesPerStage;
+            settings.dialoguesPerStage = normalSettings.dialoguesPerStage;
+            settings.autoContentCount = 0;
+        } else {
+            settings.wordsPerStage = 0; settings.sentencesPerStage = 0; settings.dialoguesPerStage = 0;
+            settings.autoContentCount = normalSettings.autoContentCount;
+        }
+
+        var result = await adminFetch('admin/settings', { method: 'PUT', body: JSON.stringify(settings) });
+        var ceHint = document.getElementById('challenge-enabled-hint');
+        if (ceHint) ceHint.textContent = settings.challengeEnabled ? '已启用' : '已关闭';
+        if (result && result.success) {
+            showAdminToast('普通模式设置已保存', 'success');
+            updateStageCountEstimate();
+            document.getElementById('setNormalQuestionCountDisplay').textContent = '每关 ' + questionCount + ' 题（' + (splitMode === 'auto' ? '自动' : '手动') + '）';
+            document.getElementById('setNormalQuestionCountDisplay').style.color = '#60a5fa';
+        } else {
+            showAdminToast((result && result.error) || (result === null ? '网络请求失败，请检查连接' : '保存失败'), 'error');
+        }
+    }
+
+    async function saveHellChallengeSettings() {
+        const splitMode = document.getElementById('cmHellAuto').style.display !== 'none' ? 'auto' : 'manual';
+        let wordsPerStage = 0, sentencesPerStage = 0, dialoguesPerStage = 0, autoContentCount = 10;
+        if (splitMode === 'auto') {
+            autoContentCount = parseInt(document.getElementById('setHellAutoContentCount').value) || 10;
+        } else {
+            wordsPerStage = parseInt(document.getElementById('setHellWordsPerStage').value) || 6;
+            sentencesPerStage = parseInt(document.getElementById('setHellSentencesPerStage').value) || 2;
+            dialoguesPerStage = parseInt(document.getElementById('setHellDialoguesPerStage').value) || 2;
+        }
+        const questionCount = splitMode === 'auto' ? autoContentCount : (wordsPerStage + sentencesPerStage + dialoguesPerStage);
+
+        const hellSettings = {
+            enabled: document.getElementById('setHellModeEnabled').checked,
+            splitMode,
+            levels: Array.from(document.querySelectorAll('.hell-level-cb:checked')).map(cb => parseInt(cb.value)),
+            questionType: document.getElementById('setHellQuestionType').value || 'mixed',
+            questionCount,
+            timeLimit: document.getElementById('setHellTimeLimitEnabled').checked ? (parseInt(document.getElementById('setHellTimeLimit').value) || 120) : 0,
+            sequentialMode: document.getElementById('setHellSequentialMode').checked,
+            timeLimitEnabled: document.getElementById('setHellTimeLimitEnabled').checked,
+            star3: parseInt(document.getElementById('setHellStar3').value) || 90,
+            star2: parseInt(document.getElementById('setHellStar2').value) || 70,
+            star1: parseInt(document.getElementById('setHellStar1').value) || 50,
+            accuracyWeight: parseFloat(document.getElementById('setHellAccuracyWeight').value) || 0.9,
+            timeWeight: parseFloat(document.getElementById('setHellTimeWeight').value) || 0.1,
+            timeMultiplier: parseInt(document.getElementById('setHellTimeMultiplier').value) || 3,
+            autoContentCount, wordsPerStage, sentencesPerStage, dialoguesPerStage,
+        };
+
+        var settings = {
+            hellSettings,
+        };
         settings.hellModeEnabled = hellSettings.enabled;
         settings.hellLevels = hellSettings.levels;
         settings.hellTimeLimit = hellSettings.timeLimit;
         settings.hellQuestionCount = hellSettings.questionCount;
         settings.hellQuestionType = hellSettings.questionType;
-        // Stage split params for course-content-loader backward compat
-        if (normalSplitMode === 'manual') {
-            settings.wordsPerStage = normalSettings.wordsPerStage;
-            settings.sentencesPerStage = normalSettings.sentencesPerStage;
-            settings.dialoguesPerStage = normalSettings.dialoguesPerStage;
-            settings.autoContentCount = 0; // 清除自动模式标记
-        } else {
-            settings.wordsPerStage = 0;
-            settings.sentencesPerStage = 0;
-            settings.dialoguesPerStage = 0;
-            settings.autoContentCount = normalSettings.autoContentCount;
-        }
 
-        console.log('[ChallengeSettings] Saving:', JSON.stringify(settings).substring(0,200));
         var result = await adminFetch('admin/settings', { method: 'PUT', body: JSON.stringify(settings) });
-        var ceHint = document.getElementById('challenge-enabled-hint');
-        if (ceHint) ceHint.textContent = settings.challengeEnabled ? '已启用' : '已关闭';
         var hmHint = document.getElementById('hell-mode-hint');
-        if (hmHint) hmHint.textContent = settings.hellModeEnabled ? '已启用' : '已关闭';
+        if (hmHint) hmHint.textContent = hellSettings.enabled ? '已启用' : '已关闭';
         if (result && result.success) {
-            showAdminToast('闯天关设置已保存', 'success');
-            // Update stage count displays and question count displays
-            document.getElementById('cmNormalAutoStageCount').textContent = normalStages + ' 关';
-            document.getElementById('cmNormalAutoStageCount').style.color = '#60a5fa';
-            document.getElementById('cmHellAutoStageCount').textContent = hellStages + ' 关';
-            document.getElementById('cmHellAutoStageCount').style.color = '#f87171';
-            // Update question count displays
-            document.getElementById('setNormalQuestionCountDisplay').textContent = '每关 ' + normalQuestionCount + ' 题（' + (normalSplitMode === 'auto' ? '自动' : '手动') + '）';
-            document.getElementById('setNormalQuestionCountDisplay').style.color = '#60a5fa';
-            document.getElementById('setHellQuestionCountDisplay').textContent = '每关 ' + hellQuestionCount + ' 题（' + (hellSplitMode === 'auto' ? '自动' : '手动') + '）';
+            showAdminToast('地狱模式设置已保存', 'success');
+            updateStageCountEstimate();
+            document.getElementById('setHellQuestionCountDisplay').textContent = '每关 ' + questionCount + ' 题（' + (splitMode === 'auto' ? '自动' : '手动') + '）';
             document.getElementById('setHellQuestionCountDisplay').style.color = '#f87171';
         } else {
             showAdminToast((result && result.error) || (result === null ? '网络请求失败，请检查连接' : '保存失败'), 'error');
         }
+    }
+
+    // 兼容旧调用
+    async function saveChallengeSettings() {
+        await saveNormalChallengeSettings();
+        await saveHellChallengeSettings();
     }
 
 

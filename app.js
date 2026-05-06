@@ -4130,3 +4130,71 @@ window.speak = function(encodedText) {
         synthOnce();
     });
 };
+
+
+// ========== 版本更新检测 ==========
+(function() {
+    let _lastKnownVersion = '';
+    let _updateCheckTimer = null;
+    let _updateDismissed = false;
+
+    function checkForUpdate() {
+        if (_updateDismissed) return;
+        fetch('/api/system/info').then(r => r.json()).then(data => {
+            if (!data || data.error || !data.mainVersion) return;
+            if (!_lastKnownVersion) {
+                _lastKnownVersion = data.mainVersion;
+                return;
+            }
+            if (data.mainVersion !== _lastKnownVersion) {
+                _lastKnownVersion = data.mainVersion;
+                showUpdateDialog(data.mainVersion);
+            }
+        }).catch(() => {});
+    }
+
+    function showUpdateDialog(newVersion) {
+        if (document.getElementById('_update-dialog-overlay')) return;
+        const overlay = document.createElement('div');
+        overlay.id = '_update-dialog-overlay';
+        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:999999;backdrop-filter:blur(4px);';
+        overlay.innerHTML = '<div style="background:#1e293b;border:1px solid rgba(99,102,241,0.3);border-radius:20px;padding:32px 36px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.5);">'
+            + '<div style="width:56px;height:56px;margin:0 auto 16px;border-radius:50%;background:rgba(99,102,241,0.15);display:flex;align-items:center;justify-content:center;"><i class="fas fa-arrow-up-right-dots" style="font-size:1.4rem;color:#818cf8;"></i></div>'
+            + '<div style="font-size:1.15rem;font-weight:700;color:#e2e8f0;margin-bottom:8px;">发现新版本 v' + newVersion + '</div>'
+            + '<div style="font-size:0.85rem;color:#94a3b8;margin-bottom:24px;line-height:1.5;">平台已更新，建议刷新页面以获取最新内容和功能</div>'
+            + '<div style="display:flex;gap:12px;justify-content:center;">'
+            + '<button id="_updateLaterBtn" style="padding:10px 24px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#94a3b8;cursor:pointer;font-size:0.9rem;">稍后再说</button>'
+            + '<button id="_updateNowBtn" style="padding:10px 24px;border-radius:10px;border:none;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;cursor:pointer;font-size:0.9rem;font-weight:600;">立即更新</button>'
+            + '</div></div>';
+        document.body.appendChild(overlay);
+        document.getElementById('_updateLaterBtn').onclick = function() {
+            _updateDismissed = true;
+            document.body.removeChild(overlay);
+            // 5 分钟后再次提醒
+            setTimeout(function() { _updateDismissed = false; }, 300000);
+        };
+        document.getElementById('_updateNowBtn').onclick = function() {
+            // 清除旧缓存并刷新
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    names.forEach(function(name) { caches.delete(name); });
+                });
+            }
+            // 注册 SW 更新（如果有）
+            if (navigator.serviceWorker) {
+                navigator.serviceWorker.getRegistration().then(function(reg) {
+                    if (reg) reg.update().then(function() {
+                        window.location.reload();
+                    });
+                });
+            } else {
+                window.location.reload();
+            }
+        };
+    }
+
+    // 每 120 秒检查一次版本更新
+    _updateCheckTimer = setInterval(checkForUpdate, 120000);
+    // 页面加载后立即检查一次（延迟 5 秒避免影响首屏）
+    setTimeout(checkForUpdate, 5000);
+})();

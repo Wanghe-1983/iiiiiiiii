@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
     user_type TEXT NOT NULL DEFAULT 'employee',
     company_code TEXT NOT NULL DEFAULT '',
     emp_no TEXT NOT NULL DEFAULT '',
+    plain_password TEXT NOT NULL DEFAULT '',
     banned INTEGER NOT NULL DEFAULT 0,
     last_heartbeat TEXT,
     created_at TEXT NOT NULL DEFAULT (datetime('now'))
