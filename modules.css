@@ -1896,3 +1896,7 @@
         font-size: 1.3rem;
     }
 }
+
+/* 折叠面板 - 听力设置 */
+.ctrl-expanded .ctrl-body { display: flex !important; align-items: center; gap: 16px; }
+.ctrl-expanded > div:first-child i.fa-chevron-down { transform: rotate(180deg); }

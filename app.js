@@ -433,8 +433,8 @@ async function initUI() {
                 <div style="flex:1;">
                     <div style="font-size:13px;color:var(--text-muted);margin-bottom:6px;display:flex;align-items:center;gap:5px;"><i class="fas fa-language" style="color:#60a5fa;"></i> 快速翻译</div>
                     <div style="display:flex;gap:6px;">
-                        <input type="text" id="quick-translate-input" placeholder="输入文字..." style="flex:1;padding:6px 10px;border-radius:8px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:0.82rem;outline:none;" onkeydown="if(event.key==='Enter')quickTranslate()">
-                        <button onclick="quickTranslate()" style="padding:6px 10px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:0.8rem;"><i class="fas fa-arrow-right-arrow-left"></i></button>
+                        <input type="text" id="quick-translate-input" placeholder="输入中文或印尼语..." style="flex:1;padding:6px 10px;border-radius:8px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:0.82rem;outline:none;" onkeydown="if(event.key==='Enter')quickTranslate()">
+                        <button onclick="quickTranslate()" style="padding:6px 12px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:0.8rem;white-space:nowrap;"><i class="fas fa-language" style="margin-right:3px;"></i>翻译</button>
                     </div>
                     <div id="quick-translate-result" style="margin-top:6px;font-size:0.85rem;color:var(--text-main);min-height:20px;cursor:pointer;" title="点击播放发音"></div>
                 </div>
@@ -458,7 +458,12 @@ async function initUI() {
                 <span style="font-size:0.8rem;display:block;margin-top:5px;">打卡</span>
             </button>
         </div>
-        <div style="margin:24px 0;padding:16px 20px;border-radius:14px;border:1px dashed var(--border-subtle);background:var(--accent-subtle);display:flex;align-items:center;gap:16px;" id="learn-inline-controls">
+        <div style="margin:24px 0;border-radius:14px;border:1px dashed var(--border-subtle);background:var(--accent-subtle);overflow:hidden;" id="learn-inline-controls">
+            <div onclick="this.parentElement.classList.toggle('ctrl-expanded')" style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;cursor:pointer;user-select:none;">
+                <span style="font-size:0.82rem;color:var(--text-muted);"><i class="fas fa-sliders" style="margin-right:5px;"></i>听力设置</span>
+                <i class="fas fa-chevron-down" style="font-size:0.7rem;color:var(--text-dim);transition:transform 0.2s;"></i>
+            </div>
+            <div class="ctrl-body" style="display:none;padding:0 16px 12px;">
             <div class="sliders-col" style="flex:1;min-width:0;">
                 <div class="vslider-box">
                     <div class="vslider-label"><i class="fas fa-gauge-high"></i> 语速</div>
@@ -491,7 +496,8 @@ async function initUI() {
                     <div class="vslider-range"><span></span><span></span></div>
                 </div>
             </div>
-        </div>
+            </div><!-- end ctrl-body -->
+        </div><!-- end learn-inline-controls -->
     </section>
 
     <div class="study-record-box">
@@ -665,6 +671,16 @@ function loadRandomWord() {
 }
 
 // ========== 快速翻译功能（中印尼互译） ==========
+// 实时检测输入语言并更新方向提示
+function updateTranslateDir() {
+    const input = document.getElementById('quick-translate-input');
+    const dirEl = document.getElementById('quick-translate-dir');
+    if (!input || !dirEl) return;
+    const text = input.value.trim();
+    if (!text) { dirEl.textContent = '中文 → 印尼语'; return; }
+    dirEl.textContent = /[\u4e00-\u9fa5]/.test(text) ? '中文 → 印尼语' : '印尼语 → 中文';
+}
+
 function quickTranslate() {
     const input = document.getElementById('quick-translate-input');
     const resultEl = document.getElementById('quick-translate-result');
@@ -887,8 +903,14 @@ async function buildMenu() {
 
     let menuHTML = `
     <div class="cat-item">
+        <div class="cat-head" style="color:#818cf8" onclick="switchStudySubTab('practice')">
+            <span><i class="fas fa-list-check" style="margin-right:4px;"></i> 已掌握词汇</span>
+            <i class="fas fa-chevron-right"></i>
+        </div>
+    </div>
+    <div class="cat-item">
         <div class="cat-head" style="color:#f87171" onclick="this.nextElementSibling.classList.toggle('active')">
-            <span>📝 错题集 (${wrongFavs.length})</span>
+            <span><i class="fas fa-bookmark" style="margin-right:4px;"></i> 错题集 (${wrongFavs.length})</span>
             <i class="fas fa-chevron-down"></i> </div>
         <div class="sub-menu">
             ${wrongHTML}
@@ -896,7 +918,7 @@ async function buildMenu() {
     </div>
     <div class="cat-item">
         <div class="cat-head" style="color:#fbbf24" onclick="this.nextElementSibling.classList.toggle('active')">
-            <span>⭐ 我的收藏 (${normalFavs.length})</span>
+            <span><i class="fas fa-star" style="margin-right:4px;"></i> 我的收藏 (${normalFavs.length})</span>
             <i class="fas fa-chevron-down"></i> </div>
         <div class="sub-menu">
             ${favsHTML}
@@ -2618,6 +2640,10 @@ function initPracticePage() {
       <select id="practice-cat-select" onchange="updatePracticeWordCount()" style="width:100%;padding:11px;border-radius:10px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:0.95rem;outline:none;">
         ${catOpts}
       </select>
+      <label style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:0.82rem;color:var(--text-muted);cursor:pointer;user-select:none;">
+        <input type="checkbox" id="practice-mastered-filter" onchange="updatePracticeWordCount()" style="accent-color:var(--accent);width:15px;height:15px;cursor:pointer;">
+        <i class="fas fa-list-check" style="color:#818cf8;"></i> 仅包含已掌握词汇
+      </label>
     </div>
     <div style="margin-bottom:18px;">
       <div style="color:var(--text-muted);font-size:0.85rem;margin-bottom:8px;">练习类型</div>
@@ -2794,10 +2820,16 @@ function updatePracticeWordCount() {
     if (!hint) return;
     try {
         const catId = document.getElementById('practice-cat-select').value;
+        const masterdOnly = document.getElementById('practice-mastered-filter') && document.getElementById('practice-mastered-filter').checked;
         let items = getPracticeItemsByLevel(catId);
         if (items.length === 0) {
             // 兜底：从旧 db 中获取
             items = catId === 'all' ? getAllWords() : getWordsByCategory(catId);
+        }
+        // 已掌握过滤
+        if (masterdOnly) {
+            const mastered = getMasteredWords();
+            items = items.filter(i => mastered.includes(i.indonesian));
         }
         const count = selectedPracticeCount === 0 ? items.length : Math.min(selectedPracticeCount, items.length);
         // 统计词/句/对话
@@ -2816,10 +2848,16 @@ function updatePracticeWordCount() {
 
 function startPractice() {
     const catId = document.getElementById('practice-cat-select').value;
+    const masterdOnly = document.getElementById('practice-mastered-filter') && document.getElementById('practice-mastered-filter').checked;
     let words = getPracticeItemsByLevel(catId);
     if (words.length === 0) {
         // 兜底
         words = catId === 'all' ? getAllWords() : getWordsByCategory(catId);
+    }
+    // 已掌握过滤
+    if (masterdOnly) {
+        const mastered = getMasteredWords();
+        words = words.filter(i => mastered.includes(i.indonesian));
     }
     if (words.length < 4) {
         if (window._showCustomConfirm) {
@@ -3294,7 +3332,7 @@ function showMasteredList() {
         if (catWords.length > 0) {
             html += '<div style="margin-bottom:16px;"><div style="color:var(--accent);font-weight:700;font-size:0.95rem;margin-bottom:8px;">' + catId + '. ' + cn + '（' + catWords.length + '词）</div>';
             catWords.forEach(w => {
-                html += '<div style="display:flex;justify-content:space-between;padding:6px 10px;border-bottom:1px solid var(--border-subtle);font-size:0.88rem;"><span style="color:var(--text-main);font-weight:600;">' + w.indo + '</span><span style="color:var(--text-muted);">' + w.zh + '</span></div>';
+                html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:1px solid var(--border-subtle);font-size:0.88rem;"><div style="flex:1;min-width:0;"><span style="color:var(--text-main);font-weight:600;">' + w.indo + '</span> <span style="color:var(--text-muted);margin-left:8px;">' + w.zh + '</span></div><button onclick="removeMasteredWord(\'' + w.indo.replace(/'/g, "\\'") + '\',this)" style="background:rgba(248,113,113,0.1);color:#f87171;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px;flex-shrink:0;"><i class="fas fa-times"></i></button></div>';
             });
             html += '</div>';
         }
@@ -3304,16 +3342,57 @@ function showMasteredList() {
     if (notFound.length > 0) {
         html += '<div style="margin-bottom:16px;"><div style="color:#f59e0b;font-weight:700;font-size:0.95rem;margin-bottom:8px;">其他（' + notFound.length + '词）</div>';
         notFound.forEach(w => {
-            html += '<div style="padding:6px 10px;border-bottom:1px solid var(--border-subtle);font-size:0.88rem;color:var(--text-main);">' + w + '</div>';
+            html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:1px solid var(--border-subtle);font-size:0.88rem;"><span style="color:var(--text-main);flex:1;">' + w + '</span><button onclick="removeMasteredWord(\'' + w.replace(/'/g, "\\'") + '\',this)" style="background:rgba(248,113,113,0.1);color:#f87171;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px;flex-shrink:0;"><i class="fas fa-times"></i></button></div>';
         });
         html += '</div>';
     }
     // 创建弹窗
     const dialog = document.createElement('div');
+    dialog.id = 'mastered-list-dialog';
     dialog.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:10000;';
-    dialog.innerHTML = '<div style="background:var(--glass,rgba(30,41,59,0.97));border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:20px 24px;max-width:420px;width:92%;max-height:75vh;overflow-y:auto;backdrop-filter:blur(20px);"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><h3 style="color:var(--text-main);font-size:1.1rem;font-weight:700;"><i class="fas fa-list-check" style="color:var(--accent);margin-right:8px;"></i>已掌握列表</h3><span style="color:var(--text-muted);font-size:0.85rem;">共 ' + learned.length + ' 词</span></div>' + html + '<div style="text-align:center;margin-top:12px;"><button onclick="this.closest(\'div[style*=fixed]\').remove()" style="background:var(--accent);color:#fff;border:none;padding:8px 24px;border-radius:10px;cursor:pointer;font-size:0.9rem;">关闭</button></div></div>';
+    dialog.innerHTML = '<div style="background:var(--glass,rgba(30,41,59,0.97));border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:20px 24px;max-width:420px;width:92%;max-height:75vh;overflow-y:auto;backdrop-filter:blur(20px);"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;"><h3 style="color:var(--text-main);font-size:1.1rem;font-weight:700;"><i class="fas fa-list-check" style="color:var(--accent);margin-right:8px;"></i>已掌握列表</h3><span style="color:var(--text-muted);font-size:0.85rem;" id="mastered-count">共 ' + learned.length + ' 词</span></div>' + html + '<div style="display:flex;gap:10px;margin-top:12px;"><button onclick="clearAllMastered()" style="flex:1;padding:8px 12px;background:rgba(248,113,113,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.3);border-radius:10px;cursor:pointer;font-size:0.85rem;"><i class="fas fa-trash-alt" style="margin-right:4px;"></i>一键清空</button><button onclick="document.getElementById(\'mastered-list-dialog\').remove()" style="flex:1;padding:8px 24px;background:var(--accent);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:0.9rem;">关闭</button></div></div>';
     document.body.appendChild(dialog);
-    dialog.addEventListener('click', (e) => { if (e.target === dialog) document.body.removeChild(dialog); });
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.remove(); });
+}
+
+// 单条删除已掌握词汇
+// 获取已掌握词汇列表
+function getMasteredWords() {
+    return JSON.parse(localStorage.getItem('fmi_all_words') || '[]');
+}
+
+function removeMasteredWord(word, btnEl) {
+    let learned = JSON.parse(localStorage.getItem('fmi_all_words') || '[]');
+    learned = learned.filter(w => w !== word);
+    localStorage.setItem('fmi_all_words', JSON.stringify(learned));
+    if (typeof studyStats !== 'undefined') studyStats.totalWords = learned.length;
+    if (btnEl && btnEl.parentElement) btnEl.parentElement.remove();
+    const countEl = document.getElementById('mastered-count');
+    if (countEl) countEl.textContent = '共 ' + learned.length + ' 词';
+    updatePracticeWordCount();
+    if (learned.length === 0) {
+        const dialog = document.getElementById('mastered-list-dialog');
+        if (dialog) dialog.remove();
+    }
+}
+
+// 一键清空已掌握列表
+function clearAllMastered() {
+    if (window._showCustomConfirm) {
+        window._showCustomConfirm('确认清空', '确定要清空所有已掌握词汇吗？此操作不可恢复。', '确认清空', '取消', function() {
+            localStorage.setItem('fmi_all_words', '[]');
+            if (typeof studyStats !== 'undefined') studyStats.totalWords = 0;
+            const dialog = document.getElementById('mastered-list-dialog');
+            if (dialog) dialog.remove();
+            updatePracticeWordCount();
+        });
+    } else if (confirm('确定要清空所有已掌握词汇吗？')) {
+        localStorage.setItem('fmi_all_words', '[]');
+        if (typeof studyStats !== 'undefined') studyStats.totalWords = 0;
+        const dialog = document.getElementById('mastered-list-dialog');
+        if (dialog) dialog.remove();
+        updatePracticeWordCount();
+    }
 }
 
 // 清空学习统计数据（带二次确认）
