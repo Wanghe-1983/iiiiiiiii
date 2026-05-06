@@ -423,9 +423,22 @@ async function initUI() {
 
     <div class="learn-cards-row">
 
-        <div style="flex:1;min-width:200px;background:var(--glass);padding:15px;border-radius:15px;border:1px solid rgba(255,255,255,0.05);">
-            <div style="font-size:14px;color:var(--text-muted);margin-bottom:8px;">随机推荐单词</div>
-            <div id="random-word" style="font-size:18px;color:#a5b4fc;font-weight:600;">加载中...</div>
+        <div style="flex:1;min-width:320px;background:var(--glass);padding:15px;border-radius:15px;border:1px solid rgba(255,255,255,0.05);">
+            <div style="display:flex;gap:12px;">
+                <div style="flex:1;">
+                    <div style="font-size:13px;color:var(--text-muted);margin-bottom:6px;display:flex;align-items:center;gap:5px;"><i class="fas fa-lightbulb" style="color:#f59e0b;"></i> 随机推荐单词</div>
+                    <div id="random-word" style="font-size:18px;color:#a5b4fc;font-weight:600;">加载中...</div>
+                </div>
+                <div style="width:1px;background:var(--border-subtle);margin:0 4px;"></div>
+                <div style="flex:1;">
+                    <div style="font-size:13px;color:var(--text-muted);margin-bottom:6px;display:flex;align-items:center;gap:5px;"><i class="fas fa-language" style="color:#60a5fa;"></i> 快速翻译</div>
+                    <div style="display:flex;gap:6px;">
+                        <input type="text" id="quick-translate-input" placeholder="输入文字..." style="flex:1;padding:6px 10px;border-radius:8px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:0.82rem;outline:none;" onkeydown="if(event.key==='Enter')quickTranslate()">
+                        <button onclick="quickTranslate()" style="padding:6px 10px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:0.8rem;"><i class="fas fa-arrow-right-arrow-left"></i></button>
+                    </div>
+                    <div id="quick-translate-result" style="margin-top:6px;font-size:0.85rem;color:var(--text-main);min-height:20px;cursor:pointer;" title="点击播放发音"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -644,10 +657,53 @@ function loadRandomWord() {
         const randomLesson = lessonIds[Math.floor(Math.random() * lessonIds.length)];
         const words = db[randomCat].lessons[randomLesson].words;
         const randomWord = words[Math.floor(Math.random() * words.length)];
-        document.getElementById('random-word').innerText = `${randomWord.indonesian} - ${randomWord.chinese}`;
+        const el = document.getElementById('random-word');
+        el.innerHTML = `<span class="rw-indo">${randomWord.indonesian}</span> <button onclick="googleSpeech('${randomWord.indonesian.replace(/'/g, "\\'")}').catch(()=>{})" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:0.9rem;padding:2px 4px;" title="播放发音"><i class="fas fa-volume-up"></i></button><span class="rw-zh">${randomWord.chinese}</span>`;
     } catch (e) {
         document.getElementById('random-word').innerText = "暂无推荐单词";
     }
+}
+
+// ========== 快速翻译功能（中印尼互译） ==========
+function quickTranslate() {
+    const input = document.getElementById('quick-translate-input');
+    const resultEl = document.getElementById('quick-translate-result');
+    if (!input || !resultEl) return;
+    const text = input.value.trim();
+    if (!text) { resultEl.innerHTML = ''; return; }
+    
+    // 检测语言：包含中文字符则翻译为印尼语，否则翻译为中文
+    const hasChinese = /[\u4e00-\u9fa5]/.test(text);
+    const from = hasChinese ? 'zh-CN' : 'id';
+    const to = hasChinese ? 'id' : 'zh-CN';
+    
+    resultEl.innerHTML = '<i class="fas fa-spinner fa-spin" style="color:var(--text-dim);"></i>';
+    
+    // 使用 Google Translate 免费接口
+    fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=' + from + '&tl=' + to + '&dt=t&q=' + encodeURIComponent(text))
+        .then(r => r.json())
+        .then(data => {
+            let translated = '';
+            if (data && data[0]) {
+                data[0].forEach(item => { translated += item[0]; });
+            }
+            if (translated) {
+                resultEl.innerHTML = '<span>' + translated + '</span> <button onclick="googleSpeech(\'' + translated.replace(/'/g, "\\'") + '\').catch(()=>{})" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:0.85rem;padding:0 2px;" title="播放发音"><i class="fas fa-volume-up"></i></button>';
+            } else {
+                resultEl.innerHTML = '<span style="color:var(--text-dim);">翻译失败</span>';
+            }
+        })
+        .catch(() => {
+            // 兜底：使用本地词库简单匹配
+            const allW = getAllWords();
+            const found = allW.find(w => hasChinese ? w.chinese === text : w.indonesian.toLowerCase() === text.toLowerCase());
+            if (found) {
+                const display = hasChinese ? found.indonesian : found.chinese;
+                resultEl.innerHTML = '<span>' + display + '</span> <button onclick="googleSpeech(\'' + display.replace(/'/g, "\\'") + '\').catch(()=>{})" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:0.85rem;padding:0 2px;" title="播放发音"><i class="fas fa-volume-up"></i></button>';
+            } else {
+                resultEl.innerHTML = '<span style="color:var(--text-dim);">翻译失败，请检查网络</span>';
+            }
+        });
 }
 
 // 加载天气信息（带降级机制）
@@ -2501,18 +2557,33 @@ function shuffleArray(arr) {
 function initPracticePage() {
     const c = document.getElementById('page-study-practice');
     if (c.dataset.init) {
-        // 重新进入时重置到设置页
         document.getElementById('practice-setup').style.display = '';
         document.getElementById('practice-quiz').style.display = 'none';
         document.getElementById('practice-result').style.display = 'none';
         return;
     }
     c.dataset.init = '1';
-    let catOpts = '';
-    for (const catId in db) {
-        const n = catId === "1" ? "生词 Vocabulary" : catId === "2" ? "短语 Phrases" : catId;
-        catOpts += '<option value="' + catId + '">' + catId + '. ' + n + '</option>';
+
+    // 构建课程级别选项（从 course-content.json 异步加载）
+    let catOpts = '<option value="all">全部课程</option>';
+    if (window._courseMenuData && window._courseMenuData.levels) {
+        catOpts = buildPracticeCatOptions(window._courseMenuData.levels);
+    } else {
+        (async () => {
+            try {
+                const courseData = await loadCourseMenuData();
+                if (courseData && courseData.levels) {
+                    window._courseMenuData = courseData;
+                    const sel = document.getElementById('practice-cat-select');
+                    if (sel) {
+                        sel.innerHTML = buildPracticeCatOptions(courseData.levels);
+                        updatePracticeWordCount();
+                    }
+                }
+            } catch(e) { console.warn('加载课程列表失败:', e); }
+        })();
     }
+
     c.innerHTML = `
 <div class="practice-container">
   <div id="practice-setup">
@@ -2523,9 +2594,9 @@ function initPracticePage() {
       <p style="color:var(--text-muted);font-size:0.85rem;margin-top:6px;">选择范围和题型，开始巩固记忆</p>
     </div>
     <div style="margin-bottom:18px;">
-      <div style="color:var(--text-muted);font-size:0.85rem;margin-bottom:8px;">词库分类</div>
+      <div style="color:var(--text-muted);font-size:0.85rem;margin-bottom:8px;">课程范围</div>
       <select id="practice-cat-select" onchange="updatePracticeWordCount()" style="width:100%;padding:11px;border-radius:10px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:0.95rem;outline:none;">
-        <option value="all">全部词库</option>${catOpts}
+        ${catOpts}
       </select>
     </div>
     <div style="margin-bottom:18px;">
@@ -2568,6 +2639,10 @@ function initPracticePage() {
       </div>
     </div>
     <div id="practice-word-count-hint" style="text-align:center;color:var(--text-dim);font-size:0.82rem;margin-bottom:14px;"></div>
+    <div style="display:flex;gap:10px;margin-bottom:14px;">
+      <button onclick="showMasteredList()" style="flex:1;padding:11px;background:rgba(99,102,241,0.12);color:#818cf8;border:1px solid rgba(99,102,241,0.25);border-radius:10px;cursor:pointer;font-size:0.85rem;"><i class="fas fa-list-check" style="margin-right:5px;"></i>已掌握词汇</button>
+      <button onclick="showWrongWords()" style="flex:1;padding:11px;background:rgba(248,113,113,0.12);color:#f87171;border:1px solid rgba(248,113,113,0.25);border-radius:10px;cursor:pointer;font-size:0.85rem;"><i class="fas fa-bookmark" style="margin-right:5px;"></i>错题集</button>
+    </div>
     <button class="practice-start-btn" onclick="startPractice()" style="width:100%;padding:13px;font-size:1.05rem;">
       <i class="fas fa-play"></i> 开始练习
     </button>
@@ -2578,71 +2653,33 @@ function initPracticePage() {
       <div style="color:var(--text-main);font-weight:700;">练习中</div>
       <div style="color:var(--text-muted);font-size:0.9rem;" id="practice-progress">1/20</div>
     </div>
-    <div style="height:6px;background:var(--card-bg);border-radius:3px;margin-bottom:16px;overflow:hidden;">
-      <div id="practice-progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#a78bfa);border-radius:3px;transition:width 0.3s ease;"></div>
+    <div style="height:4px;background:var(--border-subtle);border-radius:2px;margin-bottom:16px;overflow:hidden;">
+      <div id="practice-progress-bar" style="height:100%;background:var(--accent);border-radius:2px;transition:width 0.3s;width:0;"></div>
     </div>
-    <div class="practice-score-bar">
-      <div class="practice-score-item"><span class="score-val" id="p-correct">0</span>正确</div>
-      <div class="practice-score-item"><span class="score-val" id="p-wrong">0</span>错误</div>
-      <div class="practice-score-item"><span class="score-val" id="p-accuracy">0%</span>正确率</div>
+    <div style="display:flex;gap:14px;margin-bottom:16px;justify-content:center;">
+      <div style="text-align:center;"><span style="color:var(--success);font-weight:700;font-size:1.05rem;" id="p-correct">0</span><div style="color:var(--text-dim);font-size:0.72rem;">正确</div></div>
+      <div style="text-align:center;"><span style="color:var(--danger);font-weight:700;font-size:1.05rem;" id="p-wrong">0</span><div style="color:var(--text-dim);font-size:0.72rem;">错误</div></div>
+      <div style="text-align:center;"><span style="color:var(--accent);font-weight:700;font-size:1.05rem;" id="p-accuracy">0%</span><div style="color:var(--text-dim);font-size:0.72rem;">正确率</div></div>
     </div>
-    <div class="practice-question-box">
-      <div id="p-question-label" style="color:var(--text-muted);font-size:0.85rem;margin-bottom:8px;">请选择正确的中文翻译</div>
-      <div id="p-question-word" style="font-size:2.2rem;font-weight:800;color:var(--text-main);margin-bottom:16px;padding:12px 0;">加载中...</div>
-      <div id="p-question-hint" style="color:var(--text-dim);font-size:0.82rem;"></div>
+    <div id="p-feedback" class="practice-feedback" style="display:none;margin-bottom:14px;padding:12px 16px;border-radius:12px;font-size:0.9rem;text-align:center;"></div>
+    <div style="background:var(--card-bg);border-radius:16px;padding:24px 20px;border:1px solid var(--border-subtle);margin-bottom:16px;">
+      <div id="p-question-label" style="color:var(--text-muted);font-size:0.85rem;margin-bottom:10px;">请选择正确的中文翻译</div>
+      <div id="p-question-word" style="font-size:1.5rem;font-weight:800;color:var(--text-main);text-align:center;margin-bottom:8px;">loading...</div>
+      <div id="p-question-hint" style="text-align:center;"></div>
     </div>
-    <div id="p-options" class="practice-options"></div>
-    <div id="p-input-box" style="display:none;">
-      <input type="text" class="practice-input" id="p-fill-input" placeholder="输入中文翻译..." autocomplete="off" style="width:100%;padding:12px;border-radius:10px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:1rem;outline:none;">
-      <button class="practice-start-btn" onclick="submitFillAnswer()" style="margin-top:10px;width:100%;">提交答案</button>
+    <div id="p-options" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;"></div>
+    <div id="p-input-box" style="display:none;margin-bottom:16px;">
+      <input type="text" id="p-fill-input" class="practice-input" placeholder="输入中文翻译..." onkeydown="if(event.key==='Enter')submitFill()" style="width:100%;padding:12px 16px;border-radius:10px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:1rem;outline:none;">
+      <button onclick="submitFill()" style="width:100%;margin-top:10px;padding:10px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:0.95rem;cursor:pointer;">提交</button>
     </div>
-    <div id="p-feedback" class="practice-feedback"></div>
-    <div style="display:flex;gap:12px;justify-content:center;margin-top:18px;">
-      <button class="practice-btn-sec" onclick="endPractice()">结束练习</button>
-      <button class="practice-start-btn" id="p-next-btn" onclick="nextQuestion()" style="display:none;">下一题 <i class="fas fa-arrow-right"></i></button>
-    </div>
+    <button id="p-next-btn" onclick="nextQuestion()" style="display:none;width:100%;padding:12px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-size:0.95rem;cursor:pointer;">下一题 <i class="fas fa-arrow-right"></i></button>
   </div>
 
-  <div id="practice-result" style="display:none;">
-    <div style="text-align:center;padding:25px;">
-      <div id="p-result-score" style="font-size:3.5rem;font-weight:900;color:var(--accent);">0%</div>
-      <div id="p-result-text" style="color:var(--text-muted);font-size:1rem;margin:8px 0 18px;">练习完成！</div>
-      <div style="display:flex;gap:20px;justify-content:center;margin-bottom:20px;">
-        <div style="text-align:center;">
-          <div style="font-size:1.4rem;font-weight:800;color:#10b981;" id="p-r-correct">0</div>
-          <div style="color:var(--text-dim);font-size:0.78rem;">正确</div>
-        </div>
-        <div style="text-align:center;">
-          <div style="font-size:1.4rem;font-weight:800;color:#ef4444;" id="p-r-wrong">0</div>
-          <div style="color:var(--text-dim);font-size:0.78rem;">错误</div>
-        </div>
-        <div style="text-align:center;">
-          <div style="font-size:1.4rem;font-weight:800;color:var(--text-main);" id="p-r-total">0</div>
-          <div style="color:var(--text-dim);font-size:0.78rem;">总题数</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-        <button id="p-wrong-btn" class="practice-btn-sec" onclick="showWrongWords()" style="display:none;"><i class="fas fa-times-circle" style="margin-right:5px;"></i>查看错题</button>
-        <button id="lb-submit-btn" style="display:none;padding:10px 18px;background:#f59e0b;color:#000;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:0.88rem;" onclick="submitToLeaderboard()"><i class="fas fa-trophy"></i> 提交到排行榜</button>
-        <button class="practice-start-btn" onclick="resetPractice()"><i class="fas fa-redo"></i> 再来一轮</button>
-        <button class="practice-btn-sec" onclick="backToSetup()"><i class="fas fa-cog"></i> 重新配置</button>
-      </div>
-    </div>
-  </div>
+  <div id="practice-result" style="display:none;"></div>
 </div>`;
-    updatePracticeWordCount();
-    // 初始状态下根据后台设置决定滑块是否可见
-    if (selectedPracticeType === 'listen') {
-        const listenOpts = document.getElementById('practice-listen-options');
-        if (listenOpts) {
-            const isVisitor = sessionStorage.getItem('fmi_visitor_login');
-            const sysInfo = window._systemInfo || {};
-            const cfg = isVisitor ? (sysInfo.studyPracticeVisitor || {}) : (sysInfo.studyPracticeUser || {});
-            listenOpts.style.display = (cfg.showRateSlider !== false && cfg.showLoopSlider !== false) ? '' : 'none';
-        }
-    }
-}
 
+    updatePracticeWordCount();
+}
 function selectPracticeType(type, btn) {
     selectedPracticeType = type;
     btn.parentElement.querySelectorAll('.practice-type-btn').forEach(b => b.classList.remove('active'));
@@ -2670,36 +2707,87 @@ function selectPracticeCount(count, btn) {
 }
 
 // 更新设置页底部的可用词汇数提示
+// ========== 练习模块 - 课程级别辅助函数 ==========
+
+// 构建练习课程下拉选项
+function buildPracticeCatOptions(levels) {
+    // 根据 levelConfig 过滤可见级别
+    const levelConfig = window._levelConfig || {};
+    const visible = levels.filter(l => {
+        const state = levelConfig[Number(l.id)];
+        return state !== undefined && state > 0;
+    });
+    let html = '<option value="all">全部课程</option>';
+    for (const lv of visible) {
+        const wCount = countLevelItems(lv);
+        html += '<option value="' + lv.id + '">' + lv.id + '. ' + lv.name + ' (' + wCount + '题)</option>';
+    }
+    return html;
+}
+
+// 统计某个级别的可用练习题目数量（词+句+对话）
+function countLevelItems(level) {
+    let count = 0;
+    for (const unit of (level.units || [])) {
+        count += (unit.words || []).length;
+        count += (unit.sentences || []).length;
+        count += (unit.dialogues || []).length;
+    }
+    return count;
+}
+
+// 从课程级别获取所有可用题目（统一为 {indonesian, chinese} 格式）
+function getPracticeItemsByLevel(levelId) {
+    const courseData = window._courseMenuData;
+    if (!courseData || !courseData.levels) return [];
+    const items = [];
+    if (levelId === 'all') {
+        for (const lv of courseData.levels) {
+            collectLevelItems(lv, items);
+        }
+    } else {
+        const lv = courseData.levels.find(l => String(l.id) === String(levelId));
+        if (lv) collectLevelItems(lv, items);
+    }
+    return items;
+}
+
+// 收集某级别的所有题目
+function collectLevelItems(level, items) {
+    for (const unit of (level.units || [])) {
+        for (const w of (unit.words || [])) {
+            items.push({ indonesian: w.indonesian, chinese: w.chinese, type: 'word', levelId: level.id });
+        }
+        for (const s of (unit.sentences || [])) {
+            items.push({ indonesian: s.indonesian, chinese: s.chinese, type: 'sentence', levelId: level.id });
+        }
+        for (const d of (unit.dialogues || [])) {
+            items.push({ indonesian: d.indonesian, chinese: d.chinese, type: 'dialogue', levelId: level.id });
+        }
+    }
+}
+
+// 更新设置页底部的可用题目数提示
 function updatePracticeWordCount() {
     const hint = document.getElementById('practice-word-count-hint');
     if (!hint) return;
     try {
         const catId = document.getElementById('practice-cat-select').value;
-        let words = catId === 'all' ? getAllWords() : getWordsByCategory(catId);
-        // 模拟后台筛选逻辑计算可用数
-        const isVisitor = sessionStorage.getItem('fmi_visitor_login');
-        const sysInfo = window._systemInfo || {};
-        const practiceCfg = isVisitor ? (sysInfo.studyPracticeVisitor || {}) : (sysInfo.studyPracticeUser || {});
-        const includeMastered = practiceCfg.includeMastered !== false;
-        const includeCurrentLesson = practiceCfg.includeCurrentLesson !== false;
-        if (includeMastered || includeCurrentLesson) {
-            const learned = new Set(JSON.parse(localStorage.getItem('fmi_all_words') || '[]'));
-            let curLessonWords = new Set();
-            if (db[curCat] && db[curCat].lessons[curLesson]) {
-                db[curCat].lessons[curLesson].words.forEach(w => curLessonWords.add(w.indonesian));
-            }
-            const filtered = words.filter(w => {
-                const isMastered = learned.has(w.indonesian);
-                const isCurrent = curLessonWords.has(w.indonesian);
-                if (includeMastered && includeCurrentLesson) return isMastered || isCurrent;
-                else if (includeMastered) return isMastered;
-                else if (includeCurrentLesson) return isCurrent;
-                return true;
-            });
-            words = filtered;
+        let items = getPracticeItemsByLevel(catId);
+        if (items.length === 0) {
+            // 兜底：从旧 db 中获取
+            items = catId === 'all' ? getAllWords() : getWordsByCategory(catId);
         }
-        const count = selectedPracticeCount === 0 ? words.length : Math.min(selectedPracticeCount, words.length);
-        hint.textContent = '可用词汇 ' + words.length + ' 词' + (selectedPracticeCount > 0 ? '，将随机抽取 ' + count + ' 题' : '');
+        const count = selectedPracticeCount === 0 ? items.length : Math.min(selectedPracticeCount, items.length);
+        // 统计词/句/对话
+        const wordsN = items.filter(i => i.type === 'word' || !i.type).length;
+        const sentencesN = items.filter(i => i.type === 'sentence').length;
+        const dialoguesN = items.filter(i => i.type === 'dialogue').length;
+        let detail = '';
+        if (sentencesN > 0 || dialoguesN > 0) {
+            detail = '（' + wordsN + '词' + (sentencesN > 0 ? ' + ' + sentencesN + '句' : '') + (dialoguesN > 0 ? ' + ' + dialoguesN + '对话' : '') + '）';
+        }
+        hint.textContent = '可用题目 ' + items.length + detail + (selectedPracticeCount > 0 ? '，将随机抽取 ' + count + ' 题' : '');
     } catch(e) {
         hint.textContent = '';
     }
@@ -2707,40 +2795,16 @@ function updatePracticeWordCount() {
 
 function startPractice() {
     const catId = document.getElementById('practice-cat-select').value;
-    let words = catId === 'all' ? getAllWords() : getWordsByCategory(catId);
-    // 根据后台设置筛选题库范围
-    const isVisitor = sessionStorage.getItem('fmi_visitor_login');
-    const sysInfo = window._systemInfo || {};
-    const practiceCfg = isVisitor ? (sysInfo.studyPracticeVisitor || {}) : (sysInfo.studyPracticeUser || {});
-    const includeMastered = practiceCfg.includeMastered !== false;
-    const includeCurrentLesson = practiceCfg.includeCurrentLesson !== false;
-    if (includeMastered || includeCurrentLesson) {
-        const learned = new Set(JSON.parse(localStorage.getItem('fmi_all_words') || '[]'));
-        let curLessonWords = new Set();
-        if (db[curCat] && db[curCat].lessons[curLesson]) {
-            db[curCat].lessons[curLesson].words.forEach(w => curLessonWords.add(w.indonesian));
-        }
-        const filtered = [];
-        words.forEach(w => {
-            const isMastered = learned.has(w.indonesian);
-            const isCurrent = curLessonWords.has(w.indonesian);
-            if (includeMastered && includeCurrentLesson) {
-                if (isMastered || isCurrent) filtered.push(w);
-            } else if (includeMastered) {
-                if (isMastered) filtered.push(w);
-            } else if (includeCurrentLesson) {
-                if (isCurrent) filtered.push(w);
-            } else {
-                filtered.push(w);
-            }
-        });
-        words = filtered.length > 0 ? filtered : words;
+    let words = getPracticeItemsByLevel(catId);
+    if (words.length === 0) {
+        // 兜底
+        words = catId === 'all' ? getAllWords() : getWordsByCategory(catId);
     }
     if (words.length < 4) {
         if (window._showCustomConfirm) {
-            window._showCustomConfirm('词汇不足', '当前筛选范围内只有 ' + words.length + ' 个词汇，至少需要4个。请调整分类或联系管理员修改题库设置。', '我知道了', null, function(){});
+            window._showCustomConfirm('题目不足', '当前范围内只有 ' + words.length + ' 道题，至少需要4道。请调整课程范围。', '我知道了', null, function(){});
         } else {
-            alert('词库单词数量不足（当前 ' + words.length + ' 个），至少需要4个');
+            alert('题目不足（当前 ' + words.length + ' 道），至少需要4道');
         }
         return;
     }
@@ -2774,7 +2838,7 @@ function showQuestion() {
     fb.style.display = 'none';
     fb.className = 'practice-feedback';
     document.getElementById('p-next-btn').style.display = 'none';
-    const allW = s.catId === 'all' ? getAllWords() : getWordsByCategory(s.catId);
+    const allW = getPracticeItemsByLevel(s.catId);
     if (s.type === 'choice') {
         document.getElementById('p-question-label').textContent = '请选择正确的中文翻译';
         document.getElementById('p-question-word').textContent = q.indonesian;
@@ -3057,13 +3121,12 @@ function backToSetup() {
 // ============================================================
 function initDashboardPage() {
     const c = document.getElementById('page-study-stats');
-    if (c.dataset.init) { c.dataset.init = '2'; } // always refresh
+    if (c.dataset.init) { c.dataset.init = '2'; }
     else { c.dataset.init = '2'; }
     const allW = getAllWords();
     const totalLib = allW.length;
     const learned = JSON.parse(localStorage.getItem('fmi_all_words') || '[]');
     const learnedN = learned.length;
-    // 完成率：分母=当前课程(分类)全部词汇(含对话)，分子=已掌握中属于当前课程的数量
     let curCatWords = [];
     if (db[curCat] && db[curCat].lessons) {
         for (const lid in db[curCat].lessons) curCatWords = curCatWords.concat(db[curCat].lessons[lid].words);
@@ -3089,29 +3152,85 @@ function initDashboardPage() {
         const catLearnedN = learned.filter(w => catIndoSet.has(w)).length;
         const catPct = catTotal > 0 ? Math.min(100, Math.round((catLearnedN / catTotal) * 100)) : 0;
         const cn = catId === "1" ? "生词 Vocabulary" : catId === "2" ? "短语 Phrases" : catId;
-        catBreakdown += '<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;color:var(--text-muted);font-size:0.85rem;margin-bottom:4px;"><span>' + catId + '. ' + cn + '</span><span>已掌握 ' + catLearnedN + '/' + catTotal + ' 词</span></div><div class="dash-progress-bar" style="height:6px;"><div class="dash-progress-fill" style="width:' + catPct + '%;"></div></div></div>';
+        catBreakdown += '<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;color:var(--text-muted);font-size:0.82rem;margin-bottom:3px;"><span>' + catId + '. ' + cn + '</span><span>' + catLearnedN + '/' + catTotal + ' (' + catPct + '%)</span></div><div class="stat-progress-bar"><div class="stat-progress-fill" style="width:' + catPct + '%;"></div></div></div>';
     }
     let histHTML = '';
     if (hist.length > 0) {
-        histHTML = hist.slice(-10).reverse().map(h => {
+        histHTML = hist.slice(-5).reverse().map(h => {
             const tn = h.type === 'choice' ? '选择题' : h.type === 'fill' ? '填空题' : '听力题';
             const clr = h.percent >= 70 ? 'var(--success)' : 'var(--danger)';
-            return '<div class="dash-history-item"><div class="dash-history-date">' + h.date + '</div><div class="dash-history-type">' + tn + '</div><div class="dash-history-score" style="color:' + clr + ';">' + h.score + '/' + h.total + ' (' + h.percent + '%)</div></div>';
+            return '<div class="stat-history-item"><span class="stat-history-type">' + tn + '</span><span class="stat-history-score" style="color:' + clr + ';">' + h.score + '/' + h.total + '</span><span class="stat-history-pct">' + h.percent + '%</span></div>';
         }).join('');
     } else {
-        histHTML = '<div style="color:var(--text-dim);text-align:center;padding:20px;">暂无练习记录</div>';
+        histHTML = '<div style="color:var(--text-dim);text-align:center;padding:16px;font-size:0.85rem;">暂无练习记录</div>';
     }
     let wordsHTML = '';
     if (todayRecord.length > 0) {
-        wordsHTML = todayRecord.map((item, i) => '<div class="dash-word-chip"><span class="dash-word-idx">' + (i + 1) + '</span><span class="dash-word-indo">' + item.indonesian + '</span><span class="dash-word-zh">' + item.chinese + '</span></div>').join('');
+        wordsHTML = '<div class="stat-words-list">' + todayRecord.map((item, i) => '<div class="stat-word-item"><span class="stat-word-idx">' + (i + 1) + '</span><span class="stat-word-indo">' + item.indonesian + '</span><span class="stat-word-zh">' + item.chinese + '</span></div>').join('') + '</div>';
     } else {
-        wordsHTML = '<div style="color:var(--text-dim);text-align:center;padding:20px;">今天还没有学习记录</div>';
+        wordsHTML = '<div style="color:var(--text-dim);text-align:center;padding:16px;font-size:0.85rem;">今天还没有学习记录</div>';
     }
-    c.innerHTML = '<div style="margin:0 auto;max-width:100%;"><div style="text-align:center;margin-bottom:25px;"><h2 style="font-size:1.8rem;font-weight:800;color:var(--text-main);display:inline-block;"><i class="fas fa-chart-line" style="color:var(--accent);margin-right:10px;"></i>学习统计</h2><button onclick="clearStudyData()" style="margin-left:15px;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:0.8rem;vertical-align:middle;"><i class="fas fa-trash-alt" style="margin-right:5px;"></i>清空统计</button><p style="color:var(--text-muted);font-size:0.95rem;margin-top:5px;">' + today + ' · 数据总览</p></div><div class="dash-stats-grid"><div class="dash-card" style="border-top:3px solid var(--accent);"><div style="font-size:1.8rem;color:var(--accent);margin-bottom:10px;"><i class="fas fa-book"></i></div><div class="dash-card-value">' + studyStats.todayWords + '</div><div class="dash-card-label">今日学习</div></div></div><div class="dash-card" style="border-top:3px solid #f59e0b;"><div style="font-size:1.8rem;color:#f59e0b;margin-bottom:10px;"><i class="fas fa-clock"></i></div><div class="dash-card-value">' + mins + '<span style="font-size:0.7em;color:var(--text-muted);">分' + secs + '秒</span></div><div class="dash-card-label">在线时长</div><div class="dash-card-sub">今日累计</div></div><div class="dash-card" style="border-top:3px solid #10b981;"><div style="font-size:1.8rem;color:#10b981;margin-bottom:10px;"><i class="fas fa-layer-group"></i></div><div class="dash-card-value">' + learnedN + '<span style="font-size:0.7em;color:var(--text-muted);">/' + totalLib + '</span></div><div class="dash-card-label">累计掌握</div><div class="dash-card-sub">总词汇量</div></div><div class="dash-card" style="border-top:3px solid #a78bfa;"><div style="font-size:1.8rem;color:#a78bfa;margin-bottom:10px;"><i class="fas fa-bullseye"></i></div><div class="dash-card-value">' + learnedPct + '%</div><div class="dash-card-label">掌握率</div><div class="dash-card-sub">' + curCatLearnedN + '/' + curCatTotal + ' 词（当前课程）</div></div></div><div class="dash-section"><div class="dash-section-title"><i class="fas fa-tasks" style="color:var(--accent);margin-right:8px;"></i>词汇掌握进度</div><div class="dash-progress-bar"><div class="dash-progress-fill" style="width:' + learnedPct + '%;"></div></div><div class="dash-progress-labels"><span>已掌握 ' + curCatLearnedN + '/' + curCatTotal + ' 词</span><span>当前课程词汇量</span></div><div style="text-align:center;margin-top:8px;"><button onclick="showMasteredList()" style="background:rgba(99,102,241,0.12);color:#818cf8;border:1px solid rgba(99,102,241,0.25);padding:6px 16px;border-radius:8px;cursor:pointer;font-size:0.82rem;"><i class="fas fa-list-check" style="margin-right:5px;"></i>查看已掌握列表</button></div><div style="margin-top:20px;">' + catBreakdown + '</div></div><div class="dash-section"><div class="dash-section-title"><i class="fas fa-history" style="color:var(--accent);margin-right:8px;"></i>练习历史</div><div class="dash-mini-grid"><div class="dash-mini-card"><div class="dash-mini-value">' + totalP + '</div><div class="dash-mini-label">练习次数</div></div><div class="dash-mini-card"><div class="dash-mini-value">' + avgS + '%</div><div class="dash-mini-label">平均正确率</div></div></div><div class="dash-history-list">' + histHTML + '</div></div><div class="dash-section"><div class="dash-section-title"><i class="fas fa-list-check" style="color:var(--accent);margin-right:8px;"></i>今日已学单词</div><div class="dash-words-grid">' + wordsHTML + '</div></div></div>';
+    c.innerHTML = `
+<div class="stats-container">
+  <div class="stats-header">
+    <h2 style="font-size:1.4rem;font-weight:800;color:var(--text-main);margin:0;">
+      <i class="fas fa-chart-line" style="color:var(--accent);margin-right:8px;"></i>学习统计
+    </h2>
+    <button onclick="clearStudyData()" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.2);padding:5px 12px;border-radius:8px;cursor:pointer;font-size:0.78rem;"><i class="fas fa-trash-alt" style="margin-right:4px;"></i>清空</button>
+  </div>
+  <div style="color:var(--text-dim);font-size:0.82rem;text-align:center;margin-bottom:16px;">${today} · 数据总览</div>
+
+  <!-- 核心数据卡片 -->
+  <div class="stats-cards-grid">
+    <div class="stats-card">
+      <div class="stats-card-icon" style="color:var(--accent);"><i class="fas fa-book"></i></div>
+      <div class="stats-card-value">${studyStats.todayWords}</div>
+      <div class="stats-card-label">今日学习</div>
+    </div>
+    <div class="stats-card">
+      <div class="stats-card-icon" style="color:#f59e0b;"><i class="fas fa-clock"></i></div>
+      <div class="stats-card-value">${mins}<small style="font-size:0.6em;color:var(--text-dim);">分${secs}秒</small></div>
+      <div class="stats-card-label">在线时长</div>
+    </div>
+    <div class="stats-card">
+      <div class="stats-card-icon" style="color:#10b981;"><i class="fas fa-layer-group"></i></div>
+      <div class="stats-card-value">${learnedN}<small style="font-size:0.6em;color:var(--text-dim);">/${totalLib}</small></div>
+      <div class="stats-card-label">累计掌握</div>
+    </div>
+    <div class="stats-card">
+      <div class="stats-card-icon" style="color:#a78bfa;"><i class="fas fa-bullseye"></i></div>
+      <div class="stats-card-value">${learnedPct}%</div>
+      <div class="stats-card-label">掌握率</div>
+      <div class="stats-card-sub">${curCatLearnedN}/${curCatTotal} 词（当前课程）</div>
+    </div>
+  </div>
+
+  <!-- 词汇掌握进度卡片 -->
+  <div class="stats-section-card">
+    <div class="stats-section-title"><i class="fas fa-tasks" style="color:var(--accent);margin-right:8px;"></i>词汇掌握进度</div>
+    <div class="stat-progress-bar" style="height:8px;margin-bottom:10px;">
+      <div class="stat-progress-fill" style="width:${learnedPct}%;"></div>
+    </div>
+    ${catBreakdown}
+  </div>
+
+  <!-- 练习历史卡片 -->
+  <div class="stats-section-card">
+    <div class="stats-section-title"><i class="fas fa-history" style="color:var(--accent);margin-right:8px;"></i>练习历史</div>
+    <div class="stats-mini-row">
+      <div class="stats-mini-item"><div class="stats-mini-value">${totalP}</div><div class="stats-mini-label">练习次数</div></div>
+      <div class="stats-mini-item"><div class="stats-mini-value">${avgS}%</div><div class="stats-mini-label">平均正确率</div></div>
+    </div>
+    <div class="stat-history-list">${histHTML}</div>
+  </div>
+
+  <!-- 今日已学卡片 -->
+  <div class="stats-section-card">
+    <div class="stats-section-title"><i class="fas fa-graduation-cap" style="color:var(--accent);margin-right:8px;"></i>今日已学单词</div>
+    ${wordsHTML}
+  </div>
+</div>`;
 }
-
-
-// 显示已掌握词汇列表弹窗
 function showMasteredList() {
     const learned = JSON.parse(localStorage.getItem('fmi_all_words') || '[]');
     if (learned.length === 0) {
@@ -3122,10 +3241,23 @@ function showMasteredList() {
         }
         return;
     }
-    // 从词库中查找对应翻译
+    // 从词库和课程数据中查找对应翻译
     const allW = getAllWords();
     const wordMap = {};
     allW.forEach(w => { wordMap[w.indonesian] = w.chinese || ''; });
+    // 也从课程数据中补充
+    if (window._courseMenuData && window._courseMenuData.levels) {
+        for (const lv of window._courseMenuData.levels) {
+            for (const unit of (lv.units || [])) {
+                for (const w of (unit.words || [])) {
+                    if (!wordMap[w.indonesian]) wordMap[w.indonesian] = w.chinese || '';
+                }
+                for (const s of (unit.sentences || [])) {
+                    if (!wordMap[s.indonesian]) wordMap[s.indonesian] = s.chinese || '';
+                }
+            }
+        }
+    }
     // 构建列表（按分类分组）
     let html = '';
     for (const catId in db) {

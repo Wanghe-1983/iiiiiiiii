@@ -1715,3 +1715,184 @@
 .result-btn.wrong-book-btn:hover {
     background: rgba(248, 113, 113, 0.2);
 }
+
+
+/* ========== 统计页面 - 卡片式布局 ========== */
+.stats-container {
+    max-width: 100%;
+    padding: 0 4px;
+}
+.stats-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+.stats-cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+.stats-card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 16px 14px;
+    text-align: center;
+    border: 1px solid var(--border-subtle);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+.stats-card-icon {
+    font-size: 1.4rem;
+    margin-bottom: 6px;
+}
+.stats-card-value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.2;
+}
+.stats-card-value small {
+    font-weight: 400;
+}
+.stats-card-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+.stats-card-sub {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 2px;
+}
+.stats-section-card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-subtle);
+}
+.stats-section-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 12px;
+}
+.stats-mini-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+.stats-mini-item {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    background: var(--glass);
+    border-radius: 10px;
+}
+.stats-mini-value {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #a5b4fc;
+}
+.stats-mini-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 3px;
+}
+.stat-progress-bar {
+    height: 6px;
+    background: var(--border-subtle);
+    border-radius: 3px;
+    overflow: hidden;
+}
+.stat-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #a78bfa);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+.stat-history-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+.stat-history-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 0.85rem;
+}
+.stat-history-item:last-child {
+    border-bottom: none;
+}
+.stat-history-type {
+    padding: 2px 8px;
+    background: var(--accent-subtle);
+    color: #a5b4fc;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+.stat-history-score {
+    flex: 1;
+    text-align: center;
+    font-weight: 600;
+}
+.stat-history-pct {
+    font-weight: 700;
+    min-width: 40px;
+    text-align: right;
+}
+.stat-words-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+.stat-word-item {
+    display: flex;
+    align-items: center;
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 0.85rem;
+    gap: 8px;
+}
+.stat-word-item:last-child {
+    border-bottom: none;
+}
+.stat-word-idx {
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    min-width: 18px;
+}
+.stat-word-indo {
+    color: #a5b4fc;
+    font-weight: 600;
+}
+.stat-word-zh {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* ========== 随机推荐单词样式 ========== */
+.rw-indo {
+    color: #a5b4fc;
+}
+.rw-zh {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    font-weight: 400;
+}
+
+@media (max-width: 480px) {
+    .stats-cards-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+    .stats-card-value {
+        font-size: 1.3rem;
+    }
+}
