@@ -122,9 +122,16 @@ const StudyPractice = {
         this.answered = false;
         area.innerHTML = `
             <div class="quiz-container">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <button style="background:none;border:1px solid rgba(255,255,255,0.15);color:#94a3b8;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.85rem;" onclick="StudyModule.switchSubTab('course')">
+                        <i class="fas fa-arrow-left"></i> 返回课程
+                    </button>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div class="quiz-type-tag">${q.type === 'word' ? '单词' : '短句'}</div>
+                        <div class="quiz-counter">${this.currentIndex + 1} / ${total}</div>
+                    </div>
+                </div>
                 <div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:${progressPct}%"></div></div>
-                <div class="quiz-counter">${this.currentIndex + 1} / ${total}</div>
-                <div class="quiz-type-tag">${q.type === 'word' ? '单词' : '短句'}</div>
                 <div class="quiz-question">
                     <div class="quiz-indo" onclick="speak('${encodeURIComponent(q.indo)}')">
                         ${q.indo}
@@ -224,9 +231,16 @@ const StudyPractice = {
         this.answered = false;
         area.innerHTML = `
             <div class="quiz-container">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <button style="background:none;border:1px solid rgba(255,255,255,0.15);color:#94a3b8;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.85rem;" onclick="StudyModule.switchSubTab('course')">
+                        <i class="fas fa-arrow-left"></i> 返回课程
+                    </button>
+                    <div style="display:flex;align-items:center;gap:8px;">
+                        <div class="quiz-type-tag fill-tag">填空题</div>
+                        <div class="quiz-counter">${this.currentIndex + 1} / ${total}</div>
+                    </div>
+                </div>
                 <div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:${progressPct}%"></div></div>
-                <div class="quiz-counter">${this.currentIndex + 1} / ${total}</div>
-                <div class="quiz-type-tag fill-tag">填空题</div>
                 <div class="quiz-question">
                     <div class="quiz-indo" onclick="speak('${encodeURIComponent(q.indo)}')">
                         ${q.indo}
