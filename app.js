@@ -2500,50 +2500,192 @@ function shuffleArray(arr) {
 }
 function initPracticePage() {
     const c = document.getElementById('page-study-practice');
-    if (c.dataset.init) return;
+    if (c.dataset.init) {
+        // 重新进入时重置到设置页
+        document.getElementById('practice-setup').style.display = '';
+        document.getElementById('practice-quiz').style.display = 'none';
+        document.getElementById('practice-result').style.display = 'none';
+        return;
+    }
     c.dataset.init = '1';
     let catOpts = '';
     for (const catId in db) {
         const n = catId === "1" ? "生词 Vocabulary" : catId === "2" ? "短语 Phrases" : catId;
         catOpts += '<option value="' + catId + '">' + catId + '. ' + n + '</option>';
     }
-    c.innerHTML = `<div class="practice-container" style="max-width:100%;"><div id="practice-setup"><div style="text-align:center;margin-bottom:25px;"><h2 style="font-size:1.5rem;font-weight:800;color:var(--text-main);"><i class="fas fa-pen-fancy" style="color:var(--accent);margin-right:8px;"></i>练习模式</h2></div><div style="margin-bottom:20px;"><div style="color:var(--text-muted);font-size:0.9rem;margin-bottom:10px;">选择词库分类</div><select id="practice-cat-select" style="width:100%;padding:12px;border-radius:10px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:0.95rem;outline:none;"><option value="all">全部词库</option>' + catOpts + '</select></div><div style="margin-bottom:20px;"><div style="color:var(--text-muted);font-size:0.9rem;margin-bottom:10px;">选择练习类型</div><div class="practice-type-selector"><button class="practice-type-btn active" onclick="selectPracticeType('choice',this)"><i class="fas fa-th-large"></i> 选择题</button><button class="practice-type-btn" onclick="selectPracticeType('fill',this)"><i class="fas fa-keyboard"></i> 填空题</button><button class="practice-type-btn" onclick="selectPracticeType('listen',this)"><i class="fas fa-headphones"></i> 听力题</button></div></div>
-        <div style="margin-bottom:20px;"><div style="color:var(--text-muted);font-size:0.9rem;margin-bottom:10px;">题目数量</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="practice-type-btn" onclick="selectPracticeCount(10,this)">10题</button><button class="practice-type-btn active" onclick="selectPracticeCount(20,this)">20题</button><button class="practice-type-btn" onclick="selectPracticeCount(50,this)">50题</button><button class="practice-type-btn" onclick="selectPracticeCount(0,this)">全部</button></div></div><div style="margin:24px 0;padding:16px 20px;border-radius:14px;border:1px dashed var(--border-subtle);background:var(--accent-subtle);display:flex;align-items:center;gap:16px;">
-            <div class="sliders-col" style="flex:1;min-width:0;">
-                <div class="vslider-box">
-                    <div class="vslider-label"><i class="fas fa-gauge-high"></i> 语速</div>
-                    <div class="vslider-track-wrap">
-                        <input type="range" class="vslider vslider-rate" id="p-rate-slider" min="1" max="15" value="10" step="1" oninput="setRateFromSlider(this.value)">
-                        <div class="vslider-fill" id="p-rate-fill"></div>
-                        <div class="vslider-thumb" id="p-rate-thumb"><span id="p-val-rate">1.0x</span></div>
-                    </div>
-                    <div class="vslider-range"><span>0.5x</span><span>1.5x</span></div>
-                </div>
-                <div class="vslider-box">
-                    <div class="vslider-label"><i class="fas fa-repeat"></i> 循环</div>
-                    <div class="vslider-track-wrap">
-                        <input type="range" class="vslider vslider-loop" id="p-loop-slider" min="0" max="14" value="0" step="1" oninput="setLoopFromSlider(this.value)">
-                        <div class="vslider-fill" id="p-loop-fill"></div>
-                        <div class="vslider-thumb" id="p-loop-thumb"><span id="p-val-loop">1次</span></div>
-                    </div>
-                    <div class="vslider-range"><span>1次</span><span>无限</span></div>
-                </div>
-            </div>
+    c.innerHTML = `
+<div class="practice-container">
+  <div id="practice-setup">
+    <div style="text-align:center;margin-bottom:24px;">
+      <h2 style="font-size:1.5rem;font-weight:800;color:var(--text-main);">
+        <i class="fas fa-pen-fancy" style="color:var(--accent);margin-right:8px;"></i>练习模式
+      </h2>
+      <p style="color:var(--text-muted);font-size:0.85rem;margin-top:6px;">选择范围和题型，开始巩固记忆</p>
+    </div>
+    <div style="margin-bottom:18px;">
+      <div style="color:var(--text-muted);font-size:0.85rem;margin-bottom:8px;">词库分类</div>
+      <select id="practice-cat-select" onchange="updatePracticeWordCount()" style="width:100%;padding:11px;border-radius:10px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:0.95rem;outline:none;">
+        <option value="all">全部词库</option>${catOpts}
+      </select>
+    </div>
+    <div style="margin-bottom:18px;">
+      <div style="color:var(--text-muted);font-size:0.85rem;margin-bottom:8px;">练习类型</div>
+      <div class="practice-type-selector">
+        <button class="practice-type-btn active" onclick="selectPracticeType('choice',this)"><i class="fas fa-th-large"></i> 选择题</button>
+        <button class="practice-type-btn" onclick="selectPracticeType('fill',this)"><i class="fas fa-keyboard"></i> 填空题</button>
+        <button class="practice-type-btn" onclick="selectPracticeType('listen',this)"><i class="fas fa-headphones"></i> 听力题</button>
+      </div>
+    </div>
+    <div style="margin-bottom:18px;">
+      <div style="color:var(--text-muted);font-size:0.85rem;margin-bottom:8px;">题目数量</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="practice-type-btn" onclick="selectPracticeCount(10,this)">10题</button>
+        <button class="practice-type-btn active" onclick="selectPracticeCount(20,this)">20题</button>
+        <button class="practice-type-btn" onclick="selectPracticeCount(50,this)">50题</button>
+        <button class="practice-type-btn" onclick="selectPracticeCount(0,this)">全部</button>
+      </div>
+    </div>
+    <div id="practice-listen-options" style="display:none;margin:20px 0;padding:14px 18px;border-radius:14px;border:1px dashed var(--border-subtle);background:var(--accent-subtle);">
+      <div class="sliders-col">
+        <div class="vslider-box">
+          <div class="vslider-label"><i class="fas fa-gauge-high"></i> 语速</div>
+          <div class="vslider-track-wrap">
+            <input type="range" class="vslider vslider-rate" id="p-rate-slider" min="1" max="15" value="10" step="1" oninput="setRateFromSlider(this.value)">
+            <div class="vslider-fill" id="p-rate-fill"></div>
+            <div class="vslider-thumb" id="p-rate-thumb"><span id="p-val-rate">1.0x</span></div>
+          </div>
+          <div class="vslider-range"><span>0.5x</span><span>1.5x</span></div>
         </div>
-        <button class="practice-start-btn" onclick="startPractice()" style="width:100%;padding:14px;font-size:1.1rem;"><i class="fas fa-play"></i> 开始练习</button></div><div id="practice-quiz" style="display:none;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;"><div style="color:var(--text-main);font-weight:700;">练习中</div><div style="color:var(--text-muted);font-size:0.9rem;" id="practice-progress">1/20</div></div><div class="practice-score-bar"><div class="practice-score-item"><span class="score-val" id="p-correct">0</span>正确</div><div class="practice-score-item"><span class="score-val" id="p-wrong">0</span>错误</div><div class="practice-score-item"><span class="score-val" id="p-accuracy">0%</span>正确率</div></div><div class="practice-question-box"><div id="p-question-label" style="color:var(--text-muted);font-size:0.9rem;margin-bottom:8px;">请选择正确的中文翻译</div><div id="p-question-word" style="font-size:2.5rem;font-weight:800;color:var(--text-main);margin-bottom:20px;padding:15px 0;">加载中...</div><div id="p-question-hint" style="color:var(--text-dim);font-size:0.85rem;"></div></div><div id="p-options" class="practice-options"></div><div id="p-input-box" style="display:none;"><input type="text" class="practice-input" id="p-fill-input" placeholder="输入中文翻译..." autocomplete="off" style="width:100%;padding:12px;border-radius:10px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:1rem;outline:none;"><button class="practice-start-btn" onclick="submitFillAnswer()" style="margin-top:10px;width:100%;">提交答案</button></div><div id="p-feedback" class="practice-feedback"></div><div style="display:flex;gap:12px;justify-content:center;margin-top:20px;"><button class="practice-btn-sec" onclick="endPractice()">结束练习</button><button class="practice-start-btn" id="p-next-btn" onclick="nextQuestion()" style="display:none;">下一题 <i class="fas fa-arrow-right"></i></button></div></div><div id="practice-result" style="display:none;"><div style="text-align:center;padding:30px;"><div id="p-result-score" style="font-size:4rem;font-weight:900;color:var(--accent);">0%</div><div id="p-result-text" style="color:var(--text-muted);font-size:1.1rem;margin:10px 0 20px;">练习完成！</div><div style="display:flex;gap:20px;justify-content:center;margin-bottom:25px;"><div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:#10b981;" id="p-r-correct">0</div><div style="color:var(--text-dim);font-size:0.8rem;">正确</div></div><div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:#ef4444;" id="p-r-wrong">0</div><div style="color:var(--text-dim);font-size:0.8rem;">错误</div></div><div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:var(--text-main);" id="p-r-total">0</div><div style="color:var(--text-dim);font-size:0.8rem;">总题数</div></div></div><div style="display:flex;gap:12px;justify-content:center;"><button class="practice-btn-sec" onclick="showWrongWords()">查看错题</button><button id="lb-submit-btn" style="display:none;padding:10px 20px;background:#f59e0b;color:#000;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:0.9rem;" onclick="submitToLeaderboard()"><i class="fas fa-trophy"></i> 提交到排行榜</button><button class="practice-start-btn" onclick="resetPractice()">再来一次</button></div></div></div></div>`;
-}
+        <div class="vslider-box">
+          <div class="vslider-label"><i class="fas fa-repeat"></i> 循环</div>
+          <div class="vslider-track-wrap">
+            <input type="range" class="vslider vslider-loop" id="p-loop-slider" min="0" max="14" value="0" step="1" oninput="setLoopFromSlider(this.value)">
+            <div class="vslider-fill" id="p-loop-fill"></div>
+            <div class="vslider-thumb" id="p-loop-thumb"><span id="p-val-loop">1次</span></div>
+          </div>
+          <div class="vslider-range"><span>1次</span><span>无限</span></div>
+        </div>
+      </div>
+    </div>
+    <div id="practice-word-count-hint" style="text-align:center;color:var(--text-dim);font-size:0.82rem;margin-bottom:14px;"></div>
+    <button class="practice-start-btn" onclick="startPractice()" style="width:100%;padding:13px;font-size:1.05rem;">
+      <i class="fas fa-play"></i> 开始练习
+    </button>
+  </div>
 
+  <div id="practice-quiz" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <div style="color:var(--text-main);font-weight:700;">练习中</div>
+      <div style="color:var(--text-muted);font-size:0.9rem;" id="practice-progress">1/20</div>
+    </div>
+    <div style="height:6px;background:var(--card-bg);border-radius:3px;margin-bottom:16px;overflow:hidden;">
+      <div id="practice-progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),#a78bfa);border-radius:3px;transition:width 0.3s ease;"></div>
+    </div>
+    <div class="practice-score-bar">
+      <div class="practice-score-item"><span class="score-val" id="p-correct">0</span>正确</div>
+      <div class="practice-score-item"><span class="score-val" id="p-wrong">0</span>错误</div>
+      <div class="practice-score-item"><span class="score-val" id="p-accuracy">0%</span>正确率</div>
+    </div>
+    <div class="practice-question-box">
+      <div id="p-question-label" style="color:var(--text-muted);font-size:0.85rem;margin-bottom:8px;">请选择正确的中文翻译</div>
+      <div id="p-question-word" style="font-size:2.2rem;font-weight:800;color:var(--text-main);margin-bottom:16px;padding:12px 0;">加载中...</div>
+      <div id="p-question-hint" style="color:var(--text-dim);font-size:0.82rem;"></div>
+    </div>
+    <div id="p-options" class="practice-options"></div>
+    <div id="p-input-box" style="display:none;">
+      <input type="text" class="practice-input" id="p-fill-input" placeholder="输入中文翻译..." autocomplete="off" style="width:100%;padding:12px;border-radius:10px;background:var(--input-bg);color:var(--text-main);border:1px solid var(--border-light);font-size:1rem;outline:none;">
+      <button class="practice-start-btn" onclick="submitFillAnswer()" style="margin-top:10px;width:100%;">提交答案</button>
+    </div>
+    <div id="p-feedback" class="practice-feedback"></div>
+    <div style="display:flex;gap:12px;justify-content:center;margin-top:18px;">
+      <button class="practice-btn-sec" onclick="endPractice()">结束练习</button>
+      <button class="practice-start-btn" id="p-next-btn" onclick="nextQuestion()" style="display:none;">下一题 <i class="fas fa-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <div id="practice-result" style="display:none;">
+    <div style="text-align:center;padding:25px;">
+      <div id="p-result-score" style="font-size:3.5rem;font-weight:900;color:var(--accent);">0%</div>
+      <div id="p-result-text" style="color:var(--text-muted);font-size:1rem;margin:8px 0 18px;">练习完成！</div>
+      <div style="display:flex;gap:20px;justify-content:center;margin-bottom:20px;">
+        <div style="text-align:center;">
+          <div style="font-size:1.4rem;font-weight:800;color:#10b981;" id="p-r-correct">0</div>
+          <div style="color:var(--text-dim);font-size:0.78rem;">正确</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:1.4rem;font-weight:800;color:#ef4444;" id="p-r-wrong">0</div>
+          <div style="color:var(--text-dim);font-size:0.78rem;">错误</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:1.4rem;font-weight:800;color:var(--text-main);" id="p-r-total">0</div>
+          <div style="color:var(--text-dim);font-size:0.78rem;">总题数</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button id="p-wrong-btn" class="practice-btn-sec" onclick="showWrongWords()" style="display:none;"><i class="fas fa-times-circle" style="margin-right:5px;"></i>查看错题</button>
+        <button id="lb-submit-btn" style="display:none;padding:10px 18px;background:#f59e0b;color:#000;border:none;border-radius:10px;cursor:pointer;font-weight:700;font-size:0.88rem;" onclick="submitToLeaderboard()"><i class="fas fa-trophy"></i> 提交到排行榜</button>
+        <button class="practice-start-btn" onclick="resetPractice()"><i class="fas fa-redo"></i> 再来一轮</button>
+        <button class="practice-btn-sec" onclick="backToSetup()"><i class="fas fa-cog"></i> 重新配置</button>
+      </div>
+    </div>
+  </div>
+</div>`;
+    updatePracticeWordCount();
+}
 
 function selectPracticeType(type, btn) {
     selectedPracticeType = type;
     btn.parentElement.querySelectorAll('.practice-type-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    // 仅听力题显示语速/循环滑块
+    const listenOpts = document.getElementById('practice-listen-options');
+    if (listenOpts) listenOpts.style.display = type === 'listen' ? '' : 'none';
+    updatePracticeWordCount();
 }
+
 function selectPracticeCount(count, btn) {
     selectedPracticeCount = count;
     btn.parentElement.querySelectorAll('.practice-type-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    updatePracticeWordCount();
 }
+
+// 更新设置页底部的可用词汇数提示
+function updatePracticeWordCount() {
+    const hint = document.getElementById('practice-word-count-hint');
+    if (!hint) return;
+    try {
+        const catId = document.getElementById('practice-cat-select').value;
+        let words = catId === 'all' ? getAllWords() : getWordsByCategory(catId);
+        // 模拟后台筛选逻辑计算可用数
+        const isVisitor = sessionStorage.getItem('fmi_visitor_login');
+        const sysInfo = window._systemInfo || {};
+        const practiceCfg = isVisitor ? (sysInfo.studyPracticeVisitor || {}) : (sysInfo.studyPracticeUser || {});
+        const includeMastered = practiceCfg.includeMastered !== false;
+        const includeCurrentLesson = practiceCfg.includeCurrentLesson !== false;
+        if (includeMastered || includeCurrentLesson) {
+            const learned = new Set(JSON.parse(localStorage.getItem('fmi_all_words') || '[]'));
+            let curLessonWords = new Set();
+            if (db[curCat] && db[curCat].lessons[curLesson]) {
+                db[curCat].lessons[curLesson].words.forEach(w => curLessonWords.add(w.indonesian));
+            }
+            const filtered = words.filter(w => {
+                const isMastered = learned.has(w.indonesian);
+                const isCurrent = curLessonWords.has(w.indonesian);
+                if (includeMastered && includeCurrentLesson) return isMastered || isCurrent;
+                else if (includeMastered) return isMastered;
+                else if (includeCurrentLesson) return isCurrent;
+                return true;
+            });
+            words = filtered;
+        }
+        const count = selectedPracticeCount === 0 ? words.length : Math.min(selectedPracticeCount, words.length);
+        hint.textContent = '可用词汇 ' + words.length + ' 词' + (selectedPracticeCount > 0 ? '，将随机抽取 ' + count + ' 题' : '');
+    } catch(e) {
+        hint.textContent = '';
+    }
+}
+
 function startPractice() {
     const catId = document.getElementById('practice-cat-select').value;
     let words = catId === 'all' ? getAllWords() : getWordsByCategory(catId);
@@ -2551,11 +2693,10 @@ function startPractice() {
     const isVisitor = sessionStorage.getItem('fmi_visitor_login');
     const sysInfo = window._systemInfo || {};
     const practiceCfg = isVisitor ? (sysInfo.studyPracticeVisitor || {}) : (sysInfo.studyPracticeUser || {});
-    const includeMastered = practiceCfg.includeMastered !== false; // 默认 true
-    const includeCurrentLesson = practiceCfg.includeCurrentLesson !== false; // 默认 true
+    const includeMastered = practiceCfg.includeMastered !== false;
+    const includeCurrentLesson = practiceCfg.includeCurrentLesson !== false;
     if (includeMastered || includeCurrentLesson) {
         const learned = new Set(JSON.parse(localStorage.getItem('fmi_all_words') || '[]'));
-        // 收集当前课本全部词汇
         let curLessonWords = new Set();
         if (db[curCat] && db[curCat].lessons[curLesson]) {
             db[curCat].lessons[curLesson].words.forEach(w => curLessonWords.add(w.indonesian));
@@ -2565,41 +2706,55 @@ function startPractice() {
             const isMastered = learned.has(w.indonesian);
             const isCurrent = curLessonWords.has(w.indonesian);
             if (includeMastered && includeCurrentLesson) {
-                // 两个都开：包含已掌握 + 当前课本全部内容
                 if (isMastered || isCurrent) filtered.push(w);
             } else if (includeMastered) {
-                // 只开已掌握
                 if (isMastered) filtered.push(w);
             } else if (includeCurrentLesson) {
-                // 只开当前课本
                 if (isCurrent) filtered.push(w);
             } else {
-                filtered.push(w); // 都没开则不筛选
+                filtered.push(w);
             }
         });
-        words = filtered.length > 0 ? filtered : words; // 筛选后为空则使用原词库
+        words = filtered.length > 0 ? filtered : words;
     }
-    if (words.length < 4) { alert('词库单词数量不足，至少需要4个'); return; }
+    if (words.length < 4) {
+        if (window._showCustomConfirm) {
+            window._showCustomConfirm('词汇不足', '当前筛选范围内只有 ' + words.length + ' 个词汇，至少需要4个。请调整分类或联系管理员修改题库设置。', '我知道了', null, function(){});
+        } else {
+            alert('词库单词数量不足（当前 ' + words.length + ' 个），至少需要4个');
+        }
+        return;
+    }
     words = shuffleArray(words);
     const count = selectedPracticeCount === 0 ? words.length : Math.min(selectedPracticeCount, words.length);
-    practiceState = { type: selectedPracticeType, catId, questions: words.slice(0, count), currentIndex: 0, score: 0, total: count, answered: false, isFinished: false, wrongWords: [] };
+    practiceState = {
+        type: selectedPracticeType, catId, questions: words.slice(0, count),
+        currentIndex: 0, score: 0, total: count, answered: false, isFinished: false, wrongWords: [],
+        answeredCount: 0
+    };
     document.getElementById('practice-setup').style.display = 'none';
     document.getElementById('practice-quiz').style.display = 'block';
     document.getElementById('practice-result').style.display = 'none';
     showQuestion();
 }
+
 function showQuestion() {
     const s = practiceState;
     if (s.currentIndex >= s.total) { finishPractice(); return; }
     s.answered = false;
     const q = s.questions[s.currentIndex];
+    // 更新进度
+    const progress = ((s.currentIndex) / s.total * 100).toFixed(0);
     document.getElementById('practice-progress').textContent = (s.currentIndex + 1) + '/' + s.total;
+    const bar = document.getElementById('practice-progress-bar');
+    if (bar) bar.style.width = progress + '%';
+    document.getElementById('p-correct').textContent = s.score;
+    document.getElementById('p-wrong').textContent = s.answeredCount - s.score;
+    document.getElementById('p-accuracy').textContent = s.answeredCount > 0 ? Math.round((s.score / s.answeredCount) * 100) + '%' : '0%';
     const fb = document.getElementById('p-feedback');
     fb.style.display = 'none';
+    fb.className = 'practice-feedback';
     document.getElementById('p-next-btn').style.display = 'none';
-    document.getElementById('p-correct').textContent = s.score;
-    document.getElementById('p-wrong').textContent = s.currentIndex - s.score;
-    document.getElementById('p-accuracy').textContent = s.currentIndex > 0 ? Math.round((s.score / s.currentIndex) * 100) + '%' : '0%';
     const allW = s.catId === 'all' ? getAllWords() : getWordsByCategory(s.catId);
     if (s.type === 'choice') {
         document.getElementById('p-question-label').textContent = '请选择正确的中文翻译';
@@ -2610,113 +2765,140 @@ function showQuestion() {
         let wrong = allW.filter(w => w.chinese !== q.chinese);
         wrong = shuffleArray(wrong).slice(0, 3);
         const opts = shuffleArray([{ text: q.chinese, correct: true }, ...wrong.map(w => ({ text: w.chinese, correct: false }))]);
-        document.getElementById('p-options').innerHTML = opts.map(o => '<div class="practice-option" onclick="selectOption(this,' + o.correct + ',\'' + o.text.replace(/'/g, "\\'") + '\')">' + o.text + '</div>').join('');
+        document.getElementById('p-options').innerHTML = opts.map(o =>
+            '<div class="practice-option" onclick="selectOption(this,' + o.correct + ',\'' + o.text.replace(/'/g, "\\'") + '\')">' + o.text + '</div>'
+        ).join('');
     } else if (s.type === 'fill') {
-        document.getElementById('p-question-label').textContent = '请输入正确的中文翻译';
+        document.getElementById('p-question-label').textContent = '请输入中文翻译';
         document.getElementById('p-question-word').textContent = q.indonesian;
-        document.getElementById('p-question-hint').textContent = '输入中文后点击提交';
+        const answerLen = q.chinese.length;
+        document.getElementById('p-question-hint').innerHTML = '<span style="background:var(--card-bg);padding:2px 8px;border-radius:4px;font-size:0.78rem;">' + answerLen + ' 个字</span>';
         document.getElementById('p-options').style.display = 'none';
         document.getElementById('p-input-box').style.display = 'block';
         const inp = document.getElementById('p-fill-input');
         inp.value = '';
         inp.className = 'practice-input';
         inp.focus();
+        // 支持 Enter 提交
+        inp.onkeydown = function(e) { if (e.key === 'Enter') submitFillAnswer(); };
     } else if (s.type === 'listen') {
         document.getElementById('p-question-label').textContent = '听发音，选择正确的中文翻译';
-        document.getElementById('p-question-word').textContent = '🔊';
+        document.getElementById('p-question-word').textContent = '\uD83D\uDD0A';
         document.getElementById('p-options').style.display = 'grid';
         document.getElementById('p-input-box').style.display = 'none';
         setTimeout(() => { googleSpeech(q.indonesian).catch(() => {}); }, 300);
         let wrong = allW.filter(w => w.indonesian !== q.indonesian);
         wrong = shuffleArray(wrong).slice(0, 3);
         const opts = shuffleArray([{ text: q.chinese, correct: true }, ...wrong.map(w => ({ text: w.chinese, correct: false }))]);
-        document.getElementById('p-options').innerHTML = opts.map(o => '<div class="practice-option" onclick="selectOption(this,' + o.correct + ',\'' + o.text.replace(/'/g, "\\'") + '\')">' + o.text + '</div>').join('');
-        document.getElementById('p-question-hint').innerHTML = '<button onclick="googleSpeech(practiceState.questions[practiceState.currentIndex].indonesian).catch(()=>{})" style="background:var(--accent);color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;margin-top:8px;"><i class="fas fa-redo"></i> 重新播放</button>';
+        document.getElementById('p-options').innerHTML = opts.map(o =>
+            '<div class="practice-option" onclick="selectOption(this,' + o.correct + ',\'' + o.text.replace(/'/g, "\\'") + '\')">' + o.text + '</div>'
+        ).join('');
+        document.getElementById('p-question-hint').innerHTML =
+            '<button onclick="googleSpeech(practiceState.questions[practiceState.currentIndex].indonesian).catch(()=>{})" style="background:var(--accent);color:white;border:none;padding:7px 14px;border-radius:8px;cursor:pointer;margin-top:6px;font-size:0.85rem;"><i class="fas fa-redo"></i> 重新播放</button>';
     }
 }
+
 function selectOption(el, correct, answer) {
     if (practiceState.answered) return;
     practiceState.answered = true;
+    practiceState.answeredCount++;
     const q = practiceState.questions[practiceState.currentIndex];
     const fb = document.getElementById('p-feedback');
     document.querySelectorAll('.practice-option').forEach(o => o.classList.add('disabled'));
     if (correct) {
         el.classList.add('correct');
         practiceState.score++;
-        fb.textContent = '✓ 回答正确！';
+        fb.textContent = '\u2713 回答正确！';
         fb.className = 'practice-feedback show correct';
     } else {
         el.classList.add('wrong');
         document.querySelectorAll('.practice-option').forEach(o => { if (o.textContent === q.chinese) o.classList.add('correct'); });
-        fb.textContent = '✗ 正确答案：' + q.chinese;
+        fb.textContent = '\u2717 正确答案：' + q.chinese;
         fb.className = 'practice-feedback show wrong';
         practiceState.wrongWords.push(q);
-        // 自动加入错题集（收藏夹）
         addToWrongBook(q);
     }
     document.getElementById('p-next-btn').style.display = 'inline-flex';
-    const t = practiceState.currentIndex + 1;
     document.getElementById('p-correct').textContent = practiceState.score;
-    document.getElementById('p-wrong').textContent = t - practiceState.score;
-    document.getElementById('p-accuracy').textContent = Math.round((practiceState.score / t) * 100) + '%';
+    document.getElementById('p-wrong').textContent = practiceState.answeredCount - practiceState.score;
+    document.getElementById('p-accuracy').textContent = Math.round((practiceState.score / practiceState.answeredCount) * 100) + '%';
 }
+
 function submitFillAnswer() {
     if (practiceState.answered) return;
     practiceState.answered = true;
+    practiceState.answeredCount++;
     const q = practiceState.questions[practiceState.currentIndex];
     const inp = document.getElementById('p-fill-input');
     const fb = document.getElementById('p-feedback');
     const ua = inp.value.trim();
-    if (!ua) { practiceState.answered = false; return; }
+    if (!ua) { practiceState.answered = false; practiceState.answeredCount--; return; }
     if (ua === q.chinese) {
         inp.classList.add('correct');
         practiceState.score++;
-        fb.textContent = '✓ 回答正确！';
+        fb.textContent = '\u2713 回答正确！';
         fb.className = 'practice-feedback show correct';
     } else {
         inp.classList.add('wrong');
-        fb.textContent = '✗ 正确答案：' + q.chinese;
+        fb.textContent = '\u2717 正确答案：' + q.chinese;
         fb.className = 'practice-feedback show wrong';
         practiceState.wrongWords.push(q);
-        // 自动加入错题集（收藏夹）
         addToWrongBook(q);
     }
+    inp.onkeydown = null;
     document.getElementById('p-next-btn').style.display = 'inline-flex';
-    const t = practiceState.currentIndex + 1;
     document.getElementById('p-correct').textContent = practiceState.score;
-    document.getElementById('p-wrong').textContent = t - practiceState.score;
-    document.getElementById('p-accuracy').textContent = Math.round((practiceState.score / t) * 100) + '%';
+    document.getElementById('p-wrong').textContent = practiceState.answeredCount - practiceState.score;
+    document.getElementById('p-accuracy').textContent = Math.round((practiceState.score / practiceState.answeredCount) * 100) + '%';
 }
-function nextQuestion() { practiceState.currentIndex++; showQuestion(); }
+
+function nextQuestion() {
+    practiceState.currentIndex++;
+    showQuestion();
+}
+
 function endPractice() {
-    if (practiceState.currentIndex === 0 && !practiceState.answered) {
-        if (!confirm('还没答题，确定要结束吗？')) return;
+    if (practiceState.answeredCount === 0) {
+        if (window._showCustomConfirm) {
+            window._showCustomConfirm('尚未作答', '还没有回答任何题目，确定要退出吗？', '退出', '继续练习', function() {
+                backToSetup();
+            });
+        } else if (!confirm('还没答题，确定要结束吗？')) {
+            return;
+        }
+        backToSetup();
+        return;
     }
     finishPractice();
 }
+
 function finishPractice() {
     practiceState.isFinished = true;
     const s = practiceState;
-    const answered = s.currentIndex; // 已答题数
-    const total = Math.max(answered, s.score + s.wrongWords.length);
+    const answered = s.answeredCount;
+    // 未实际作答则不记录
+    if (answered === 0) { backToSetup(); return; }
+    const total = answered;
     const pct = total > 0 ? Math.round((s.score / total) * 100) : 0;
     document.getElementById('practice-quiz').style.display = 'none';
     document.getElementById('practice-result').style.display = 'block';
     document.getElementById('p-result-score').textContent = pct + '%';
     document.getElementById('p-r-correct').textContent = s.score;
     document.getElementById('p-r-wrong').textContent = s.wrongWords.length;
-    document.getElementById('p-r-total').textContent = answered > 0 ? answered : '—';
+    document.getElementById('p-r-total').textContent = answered;
+    // 错题按钮：有错题才显示
+    const wrongBtn = document.getElementById('p-wrong-btn');
+    if (wrongBtn) wrongBtn.style.display = s.wrongWords.length > 0 ? '' : 'none';
     let txt = '继续加油！';
     if (pct >= 90) txt = '太棒了！几乎完美！';
     else if (pct >= 70) txt = '不错！再接再厉！';
     else if (pct >= 50) txt = '还可以，多多练习！';
     document.getElementById('p-result-text').textContent = txt;
+    // 记录练习历史
     const hist = JSON.parse(localStorage.getItem('fmi_practice_history') || '[]');
-    hist.push({ date: new Date().toLocaleDateString(), type: s.type, score: s.score, total: s.total, percent: pct });
+    hist.push({ date: new Date().toLocaleDateString(), type: s.type, score: s.score, total: total, percent: pct });
     if (hist.length > 50) hist.splice(0, hist.length - 50);
     localStorage.setItem('fmi_practice_history', JSON.stringify(hist));
-
-    // Check if leaderboard is enabled for this practice
     checkLeaderboardAndShowButton(s, pct);
 }
 
@@ -2725,10 +2907,8 @@ async function checkLeaderboardAndShowButton(state, pct) {
         const data = await API.getLeaderboard();
         if (!data.error && data.config && data.config.enabled) {
             const config = data.config;
-            // Check if practice matches leaderboard config
             const matchCount = !config.questionCount || state.total === config.questionCount;
             const matchType = !config.type || state.type === config.type;
-            const matchCat = !config.category || state.category === config.category || (config.category === 'all' && !state.category);
             if (matchCount && (matchType || !config.type)) {
                 document.getElementById('lb-submit-btn').style.display = 'inline-flex';
             }
@@ -2737,33 +2917,28 @@ async function checkLeaderboardAndShowButton(state, pct) {
 }
 
 async function submitToLeaderboard() {
-    // 爱好者前端拦截
-    // loginStatus 已在函数开头声明
     if (loginStatus.user && loginStatus.user.userType === 'hobby') {
         alert('爱好者不能参与排行榜');
         return;
     }
     const s = practiceState;
-    const answered = s.currentIndex; // 已答题数
-    const total = Math.max(answered, s.score + s.wrongWords.length);
-    const pct = total > 0 ? Math.round((s.score / total) * 100) : 0;
+    const answered = s.answeredCount;
+    const pct = answered > 0 ? Math.round((s.score / answered) * 100) : 0;
     const btn = document.getElementById('lb-submit-btn');
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 提交中...';
-
     try {
         const result = await API.submitLeaderboard({
             accuracy: pct,
-            timeSpent: Math.round((Date.now() - (s.startTime || Date.now())) / 1000),
-            totalQuestions: s.total,
-            correctCount: s.score,
+            score: s.score,
+            total: answered,
+            type: s.type,
+            category: s.catId
         });
-        if (result.success) {
+        if (!result.error) {
             btn.innerHTML = '<i class="fas fa-check"></i> 已提交';
             btn.disabled = true;
-            btn.style.background = '#10b981';
-            btn.style.color = '#fff';
-        } else if (result.error) {
+        } else {
             btn.innerHTML = '<i class="fas fa-trophy"></i> 提交到排行榜';
             btn.disabled = false;
             alert(result.error);
@@ -2773,31 +2948,21 @@ async function submitToLeaderboard() {
         btn.disabled = false;
     }
 }
-// 错题自动加入错题集
-function addToWrongBook(word) {
-    if (!word || !word.indonesian) return;
-    const exists = favs.some(f => f.indonesian === word.indonesian && f._wrongBook);
-    if (!exists) {
-        favs.push({
-            cat: 'wrong',
-            lesson: 'wrong',
-            idx: Date.now(),
-            indonesian: word.indonesian,
-            chinese: word.chinese,
-            _wrongBook: true
-        });
-        localStorage.setItem('fmi_v1_favs', JSON.stringify(favs));
-        syncStudyToCloud();
-        buildMenu();
-    }
-}
 
 // 错题自动加入错题集
 function addToWrongBook(word) {
     if (!word || !word.indonesian) return;
+    // 检查后台是否允许
+    const isVisitor = sessionStorage.getItem('fmi_visitor_login');
+    const sysInfo = window._systemInfo || {};
+    const cfg = isVisitor ? (sysInfo.studyPracticeVisitor || {}) : (sysInfo.studyPracticeUser || {});
+    if (cfg.enableWrongBook === false) return;
     const exists = favs.some(f => f.indonesian === word.indonesian && f._wrongBook);
     if (!exists) {
-        favs.push({ cat: 'wrong', lesson: 'wrong', idx: Date.now(), indonesian: word.indonesian, chinese: word.chinese, _wrongBook: true });
+        favs.push({
+            cat: 'wrong', lesson: 'wrong', idx: Date.now(),
+            indonesian: word.indonesian, chinese: word.chinese, _wrongBook: true
+        });
         localStorage.setItem('fmi_v1_favs', JSON.stringify(favs));
         syncStudyToCloud();
         buildMenu();
@@ -2807,7 +2972,14 @@ function addToWrongBook(word) {
 // 清空错题集
 function clearWrongBook(event) {
     if (event) event.stopPropagation();
-    if (confirm('确认清空错题集？')) {
+    if (window._showCustomConfirm) {
+        window._showCustomConfirm('清空错题集', '确认清空所有错题记录？此操作不可撤销。', '清空', '取消', function() {
+            favs = favs.filter(f => !f._wrongBook);
+            localStorage.setItem('fmi_v1_favs', JSON.stringify(favs));
+            syncStudyToCloud();
+            buildMenu();
+        });
+    } else if (confirm('确认清空错题集？')) {
         favs = favs.filter(f => !f._wrongBook);
         localStorage.setItem('fmi_v1_favs', JSON.stringify(favs));
         syncStudyToCloud();
@@ -2825,14 +2997,14 @@ function showWrongWords() {
     let wordList = practiceState.wrongWords.map((w, i) =>
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.05);">' +
         '<span style="color:#fca5a5;font-weight:600;">' + (i+1) + '. ' + w.indonesian + '</span>' +
-        '<span style="color:#94a3b8;">' + w.chinese + '</span></div>'
+        '<span style="color:#94a3b8;font-size:0.9rem;">' + w.chinese + '</span></div>'
     ).join('');
     dialog.innerHTML =
         '<div style="background:rgba(30,41,59,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:25px;max-width:450px;width:90%;backdrop-filter:blur(20px);">' +
-        '<div style="text-align:center;margin-bottom:15px;"><span style="font-size:2rem;">📝</span><h3 style="color:#fff;margin:8px 0 5px;">错题列表</h3><p style="color:#f87171;font-size:0.9rem;">共 ' + practiceState.wrongWords.length + ' 道错题</p></div>' +
-        '<div style="max-height:300px;overflow-y:auto;border-radius:12px;border:1px solid rgba(255,255,255,0.05);margin-bottom:15px;">' + wordList + '</div>' +
-        '<div style="text-align:center;color:#94a3b8;font-size:0.8rem;margin-bottom:15px;">错题已自动加入错题集</div>' +
-        '<button onclick="document.body.removeChild(this.closest(\'[style*=fixed]\'))" style="width:100%;padding:10px;background:rgba(99,102,241,0.2);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3);border-radius:10px;cursor:pointer;font-weight:600;">关闭</button></div>';
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;"><span style="font-size:1.5rem;font-weight:700;color:#fff;"><i class="fas fa-times-circle" style="color:#f87171;margin-right:8px;"></i>错题列表</span><span style="color:#f87171;font-size:0.85rem;">共 ' + practiceState.wrongWords.length + ' 题</span></div>' +
+        '<div style="max-height:300px;overflow-y:auto;border-radius:12px;border:1px solid rgba(255,255,255,0.05);margin-bottom:12px;">' + wordList + '</div>' +
+        '<div style="text-align:center;color:#64748b;font-size:0.78rem;margin-bottom:14px;">错题已自动加入侧栏错题集</div>' +
+        '<button onclick="document.body.removeChild(this.closest(\'[style*=fixed]\'))" style="width:100%;padding:9px;background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.25);border-radius:10px;cursor:pointer;font-weight:600;font-size:0.88rem;">关闭</button></div>';
     document.body.appendChild(dialog);
     dialog.addEventListener('click', (e) => { if (e.target === dialog) document.body.removeChild(dialog); });
 }
@@ -2840,14 +3012,25 @@ function showWrongWords() {
 function showNotice(msg) {
     const dialog = document.createElement('div');
     dialog.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:8000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px);';
-    dialog.innerHTML = '<div style="background:rgba(30,41,59,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:25px 35px;text-align:center;"><div style="font-size:2.5rem;margin-bottom:10px;">🎉</div><p style="color:#e2e8f0;font-size:1rem;">' + msg + '</p><button onclick="document.body.removeChild(this.closest(\'[style*=fixed]\'))" style="margin-top:15px;padding:8px 25px;background:rgba(52,211,153,0.2);color:#34d399;border:1px solid rgba(52,211,153,0.3);border-radius:8px;cursor:pointer;font-weight:600;">好的</button></div>';
+    dialog.innerHTML = '<div style="background:rgba(30,41,59,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:25px 35px;text-align:center;"><div style="font-size:2.5rem;margin-bottom:10px;">\uD83C\uDF89</div><p style="color:#e2e8f0;font-size:1rem;">' + msg + '</p><button onclick="document.body.removeChild(this.closest(\'[style*=fixed]\'))" style="margin-top:15px;padding:8px 25px;background:rgba(52,211,153,0.2);color:#34d399;border:1px solid rgba(52,211,153,0.3);border-radius:8px;cursor:pointer;font-weight:600;">好的</button></div>';
     document.body.appendChild(dialog);
     dialog.addEventListener('click', (e) => { if (e.target === dialog) document.body.removeChild(dialog); });
 }
+
 function resetPractice() {
-    document.getElementById('practice-setup').style.display = 'block';
+    // 同配置再来一轮
+    document.getElementById('practice-setup').style.display = 'none';
+    document.getElementById('practice-quiz').style.display = 'block';
+    document.getElementById('practice-result').style.display = 'none';
+    startPractice();
+}
+
+function backToSetup() {
+    // 返回设置页重新配置
+    document.getElementById('practice-setup').style.display = '';
     document.getElementById('practice-quiz').style.display = 'none';
     document.getElementById('practice-result').style.display = 'none';
+    updatePracticeWordCount();
 }
 
 // ============================================================
