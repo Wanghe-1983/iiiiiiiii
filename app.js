@@ -2631,15 +2631,34 @@ function initPracticePage() {
   </div>
 </div>`;
     updatePracticeWordCount();
+    // 初始状态下根据后台设置决定滑块是否可见
+    if (selectedPracticeType === 'listen') {
+        const listenOpts = document.getElementById('practice-listen-options');
+        if (listenOpts) {
+            const isVisitor = sessionStorage.getItem('fmi_visitor_login');
+            const sysInfo = window._systemInfo || {};
+            const cfg = isVisitor ? (sysInfo.studyPracticeVisitor || {}) : (sysInfo.studyPracticeUser || {});
+            listenOpts.style.display = (cfg.showRateSlider !== false && cfg.showLoopSlider !== false) ? '' : 'none';
+        }
+    }
 }
 
 function selectPracticeType(type, btn) {
     selectedPracticeType = type;
     btn.parentElement.querySelectorAll('.practice-type-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    // 仅听力题显示语速/循环滑块
+    // 仅听力题显示语速/循环滑块，且受后台开关控制
     const listenOpts = document.getElementById('practice-listen-options');
-    if (listenOpts) listenOpts.style.display = type === 'listen' ? '' : 'none';
+    if (listenOpts) {
+        if (type !== 'listen') {
+            listenOpts.style.display = 'none';
+        } else {
+            const isVisitor = sessionStorage.getItem('fmi_visitor_login');
+            const sysInfo = window._systemInfo || {};
+            const cfg = isVisitor ? (sysInfo.studyPracticeVisitor || {}) : (sysInfo.studyPracticeUser || {});
+            listenOpts.style.display = (cfg.showRateSlider !== false && cfg.showLoopSlider !== false) ? '' : 'none';
+        }
+    }
     updatePracticeWordCount();
 }
 
