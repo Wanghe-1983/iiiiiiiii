@@ -1734,7 +1734,7 @@
     gap: 10px;
     margin-bottom: 14px;
 }
-.stats-card {
+.stats-card { position:relative;
     background: var(--card-bg);
     border-radius: 14px;
     padding: 16px 14px;

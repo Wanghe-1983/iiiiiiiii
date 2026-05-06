@@ -704,7 +704,8 @@ function quickTranslate() {
                 data[0].forEach(item => { translated += item[0]; });
             }
             if (translated) {
-                resultEl.innerHTML = '<span>' + translated + '</span> <button onclick="googleSpeech(\'' + translated.replace(/'/g, "\\'") + '\').catch(()=>{})" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:0.85rem;padding:0 2px;" title="播放发音"><i class="fas fa-volume-up"></i></button>';
+                const showSpeak = hasChinese;
+                resultEl.innerHTML = '<span>' + translated + '</span>' + (showSpeak ? ' <button onclick="googleSpeech(\'' + translated.replace(/'/g, "\\\'") + '\').catch(()=>{})" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:0.85rem;padding:0 2px;" title="播放印尼语发音"><i class="fas fa-volume-up"></i></button>' : '');
             } else {
                 resultEl.innerHTML = '<span style="color:var(--text-dim);">翻译失败</span>';
             }
@@ -715,7 +716,8 @@ function quickTranslate() {
             const found = allW.find(w => hasChinese ? w.chinese === text : w.indonesian.toLowerCase() === text.toLowerCase());
             if (found) {
                 const display = hasChinese ? found.indonesian : found.chinese;
-                resultEl.innerHTML = '<span>' + display + '</span> <button onclick="googleSpeech(\'' + display.replace(/'/g, "\\'") + '\').catch(()=>{})" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:0.85rem;padding:0 2px;" title="播放发音"><i class="fas fa-volume-up"></i></button>';
+                const showSpeak2 = hasChinese;
+                resultEl.innerHTML = '<span>' + display + '</span>' + (showSpeak2 ? ' <button onclick="googleSpeech(\'' + display.replace(/'/g, "\\\'") + '\').catch(()=>{})" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:0.85rem;padding:0 2px;" title="播放印尼语发音"><i class="fas fa-volume-up"></i></button>' : '');
             } else {
                 resultEl.innerHTML = '<span style="color:var(--text-dim);">翻译失败，请检查网络</span>';
             }
@@ -1869,6 +1871,11 @@ function addToTodayRecord(word) {
         }
         studyStats.totalWords = allWords.length;
         updateStats();
+        // 记录每日学习量
+        const todayKey = new Date().getFullYear() + '-' + String(new Date().getMonth()+1).padStart(2,'0') + '-' + String(new Date().getDate()).padStart(2,'0');
+        const dailyHist = JSON.parse(localStorage.getItem('fmi_daily_history') || '{}');
+        dailyHist[todayKey] = allWords.length;
+        localStorage.setItem('fmi_daily_history', JSON.stringify(dailyHist));
         // 同步到KV后端
         syncStudyToCloud();
     }
@@ -3201,39 +3208,51 @@ function backToSetup() {
 // ============================================================
 function initDashboardPage() {
     const c = document.getElementById('page-study-stats');
-    if (c.dataset.init) { c.dataset.init = '2'; }
-    else { c.dataset.init = '2'; }
-    const allW = getAllWords();
-    const totalLib = allW.length;
+    c.dataset.init = '2';
+
+    // ===== 数据源：基于课程数据统计（不再依赖旧db的79/113） =====
     const learned = JSON.parse(localStorage.getItem('fmi_all_words') || '[]');
-    const learnedN = learned.length;
-    let curCatWords = [];
-    if (db[curCat] && db[curCat].lessons) {
-        for (const lid in db[curCat].lessons) curCatWords = curCatWords.concat(db[curCat].lessons[lid].words);
+    const learnedSet = new Set(learned);
+
+    // 从课程数据统计生词/短句/对话总数
+    let totalWords = 0, totalSentences = 0, totalDialogues = 0;
+    let masteredWords = 0, masteredSentences = 0, masteredDialogues = 0;
+    const courseData = window._courseMenuData;
+    if (courseData && courseData.levels) {
+        for (const lv of courseData.levels) {
+            for (const unit of (lv.units || [])) {
+                for (const w of (unit.words || [])) {
+                    totalWords++;
+                    if (learnedSet.has(w.indonesian)) masteredWords++;
+                }
+                for (const s of (unit.sentences || [])) {
+                    totalSentences++;
+                    if (learnedSet.has(s.indonesian)) masteredSentences++;
+                }
+                for (const d of (unit.dialogues || [])) {
+                    totalDialogues++;
+                    if (learnedSet.has(d.indonesian)) masteredDialogues++;
+                }
+            }
+        }
     }
-    const curCatTotal = curCatWords.length;
-    const curCatIndo = new Set(curCatWords.map(w => w.indonesian));
-    const curCatLearnedN = learned.filter(w => curCatIndo.has(w)).length;
-    const learnedPct = curCatTotal > 0 ? Math.round((curCatLearnedN / curCatTotal) * 100) : 0;
+    const totalAll = totalWords + totalSentences + totalDialogues;
+    const masteredAll = masteredWords + masteredSentences + masteredDialogues;
+    const overallPct = totalAll > 0 ? Math.round((masteredAll / totalAll) * 100) : 0;
+    const wordsPct = totalWords > 0 ? Math.round((masteredWords / totalWords) * 100) : 0;
+    const sentencesPct = totalSentences > 0 ? Math.round((masteredSentences / totalSentences) * 100) : 0;
+    const dialoguesPct = totalDialogues > 0 ? Math.round((masteredDialogues / totalDialogues) * 100) : 0;
+
+    // 时长统计
     const mins = Math.floor(studyStats.studySeconds / 60);
     const secs = studyStats.studySeconds % 60;
+
+    // 练习历史
     const hist = JSON.parse(localStorage.getItem('fmi_practice_history') || '[]');
     const totalP = hist.length;
     const avgS = totalP > 0 ? Math.round(hist.reduce((s, h) => s + h.percent, 0) / totalP) : 0;
-    let catBreakdown = '';
-    for (const catId in db) {
-        let catTotal = 0;
-        let catIndo = [];
-        for (const lid in db[catId].lessons) {
-            catTotal += db[catId].lessons[lid].words.length;
-            db[catId].lessons[lid].words.forEach(w => catIndo.push(w.indonesian));
-        }
-        const catIndoSet = new Set(catIndo);
-        const catLearnedN = learned.filter(w => catIndoSet.has(w)).length;
-        const catPct = catTotal > 0 ? Math.min(100, Math.round((catLearnedN / catTotal) * 100)) : 0;
-        const cn = catId === "1" ? "生词 Vocabulary" : catId === "2" ? "短语 Phrases" : catId;
-        catBreakdown += '<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;color:var(--text-muted);font-size:0.82rem;margin-bottom:3px;"><span>' + catId + '. ' + cn + '</span><span>' + catLearnedN + '/' + catTotal + ' (' + catPct + '%)</span></div><div class="stat-progress-bar"><div class="stat-progress-fill" style="width:' + catPct + '%;"></div></div></div>';
-    }
+
+    // ===== 练习历史列表 =====
     let histHTML = '';
     if (hist.length > 0) {
         histHTML = hist.slice(-5).reverse().map(h => {
@@ -3244,19 +3263,17 @@ function initDashboardPage() {
     } else {
         histHTML = '<div style="color:var(--text-dim);text-align:center;padding:16px;font-size:0.85rem;">暂无练习记录</div>';
     }
-    let wordsHTML = '';
-    if (todayRecord.length > 0) {
-        wordsHTML = '<div class="stat-words-list">' + todayRecord.map((item, i) => '<div class="stat-word-item"><span class="stat-word-idx">' + (i + 1) + '</span><span class="stat-word-indo">' + item.indonesian + '</span><span class="stat-word-zh">' + item.chinese + '</span></div>').join('') + '</div>';
-    } else {
-        wordsHTML = '<div style="color:var(--text-dim);text-align:center;padding:16px;font-size:0.85rem;">今天还没有学习记录</div>';
-    }
+
+    // ===== 学习日历（最近30天） =====
+    const calHTML = buildStudyCalendar();
+
     c.innerHTML = `
 <div class="stats-container">
   <div class="stats-header">
     <h2 style="font-size:1.4rem;font-weight:800;color:var(--text-main);margin:0;">
       <i class="fas fa-chart-line" style="color:var(--accent);margin-right:8px;"></i>学习统计
     </h2>
-    <button onclick="clearStudyData()" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.2);padding:5px 12px;border-radius:8px;cursor:pointer;font-size:0.78rem;"><i class="fas fa-trash-alt" style="margin-right:4px;"></i>清空</button>
+    <button onclick="clearAllStudyData()" style="background:rgba(239,68,68,0.12);color:#f87171;border:1px solid rgba(239,68,68,0.2);padding:5px 12px;border-radius:8px;cursor:pointer;font-size:0.78rem;"><i class="fas fa-trash-alt" style="margin-right:4px;"></i>全部重置</button>
   </div>
   <div style="color:var(--text-dim);font-size:0.82rem;text-align:center;margin-bottom:16px;">${today} · 数据总览</div>
 
@@ -3266,35 +3283,54 @@ function initDashboardPage() {
       <div class="stats-card-icon" style="color:var(--accent);"><i class="fas fa-book"></i></div>
       <div class="stats-card-value">${studyStats.todayWords}</div>
       <div class="stats-card-label">今日学习</div>
+      <button onclick="clearTodayStats()" style="position:absolute;top:6px;right:6px;background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.65rem;padding:2px 4px;" title="清空今日数据"><i class="fas fa-undo"></i></button>
     </div>
     <div class="stats-card">
       <div class="stats-card-icon" style="color:#f59e0b;"><i class="fas fa-clock"></i></div>
       <div class="stats-card-value">${mins}<small style="font-size:0.6em;color:var(--text-dim);">分${secs}秒</small></div>
       <div class="stats-card-label">在线时长</div>
+      <button onclick="clearTimeStats()" style="position:absolute;top:6px;right:6px;background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.65rem;padding:2px 4px;" title="清空时长"><i class="fas fa-undo"></i></button>
     </div>
     <div class="stats-card">
       <div class="stats-card-icon" style="color:#10b981;"><i class="fas fa-layer-group"></i></div>
-      <div class="stats-card-value">${learnedN}<small style="font-size:0.6em;color:var(--text-dim);">/${totalLib}</small></div>
+      <div class="stats-card-value">${masteredAll}<small style="font-size:0.6em;color:var(--text-dim);">/${totalAll}</small></div>
       <div class="stats-card-label">累计掌握</div>
+      <button onclick="clearMasteredStats()" style="position:absolute;top:6px;right:6px;background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.65rem;padding:2px 4px;" title="清空掌握记录"><i class="fas fa-undo"></i></button>
     </div>
     <div class="stats-card">
       <div class="stats-card-icon" style="color:#a78bfa;"><i class="fas fa-bullseye"></i></div>
-      <div class="stats-card-value">${learnedPct}%</div>
+      <div class="stats-card-value">${overallPct}%</div>
       <div class="stats-card-label">掌握率</div>
-      <div class="stats-card-sub">${curCatLearnedN}/${curCatTotal} 词（当前课程）</div>
+      <div class="stats-card-sub">${totalWords}词 ${totalSentences}句 ${totalDialogues}对话</div>
     </div>
   </div>
 
-  <!-- 词汇掌握进度卡片 -->
+  <!-- 分类掌握进度 -->
   <div class="stats-section-card">
-    <div class="stats-section-title"><i class="fas fa-tasks" style="color:var(--accent);margin-right:8px;"></i>词汇掌握进度</div>
-    <div class="stat-progress-bar" style="height:8px;margin-bottom:10px;">
-      <div class="stat-progress-fill" style="width:${learnedPct}%;"></div>
+    <div class="stats-section-title"><i class="fas fa-tasks" style="color:var(--accent);margin-right:8px;"></i>分类掌握进度</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+      <div style="text-align:center;padding:10px;background:var(--accent-subtle);border-radius:10px;">
+        <div style="font-size:1.1rem;font-weight:800;color:var(--accent);">${masteredWords}/${totalWords}</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin:4px 0;">生词掌握</div>
+        <div class="stat-progress-bar" style="height:5px;"><div class="stat-progress-fill" style="width:${wordsPct}%;background:var(--accent);"></div></div>
+        <div style="font-size:0.7rem;color:var(--text-dim);margin-top:2px;">${wordsPct}%</div>
+      </div>
+      <div style="text-align:center;padding:10px;background:rgba(16,185,129,0.08);border-radius:10px;">
+        <div style="font-size:1.1rem;font-weight:800;color:#10b981;">${masteredSentences}/${totalSentences}</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin:4px 0;">短句掌握</div>
+        <div class="stat-progress-bar" style="height:5px;"><div class="stat-progress-fill" style="width:${sentencesPct}%;background:#10b981;"></div></div>
+        <div style="font-size:0.7rem;color:var(--text-dim);margin-top:2px;">${sentencesPct}%</div>
+      </div>
+      <div style="text-align:center;padding:10px;background:rgba(251,191,36,0.08);border-radius:10px;">
+        <div style="font-size:1.1rem;font-weight:800;color:#fbbf24;">${masteredDialogues}/${totalDialogues}</div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin:4px 0;">对话掌握</div>
+        <div class="stat-progress-bar" style="height:5px;"><div class="stat-progress-fill" style="width:${dialoguesPct}%;background:#fbbf24;"></div></div>
+        <div style="font-size:0.7rem;color:var(--text-dim);margin-top:2px;">${dialoguesPct}%</div>
+      </div>
     </div>
-    ${catBreakdown}
   </div>
 
-  <!-- 练习历史卡片 -->
+  <!-- 练习历史 -->
   <div class="stats-section-card">
     <div class="stats-section-title"><i class="fas fa-history" style="color:var(--accent);margin-right:8px;"></i>练习历史</div>
     <div class="stats-mini-row">
@@ -3304,12 +3340,129 @@ function initDashboardPage() {
     <div class="stat-history-list">${histHTML}</div>
   </div>
 
-  <!-- 今日已学卡片 -->
+  <!-- 学习日历 -->
   <div class="stats-section-card">
-    <div class="stats-section-title"><i class="fas fa-graduation-cap" style="color:var(--accent);margin-right:8px;"></i>今日已学单词</div>
-    ${wordsHTML}
+    <div class="stats-section-title"><i class="fas fa-calendar-days" style="color:var(--accent);margin-right:8px;"></i>学习日历</div>
+    ${calHTML}
   </div>
 </div>`;
+}
+
+// 构建学习日历（最近30天）
+function buildStudyCalendar() {
+    const history = JSON.parse(localStorage.getItem('fmi_daily_history') || '{}');
+    const today = new Date();
+    let html = '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;">';
+    // 星期标题
+    const weekDays = ['一','二','三','四','五','六','日'];
+    weekDays.forEach(d => {
+        html += '<div style="font-size:0.65rem;color:var(--text-dim);padding:4px 0;">' + d + '</div>';
+    });
+    // 最近30天
+    for (let i = 29; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(d.getDate() - i);
+        const key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+        const count = history[key] || 0;
+        const isToday = i === 0;
+        const bg = count > 0 ? (count >= 10 ? 'var(--accent)' : count >= 5 ? 'rgba(99,102,241,0.5)' : 'rgba(99,102,241,0.2)') : 'var(--border-subtle)';
+        const color = count > 0 ? '#fff' : 'var(--text-dim)';
+        const border = isToday ? 'border:1.5px solid var(--accent);' : '';
+        html += '<div style="border-radius:6px;padding:4px 0;font-size:0.7rem;background:' + bg + ';color:' + color + ';' + border + '" title="' + key + ': ' + count + '词">' + d.getDate() + '</div>';
+    }
+    html += '</div>';
+    html += '<div style="display:flex;align-items:center;gap:8px;margin-top:8px;font-size:0.65rem;color:var(--text-dim);justify-content:center;">';
+    html += '<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--border-subtle);"></span>无';
+    html += '<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(99,102,241,0.2);"></span>1-4词';
+    html += '<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(99,102,241,0.5);"></span>5-9词';
+    html += '<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--accent);"></span>10+词';
+    html += '</div>';
+    return html;
+}
+
+// 统计卡片单独清空函数
+function clearTodayStats() {
+    todayRecord = [];
+    studyStats.todayWords = 0;
+    localStorage.removeItem('fmi_today_record');
+    localStorage.setItem('fmi_study_stats', JSON.stringify(studyStats));
+    renderTodayRecord();
+    updateStats();
+    initDashboardPage();
+}
+
+function clearTimeStats() {
+    studyStats.studySeconds = 0;
+    studyStats.startTime = new Date().getTime();
+    localStorage.setItem('fmi_study_stats', JSON.stringify(studyStats));
+    initDashboardPage();
+}
+
+function clearMasteredStats() {
+    if (window._showCustomConfirm) {
+        window._showCustomConfirm('确认清空', '确定要清空所有已掌握记录吗？此操作不可恢复。', '确认清空', '取消', function() {
+            localStorage.setItem('fmi_all_words', '[]');
+            studyStats.totalWords = 0;
+            localStorage.setItem('fmi_study_stats', JSON.stringify(studyStats));
+            initDashboardPage();
+            updatePracticeWordCount();
+        });
+    } else if (confirm('确定要清空所有已掌握记录吗？')) {
+        localStorage.setItem('fmi_all_words', '[]');
+        studyStats.totalWords = 0;
+        localStorage.setItem('fmi_study_stats', JSON.stringify(studyStats));
+        initDashboardPage();
+        updatePracticeWordCount();
+    }
+}
+
+// 全部重置（原clearStudyData改名为clearAllStudyData，修复确认按钮无效问题）
+function clearAllStudyData() {
+    const dialog = document.createElement('div');
+    dialog.id = 'clear-all-dialog';
+    dialog.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:10001;display:flex;align-items:center;justify-content:center;';
+    dialog.innerHTML = `
+        <div style="background:var(--glass,rgba(30,41,59,0.95));border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:30px;max-width:400px;width:90%;text-align:center;backdrop-filter:blur(20px);">
+            <div style="font-size:2.5rem;margin-bottom:15px;">⚠️</div>
+            <h3 style="color:#fff;font-size:1.1rem;margin-bottom:12px;">确认重置全部学习数据？</h3>
+            <p style="color:#94a3b8;font-size:0.9rem;line-height:1.6;margin-bottom:25px;">
+                将清空以下数据：<br>
+                <span style="color:#f87171;">• 今日学习记录</span><br>
+                <span style="color:#f87171;">• 学习时长</span><br>
+                <span style="color:#f87171;">• 累计掌握词汇</span><br>
+                <span style="color:#f87171;">• 练习历史</span><br>
+                <span style="color:#f87171;">• 学习日历</span><br>
+                <span style="color:#6b7280;font-size:0.8rem;">（清空后不可恢复）</span>
+            </p>
+            <div style="display:flex;gap:12px;justify-content:center;">
+                <button id="casd-cancel" style="background:#475569;color:white;border:none;padding:10px 25px;border-radius:12px;cursor:pointer;font-size:0.95rem;">取消</button>
+                <button id="casd-confirm" style="background:#ef4444;color:white;border:none;padding:10px 25px;border-radius:12px;cursor:pointer;font-size:0.95rem;">确认重置</button>
+            </div>
+        </div>`;
+    document.body.appendChild(dialog);
+    // 使用setTimeout确保DOM已渲染
+    setTimeout(() => {
+        const cancelBtn = document.getElementById('casd-cancel');
+        const confirmBtn = document.getElementById('casd-confirm');
+        if (cancelBtn) cancelBtn.onclick = () => { const d = document.getElementById('clear-all-dialog'); if (d) d.remove(); };
+        if (confirmBtn) confirmBtn.onclick = () => {
+            todayRecord = [];
+            studyStats = { todayWords: 0, totalWords: 0, studySeconds: 0, startTime: new Date().getTime() };
+            localStorage.removeItem('fmi_today_record');
+            localStorage.removeItem('fmi_study_stats');
+            localStorage.removeItem('fmi_all_words');
+            localStorage.removeItem('fmi_study_date');
+            localStorage.removeItem('fmi_practice_history');
+            localStorage.removeItem('fmi_learned_words');
+            localStorage.removeItem('fmi_daily_history');
+            syncStudyToCloud().catch(() => {});
+            const d = document.getElementById('clear-all-dialog');
+            if (d) d.remove();
+            initDashboardPage();
+            renderTodayRecord();
+            updateStats();
+        };
+    }, 50);
 }
 function showMasteredList() {
     const learned = JSON.parse(localStorage.getItem('fmi_all_words') || '[]');
@@ -3472,60 +3625,6 @@ function clearAllMastered() {
 }
 
 // 清空学习统计数据（带二次确认）
-function clearStudyData() {
-    // 创建确认弹窗
-    const dialog = document.createElement('div');
-    dialog.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:10000;display:flex;align-items:center;justify-content:center;';
-    dialog.innerHTML = `
-        <div style="background:var(--glass,rgba(30,41,59,0.95));border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:30px;max-width:400px;width:90%;text-align:center;backdrop-filter:blur(20px);">
-            <div style="font-size:2.5rem;margin-bottom:15px;">⚠️</div>
-            <h3 style="color:#fff;font-size:1.1rem;margin-bottom:12px;">确认清空学习统计？</h3>
-            <p style="color:#94a3b8;font-size:0.9rem;line-height:1.6;margin-bottom:25px;">
-                将清空以下数据：<br>
-                <span style="color:#f87171;">• 今日学习记录</span><br>
-                <span style="color:#f87171;">• 学习时长</span><br>
-                <span style="color:#f87171;">• 累计掌握词汇</span><br>
-                <span style="color:#6b7280;font-size:0.8rem;">（清空后不可恢复）</span>
-            </p>
-            <div style="display:flex;gap:12px;justify-content:center;">
-                <button id="csd-cancel" style="background:#475569;color:white;border:none;padding:10px 25px;border-radius:12px;cursor:pointer;font-size:0.95rem;">取消</button>
-                <button id="csd-confirm" style="background:#ef4444;color:white;border:none;padding:10px 25px;border-radius:12px;cursor:pointer;font-size:0.95rem;">确认清空</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(dialog);
-
-    dialog.querySelector('#csd-cancel').onclick = () => document.body.removeChild(dialog);
-    dialog.querySelector('#csd-confirm').onclick = () => {
-        // 清空所有学习相关数据
-        todayRecord = [];
-        studyStats = { todayWords: 0, totalWords: 0, studySeconds: 0, startTime: new Date().getTime() };
-        localStorage.removeItem('fmi_today_record');
-        localStorage.removeItem('fmi_study_stats');
-        localStorage.removeItem('fmi_all_words');
-        localStorage.removeItem('fmi_study_date');
-        localStorage.removeItem('fmi_practice_history');
-        localStorage.removeItem('fmi_learned_words');
-        // 保留 dailyGoal 设置不清空
-        // 同步到云端
-        syncStudyToCloud().catch(() => {});
-        document.body.removeChild(dialog);
-        // 刷新界面
-        initDashboardPage();
-        renderTodayRecord();
-        updateStats();
-        const rst = document.getElementById('stat-today');
-        if (rst) rst.innerText = '0';
-        const rsto = document.getElementById('stat-total');
-        if (rsto) rsto.innerText = '0';
-        const rsti = document.getElementById('stat-time');
-        if (rsti) rsti.innerText = '0分0秒';
-        const rstr = document.getElementById('stat-rate');
-        if (rstr) rstr.innerText = '0%';
-        const pb = document.getElementById('progress-bar');
-        if (pb) pb.style.width = '0%';
-    };
-}
 
 // ============================================================
 // 【v1.2 主题切换】
