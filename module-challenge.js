@@ -6,6 +6,7 @@
 
 const ChallengeModule = {
     currentSubTab: 'stages', // stages | rank
+    challengeMode: 'normal', // normal | hell
     allStages: [],
     serverProgress: {}, // 从D1加载
     currentStageId: null,
@@ -85,6 +86,10 @@ const ChallengeModule = {
 
     // ========== 渲染 ==========
     render() {
+        const sysInfo = window._systemInfo || {};
+        const hellEnabled = sysInfo.hellModeEnabled !== false;
+        const modeNormal = this.challengeMode === 'normal';
+        const modeHell = this.challengeMode === 'hell';
         this.container.innerHTML = `
             <div class="challenge-module">
                 <div class="challenge-sub-tabs">
@@ -95,12 +100,27 @@ const ChallengeModule = {
                         <i class="fas fa-trophy"></i> 排行榜
                     </button>
                 </div>
+                ${hellEnabled ? `<div class="challenge-mode-switch" style="display:flex;gap:8px;padding:6px 12px;margin:0 12px;">
+                    <button class="mode-btn ${modeNormal ? 'mode-btn-active' : ''}" onclick="ChallengeModule.switchChallengeMode('normal')" style="flex:1;padding:8px;border-radius:10px;border:1px solid ${modeNormal ? 'rgba(96,165,250,0.5)' : 'rgba(255,255,255,0.08)'};background:${modeNormal ? 'rgba(96,165,250,0.15)' : 'rgba(255,255,255,0.03)'};color:${modeNormal ? '#60a5fa' : '#94a3b8'};cursor:pointer;font-size:0.85rem;font-weight:600;transition:all 0.2s;">
+                        <i class="fas fa-shield-halved"></i> 普通模式
+                    </button>
+                    <button class="mode-btn ${modeHell ? 'mode-btn-active' : ''}" onclick="ChallengeModule.switchChallengeMode('hell')" style="flex:1;padding:8px;border-radius:10px;border:1px solid ${modeHell ? 'rgba(248,113,113,0.5)' : 'rgba(255,255,255,0.08)'};background:${modeHell ? 'rgba(248,113,113,0.15)' : 'rgba(255,255,255,0.03)'};color:${modeHell ? '#f87171' : '#94a3b8'};cursor:pointer;font-size:0.85rem;font-weight:600;transition:all 0.2s;">
+                        <i class="fas fa-skull-crossbones"></i> 地狱模式
+                    </button>
+                </div>` : ''}
                 <div id="challenge-sub-content"></div>
             </div>
         `;
         const subContent = document.getElementById('challenge-sub-content');
         if (this.currentSubTab === 'stages') this.renderStages(subContent);
         else this.renderRank(subContent);
+    },
+
+    switchChallengeMode(mode) {
+        this.challengeMode = mode;
+        this.currentStageId = null;
+        this.challengeState = null;
+        this.render();
     },
 
     switchSubTab(tab) {
@@ -115,13 +135,21 @@ const ChallengeModule = {
             return;
         }
 
-        const stages = this.allStages;
+        const HELL_LEVELS = (window._systemInfo && window._systemInfo.hellLevels) || [5, 6, 7];
+        const isHellMode = this.challengeMode === 'hell';
+
+        // 按 challengeMode 过滤关卡
+        const stages = this.allStages.filter(s => {
+            const isHellStage = HELL_LEVELS.includes(Number(s.levelId));
+            return isHellMode ? isHellStage : !isHellStage;
+        });
+
         if (stages.length === 0) {
-            container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">暂无关卡</div>';
+            container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">' + (isHellMode ? '地狱模式暂无关卡' : '暂无关卡') + '</div>';
             return;
         }
 
-        // 计算解锁状态
+        // 计算解锁状态（基于过滤后的 stages）
         let highestCleared = -1;
         for (let i = 0; i < stages.length; i++) {
             const p = this.serverProgress[stages[i].id];
@@ -133,9 +161,6 @@ const ChallengeModule = {
         const totalCleared = stages.filter(s => this.serverProgress[s.id]?.cleared).length;
         const totalScore = stages.reduce((sum, s) => sum + (this.serverProgress[s.id]?.bestScore || 0), 0);
         const maxStars = stages.reduce((sum, s) => sum + (this.serverProgress[s.id]?.stars || 0), 0);
-
-        // 按关卡所属等级分组，并标记地狱模式
-        const HELL_LEVELS = (window._systemInfo && window._systemInfo.hellLevels) || [5, 6, 7];
         const levelNames = {};
         this.allStages.forEach(s => {
             if (!levelNames[s.levelId]) levelNames[s.levelId] = s.levelId === '0' ? '通用印尼语学习手册' : '';
@@ -160,20 +185,20 @@ const ChallengeModule = {
 
         let stageGrid = '';
         groups.forEach(group => {
-            // 地狱模式未开放时，跳过整个地狱关卡分组
-            const hellEnabled = window._systemInfo ? window._systemInfo.hellModeEnabled !== false : true;
-            if (group.isHell && !hellEnabled) return;
             const hellTag = group.isHell ? `<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);border-radius:6px;font-size:0.7rem;font-weight:600;"><i class="fas fa-skull-crossbones"></i> 地狱模式</span>` : '';
             stageGrid += `<div style="grid-column:1/-1;padding:8px 4px 2px;display:flex;align-items:center;gap:8px;"><span style="font-size:0.75rem;color:#64748b;font-weight:600;">${group.levelName}</span>${hellTag}</div>`;
             group.stages.forEach(({stage, index: i}) => {
                 const p = this.serverProgress[stage.id];
                 const isCleared = p && p.cleared;
                 const isCurrent = i === nextAvailable;
-                // 顺序闯关：全局开启或地狱模式下按顺序解锁
-                // 读取顺序闯关设置：普通模式读取 normalSettings.sequentialMode，地狱模式强制顺序
-            const ns = window._systemInfo && (window._systemInfo.normalSettings || {});
-            const sequentialMode = group.isHell || (ns.sequentialMode === true) || (window._systemInfo && window._systemInfo.challengeSequentialMode === true);
-                const isHellLocked = (group.isHell || sequentialMode) && i > nextAvailable;
+                // 顺序闯关：读取当前模式的设置
+            const _sysInfo2 = window._systemInfo || {};
+            const _ns2 = _sysInfo2.normalSettings || {};
+            const _hs2 = _sysInfo2.hellSettings || {};
+            const _normalSeq = _ns2.sequentialMode === true || _sysInfo2.challengeSequentialMode === true;
+            const _hellSeq = _hs2.sequentialMode !== false;
+            const sequentialMode = isHellMode ? _hellSeq : _normalSeq;
+                const isHellLocked = sequentialMode && i > nextAvailable;
                 const isReadonly = stage._readonly === true;
                 const isLocked = isHellLocked || isReadonly;
                 const stars = p?.stars || 0;
@@ -198,6 +223,12 @@ const ChallengeModule = {
 
         container.innerHTML = `
             <div class="stages-page">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0 8px;">
+                    <span style="font-size:0.82rem;color:${isHellMode ? '#f87171' : '#60a5fa'};font-weight:700;">
+                        ${isHellMode ? '<i class="fas fa-skull-crossbones"></i> 地狱模式' : '<i class="fas fa-shield-halved"></i> 普通模式'}
+                    </span>
+                    <span style="font-size:0.72rem;color:#64748b;">共 ${stages.length} 关</span>
+                </div>
                 <div class="stages-summary">
                     <div class="summary-card">
                         <div class="summary-num">${totalCleared}</div>
@@ -470,9 +501,15 @@ const ChallengeModule = {
         }, 50);
 
         // 更新计时器（支持时间限制倒计时）
-        const timeLimit = _isHellStage
-            ? (window._systemInfo && (window._systemInfo.hellSettings?.timeLimit || window._systemInfo.hellTimeLimit)) || 120
-            : (window._systemInfo && window._systemInfo.challengeTimeLimit) || 0;
+        const _sysInfo = window._systemInfo || {};
+        const _hellCfg = _sysInfo.hellSettings || {};
+        let timeLimit;
+        if (_isHellStage) {
+            timeLimit = _hellCfg.timeLimitEnabled !== false ? (_hellCfg.timeLimit || _sysInfo.hellTimeLimit || 120) : 0;
+        } else {
+            const _normalCfg = _sysInfo.normalSettings || {};
+            timeLimit = _normalCfg.timeLimitEnabled !== false ? (_normalCfg.timeLimit || _sysInfo.challengeTimeLimit || 60) : 0;
+        }
 
         this._timerInterval = setInterval(() => {
             const el = document.querySelector('.challenge-timer');

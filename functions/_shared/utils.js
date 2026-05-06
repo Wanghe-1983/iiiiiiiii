@@ -131,16 +131,15 @@ function defaultSettings() {
         showRegCount: true,
         allowVisitorChallenge: false,
         visitorMultiDevice: true,
-        mainVersion: '2.27',              // 主界面版本号
-        mainChangelog: `v2.27
-- 新增：闯天关普通/地狱双模式并列架构，各自独立配置面板
-- 新增：内容自动/手动分配模式，自动模式按单元混合切分关卡
-- 新增：课程等级控制统一管理，勤学苦练与闯天关共用
-- 新增：地狱模式强制顺序闯关、强制限时、隐藏语速和循环控制
-- 优化：关卡切分参数后台化，支持管理员动态调整
-- 优化：每关抽取题数由内容分配自动决定，不再独立配置
-- 修复：renderStages 中 isHell 作用域引用错误
-- 修复：自动分配模式切换时旧手动参数残留导致模式判断异常`,             // 主界面更新日志内容
+        mainVersion: '2.28',              // 主界面版本号
+        mainChangelog: `v2.28
+- 新增：闯天关前端拆分为普通/地狱两个独立页面，各自独立展示关卡和统计
+- 新增：地狱模式闯关顺序、限时答题改为可选项（默认开启），管理员灵活控制
+- 新增：预计关卡总数实时计算，参数变更时自动更新
+- 优化：地狱模式顺序/限时读取 hellSettings 配置，不再硬编码
+- 优化：普通模式限时读取 normalSettings 配置，结构统一
+- 修复：admin 后台 course-content.json 加载路径错误
+- 修复：关卡数显示为 0 的 bug（课程数据未加载）`,             // 主界面更新日志内容
         userGuide: `## 欢迎使用印尼语学习助手
 
 本平台是基于 **BIPA（Bahasa Indonesia bagi Penutur Asing）** 课程体系开发的在线学习工具，专为印尼语学习者设计。
@@ -188,6 +187,8 @@ function defaultSettings() {
         challengeTimeWeight: 0.1,      // 用时权重
         challengeTimeMultiplier: 5,    // 时间惩罚系数（越大对慢答题越宽容）
         hellModeEnabled: true,         // 地狱模式总开关
+        hellSequentialMode: true,     // 地狱模式顺序闯关
+        hellTimeLimitEnabled: true,   // 地狱模式限时答题
         // 每关题目配置
         challengeQuestionCount: 10,     // 普通模式每关题目数量
         challengeQuestionType: 'words', // 题目类型: words(单词)/sentences(短句)/dialogues(对话)/mixed(混合)

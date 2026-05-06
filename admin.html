@@ -1063,12 +1063,16 @@
                         <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:8px;margin-bottom:12px;">
                             <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-cog" style="color:#a78bfa;margin-right:4px;"></i> 闯关规则</div>
                             <div class="setting-row" style="border-top:none;padding-top:0;margin-top:0;">
-                                <div class="setting-info"><div class="setting-label">闯关顺序</div><div class="setting-desc" style="color:#f87171;">地狱模式强制顺序闯关，不可修改</div></div>
-                                <div class="setting-control"><span style="color:#f87171;font-size:0.85rem;font-weight:600;"><i class="fas fa-lock"></i> 强制顺序</span></div>
+                                <div class="setting-info"><div class="setting-label">闯关顺序</div><div class="setting-desc" id="hell-sequential-hint" style="color:#22c55e;">默认顺序闯关</div></div>
+                                <div class="setting-control"><label class="toggle"><input type="checkbox" id="setHellSequentialMode" checked onchange="document.getElementById('hell-sequential-hint').textContent=this.checked?'顺序闯关':'可跳关';document.getElementById('hell-sequential-hint').style.color=this.checked?'#22c55e':'#64748b'"><span class="slider"></span></label></div>
                             </div>
                             <div class="setting-row">
-                                <div class="setting-info"><div class="setting-label">限时答题</div><div class="setting-desc" style="color:#f87171;">地狱模式强制限时，不可关闭</div></div>
-                                <div class="setting-control"><span style="color:#f87171;font-size:0.85rem;font-weight:600;"><i class="fas fa-lock"></i> 强制开启</span></div>
+                                <div class="setting-info"><div class="setting-label">限时答题</div><div class="setting-desc" id="hell-timelimit-hint" style="color:#22c55e;">默认限时答题</div></div>
+                                <div class="setting-control"><label class="toggle"><input type="checkbox" id="setHellTimeLimitEnabled" checked onchange="document.getElementById('hellTimeLimitRow').style.display=this.checked?'block':'none';document.getElementById('hell-timelimit-hint').textContent=this.checked?'已开启':'已关闭';document.getElementById('hell-timelimit-hint').style.color=this.checked?'#22c55e':'#64748b'"><span class="slider"></span></label></div>
+                            </div>
+                            <div class="setting-row" id="hellTimeLimitRow">
+                                <div class="setting-info"><div class="setting-label">每关时间限制</div><div class="setting-desc">答题最长时限（秒）</div></div>
+                                <div class="setting-control"><input type="number" class="setting-input" id="setHellTimeLimit" min="5" max="600" value="120" style="width:100px;"><span style="color:#64748b;font-size:0.8rem;">秒</span></div>
                             </div>
                             <div class="setting-row">
                                 <div class="setting-info"><div class="setting-label">每关时间限制</div><div class="setting-desc">答题最长时限（秒）</div></div>
@@ -1405,7 +1409,90 @@ let allUsers = [];
         if (vmHint) vmHint.textContent = s.visitorMultiDevice !== false ? '已开启' : '已关闭';
     }
 
+    // 实时预估关卡数（不弹确认框，仅更新显示）
+    function updateStageCountEstimate() {
+        const courseData = window._adminCourseData || {};
+        const allLevels = courseData.levels || [];
+        if (!allLevels.length) return;
+
+        const visibleLevelConfig = window._adminSettings || {};
+        const lvlCfgUser = visibleLevelConfig.levelConfigUser || visibleLevelConfig.studyLevelConfigUser;
+
+        // 普通模式
+        const nSplit = document.getElementById('cmNormalAuto').style.display !== 'none' ? 'auto' : 'manual';
+        const nAutoCount = parseInt(document.getElementById('setNormalAutoContentCount')?.value) || 5;
+        const nW = parseInt(document.getElementById('setNormalWordsPerStage')?.value) || 3;
+        const nS = parseInt(document.getElementById('setNormalSentencesPerStage')?.value) || 1;
+        const nD = parseInt(document.getElementById('setNormalDialoguesPerStage')?.value) || 1;
+        let nStages = 0;
+        for (const level of allLevels) {
+            const state = lvlCfgUser ? (lvlCfgUser[Number(level.id)] !== undefined ? lvlCfgUser[Number(level.id)] : 2) : 2;
+            if (state === 0) continue;
+            for (const unit of (level.units || [])) {
+                const wC = (unit.words || []).length;
+                const sC = (unit.sentences || []).length;
+                const dC = (unit.dialogues || []).length;
+                const skipS = String(level.id) === '0' && (level.units || []).indexOf(unit) < 4;
+                if (nSplit === 'auto') {
+                    const total = wC + (skipS ? 0 : sC) + dC;
+                    nStages += total > 0 ? Math.ceil(total / nAutoCount) : 0;
+                } else {
+                    nStages += Math.ceil(wC / nW) + (skipS ? 0 : Math.ceil(sC / nS)) + Math.ceil(dC / nD);
+                }
+            }
+        }
+        const nEl = document.getElementById('cmNormalAutoStageCount');
+        if (nEl) { nEl.textContent = nStages + ' 关'; nEl.style.color = '#60a5fa'; }
+
+        // 地狱模式
+        const hSplit = document.getElementById('cmHellAuto').style.display !== 'none' ? 'auto' : 'manual';
+        const hAutoCount = parseInt(document.getElementById('setHellAutoContentCount')?.value) || 10;
+        const hW = parseInt(document.getElementById('setHellWordsPerStage')?.value) || 6;
+        const hS = parseInt(document.getElementById('setHellSentencesPerStage')?.value) || 2;
+        const hD = parseInt(document.getElementById('setHellDialoguesPerStage')?.value) || 2;
+        const hellLevels = Array.from(document.querySelectorAll('.hell-level-cb:checked')).map(cb => parseInt(cb.value));
+        const hellSet = new Set(hellLevels);
+        let hStages = 0;
+        for (const level of allLevels) {
+            if (!hellSet.has(Number(level.id))) continue;
+            const state = lvlCfgUser ? (lvlCfgUser[Number(level.id)] !== undefined ? lvlCfgUser[Number(level.id)] : 2) : 2;
+            if (state === 0) continue;
+            for (const unit of (level.units || [])) {
+                const wC = (unit.words || []).length;
+                const sC = (unit.sentences || []).length;
+                const dC = (unit.dialogues || []).length;
+                const skipS = String(level.id) === '0' && (level.units || []).indexOf(unit) < 4;
+                if (hSplit === 'auto') {
+                    const total = wC + (skipS ? 0 : sC) + dC;
+                    hStages += total > 0 ? Math.ceil(total / hAutoCount) : 0;
+                } else {
+                    hStages += Math.ceil(wC / hW) + (skipS ? 0 : Math.ceil(sC / hS)) + Math.ceil(dC / hD);
+                }
+            }
+        }
+        const hEl = document.getElementById('cmHellAutoStageCount');
+        if (hEl) { hEl.textContent = hStages + ' 关'; hEl.style.color = '#f87171'; }
+    }
+
+    // 监听切分参数变更实时更新关卡数
+    document.addEventListener('input', function(e) {
+        if (['setNormalAutoContentCount','setNormalWordsPerStage','setNormalSentencesPerStage','setNormalDialoguesPerStage',
+             'setHellAutoContentCount','setHellWordsPerStage','setHellSentencesPerStage','setHellDialoguesPerStage'].includes(e.target.id)) {
+            updateStageCountEstimate();
+        }
+    });
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('hell-level-cb')) updateStageCountEstimate();
+    });
+
     async function loadChallengeSettings() {
+        // 加载课程数据用于计算关卡数
+        if (!window._adminCourseData) {
+            try {
+                const cRes = await fetch('./course-content.json?t=' + Date.now());
+                if (cRes.ok) window._adminCourseData = await cRes.json();
+            } catch(e) { console.warn('Failed to load course data:', e); }
+        }
         const s = await adminFetch('admin/settings', { method: 'GET' });
         if (s.error) return;
         document.getElementById('setChallengeEnabled').checked = s.challengeEnabled !== false;
@@ -1476,6 +1563,17 @@ let allUsers = [];
             hqcDisplay.textContent = '每关 ' + hellQC + ' 题（' + (hellQCMode === 'auto' ? '自动' : '手动') + '）';
             hqcDisplay.style.color = '#f87171';
         }
+        // 地狱模式顺序闯关
+        const hellSeqMode = hs.sequentialMode !== false; // 默认开启
+        document.getElementById('setHellSequentialMode').checked = hellSeqMode;
+        document.getElementById('hell-sequential-hint').textContent = hellSeqMode ? '顺序闯关' : '可跳关';
+        document.getElementById('hell-sequential-hint').style.color = hellSeqMode ? '#22c55e' : '#64748b';
+        // 地狱模式限时答题
+        const hellTLEnabled = hs.timeLimitEnabled !== false; // 默认开启
+        document.getElementById('setHellTimeLimitEnabled').checked = hellTLEnabled;
+        document.getElementById('hell-timelimit-hint').textContent = hellTLEnabled ? '已开启' : '已关闭';
+        document.getElementById('hell-timelimit-hint').style.color = hellTLEnabled ? '#22c55e' : '#64748b';
+        document.getElementById('hellTimeLimitRow').style.display = hellTLEnabled ? 'block' : 'none';
         document.getElementById('setHellTimeLimit').value = hs.timeLimit || s.hellTimeLimit || 120;
 
         // Hell stars & weights
@@ -1663,7 +1761,9 @@ let allUsers = [];
             levels: Array.from(document.querySelectorAll('.hell-level-cb:checked')).map(cb => parseInt(cb.value)),
             questionType: document.getElementById('setHellQuestionType').value || 'mixed',
             questionCount: hellQuestionCount,
-            timeLimit: parseInt(document.getElementById('setHellTimeLimit').value) || 120,
+            timeLimit: document.getElementById('setHellTimeLimitEnabled').checked ? (parseInt(document.getElementById('setHellTimeLimit').value) || 120) : 0,
+            sequentialMode: document.getElementById('setHellSequentialMode').checked,
+            timeLimitEnabled: document.getElementById('setHellTimeLimitEnabled').checked,
             star3: parseInt(document.getElementById('setHellStar3').value) || 90,
             star2: parseInt(document.getElementById('setHellStar2').value) || 70,
             star1: parseInt(document.getElementById('setHellStar1').value) || 50,
