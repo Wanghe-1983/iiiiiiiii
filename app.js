@@ -2566,11 +2566,31 @@ function initPracticePage() {
 
     // 构建课程级别选项（从 course-content.json 异步加载）
     let catOpts = '<option value="all">全部课程</option>';
-    if (window._courseMenuData && window._courseMenuData.levels) {
+    if (window._courseMenuData && window._courseMenuData.levels && window._levelConfig && Object.keys(window._levelConfig).length > 0) {
         catOpts = buildPracticeCatOptions(window._courseMenuData.levels);
     } else {
+        // 异步加载课程数据 + 确保 levelConfig 权限数据到位
         (async () => {
             try {
+                // 确保 _levelConfig 已初始化（练习页面可能先于 buildMenu 执行）
+                if (!window._levelConfig || Object.keys(window._levelConfig).length === 0) {
+                    const sysResp = await fetch('/api/system/info');
+                    const sysData = await sysResp.json();
+                    if (!sysData.error) {
+                        window._systemInfo = sysData;
+                        const userInfo = JSON.parse(sessionStorage.getItem('fmi_user') || '{}');
+                        const isVisitor = userInfo.role === 'visitor';
+                        const lc = isVisitor
+                            ? (sysData.studyLevelConfigVisitor || sysData.studyVisibleLevelsVisitor)
+                            : (sysData.studyLevelConfigUser || sysData.studyVisibleLevelsUser);
+                        if (Array.isArray(lc)) {
+                            window._levelConfig = {};
+                            for (let i = 0; i <= 7; i++) window._levelConfig[i] = lc.includes(i) ? 2 : 0;
+                        } else {
+                            window._levelConfig = lc || {};
+                        }
+                    }
+                }
                 const courseData = await loadCourseMenuData();
                 if (courseData && courseData.levels) {
                     window._courseMenuData = courseData;
@@ -2713,9 +2733,10 @@ function selectPracticeCount(count, btn) {
 function buildPracticeCatOptions(levels) {
     // 根据 levelConfig 过滤可见级别
     const levelConfig = window._levelConfig || {};
+    // 练习模块只包含 state >= 2（可学习）的课程，与闯天关独立
     const visible = levels.filter(l => {
         const state = levelConfig[Number(l.id)];
-        return state !== undefined && state > 0;
+        return state !== undefined && state >= 2;
     });
     let html = '<option value="all">全部课程</option>';
     for (const lv of visible) {
