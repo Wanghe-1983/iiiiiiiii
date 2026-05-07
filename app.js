@@ -4175,18 +4175,26 @@ window.speak = function(encodedText) {
             setTimeout(function() { _updateDismissed = false; }, 300000);
         };
         document.getElementById('_updateNowBtn').onclick = function() {
-            // 清除旧缓存并刷新
+            // 先清除所有缓存
             if ('caches' in window) {
                 caches.keys().then(function(names) {
-                    names.forEach(function(name) { caches.delete(name); });
-                });
+                    return Promise.all(names.map(function(name) { return caches.delete(name); }));
+                }).catch(function() {});
             }
-            // 注册 SW 更新（如果有）
+            // 尝试注销旧 SW 再注册新的，确保获取最新文件
             if (navigator.serviceWorker) {
                 navigator.serviceWorker.getRegistration().then(function(reg) {
-                    if (reg) reg.update().then(function() {
+                    if (reg) {
+                        reg.unregister().then(function() {
+                            window.location.reload();
+                        }).catch(function() {
+                            window.location.reload();
+                        });
+                    } else {
                         window.location.reload();
-                    });
+                    }
+                }).catch(function() {
+                    window.location.reload();
                 });
             } else {
                 window.location.reload();
