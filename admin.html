@@ -983,11 +983,14 @@
                         </div>
                     </div>
 
+
+                        <!-- 保存普通模式 -->
+                        <div style="margin-top:20px;display:flex;gap:10px;">
+                            <button class="hdr-btn primary" onclick="saveNormalChallengeSettings()" style="flex:1;"><i class="fas fa-shield-halved"></i> 保存普通模式</button>
+                        </div>
+
                     <!-- ====== 地狱闯关配置 ====== -->
                     <div id="cmPanelHell" style="display:none;">
-                        <!-- 地狱等级选择 -->
-                        <div style="border-top:1px solid rgba(239,68,68,0.12);padding-top:12px;margin-top:8px;margin-bottom:12px;">
-                            <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-skull-crossbones" style=
                         <!-- 关卡切分 -->
                         <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:8px;margin-bottom:12px;">
                             <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-cut" style="color:#f472b6;margin-right:4px;"></i> 关卡切分</div>
@@ -1061,10 +1064,6 @@
                                 <div class="setting-control"><input type="number" class="setting-input" id="setHellTimeLimit" min="5" max="600" value="120" style="width:100px;"><span style="color:#64748b;font-size:0.8rem;">秒</span></div>
                             </div>
                             <div class="setting-row">
-                                <div class="setting-info"><div class="setting-label">每关时间限制</div><div class="setting-desc">答题最长时限（秒）</div></div>
-                                <div class="setting-control"><input type="number" class="setting-input" id="setHellTimeLimit" min="5" max="600" value="120" style="width:100px;"><span style="color:#64748b;font-size:0.8rem;">秒</span></div>
-                            </div>
-                            <div class="setting-row">
                                 <div class="setting-info"><div class="setting-label">语速调节</div><div class="setting-desc" style="color:#64748b;">地狱模式不支持语速调节</div></div>
                                 <div class="setting-control"><span style="color:#64748b;font-size:0.85rem;"><i class="fas fa-ban"></i> 不可用</span></div>
                             </div>
@@ -1093,10 +1092,12 @@
                         </div>
                     </div>
 
-                    <div style="margin-top:20px;display:flex;gap:10px;">
-                        <button class="hdr-btn primary" onclick="saveNormalChallengeSettings()" style="flex:1;"><i class="fas fa-shield-halved"></i> 保存普通模式</button>
-                        <button class="hdr-btn" onclick="saveHellChallengeSettings()" style="flex:1;background:rgba(248,113,113,0.2);color:#f87171;border:1px solid rgba(248,113,113,0.4);"><i class="fas fa-skull-crossbones"></i> 保存地狱模式</button>
-                    </div>
+
+                        <!-- 保存地狱模式 -->
+                        <div style="margin-top:20px;display:flex;gap:10px;">
+                            <button class="hdr-btn" onclick="saveHellChallengeSettings()" style="flex:1;background:rgba(248,113,113,0.2);color:#f87171;border:1px solid rgba(248,113,113,0.4);"><i class="fas fa-skull-crossbones"></i> 保存地狱模式</button>
+                        </div>
+
                 </div>
             </div>
 
