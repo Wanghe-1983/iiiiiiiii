@@ -1664,7 +1664,7 @@ let allUsers = [];
             const nLoadListenW = (ns.listeningWeight !== undefined ? ns.listeningWeight : 0) || 0;
             const nLoadTypeMul = (nLoadChoiceW > 0 ? 1 : 0) + (nLoadFillW > 0 ? 1 : 0) + (nLoadListenW > 0 ? 1 : 0) || 1;
             const nLoadContentC = Math.round(normalQC / nLoadTypeMul) || normalQC;
-            nqcDisplay.textContent = '每关 ' + normalQC + ' 题（' + nLoadContentC + '内容×' + nLoadTypeMul + '题型，' + (normalQCMode === 'auto' ? '自动' : '手动') + '）';
+            nqcDisplay.textContent = '每关 ' + (nLoadContentC * nLoadTypeMul) + ' 题（' + nLoadContentC + '内容×' + nLoadTypeMul + '题型，' + (normalQCMode === 'auto' ? '自动' : '手动') + '）';
             nqcDisplay.style.color = '#60a5fa';
         }
         document.getElementById('setNormalSequentialMode').checked = ns.sequentialMode === true || s.challengeSequentialMode === true;
@@ -1733,7 +1733,7 @@ let allUsers = [];
             const hLoadListenW = (hs.listeningWeight !== undefined ? hs.listeningWeight : 0) || 0;
             const hLoadTypeMul = (hLoadChoiceW > 0 ? 1 : 0) + (hLoadFillW > 0 ? 1 : 0) + (hLoadListenW > 0 ? 1 : 0) || 1;
             const hLoadContentC = Math.round(hellQC / hLoadTypeMul) || hellQC;
-            hqcDisplay.textContent = '每关 ' + hellQC + ' 题（' + hLoadContentC + '内容×' + hLoadTypeMul + '题型，' + (hellQCMode === 'auto' ? '自动' : '手动') + '）';
+            hqcDisplay.textContent = '每关 ' + (hLoadContentC * hLoadTypeMul) + ' 题（' + hLoadContentC + '内容×' + hLoadTypeMul + '题型，' + (hellQCMode === 'auto' ? '自动' : '手动') + '）';
             hqcDisplay.style.color = '#f87171';
         }
         // 地狱模式顺序闯关
@@ -2003,7 +2003,7 @@ function toggleQuestionTypeOptions(mode) {
         if (result && result.success) {
             showAdminToast('普通模式设置已保存', 'success');
             updateStageCountEstimate();
-            document.getElementById('setNormalQuestionCountDisplay').textContent = '每关 ' + questionCount + ' 题（' + contentCount + '内容×' + nTypeMultiplier + '题型，' + (splitMode === 'auto' ? '自动' : '手动') + '）';
+            document.getElementById('setNormalQuestionCountDisplay').textContent = '每关 ' + (contentCount * nTypeMultiplier) + ' 题（' + contentCount + '内容×' + nTypeMultiplier + '题型，' + (splitMode === 'auto' ? '自动' : '手动') + '）';
             document.getElementById('setNormalQuestionCountDisplay').style.color = '#60a5fa';
         } else {
             showAdminToast((result && result.error) || (result === null ? '网络请求失败，请检查连接' : '保存失败'), 'error');
@@ -2069,7 +2069,7 @@ function toggleQuestionTypeOptions(mode) {
         if (result && result.success) {
             showAdminToast('地狱模式设置已保存', 'success');
             updateStageCountEstimate();
-            document.getElementById('setHellQuestionCountDisplay').textContent = '每关 ' + questionCount + ' 题（' + contentCount + '内容×' + hTypeMultiplier + '题型，' + (splitMode === 'auto' ? '自动' : '手动') + '）';
+            document.getElementById('setHellQuestionCountDisplay').textContent = '每关 ' + (contentCount * hTypeMultiplier) + ' 题（' + contentCount + '内容×' + hTypeMultiplier + '题型，' + (splitMode === 'auto' ? '自动' : '手动') + '）';
             document.getElementById('setHellQuestionCountDisplay').style.color = '#f87171';
         } else {
             showAdminToast((result && result.error) || (result === null ? '网络请求失败，请检查连接' : '保存失败'), 'error');
