@@ -3934,7 +3934,7 @@ function showVersionChangelog() {
                 <h3 style="color:#fff;font-size:1.2rem;">📋 更新日志</h3>
                 <button onclick="document.body.removeChild(document.getElementById('version-changelog-dialog'))" style="background:none;border:none;color:#94a3b8;font-size:1.5rem;cursor:pointer;padding:0 5px;">&times;</button>
             </div>
-            <div id="version-changelog-body" style="color:#94a3b8;font-size:0.9rem;text-align:center;padding:30px 0;">加载中...</div>
+            <div id="version-changelog-body" style="color:#94a3b8;font-size:0.9rem;text-align:left;padding:30px 0;">加载中...</div>
         </div>
     `;
     document.body.appendChild(dialog);
@@ -3947,7 +3947,7 @@ function showVersionChangelog() {
         var body = document.getElementById('version-changelog-body');
         if (!body) return;
         if (!changelog) {
-            body.innerHTML = '<div style="color:#64748b;">暂无更新日志</div>';
+            body.innerHTML = '<div style="color:#64748b;text-align:left;">暂无更新日志</div>';
             return;
         }
         // 将每行转为列表项
