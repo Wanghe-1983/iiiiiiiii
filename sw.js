@@ -1,5 +1,5 @@
-const CACHE_NAME = 'indonesian-v2.33';
-const ASSETS = ['./','./index.html','./login.html','./admin.html','./app.js','./style.css','./config.js','./indonesian_learning_data.json','./manifest.json','./Wang_he.jpg','./module-challenge.js','./module-study.js','./module-study-practice.js','./course-content-loader.js','./modules.css'];
+const CACHE_NAME = 'indonesian-v2.34';
+const ASSETS = ['./','./index.html','./login.html','./admin.html','./app.js?v=20260507','./style.css?v=20260507','./config.js?v=20260507','./indonesian_learning_data.json','./manifest.json','./Wang_he.jpg','./module-challenge.js?v=20260507','./module-study.js?v=20260507','./module-study-practice.js?v=20260507','./course-content-loader.js?v=20260507','./modules.css?v=20260507'];
 
 self.addEventListener('install', e => {
     e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS).catch(()=>{})).then(() => self.skipWaiting()));
