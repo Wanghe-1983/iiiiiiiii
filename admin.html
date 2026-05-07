@@ -945,7 +945,7 @@
                             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;">
                                 <div class="form-group">
                                     <label style="font-size:0.8rem;color:#64748b;display:flex;align-items:center;gap:4px;"><i class="fas fa-check-circle" style="color:#60a5fa;"></i> 选择题权重</label>
-                                    <input type="number" id="setNormalChoiceWeight" min="0" max="100" value="10" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
+                                    <input type="number" id="setNormalChoiceWeight" oninput="toggleQuestionTypeOptions('Normal');updateQuestionCountDisplay('Normal')" min="0" max="100" value="10" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
                                     <div style="font-size:0.72rem;color:#475569;margin-top:4px;">给印尼语选中文释义</div>
                                 </div>
                                 <div class="form-group">
@@ -1122,7 +1122,7 @@
                             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;">
                                 <div class="form-group">
                                     <label style="font-size:0.8rem;color:#64748b;display:flex;align-items:center;gap:4px;"><i class="fas fa-check-circle" style="color:#60a5fa;"></i> 选择题权重</label>
-                                    <input type="number" id="setHellChoiceWeight" min="0" max="100" value="10" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
+                                    <input type="number" id="setHellChoiceWeight" oninput="toggleQuestionTypeOptions('Hell');updateQuestionCountDisplay('Hell')" min="0" max="100" value="10" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
                                     <div style="font-size:0.72rem;color:#475569;margin-top:4px;">给印尼语选中文释义</div>
                                 </div>
                                 <div class="form-group">
@@ -1659,7 +1659,12 @@ let allUsers = [];
         const normalQCMode = ns.splitMode || (s.wordsPerStage === 0 || s.autoContentCount ? 'auto' : 'manual');
         const nqcDisplay = document.getElementById('setNormalQuestionCountDisplay');
         if (normalQC > 0 && nqcDisplay) {
-            nqcDisplay.textContent = '每关 ' + normalQC + ' 题（' + (normalQCMode === 'auto' ? '自动' : '手动') + '）';
+            const nLoadChoiceW = (ns.choiceWeight !== undefined ? ns.choiceWeight : 10) || 0;
+            const nLoadFillW = (ns.fillWeight !== undefined ? ns.fillWeight : 0) || 0;
+            const nLoadListenW = (ns.listeningWeight !== undefined ? ns.listeningWeight : 0) || 0;
+            const nLoadTypeMul = (nLoadChoiceW > 0 ? 1 : 0) + (nLoadFillW > 0 ? 1 : 0) + (nLoadListenW > 0 ? 1 : 0) || 1;
+            const nLoadContentC = Math.round(normalQC / nLoadTypeMul) || normalQC;
+            nqcDisplay.textContent = '每关 ' + normalQC + ' 题（' + nLoadContentC + '内容×' + nLoadTypeMul + '题型，' + (normalQCMode === 'auto' ? '自动' : '手动') + '）';
             nqcDisplay.style.color = '#60a5fa';
         }
         document.getElementById('setNormalSequentialMode').checked = ns.sequentialMode === true || s.challengeSequentialMode === true;
@@ -1723,7 +1728,12 @@ let allUsers = [];
         const hellQCMode = hs.splitMode || 'auto';
         const hqcDisplay = document.getElementById('setHellQuestionCountDisplay');
         if (hellQC > 0 && hqcDisplay) {
-            hqcDisplay.textContent = '每关 ' + hellQC + ' 题（' + (hellQCMode === 'auto' ? '自动' : '手动') + '）';
+            const hLoadChoiceW = (hs.choiceWeight !== undefined ? hs.choiceWeight : 10) || 0;
+            const hLoadFillW = (hs.fillWeight !== undefined ? hs.fillWeight : 0) || 0;
+            const hLoadListenW = (hs.listeningWeight !== undefined ? hs.listeningWeight : 0) || 0;
+            const hLoadTypeMul = (hLoadChoiceW > 0 ? 1 : 0) + (hLoadFillW > 0 ? 1 : 0) + (hLoadListenW > 0 ? 1 : 0) || 1;
+            const hLoadContentC = Math.round(hellQC / hLoadTypeMul) || hellQC;
+            hqcDisplay.textContent = '每关 ' + hellQC + ' 题（' + hLoadContentC + '内容×' + hLoadTypeMul + '题型，' + (hellQCMode === 'auto' ? '自动' : '手动') + '）';
             hqcDisplay.style.color = '#f87171';
         }
         // 地狱模式顺序闯关
@@ -1791,6 +1801,23 @@ function toggleQuestionTypeOptions(mode) {
     if (fillOpts) fillOpts.style.display = fillW > 0 ? 'block' : 'none';
     if (listenOpts) listenOpts.style.display = listenW > 0 ? 'block' : 'none';
 }
+
+    function updateQuestionCountDisplay(mode) {
+        const prefix = mode;
+        const cW = parseInt(document.getElementById('set' + prefix + 'ChoiceWeight').value) || 0;
+        const fW = parseInt(document.getElementById('set' + prefix + 'FillWeight').value) || 0;
+        const lW = parseInt(document.getElementById('set' + prefix + 'ListeningWeight').value) || 0;
+        const typeMul = (cW > 0 ? 1 : 0) + (fW > 0 ? 1 : 0) + (lW > 0 ? 1 : 0) || 1;
+        const isAuto = document.getElementById('cm' + prefix + 'Auto').style.display !== 'none';
+        const contentCount = isAuto
+            ? (parseInt(document.getElementById('set' + prefix + 'AutoContentCount').value) || (prefix === 'Normal' ? 5 : 10))
+            : (parseInt(document.getElementById('set' + prefix + 'WordsPerStage').value) || 0) + (parseInt(document.getElementById('set' + prefix + 'SentencesPerStage').value) || 0) + (parseInt(document.getElementById('set' + prefix + 'DialoguesPerStage').value) || 0);
+        const qCount = contentCount * typeMul;
+        const qcEl = document.getElementById('set' + prefix + 'QuestionCountDisplay');
+        if (qcEl && contentCount > 0) {
+            qcEl.textContent = '每关 ' + qCount + ' 题（' + contentCount + '内容×' + typeMul + '题型，' + (isAuto ? '自动' : '手动') + '）';
+        }
+    }
 
 
 
@@ -1914,7 +1941,12 @@ function toggleQuestionTypeOptions(mode) {
             sentencesPerStage = parseInt(document.getElementById('setNormalSentencesPerStage').value) || 1;
             dialoguesPerStage = parseInt(document.getElementById('setNormalDialoguesPerStage').value) || 1;
         }
-        const questionCount = splitMode === 'auto' ? autoContentCount : (wordsPerStage + sentencesPerStage + dialoguesPerStage);
+        const contentCount = splitMode === 'auto' ? autoContentCount : (wordsPerStage + sentencesPerStage + dialoguesPerStage);
+        const nChoiceW = parseInt(document.getElementById('setNormalChoiceWeight').value) || 0;
+        const nFillW = parseInt(document.getElementById('setNormalFillWeight').value) || 0;
+        const nListenW = parseInt(document.getElementById('setNormalListeningWeight').value) || 0;
+        const nTypeMultiplier = (nChoiceW > 0 ? 1 : 0) + (nFillW > 0 ? 1 : 0) + (nListenW > 0 ? 1 : 0) || 1;
+        const questionCount = contentCount * nTypeMultiplier;
 
         const normalSettings = {
             splitMode, questionType: document.getElementById('setNormalQuestionType').value || 'mixed',
@@ -1971,7 +2003,7 @@ function toggleQuestionTypeOptions(mode) {
         if (result && result.success) {
             showAdminToast('普通模式设置已保存', 'success');
             updateStageCountEstimate();
-            document.getElementById('setNormalQuestionCountDisplay').textContent = '每关 ' + questionCount + ' 题（' + (splitMode === 'auto' ? '自动' : '手动') + '）';
+            document.getElementById('setNormalQuestionCountDisplay').textContent = '每关 ' + questionCount + ' 题（' + contentCount + '内容×' + nTypeMultiplier + '题型，' + (splitMode === 'auto' ? '自动' : '手动') + '）';
             document.getElementById('setNormalQuestionCountDisplay').style.color = '#60a5fa';
         } else {
             showAdminToast((result && result.error) || (result === null ? '网络请求失败，请检查连接' : '保存失败'), 'error');
@@ -1988,7 +2020,12 @@ function toggleQuestionTypeOptions(mode) {
             sentencesPerStage = parseInt(document.getElementById('setHellSentencesPerStage').value) || 2;
             dialoguesPerStage = parseInt(document.getElementById('setHellDialoguesPerStage').value) || 2;
         }
-        const questionCount = splitMode === 'auto' ? autoContentCount : (wordsPerStage + sentencesPerStage + dialoguesPerStage);
+        const contentCount = splitMode === 'auto' ? autoContentCount : (wordsPerStage + sentencesPerStage + dialoguesPerStage);
+        const hChoiceW = parseInt(document.getElementById('setHellChoiceWeight').value) || 0;
+        const hFillW = parseInt(document.getElementById('setHellFillWeight').value) || 0;
+        const hListenW = parseInt(document.getElementById('setHellListeningWeight').value) || 0;
+        const hTypeMultiplier = (hChoiceW > 0 ? 1 : 0) + (hFillW > 0 ? 1 : 0) + (hListenW > 0 ? 1 : 0) || 1;
+        const questionCount = contentCount * hTypeMultiplier;
 
         const hellSettings = {
             enabled: document.getElementById('setHellModeEnabled').checked,
@@ -2032,7 +2069,7 @@ function toggleQuestionTypeOptions(mode) {
         if (result && result.success) {
             showAdminToast('地狱模式设置已保存', 'success');
             updateStageCountEstimate();
-            document.getElementById('setHellQuestionCountDisplay').textContent = '每关 ' + questionCount + ' 题（' + (splitMode === 'auto' ? '自动' : '手动') + '）';
+            document.getElementById('setHellQuestionCountDisplay').textContent = '每关 ' + questionCount + ' 题（' + contentCount + '内容×' + hTypeMultiplier + '题型，' + (splitMode === 'auto' ? '自动' : '手动') + '）';
             document.getElementById('setHellQuestionCountDisplay').style.color = '#f87171';
         } else {
             showAdminToast((result && result.error) || (result === null ? '网络请求失败，请检查连接' : '保存失败'), 'error');
