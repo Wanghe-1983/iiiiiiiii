@@ -4158,11 +4158,11 @@ window.speak = function(encodedText) {
         const overlay = document.createElement('div');
         overlay.id = '_update-dialog-overlay';
         overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:999999;backdrop-filter:blur(4px);';
-        overlay.innerHTML = '<div style="background:#1e293b;border:1px solid rgba(99,102,241,0.3);border-radius:20px;padding:32px 36px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.5);">'
-            + '<div style="width:56px;height:56px;margin:0 auto 16px;border-radius:50%;background:rgba(99,102,241,0.15);display:flex;align-items:center;justify-content:center;"><i class="fas fa-arrow-up-right-dots" style="font-size:1.4rem;color:#818cf8;"></i></div>'
-            + '<div style="font-size:1.15rem;font-weight:700;color:#e2e8f0;margin-bottom:8px;">发现新版本 v' + newVersion + '</div>'
-            + '<div style="font-size:0.85rem;color:#94a3b8;margin-bottom:24px;line-height:1.5;">平台已更新，建议刷新页面以获取最新内容和功能</div>'
-            + '<div style="display:flex;gap:12px;justify-content:center;">'
+        overlay.innerHTML = '<div id="_update-card" style="background:#1e293b;border:1px solid rgba(99,102,241,0.3);border-radius:20px;padding:32px 36px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.5);">'
+            + '<div id="_update-icon" style="width:56px;height:56px;margin:0 auto 16px;border-radius:50%;background:rgba(99,102,241,0.15);display:flex;align-items:center;justify-content:center;"><i class="fas fa-arrow-up-right-dots" style="font-size:1.4rem;color:#818cf8;"></i></div>'
+            + '<div id="_update-title" style="font-size:1.15rem;font-weight:700;color:#e2e8f0;margin-bottom:8px;">发现新版本 v' + newVersion + '</div>'
+            + '<div id="_update-desc" style="font-size:0.85rem;color:#94a3b8;margin-bottom:24px;line-height:1.5;">平台已更新，建议刷新页面以获取最新内容和功能</div>'
+            + '<div id="_update-actions" style="display:flex;gap:12px;justify-content:center;">'
             + '<button id="_updateLaterBtn" style="padding:10px 24px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#94a3b8;cursor:pointer;font-size:0.9rem;">稍后再说</button>'
             + '<button id="_updateNowBtn" style="padding:10px 24px;border-radius:10px;border:none;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;cursor:pointer;font-size:0.9rem;font-weight:600;">立即更新</button>'
             + '</div></div>';
@@ -4170,33 +4170,55 @@ window.speak = function(encodedText) {
         document.getElementById('_updateLaterBtn').onclick = function() {
             _updateDismissed = true;
             document.body.removeChild(overlay);
-            // 5 分钟后再次提醒
             setTimeout(function() { _updateDismissed = false; }, 300000);
         };
         document.getElementById('_updateNowBtn').onclick = function() {
-            // 先清除所有缓存
+            // 切换到加载进度视图
+            var card = document.getElementById('_update-card');
+            card.innerHTML = ''
+                + '<div style="width:64px;height:64px;margin:0 auto 20px;position:relative;">'
+                + '<svg style="width:64px;height:64px;transform:rotate(-90deg);" viewBox="0 0 64 64">'
+                + '<circle cx="32" cy="32" r="28" fill="none" stroke="rgba(99,102,241,0.15)" stroke-width="4"/>'
+                + '<circle id="_progress-ring" cx="32" cy="32" r="28" fill="none" stroke="#818cf8" stroke-width="4" stroke-linecap="round" stroke-dasharray="175.93" stroke-dashoffset="175.93" style="transition:stroke-dashoffset 0.3s ease;"/>'
+                + '</svg>'
+                + '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:600;color:#818cf8;" id="_progress-text">0%</div>'
+                + '</div>'
+                + '<div style="font-size:1.1rem;font-weight:700;color:#e2e8f0;margin-bottom:6px;">正在更新</div>'
+                + '<div id="_progress-step" style="font-size:0.8rem;color:#64748b;">正在清除缓存...</div>';
+            // 进度动画
+            var steps = [
+                { pct: 30, text: '正在清除缓存...' },
+                { pct: 60, text: '正在注销旧版本...' },
+                { pct: 85, text: '正在加载新版本...' },
+                { pct: 100, text: '即将完成...' }
+            ];
+            var stepIdx = 0;
+            function nextStep() {
+                if (stepIdx >= steps.length) {
+                    setTimeout(function() { window.location.reload(); }, 400);
+                    return;
+                }
+                var s = steps[stepIdx];
+                var ring = document.getElementById('_progress-ring');
+                var text = document.getElementById('_progress-text');
+                var stepEl = document.getElementById('_progress-step');
+                if (ring) ring.setAttribute('stroke-dashoffset', String(175.93 * (1 - s.pct / 100)));
+                if (text) text.textContent = s.pct + '%';
+                if (stepEl) stepEl.textContent = s.text;
+                stepIdx++;
+                setTimeout(nextStep, 600);
+            }
+            setTimeout(nextStep, 200);
+            // 实际清理工作（并行执行，不阻塞动画）
             if ('caches' in window) {
                 caches.keys().then(function(names) {
-                    return Promise.all(names.map(function(name) { return caches.delete(name); }));
+                    return Promise.all(names.map(function(n) { return caches.delete(n); }));
                 }).catch(function() {});
             }
-            // 尝试注销旧 SW 再注册新的，确保获取最新文件
             if (navigator.serviceWorker) {
                 navigator.serviceWorker.getRegistration().then(function(reg) {
-                    if (reg) {
-                        reg.unregister().then(function() {
-                            window.location.reload();
-                        }).catch(function() {
-                            window.location.reload();
-                        });
-                    } else {
-                        window.location.reload();
-                    }
-                }).catch(function() {
-                    window.location.reload();
-                });
-            } else {
-                window.location.reload();
+                    if (reg) reg.unregister().catch(function() {});
+                }).catch(function() {});
             }
         };
     }
