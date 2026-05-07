@@ -1821,10 +1821,14 @@ let allUsers = [];
         }
         const questionCount = splitMode === 'auto' ? autoContentCount : (wordsPerStage + sentencesPerStage + dialoguesPerStage);
 
+        const checkedLevels = Array.from(document.querySelectorAll('.hell-level-cb:checked')).map(cb => parseInt(cb.value));
+        if (checkedLevels.length === 8) {
+            if (!confirm('你选择了所有 BIPA 等级（0-7）作为地狱关卡，这意味着普通模式将没有任何关卡。\n\n确定继续吗？')) return;
+        }
         const hellSettings = {
             enabled: document.getElementById('setHellModeEnabled').checked,
             splitMode,
-            levels: Array.from(document.querySelectorAll('.hell-level-cb:checked')).map(cb => parseInt(cb.value)),
+            levels: checkedLevels,
             questionType: document.getElementById('setHellQuestionType').value || 'mixed',
             questionCount,
             timeLimit: document.getElementById('setHellTimeLimitEnabled').checked ? (parseInt(document.getElementById('setHellTimeLimit').value) || 120) : 0,
