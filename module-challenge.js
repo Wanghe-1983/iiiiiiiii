@@ -5,7 +5,7 @@
  */
 
 const ChallengeModule = {
-    currentSubTab: 'stages', // stages | rank
+    currentView: 'home', // home | modes | stages | rank-modes | rank
     challengeMode: 'normal', // normal | hell
     allStages: [],
     serverProgress: {}, // 从D1加载
@@ -88,32 +88,216 @@ const ChallengeModule = {
     render() {
         const sysInfo = window._systemInfo || {};
         const hellEnabled = sysInfo.hellModeEnabled !== false;
-        const modeNormal = this.challengeMode === 'normal';
-        const modeHell = this.challengeMode === 'hell';
-        this.container.innerHTML = `
-            <div class="challenge-module">
-                <div class="challenge-sub-tabs">
-                    <button class="sub-tab ${this.currentSubTab === 'stages' ? 'active' : ''}" onclick="ChallengeModule.switchSubTab('stages')">
-                        <i class="fas fa-gamepad"></i> 闯关
-                    </button>
-                    <button class="sub-tab ${this.currentSubTab === 'rank' ? 'active' : ''}" onclick="ChallengeModule.switchSubTab('rank')">
-                        <i class="fas fa-trophy"></i> 排行榜
-                    </button>
+        const view = this.currentView;
+
+        // 面包屑导航
+        let breadcrumb = '';
+        if (view === 'modes' || view === 'stages') {
+            breadcrumb = `<div style="padding:8px 12px;display:flex;align-items:center;gap:6px;">
+                <span style="cursor:pointer;color:#64748b;font-size:0.8rem;" onclick="ChallengeModule.goHome()"><i class="fas fa-home"></i> 首页</span>
+                <i class="fas fa-chevron-right" style="color:#475569;font-size:0.6rem;"></i>
+                <span style="color:#e2e8f0;font-size:0.8rem;font-weight:600;">闯天关</span>
+                ${view === 'stages' ? `<i class="fas fa-chevron-right" style="color:#475569;font-size:0.6rem;"></i><span style="color:${this.challengeMode === 'hell' ? '#f87171' : '#60a5fa'};font-size:0.8rem;font-weight:600;">${this.challengeMode === 'hell' ? '地狱模式' : '普通模式'}</span>` : ''}
+            </div>`;
+        } else if (view === 'rank-modes' || view === 'rank') {
+            breadcrumb = `<div style="padding:8px 12px;display:flex;align-items:center;gap:6px;">
+                <span style="cursor:pointer;color:#64748b;font-size:0.8rem;" onclick="ChallengeModule.goHome()"><i class="fas fa-home"></i> 首页</span>
+                <i class="fas fa-chevron-right" style="color:#475569;font-size:0.6rem;"></i>
+                <span style="color:#e2e8f0;font-size:0.8rem;font-weight:600;">排行榜</span>
+                ${view === 'rank' ? '' : ''}
+            </div>`;
+        }
+
+        let bodyHtml = '';
+        if (view === 'home') {
+            bodyHtml = this._renderHome(hellEnabled);
+        } else if (view === 'modes') {
+            bodyHtml = this._renderModeCards(hellEnabled);
+        } else if (view === 'stages') {
+            bodyHtml = '<div id="challenge-sub-content"></div>';
+        } else if (view === 'rank-modes') {
+            bodyHtml = this._renderRankModeCards(hellEnabled);
+        } else if (view === 'rank') {
+            bodyHtml = '<div id="challenge-sub-content"></div>';
+        }
+
+        this.container.innerHTML = `<div class="challenge-module">${breadcrumb}${bodyHtml}</div>`;
+
+        if (view === 'stages') {
+            const subContent = document.getElementById('challenge-sub-content');
+            if (subContent) this.renderStages(subContent);
+        } else if (view === 'rank') {
+            const subContent = document.getElementById('challenge-sub-content');
+            if (subContent) this.renderRank(subContent);
+        }
+    },
+
+    goHome() {
+        this.currentView = 'home';
+        this.render();
+    },
+
+    _renderHome(hellEnabled) {
+        const sysInfo = window._systemInfo || {};
+        const normalProgress = this._calcModeProgress('normal');
+        const hellProgress = this._calcModeProgress('hell');
+        return `
+        <div style="padding:12px;display:flex;flex-direction:column;gap:16px;">
+            <div onclick="ChallengeModule.enterChallenge()" style="cursor:pointer;background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(139,92,246,0.08));border:1px solid rgba(99,102,241,0.25);border-radius:16px;padding:24px;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(99,102,241,0.5)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(99,102,241,0.25)';this.style.transform='none'">
+                <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+                    <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-gamepad" style="font-size:1.4rem;color:#fff;"></i>
+                    </div>
+                    <div>
+                        <div style="font-size:1.1rem;font-weight:700;color:#e2e8f0;">闯天关</div>
+                        <div style="font-size:0.78rem;color:#94a3b8;margin-top:2px;">${hellEnabled ? '普通 / 地狱两种难度模式' : '普通模式'}</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="margin-left:auto;color:#64748b;font-size:1rem;"></i>
                 </div>
-                ${hellEnabled ? `<div class="challenge-mode-switch" style="display:flex;gap:8px;padding:6px 12px;margin:0 12px;">
-                    <button class="mode-btn ${modeNormal ? 'mode-btn-active' : ''}" onclick="ChallengeModule.switchChallengeMode('normal')" style="flex:1;padding:8px;border-radius:10px;border:1px solid ${modeNormal ? 'rgba(96,165,250,0.5)' : 'rgba(255,255,255,0.08)'};background:${modeNormal ? 'rgba(96,165,250,0.15)' : 'rgba(255,255,255,0.03)'};color:${modeNormal ? '#60a5fa' : '#94a3b8'};cursor:pointer;font-size:0.85rem;font-weight:600;transition:all 0.2s;">
-                        <i class="fas fa-shield-halved"></i> 普通模式
-                    </button>
-                    <button class="mode-btn ${modeHell ? 'mode-btn-active' : ''}" onclick="ChallengeModule.switchChallengeMode('hell')" style="flex:1;padding:8px;border-radius:10px;border:1px solid ${modeHell ? 'rgba(248,113,113,0.5)' : 'rgba(255,255,255,0.08)'};background:${modeHell ? 'rgba(248,113,113,0.15)' : 'rgba(255,255,255,0.03)'};color:${modeHell ? '#f87171' : '#94a3b8'};cursor:pointer;font-size:0.85rem;font-weight:600;transition:all 0.2s;">
-                        <i class="fas fa-skull-crossbones"></i> 地狱模式
-                    </button>
-                </div>` : ''}
-                <div id="challenge-sub-content"></div>
+                <div style="display:flex;gap:12px;">
+                    <div style="flex:1;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);border-radius:10px;padding:10px 12px;">
+                        <div style="font-size:0.7rem;color:#60a5fa;font-weight:600;margin-bottom:4px;"><i class="fas fa-shield-halved"></i> 普通</div>
+                        <div style="font-size:0.82rem;color:#e2e8f0;font-weight:700;">${normalProgress.cleared}<span style="font-size:0.7rem;color:#64748b;font-weight:400;">/${normalProgress.total}</span></div>
+                        <div style="font-size:0.65rem;color:#64748b;">${normalProgress.stars} <i class="fas fa-star" style="color:#fbbf24;font-size:0.55rem;"></i></div>
+                    </div>
+                    ${hellEnabled ? `<div style="flex:1;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.2);border-radius:10px;padding:10px 12px;">
+                        <div style="font-size:0.7rem;color:#f87171;font-weight:600;margin-bottom:4px;"><i class="fas fa-skull-crossbones"></i> 地狱</div>
+                        <div style="font-size:0.82rem;color:#e2e8f0;font-weight:700;">${hellProgress.cleared}<span style="font-size:0.7rem;color:#64748b;font-weight:400;">/${hellProgress.total}</span></div>
+                        <div style="font-size:0.65rem;color:#64748b;">${hellProgress.stars} <i class="fas fa-star" style="color:#fbbf24;font-size:0.55rem;"></i></div>
+                    </div>` : ''}
+                </div>
             </div>
-        `;
-        const subContent = document.getElementById('challenge-sub-content');
-        if (this.currentSubTab === 'stages') this.renderStages(subContent);
-        else this.renderRank(subContent);
+            <div onclick="ChallengeModule.enterRank()" style="cursor:pointer;background:linear-gradient(135deg,rgba(251,191,36,0.1),rgba(245,158,11,0.06));border:1px solid rgba(251,191,36,0.2);border-radius:16px;padding:24px;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(251,191,36,0.4)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(251,191,36,0.2)';this.style.transform='none'">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-trophy" style="font-size:1.4rem;color:#fff;"></i>
+                    </div>
+                    <div>
+                        <div style="font-size:1.1rem;font-weight:700;color:#e2e8f0;">排行榜</div>
+                        <div style="font-size:0.78rem;color:#94a3b8;margin-top:2px;">查看各模式下的闯关排名</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="margin-left:auto;color:#64748b;font-size:1rem;"></i>
+                </div>
+            </div>
+        </div>`;
+    },
+
+    _renderModeCards(hellEnabled) {
+        const normalProgress = this._calcModeProgress('normal');
+        const hellProgress = this._calcModeProgress('hell');
+        return `
+        <div style="padding:12px;display:flex;flex-direction:column;gap:16px;">
+            <div onclick="ChallengeModule.selectMode('normal')" style="cursor:pointer;background:linear-gradient(135deg,rgba(96,165,250,0.12),rgba(59,130,246,0.06));border:2px solid ${this.challengeMode === 'normal' ? 'rgba(96,165,250,0.6)' : 'rgba(96,165,250,0.2)'};border-radius:16px;padding:20px;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(96,165,250,0.5)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='${this.challengeMode === 'normal' ? 'rgba(96,165,250,0.6)' : 'rgba(96,165,250,0.2)'}';this.style.transform='none'">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+                    <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#3b82f6,#2563eb);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-shield-halved" style="font-size:1.2rem;color:#fff;"></i>
+                    </div>
+                    <div>
+                        <div style="font-size:1rem;font-weight:700;color:#60a5fa;">普通模式</div>
+                        <div style="font-size:0.72rem;color:#64748b;margin-top:2px;">基础难度，适合入门闯关</div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:20px;">
+                    <div><span style="font-size:0.7rem;color:#64748b;">关卡</span><br><span style="font-size:0.95rem;color:#e2e8f0;font-weight:700;">${normalProgress.total}</span></div>
+                    <div><span style="font-size:0.7rem;color:#64748b;">已通关</span><br><span style="font-size:0.95rem;color:#e2e8f0;font-weight:700;">${normalProgress.cleared}</span></div>
+                    <div><span style="font-size:0.7rem;color:#64748b;">总星数</span><br><span style="font-size:0.95rem;color:#fbbf24;font-weight:700;">${normalProgress.stars} <i class="fas fa-star" style="font-size:0.7rem;"></i></span></div>
+                    <div><span style="font-size:0.7rem;color:#64748b;">总积分</span><br><span style="font-size:0.95rem;color:#e2e8f0;font-weight:700;">${normalProgress.score}</span></div>
+                </div>
+            </div>
+            ${hellEnabled ? `<div onclick="ChallengeModule.selectMode('hell')" style="cursor:pointer;background:linear-gradient(135deg,rgba(248,113,113,0.12),rgba(239,68,68,0.06));border:2px solid ${this.challengeMode === 'hell' ? 'rgba(248,113,113,0.6)' : 'rgba(248,113,113,0.2)'};border-radius:16px;padding:20px;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(248,113,113,0.5)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='${this.challengeMode === 'hell' ? 'rgba(248,113,113,0.6)' : 'rgba(248,113,113,0.2)'}';this.style.transform='none'">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+                    <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#ef4444,#dc2626);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-skull-crossbones" style="font-size:1.2rem;color:#fff;"></i>
+                    </div>
+                    <div>
+                        <div style="font-size:1rem;font-weight:700;color:#f87171;">地狱模式</div>
+                        <div style="font-size:0.72rem;color:#64748b;margin-top:2px;">高难度，内容更多更复杂</div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:20px;">
+                    <div><span style="font-size:0.7rem;color:#64748b;">关卡</span><br><span style="font-size:0.95rem;color:#e2e8f0;font-weight:700;">${hellProgress.total}</span></div>
+                    <div><span style="font-size:0.7rem;color:#64748b;">已通关</span><br><span style="font-size:0.95rem;color:#e2e8f0;font-weight:700;">${hellProgress.cleared}</span></div>
+                    <div><span style="font-size:0.7rem;color:#64748b;">总星数</span><br><span style="font-size:0.95rem;color:#fbbf24;font-weight:700;">${hellProgress.stars} <i class="fas fa-star" style="font-size:0.7rem;"></i></span></div>
+                    <div><span style="font-size:0.7rem;color:#64748b;">总积分</span><br><span style="font-size:0.95rem;color:#e2e8f0;font-weight:700;">${hellProgress.score}</span></div>
+                </div>
+            </div>` : ''}
+        </div>`;
+    },
+
+    _renderRankModeCards(hellEnabled) {
+        return `
+        <div style="padding:12px;display:flex;flex-direction:column;gap:16px;">
+            <div onclick="ChallengeModule.selectRankMode('normal')" style="cursor:pointer;background:linear-gradient(135deg,rgba(96,165,250,0.12),rgba(59,130,246,0.06));border:1px solid rgba(96,165,250,0.2);border-radius:16px;padding:24px;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(96,165,250,0.5)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(96,165,250,0.2)';this.style.transform='none'">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#3b82f6,#2563eb);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-shield-halved" style="font-size:1.1rem;color:#fff;"></i>
+                    </div>
+                    <div>
+                        <div style="font-size:1rem;font-weight:700;color:#60a5fa;">普通模式排行榜</div>
+                        <div style="font-size:0.72rem;color:#64748b;margin-top:2px;">查看普通模式下的闯关排名</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="margin-left:auto;color:#64748b;font-size:1rem;"></i>
+                </div>
+            </div>
+            ${hellEnabled ? `<div onclick="ChallengeModule.selectRankMode('hell')" style="cursor:pointer;background:linear-gradient(135deg,rgba(248,113,113,0.12),rgba(239,68,68,0.06));border:1px solid rgba(248,113,113,0.2);border-radius:16px;padding:24px;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(248,113,113,0.5)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(248,113,113,0.2)';this.style.transform='none'">
+                <div style="display:flex;align-items:center;gap:14px;">
+                    <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#ef4444,#dc2626);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-skull-crossbones" style="font-size:1.1rem;color:#fff;"></i>
+                    </div>
+                    <div>
+                        <div style="font-size:1rem;font-weight:700;color:#f87171;">地狱模式排行榜</div>
+                        <div style="font-size:0.72rem;color:#64748b;margin-top:2px;">查看地狱模式下的闯关排名</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="margin-left:auto;color:#64748b;font-size:1rem;"></i>
+                </div>
+            </div>` : ''}
+        </div>`;
+    },
+
+    enterChallenge() {
+        this.currentView = 'modes';
+        this.render();
+    },
+
+    selectMode(mode) {
+        this.challengeMode = mode;
+        this.currentStageId = null;
+        this.challengeState = null;
+        this._regenerateStages();
+        this._applyChallengeLevelFilter();
+        this.currentView = 'stages';
+        this.render();
+    },
+
+    enterRank() {
+        this.currentView = 'rank-modes';
+        this.render();
+    },
+
+    selectRankMode(mode) {
+        this.challengeMode = mode;
+        this.currentView = 'rank';
+        this.render();
+    },
+
+    _calcModeProgress(mode) {
+        const sysInfo = window._systemInfo || {};
+        const _hs = sysInfo.hellSettings || sysInfo;
+        const HELL_LEVELS = (_hs && (_hs.levels || _hs.hellLevels)) || [5, 6, 7];
+        const isHell = mode === 'hell';
+        const stages = (this.allStages || []).filter(s => {
+            const isHellStage = HELL_LEVELS.includes(Number(s.levelId));
+            return isHell ? isHellStage : !isHellStage;
+        });
+        // 临时用当前模式生成来获取准确数量
+        const modeStages = CourseContent.getAllStages(mode).filter(s => {
+            const isHellStage = HELL_LEVELS.includes(Number(s.levelId));
+            return isHell ? isHellStage : !isHellStage;
+        });
+        const cleared = modeStages.filter(s => this.serverProgress[s.id]?.cleared).length;
+        const stars = modeStages.reduce((sum, s) => sum + (this.serverProgress[s.id]?.stars || 0), 0);
+        const score = modeStages.reduce((sum, s) => sum + (this.serverProgress[s.id]?.bestScore || 0), 0);
+        return { total: modeStages.length, cleared, stars, score: Math.round(score) };
     },
 
     switchChallengeMode(mode) {
