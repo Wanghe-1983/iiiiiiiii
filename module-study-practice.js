@@ -126,6 +126,9 @@ const StudyPractice = {
                     <button style="background:none;border:1px solid rgba(255,255,255,0.15);color:#94a3b8;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.85rem;" onclick="StudyModule.switchSubTab('course')">
                         <i class="fas fa-arrow-left"></i> 返回课程
                     </button>
+                    <button style="background:none;border:1px solid rgba(248,113,113,0.3);color:#f87171;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.85rem;" onclick="if(confirm('确定要结束本次练习吗？')){StudyPractice.isFinished=true;StudyModule.switchSubTab('course')}">
+                        <i class="fas fa-stop"></i> 结束练习
+                    </button>
                     <div style="display:flex;align-items:center;gap:8px;">
                         <div class="quiz-type-tag">${q.type === 'word' ? '单词' : '短句'}</div>
                         <div class="quiz-counter">${this.currentIndex + 1} / ${total}</div>
@@ -234,6 +237,9 @@ const StudyPractice = {
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
                     <button style="background:none;border:1px solid rgba(255,255,255,0.15);color:#94a3b8;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.85rem;" onclick="StudyModule.switchSubTab('course')">
                         <i class="fas fa-arrow-left"></i> 返回课程
+                    </button>
+                    <button style="background:none;border:1px solid rgba(248,113,113,0.3);color:#f87171;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.85rem;" onclick="if(confirm('确定要结束本次练习吗？')){StudyPractice.isFinished=true;StudyModule.switchSubTab('course')}">
+                        <i class="fas fa-stop"></i> 结束练习
                     </button>
                     <div style="display:flex;align-items:center;gap:8px;">
                         <div class="quiz-type-tag fill-tag">填空题</div>
