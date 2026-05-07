@@ -578,23 +578,29 @@ const ChallengeModule = {
             return contents.map(c => ({ ...c, _qType: 'choice' }));
         }
         
-        const expanded = [];
+        // 按权重概率为每条内容分配一种题型
+        // 权重代表出现概率：如 10:10:10 各占 33.3%，10:5:0 选择 66.7% + 填空 33.3%
+        const fillMode = typeConfig.fillMode || 'input';
+        const listenSpeed = typeConfig.listeningSpeed || '1.0';
+        const listenReplays = typeConfig.listeningReplays || 2;
+        
+        const result = [];
         for (const item of contents) {
-            // 选择题
-            if (cw > 0) {
-                expanded.push({ ...item, _qType: 'choice', _weight: cw });
+            const rand = Math.random() * totalW;
+            let qType, extra = {};
+            if (rand < cw) {
+                qType = 'choice';
+            } else if (rand < cw + fw) {
+                qType = 'fill';
+                extra = { _fillMode: fillMode };
+            } else {
+                qType = 'listening';
+                extra = { _listenSpeed: listenSpeed, _listenReplays: listenReplays };
             }
-            // 填空题
-            if (fw > 0) {
-                expanded.push({ ...item, _qType: 'fill', _fillMode: typeConfig.fillMode || 'input', _weight: fw });
-            }
-            // 听力题
-            if (lw > 0) {
-                expanded.push({ ...item, _qType: 'listening', _listenSpeed: typeConfig.listeningSpeed || '1.0', _listenReplays: typeConfig.listeningReplays || 2, _weight: lw });
-            }
+            result.push({ ...item, _qType: qType, ...extra });
         }
         
-        return expanded;
+        return result;
     },
 
     // ========== 填空题交互 ==========
