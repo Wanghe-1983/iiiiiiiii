@@ -281,6 +281,7 @@ const ChallengeModule = {
     },
 
     _calcModeProgress(mode) {
+        console.log('[_calcModeProgress] mode:', mode, 'sysInfo keys:', Object.keys(window._systemInfo || {}));
         const sysInfo = window._systemInfo || {};
         const _hs = sysInfo.hellSettings || sysInfo;
         const HELL_LEVELS = (_hs && (_hs.levels || _hs.hellLevels)) || [5, 6, 7];
@@ -312,6 +313,7 @@ const ChallengeModule = {
     _regenerateStages() {
         // 根据当前模式重新生成关卡列表（使用对应的切分配置）
         this.allStages = CourseContent.getAllStages(this.challengeMode);
+        console.log('[_regenerateStages] mode:', this.challengeMode, 'totalStages:', this.allStages.length);
     },
 
     switchSubTab(tab) {
