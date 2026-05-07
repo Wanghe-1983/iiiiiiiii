@@ -2201,7 +2201,8 @@ let allUsers = [];
 
         async function loadChangelog() {
             const res = await adminFetch('changelog/list');
-            if (!res) return;
+            console.log('[loadChangelog] response:', res);
+            if (!res) { console.warn('[loadChangelog] 请求失败'); return; }
             const list = res.versions || [];
             const container = document.getElementById('changelog-list');
             const empty = document.getElementById('changelog-empty');
@@ -2212,10 +2213,10 @@ let allUsers = [];
             }
             empty.style.display = 'none';
             container.innerHTML = list.map((v, i) => `
-                <div class="version-item">
+                <div class="version-item" data-id="${v.id}">
                     <div class="version-item-header">
                         <span class="version-badge">${escHtml(v.version)}</span>
-                        <span class="version-date">${v.date || ''}</span>
+                        <span class="version-date">${v.createdAt || ''}</span>
                     </div>
                     ${v.title ? '<div class="version-title">' + escHtml(v.title) + '</div>' : ''}
                     <div class="version-content">${escHtml(v.content)}</div>
@@ -2267,15 +2268,16 @@ let allUsers = [];
             const title = document.getElementById('version-title').value.trim();
             const content = document.getElementById('version-content').value.trim();
             if (!version) { alert('请输入版本号'); return; }
-            if (!content) { alert('请输入更新内容'); return; }
 
             const body = { id: document.getElementById('version-save-idx').value || '', version, title, content };
             const res = await adminFetch('changelog/save', { method: 'POST', body: JSON.stringify(body) });
+            console.log('[saveVersion] response:', res);
             if (res && res.success) {
                 closeVersionModal();
                 loadChangelog();
+                showAdminToast('版本记录已保存', 'success');
             } else {
-                alert(res?.error || '保存失败');
+                alert(res?.error || '保存失败，请查看控制台');
             }
         }
 
