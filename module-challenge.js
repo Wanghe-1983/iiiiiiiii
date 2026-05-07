@@ -42,9 +42,10 @@ const ChallengeModule = {
             if (state === 0) return false; // 隐藏
             return true; // 仅展示：保留但标记
         });
-        this.allStages.forEach(s => {
-            s._readonly = config[Number(s.levelId)] === 1;
-        });
+        // 闯天关不受"仅展示"状态影响，state=1也允许闯关
+        // this.allStages.forEach(s => {
+        //     s._readonly = config[Number(s.levelId)] === 1;
+        // });
     },
 
     // ========== 初始化 ==========
