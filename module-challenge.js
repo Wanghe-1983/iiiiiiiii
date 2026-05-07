@@ -281,24 +281,28 @@ const ChallengeModule = {
     },
 
     _calcModeProgress(mode) {
-        console.log('[_calcModeProgress] mode:', mode, 'sysInfo keys:', Object.keys(window._systemInfo || {}));
         const sysInfo = window._systemInfo || {};
         const _hs = sysInfo.hellSettings || sysInfo;
         const HELL_LEVELS = (_hs && (_hs.levels || _hs.hellLevels)) || [5, 6, 7];
         const isHell = mode === 'hell';
-        const stages = (this.allStages || []).filter(s => {
+        // 用 getAllStages 生成所有等级的关卡，再按 HELL_LEVELS 过滤
+        const allModeStages = CourseContent.getAllStages(mode);
+        console.log('[_calcModeProgress] mode:', mode, 'allModeStages:', allModeStages.length, 'HELL_LEVELS:', HELL_LEVELS);
+        const filtered = allModeStages.filter(s => {
             const isHellStage = HELL_LEVELS.includes(Number(s.levelId));
             return isHell ? isHellStage : !isHellStage;
         });
-        // 临时用当前模式生成来获取准确数量
-        const modeStages = CourseContent.getAllStages(mode).filter(s => {
-            const isHellStage = HELL_LEVELS.includes(Number(s.levelId));
-            return isHell ? isHellStage : !isHellStage;
+        console.log('[_calcModeProgress] filtered:', filtered.length);
+        // 应用等级过滤（与 _applyChallengeLevelFilter 一致）
+        const config = this._getChallengeLevelConfig();
+        const visible = filtered.filter(s => {
+            const state = config[Number(s.levelId)];
+            return state !== 0;
         });
-        const cleared = modeStages.filter(s => this.serverProgress[s.id]?.cleared).length;
-        const stars = modeStages.reduce((sum, s) => sum + (this.serverProgress[s.id]?.stars || 0), 0);
-        const score = modeStages.reduce((sum, s) => sum + (this.serverProgress[s.id]?.bestScore || 0), 0);
-        return { total: modeStages.length, cleared, stars, score: Math.round(score) };
+        const cleared = visible.filter(s => this.serverProgress[s.id]?.cleared).length;
+        const stars = visible.reduce((sum, s) => sum + (this.serverProgress[s.id]?.stars || 0), 0);
+        const score = visible.reduce((sum, s) => sum + (this.serverProgress[s.id]?.bestScore || 0), 0);
+        return { total: visible.length, cleared, stars, score: Math.round(score) };
     },
 
     switchChallengeMode(mode) {
