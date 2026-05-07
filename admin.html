@@ -932,8 +932,64 @@
                                 </div>
                                 <div class="form-group">
                                     <label style="font-size:0.8rem;color:#64748b;">每关抽取题数</label>
-                                    <div id="setNormalQuestionCountDisplay" style="padding:10px 14px;background:rgba(15,23,42,0.5);color:#64748b;border:1px solid rgba(255,255,255,0.05);border-radius:8px;font-size:0.85rem;width:100;">由内容分配自动决定</div>
+                                    <div id="setNormalQuestionCountDisplay" style="padding:10px 14px;background:rgba(15,23,42,0.5);color:#64748b;border:1px solid rgba(255,255,255,0.05);border-radius:8px;font-size:0.85rem;width:100%;">由内容分配自动决定</div>
                                     <div style="font-size:0.72rem;color:#475569;margin-top:4px;">答题时从关卡中抽取的题目数量，等于每关的内容数</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 题型配置 -->
+                        <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:8px;margin-bottom:12px;">
+                            <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-shapes" style="color:#a78bfa;margin-right:4px;"></i> 题型配置</div>
+                            <p style="font-size:0.75rem;color:#64748b;margin-bottom:14px;">同一内容可以多种题型出现，权重越高出现频率越高（0 = 禁用该题型）</p>
+                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;">
+                                <div class="form-group">
+                                    <label style="font-size:0.8rem;color:#64748b;display:flex;align-items:center;gap:4px;"><i class="fas fa-check-circle" style="color:#60a5fa;"></i> 选择题权重</label>
+                                    <input type="number" id="setNormalChoiceWeight" min="0" max="100" value="10" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
+                                    <div style="font-size:0.72rem;color:#475569;margin-top:4px;">给印尼语选中文释义</div>
+                                </div>
+                                <div class="form-group">
+                                    <label style="font-size:0.8rem;color:#64748b;display:flex;align-items:center;gap:4px;"><i class="fas fa-keyboard" style="color:#f59e0b;"></i> 填空题权重</label>
+                                    <input type="number" id="setNormalFillWeight" oninput="toggleQuestionTypeOptions('Normal')" min="0" max="100" value="0" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
+                                    <div style="font-size:0.72rem;color:#475569;margin-top:4px;">给中文释义写印尼语</div>
+                                </div>
+                                <div class="form-group">
+                                    <label style="font-size:0.8rem;color:#64748b;display:flex;align-items:center;gap:4px;"><i class="fas fa-headphones" style="color:#10b981;"></i> 听力题权重</label>
+                                    <input type="number" id="setNormalListeningWeight" oninput="toggleQuestionTypeOptions('Normal')" min="0" max="100" value="0" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
+                                    <div style="font-size:0.72rem;color:#475569;margin-top:4px;">听发音选中文释义</div>
+                                </div>
+                            </div>
+                            <!-- 填空题模式 -->
+                            <div id="normalFillOptions" style="display:none;border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:4px;">
+                                <div style="font-size:0.82rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-keyboard" style="color:#f59e0b;margin-right:4px;"></i> 填空题模式</div>
+                                <div style="display:flex;gap:12px;align-items:flex-start;">
+                                    <label style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);cursor:pointer;font-size:0.85rem;color:#e2e8f0;">
+                                        <input type="radio" name="normalFillMode" value="input" style="accent-color:#60a5fa;width:16px;height:16px;">
+                                        <div><div style="font-weight:600;">键盘输入</div><div style="font-size:0.72rem;color:#64748b;">用户手动输入印尼语</div></div>
+                                    </label>
+                                    <label style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);cursor:pointer;font-size:0.85rem;color:#e2e8f0;">
+                                        <input type="radio" name="normalFillMode" value="select" style="accent-color:#60a5fa;width:16px;height:16px;">
+                                        <div><div style="font-weight:600;">选项拼选</div><div style="font-size:0.72rem;color:#64748b;">从备选字母中选取拼出</div></div>
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- 听力题配置 -->
+                            <div id="normalListeningOptions" style="display:none;border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:4px;">
+                                <div style="font-size:0.82rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-headphones" style="color:#10b981;margin-right:4px;"></i> 听力题配置</div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                                    <div class="form-group">
+                                        <label style="font-size:0.8rem;color:#64748b;">播放语速</label>
+                                        <select id="setNormalListeningSpeed" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
+                                            <option value="0.6">0.6x 慢速</option>
+                                            <option value="0.8">0.8x 较慢</option>
+                                            <option value="1.0" selected>1.0x 正常</option>
+                                            <option value="1.2">1.2x 较快</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label style="font-size:0.8rem;color:#64748b;">自动播报次数</label>
+                                        <input type="number" id="setNormalListeningReplays" min="1" max="5" value="2" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
+                                        <div style="font-size:0.72rem;color:#475569;margin-top:4px;">进入题目时自动播放次数</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1204,6 +1260,7 @@ let allUsers = [];
         if (name === 'whitelist') { loadWhitelist(); loadEmployees(); }
         if (name === 'study') { loadStudySettings(); loadStudyStats(); }
         if (name === 'changelog') loadChangelog();
+        if (name === 'challenge') loadChallengeSettings();
     }
 
     // ========== 概览 ==========
@@ -1565,6 +1622,18 @@ let allUsers = [];
         document.getElementById('setNormalSentencesPerStage').value = ns.sentencesPerStage || s.sentencesPerStage || 1;
         document.getElementById('setNormalDialoguesPerStage').value = ns.dialoguesPerStage || s.dialoguesPerStage || 1;
 
+        // Normal 题型配置
+        document.getElementById('setNormalChoiceWeight').value = ns.choiceWeight !== undefined ? ns.choiceWeight : 10;
+        document.getElementById('setNormalFillWeight').value = ns.fillWeight !== undefined ? ns.fillWeight : 0;
+        document.getElementById('setNormalListeningWeight').value = ns.listeningWeight !== undefined ? ns.listeningWeight : 0;
+        const nFillMode = ns.fillMode || 'input';
+        const nFillRadio = document.querySelector('input[name="normalFillMode"][value="' + nFillMode + '"]');
+        if (nFillRadio) nFillRadio.checked = true;
+        document.getElementById('setNormalListeningSpeed').value = ns.listeningSpeed || '1.0';
+        document.getElementById('setNormalListeningReplays').value = ns.listeningReplays || 2;
+        document.getElementById('normalFillOptions').style.display = (ns.fillWeight > 0) ? 'block' : 'none';
+        document.getElementById('normalListeningOptions').style.display = (ns.listeningWeight > 0) ? 'block' : 'none';
+
         // Load hell settings
         const hs = s.hellSettings || {};
         document.getElementById('setHellModeEnabled').checked = hs.enabled !== false;
@@ -1607,9 +1676,33 @@ let allUsers = [];
         document.getElementById('setHellSentencesPerStage').value = hs.sentencesPerStage || 2;
         document.getElementById('setHellDialoguesPerStage').value = hs.dialoguesPerStage || 2;
 
+        // Hell 题型配置
+        document.getElementById('setHellChoiceWeight').value = hs.choiceWeight !== undefined ? hs.choiceWeight : 10;
+        document.getElementById('setHellFillWeight').value = hs.fillWeight !== undefined ? hs.fillWeight : 0;
+        document.getElementById('setHellListeningWeight').value = hs.listeningWeight !== undefined ? hs.listeningWeight : 0;
+        const hFillMode = hs.fillMode || 'input';
+        const hFillRadio = document.querySelector('input[name="hellFillMode"][value="' + hFillMode + '"]');
+        if (hFillRadio) hFillRadio.checked = true;
+        document.getElementById('setHellListeningSpeed').value = hs.listeningSpeed || '1.0';
+        document.getElementById('setHellListeningReplays').value = hs.listeningReplays || 2;
+        document.getElementById('hellFillOptions').style.display = (hs.fillWeight > 0) ? 'block' : 'none';
+        document.getElementById('hellListeningOptions').style.display = (hs.listeningWeight > 0) ? 'block' : 'none';
+
         // 初始化完成后计算关卡数
         updateStageCountEstimate();
     }
+
+// 题型权重变化联动：填空/听力选项区显隐
+function toggleQuestionTypeOptions(mode) {
+    const prefix = mode;
+    const fillW = parseInt(document.getElementById('set' + prefix + 'FillWeight').value) || 0;
+    const listenW = parseInt(document.getElementById('set' + prefix + 'ListeningWeight').value) || 0;
+    const fillOpts = document.getElementById(prefix.toLowerCase() + 'FillOptions');
+    const listenOpts = document.getElementById(prefix.toLowerCase() + 'ListeningOptions');
+    if (fillOpts) fillOpts.style.display = fillW > 0 ? 'block' : 'none';
+    if (listenOpts) listenOpts.style.display = listenW > 0 ? 'block' : 'none';
+}
+
 
 
     async function loadMainVersionInfo() {
@@ -1736,7 +1829,15 @@ let allUsers = [];
 
         const normalSettings = {
             splitMode, questionType: document.getElementById('setNormalQuestionType').value || 'mixed',
-            questionCount, sequentialMode: document.getElementById('setNormalSequentialMode').checked,
+            questionCount,
+            // 题型配置
+            choiceWeight: parseInt(document.getElementById('setNormalChoiceWeight').value) || 0,
+            fillWeight: parseInt(document.getElementById('setNormalFillWeight').value) || 0,
+            listeningWeight: parseInt(document.getElementById('setNormalListeningWeight').value) || 0,
+            fillMode: (document.querySelector('input[name="normalFillMode"]:checked') || {}).value || 'input',
+            listeningSpeed: document.getElementById('setNormalListeningSpeed').value || '1.0',
+            listeningReplays: parseInt(document.getElementById('setNormalListeningReplays').value) || 2,
+            sequentialMode: document.getElementById('setNormalSequentialMode').checked,
             timeLimitEnabled: document.getElementById('setNormalTimeLimitEnabled').checked,
             timeLimit: document.getElementById('setNormalTimeLimitEnabled').checked ? (parseInt(document.getElementById('setNormalTimeLimit').value) || 60) : 0,
             speedControl: document.getElementById('setNormalSpeedControl').checked,
@@ -1804,6 +1905,13 @@ let allUsers = [];
             splitMode,
             questionType: document.getElementById('setHellQuestionType').value || 'mixed',
             questionCount,
+            // 题型配置
+            choiceWeight: parseInt(document.getElementById('setHellChoiceWeight').value) || 0,
+            fillWeight: parseInt(document.getElementById('setHellFillWeight').value) || 0,
+            listeningWeight: parseInt(document.getElementById('setHellListeningWeight').value) || 0,
+            fillMode: (document.querySelector('input[name="hellFillMode"]:checked') || {}).value || 'input',
+            listeningSpeed: document.getElementById('setHellListeningSpeed').value || '1.0',
+            listeningReplays: parseInt(document.getElementById('setHellListeningReplays').value) || 2,
             timeLimit: document.getElementById('setHellTimeLimitEnabled').checked ? (parseInt(document.getElementById('setHellTimeLimit').value) || 120) : 0,
             sequentialMode: document.getElementById('setHellSequentialMode').checked,
             timeLimitEnabled: document.getElementById('setHellTimeLimitEnabled').checked,

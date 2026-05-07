@@ -402,8 +402,6 @@ const ChallengeModule = {
                 stageGrid += `<div class="stage-card ${statusClass} ${group.isHell ? 'stage-hell' : ''}" onclick="${isLocked ? '' : `ChallengeModule.enterStage('${stage.id}')`}" ${isReadonly ? 'title="该课程暂未开放"' : ''}>
                     <div class="stage-number">${i + 1}</div>
                     <div class="stage-icon">${statusIcon}</div>
-                    <div class="stage-name">${stage.name}</div>
-                    <div class="stage-type">${stage.type === 'words' ? '单词' : stage.type === 'sentences' ? '短句' : '对话'}</div>
                     ${isCleared ? `<div class="stage-best">最佳 ${p.bestScore.toFixed(0)}分</div>` : ''}
                     ${isCurrent && !isLocked ? '<div class="stage-hint">可挑战</div>' : ''}
                 </div>`;
@@ -503,6 +501,12 @@ const ChallengeModule = {
             questions = this._sampleQuestions(levelData, stage.unitId, questionType, questionCount);
         }
 
+        // 按题型权重扩展题目池：同一内容可生成多种题型
+        questions = this._expandQuestionsByType(questions, modeSettings, isHell);
+        if (questions.length === 0) questions = this._expandQuestionsByType(this._shuffle(stage.questions.slice()), { choiceWeight: 10, fillWeight: 0, listeningWeight: 0 }, isHell);
+        // 洗牌
+        questions = this._shuffle(questions);
+
         this.challengeState = {
             stageId,
             questions: questions,
@@ -556,6 +560,146 @@ const ChallengeModule = {
         }
         return pool.slice(0, count);
     },
+    /**
+     * 按题型权重扩展题目：同一内容可生成多种题型（选择/填空/听力）
+     * @param {Array} contents - 原始内容列表
+     * @param {Object} typeConfig - { choiceWeight, fillWeight, listeningWeight, fillMode, listeningSpeed, listeningReplays }
+     * @param {Boolean} isHell - 是否地狱模式
+     * @returns {Array} 扩展后的题目列表，每项额外带 _qType 字段
+     */
+    _expandQuestionsByType(contents, typeConfig, isHell) {
+        const cw = typeConfig.choiceWeight || 0;
+        const fw = typeConfig.fillWeight || 0;
+        const lw = typeConfig.listeningWeight || 0;
+        const totalW = cw + fw + lw;
+        
+        // 如果没有配置权重（旧版本兼容），默认全部为选择题
+        if (totalW === 0) {
+            return contents.map(c => ({ ...c, _qType: 'choice' }));
+        }
+        
+        const expanded = [];
+        for (const item of contents) {
+            // 选择题
+            if (cw > 0) {
+                expanded.push({ ...item, _qType: 'choice', _weight: cw });
+            }
+            // 填空题
+            if (fw > 0) {
+                expanded.push({ ...item, _qType: 'fill', _fillMode: typeConfig.fillMode || 'input', _weight: fw });
+            }
+            // 听力题
+            if (lw > 0) {
+                expanded.push({ ...item, _qType: 'listening', _listenSpeed: typeConfig.listeningSpeed || '1.0', _listenReplays: typeConfig.listeningReplays || 2, _weight: lw });
+            }
+        }
+        
+        return expanded;
+    },
+
+    // ========== 填空题交互 ==========
+    pickFillLetter(btn, letter) {
+        const pool = document.getElementById('fill-letter-pool');
+        const answerBox = document.getElementById('fill-answer-box');
+        if (!pool || !answerBox) return;
+        // 从字母池移除
+        btn.style.opacity = '0.3';
+        btn.style.pointerEvents = 'none';
+        // 添加到答案框
+        const chip = document.createElement('span');
+        chip.textContent = letter;
+        chip.className = 'fill-chip';
+        chip.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:6px;background:rgba(96,165,250,0.2);color:#60a5fa;border:1px solid rgba(96,165,250,0.4);font-size:0.95rem;font-weight:600;cursor:pointer;';
+        chip.onclick = function() {
+            chip.remove();
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'auto';
+        };
+        answerBox.appendChild(chip);
+    },
+
+    submitFillAnswer() {
+        const answerBox = document.getElementById('fill-answer-box');
+        const inputEl = document.getElementById('fill-input-answer');
+        const q = this.challengeState.questions[this.challengeState.currentIndex];
+        const isDialogue = q.lines !== undefined;
+        const correctAnswer = (isDialogue ? (q.title || '') : (q.indonesian || '')).toLowerCase();
+        let userAnswer = '';
+
+        if (answerBox) {
+            // 拼选模式
+            const chips = answerBox.querySelectorAll('.fill-chip');
+            userAnswer = Array.from(chips).map(c => c.textContent.toLowerCase()).join('');
+        } else if (inputEl) {
+            // 输入模式
+            userAnswer = inputEl.value.trim().toLowerCase();
+        }
+
+        const isCorrect = userAnswer === correctAnswer;
+        this.challengeState.answers.push({ correct: isCorrect, question: q, userAnswer, correctAnswer });
+
+        // 显示反馈
+        const container = document.getElementById('challenge-question');
+        if (container) {
+            const feedback = document.createElement('div');
+            feedback.style.cssText = `margin:16px 0;padding:14px 18px;border-radius:12px;text-align:center;font-weight:600;font-size:0.95rem;`;
+            if (isCorrect) {
+                feedback.style.background = 'rgba(16,185,129,0.15)';
+                feedback.style.color = '#10b981';
+                feedback.style.border = '1px solid rgba(16,185,129,0.3)';
+                feedback.innerHTML = '<i class="fas fa-check-circle" style="margin-right:6px;"></i>回答正确！';
+            } else {
+                feedback.style.background = 'rgba(239,68,68,0.15)';
+                feedback.style.color = '#f87171';
+                feedback.style.border = '1px solid rgba(239,68,68,0.3)';
+                feedback.innerHTML = `<i class="fas fa-times-circle" style="margin-right:6px;"></i>回答错误！正确答案：<span style="color:#e2e8f0;">${isDialogue ? q.title : q.indonesian}</span>`;
+            }
+            // 禁用所有交互按钮
+            const area = document.getElementById('challenge-question');
+            if (area) {
+                area.querySelectorAll('button, input').forEach(el => { el.disabled = true; el.style.pointerEvents = 'none'; el.style.opacity = '0.5'; });
+            }
+            container.appendChild(feedback);
+        }
+
+        // 更新分数
+        if (isCorrect) this.challengeState.correct++;
+        // 自动跳转下一题
+        setTimeout(() => {
+            this.challengeState.currentIndex++;
+            this.render();
+        }, 1200);
+    },
+
+    // ========== 听力题交互 ==========
+    playListening(text, speed, replays) {
+        const decodedText = decodeURIComponent(text);
+        if (!decodedText) return;
+        // 取消之前的语音
+        if (window._listenUtterance) speechSynthesis.cancel();
+        const utt = new SpeechSynthesisUtterance(decodedText);
+        utt.lang = 'id-ID';
+        utt.rate = parseFloat(speed) || 1.0;
+        utt.pitch = 1.0;
+        window._listenUtterance = utt;
+        let count = 0;
+        const totalReplays = parseInt(replays) || 2;
+        utt.onend = function() {
+            count++;
+            if (count < totalReplays) {
+                setTimeout(() => speechSynthesis.speak(utt), 300);
+            }
+        };
+        speechSynthesis.speak(utt);
+        // 更新按钮状态
+        const btn = document.getElementById('listen-play-btn');
+        if (btn) {
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            setTimeout(() => { if (btn) btn.innerHTML = '<i class="fas fa-volume-up"></i>'; }, totalReplays * 3000);
+        }
+    },
+
+
 
     _renderPlayArea(container) {
         const state = this.challengeState;
@@ -567,6 +711,7 @@ const ChallengeModule = {
         }
 
         const q = state.questions[state.currentIndex];
+        const qType = q._qType || 'choice';
         const currentStage = this.allStages.find(s => s.id === state.stageId);
         const stageType = currentStage ? currentStage.type : 'words';
         const _isHellStage = this.challengeMode === 'hell';
@@ -578,40 +723,110 @@ const ChallengeModule = {
         const ss = String(elapsed % 60).padStart(2, '0');
 
         const isDialogue = q.lines !== undefined;
-        // 对话题：正确答案为中文标题(q.title)，选项池只用中文
-        // 非对话：正确答案为中文释义(q.chinese)
-        const allOptions = state.questions.map(item => {
-            if (item.lines !== undefined) return item.title || '';
-            return item.chinese || '';
-        }).filter(Boolean);
         const correctAnswer = isDialogue ? (q.title || '') : (q.chinese || '');
+        const indoText = isDialogue ? (q.title_id || '') : (q.indonesian || '');
 
-        // 生成选项
-        const wrongOptions = allOptions.filter(o => o !== correctAnswer);
-        const shuffledWrong = this._shuffle(wrongOptions).slice(0, 3);
-        const options = this._shuffle([correctAnswer, ...shuffledWrong]);
+        // 题型标签
+        const qTypeLabel = qType === 'choice' ? '选择题' : qType === 'fill' ? '填空题' : '听力题';
+        const qTypeColor = qType === 'choice' ? '#60a5fa' : qType === 'fill' ? '#f59e0b' : '#10b981';
+        const qTypeIcon = qType === 'choice' ? 'fa-check-circle' : qType === 'fill' ? 'fa-keyboard' : 'fa-headphones';
+
+        // 构建选项池（选择和听力题需要）
+        let options = [];
+        if (qType === 'choice' || qType === 'listening') {
+            const allOptions = state.questions.map(item => {
+                if (item.lines !== undefined) return item.title || '';
+                return item.chinese || '';
+            }).filter(Boolean);
+            const wrongOptions = this._shuffle(allOptions.filter(o => o !== correctAnswer)).slice(0, 3);
+            options = this._shuffle([correctAnswer, ...wrongOptions]);
+        }
 
         let questionContent = '';
-        if (isDialogue) {
-            // 对话题：显示对话标题
+
+        if (qType === 'choice') {
+            // ===== 选择题：显示印尼语，选中文 =====
+            if (isDialogue) {
+                questionContent = `
+                    <div class="challenge-q-type"><i class="fas ${qTypeIcon}" style="color:${qTypeColor};margin-right:4px;"></i>${qTypeLabel}</div>
+                    <div class="challenge-q-title">${q.title || ''}</div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        ${q.title_id ? `<button class="circle-btn play-btn ch-speak-btn" onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.title_id)}')" style="flex-shrink:0;width:42px;height:42px;font-size:1rem;"><i class="fas fa-play ch-play-ico"></i></button>` : ''}
+                        <div class="challenge-q-indo ch-speak-btn" ${q.title_id ? `onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.title_id)}')" style="cursor:pointer;"` : ''} style="flex:1;">${q.title_id || ''}</div>
+                    </div>
+                    <div class="challenge-q-prompt">这个对话的主题是什么？</div>
+                `;
+            } else {
+                questionContent = `
+                    <div class="challenge-q-type"><i class="fas ${qTypeIcon}" style="color:${qTypeColor};margin-right:4px;"></i>${qTypeLabel}</div>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <button class="circle-btn play-btn ch-speak-btn" onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.indonesian)}')" style="flex-shrink:0;width:42px;height:42px;font-size:1rem;"><i class="fas fa-play ch-play-ico"></i></button>
+                        <div class="challenge-q-indo ch-speak-btn" onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.indonesian)}')" style="cursor:pointer;flex:1;">${q.indonesian}</div>
+                    </div>
+                    <div class="challenge-q-prompt">请选择正确的中文释义：</div>
+                `;
+            }
+            questionContent += `<div class="challenge-options">${options.map((opt, i) => `
+                <button class="challenge-option" onclick="ChallengeModule.answerQuestion(this, '${encodeURIComponent(opt)}', '${encodeURIComponent(correctAnswer)}')">
+                    <span class="challenge-option-letter">${'ABCD'[i]}</span>
+                    <span class="challenge-option-text">${opt}</span>
+                </button>`).join('')}</div>`;
+
+        } else if (qType === 'fill') {
+            // ===== 填空题：显示中文，输入印尼语 =====
+            const fillMode = q._fillMode || 'input';
+            if (fillMode === 'select') {
+                // 选项拼选模式：打散正确答案的字母 + 加入干扰字母
+                const correctWord = (isDialogue ? (q.title || '') : (q.indonesian || '')).toLowerCase();
+                const letters = correctWord.split('');
+                // 加入干扰字母
+                const extraLetters = 'abcdefghijklmnopqrstuvwxyz'.split('').filter(l => !letters.includes(l));
+                const shuffledExtra = this._shuffle(extraLetters).slice(0, Math.max(4, 12 - letters.length));
+                const allLetters = this._shuffle([...letters, ...shuffledExtra]);
+                questionContent = `
+                    <div class="challenge-q-type"><i class="fas ${qTypeIcon}" style="color:${qTypeColor};margin-right:4px;"></i>${qTypeLabel}（拼选）</div>
+                    <div style="font-size:1.15rem;color:#e2e8f0;font-weight:600;text-align:center;margin:12px 0;">${correctAnswer}</div>
+                    <div class="challenge-q-prompt">请从下方字母中拼选出正确的印尼语：</div>
+                    <div id="fill-answer-box" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;min-height:48px;padding:10px;border:2px dashed rgba(255,255,255,0.15);border-radius:10px;margin:12px 0;background:rgba(15,23,42,0.4);" data-answer="${encodeURIComponent(correctWord)}"></div>
+                    <div id="fill-letter-pool" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px;">
+                        ${allLetters.map(l => `<button class="fill-letter-btn" onclick="ChallengeModule.pickFillLetter(this, '${l}')" style="width:40px;height:40px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(15,23,42,0.8);color:#e2e8f0;font-size:1rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;">${l}</button>`).join('')}
+                    </div>
+                    <button class="challenge-option" onclick="ChallengeModule.submitFillAnswer()" style="margin-top:16px;width:100%;padding:12px;text-align:center;border-radius:12px;background:rgba(251,191,36,0.2);color:#fbbf24;border:1px solid rgba(251,191,36,0.4);font-weight:600;font-size:0.95rem;cursor:pointer;">
+                        <i class="fas fa-paper-plane" style="margin-right:6px;"></i>确认提交
+                    </button>
+                `;
+            } else {
+                // 键盘输入模式
+                questionContent = `
+                    <div class="challenge-q-type"><i class="fas ${qTypeIcon}" style="color:${qTypeColor};margin-right:4px;"></i>${qTypeLabel}（输入）</div>
+                    <div style="font-size:1.15rem;color:#e2e8f0;font-weight:600;text-align:center;margin:12px 0;">${correctAnswer}</div>
+                    <div class="challenge-q-prompt">请输入对应的印尼语：</div>
+                    <input type="text" id="fill-input-answer" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="输入印尼语..."
+                        style="width:100%;padding:14px 18px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:2px solid rgba(255,255,255,0.15);border-radius:12px;font-size:1.1rem;text-align:center;outline:none;margin:12px 0;font-family:inherit;"
+                        onkeydown="if(event.key==='Enter')ChallengeModule.submitFillAnswer()">
+                    <button class="challenge-option" onclick="ChallengeModule.submitFillAnswer()" style="width:100%;padding:12px;text-align:center;border-radius:12px;background:rgba(251,191,36,0.2);color:#fbbf24;border:1px solid rgba(251,191,36,0.4);font-weight:600;font-size:0.95rem;cursor:pointer;">
+                        <i class="fas fa-paper-plane" style="margin-right:6px;"></i>确认提交
+                    </button>
+                `;
+            }
+
+        } else if (qType === 'listening') {
+            // ===== 听力题：只播放音频，选中文 =====
+            const listenSpeed = q._listenSpeed || '1.0';
+            const listenReplays = q._listenReplays || 2;
             questionContent = `
-                <div class="challenge-q-type">对话题</div>
-                <div class="challenge-q-title">${q.title || ''}</div>
-                <div style="display:flex;align-items:center;gap:10px;">
-                    ${q.title_id ? `<button class="circle-btn play-btn ch-speak-btn" onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.title_id)}')" style="flex-shrink:0;width:42px;height:42px;font-size:1rem;"><i class="fas fa-play ch-play-ico"></i></button>` : ''}
-                    <div class="challenge-q-indo ch-speak-btn" ${q.title_id ? `onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.title_id)}')" style="cursor:pointer;"` : ''} style="flex:1;">${q.title_id || ''}</div>
+                <div class="challenge-q-type"><i class="fas ${qTypeIcon}" style="color:${qTypeColor};margin-right:4px;"></i>${qTypeLabel}</div>
+                <div style="text-align:center;padding:20px 0;">
+                    <button class="circle-btn play-btn" id="listen-play-btn" onclick="ChallengeModule.playListening('${encodeURIComponent(indoText)}', ${listenSpeed}, ${listenReplays})" style="width:72px;height:72px;font-size:1.6rem;margin:0 auto;display:flex;align-items:center;justify-content:center;border-radius:50%;"><i class="fas fa-volume-up"></i></button>
+                    <div style="font-size:0.8rem;color:#64748b;margin-top:10px;">点击播放音频（自动播放 ${listenReplays} 次）</div>
                 </div>
-                <div class="challenge-q-prompt">这个对话的主题是什么？</div>
+                <div class="challenge-q-prompt">听发音，选择正确的中文释义：</div>
             `;
-        } else {
-            questionContent = `
-                <div class="challenge-q-type">${stageType === 'words' ? '生词' : stageType === 'sentences' ? '短句' : '对话'}</div>
-                <div style="display:flex;align-items:center;gap:10px;">
-                    <button class="circle-btn play-btn ch-speak-btn" onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.indonesian)}')" style="flex-shrink:0;width:42px;height:42px;font-size:1rem;"><i class="fas fa-play ch-play-ico"></i></button>
-                    <div class="challenge-q-indo ch-speak-btn" onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.indonesian)}')" style="cursor:pointer;flex:1;">${q.indonesian}</div>
-                </div>
-                <div class="challenge-q-prompt">请选择正确的中文释义：</div>
-            `;
+            questionContent += `<div class="challenge-options">${options.map((opt, i) => `
+                <button class="challenge-option" onclick="ChallengeModule.answerQuestion(this, '${encodeURIComponent(opt)}', '${encodeURIComponent(correctAnswer)}')">
+                    <span class="challenge-option-letter">${'ABCD'[i]}</span>
+                    <span class="challenge-option-text">${opt}</span>
+                </button>`).join('')}</div>`;
         }
 
         container.innerHTML = `
