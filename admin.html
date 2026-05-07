@@ -987,22 +987,7 @@
                     <div id="cmPanelHell" style="display:none;">
                         <!-- 地狱等级选择 -->
                         <div style="border-top:1px solid rgba(239,68,68,0.12);padding-top:12px;margin-top:8px;margin-bottom:12px;">
-                            <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-skull-crossbones" style="color:#f87171;margin-right:4px;"></i> 地狱模式关卡等级 <span id="hell-mode-hint" style="color:#22c55e;margin-left:6px;font-size:0.8rem;">已启用</span></div>
-                            <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-                                <label class="toggle" style="margin-right:4px;"><input type="checkbox" id="setHellModeEnabled" checked><span class="slider"></span></label>
-                                <span style="font-size:0.82rem;color:#64748b;">勾选的 BIPA 等级将作为地狱关卡内容来源</span>
-                            </div>
-                            <div id="hellLevelCheckboxes" style="display:flex;flex-wrap:wrap;gap:8px;padding:8px 0;">
-                                <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="0"> BIPA 0</label>
-                                <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="1"> BIPA 1</label>
-                                <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="2"> BIPA 2</label>
-                                <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="3"> BIPA 3</label>
-                                <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="4"> BIPA 4</label>
-                                <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="5"> BIPA 5</label>
-                                <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="6"> BIPA 6</label>
-                                <label style="display:flex;align-items:center;gap:4px;font-size:0.85rem;color:#cbd5e1;cursor:pointer;"><input type="checkbox" class="hell-level-cb" value="7"> BIPA 7</label>
-                            </div>
-                        </div>
+                            <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-skull-crossbones" style=
                         <!-- 关卡切分 -->
                         <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:8px;margin-bottom:12px;">
                             <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-cut" style="color:#f472b6;margin-right:4px;"></i> 关卡切分</div>
@@ -1478,11 +1463,8 @@ let allUsers = [];
         const hW = parseInt(document.getElementById('setHellWordsPerStage')?.value) || 6;
         const hS = parseInt(document.getElementById('setHellSentencesPerStage')?.value) || 2;
         const hD = parseInt(document.getElementById('setHellDialoguesPerStage')?.value) || 2;
-        const hellLevels = Array.from(document.querySelectorAll('.hell-level-cb:checked')).map(cb => parseInt(cb.value));
-        const hellSet = new Set(hellLevels);
         let hStages = 0;
         for (const level of allLevels) {
-            if (!hellSet.has(Number(level.id))) continue;
             const state = lvlCfgUser ? (lvlCfgUser[Number(level.id)] !== undefined ? lvlCfgUser[Number(level.id)] : 2) : 2;
             if (state === 0) continue;
             for (const unit of (level.units || [])) {
@@ -1513,7 +1495,6 @@ let allUsers = [];
         }
     });
     document.addEventListener('change', function(e) {
-        if (e.target.classList.contains('hell-level-cb')) updateStageCountEstimate();
     });
 
     async function loadChallengeSettings() {
@@ -1587,10 +1568,6 @@ let allUsers = [];
         const hs = s.hellSettings || {};
         document.getElementById('setHellModeEnabled').checked = hs.enabled !== false;
         document.getElementById('hell-mode-hint').textContent = hs.enabled !== false ? '已启用' : '已关闭';
-        const hellLevels = hs.levels || s.hellLevels || [5, 6, 7];
-        document.querySelectorAll('.hell-level-cb').forEach(cb => {
-            cb.checked = hellLevels.includes(parseInt(cb.value));
-        });
         document.getElementById('setHellQuestionType').value = hs.questionType || s.hellQuestionType || 'mixed';
         // questionCount 由内容分配决定，设置只读显示
         const hellQC = hs.questionCount || s.hellQuestionCount || 0;
@@ -1821,14 +1798,9 @@ let allUsers = [];
         }
         const questionCount = splitMode === 'auto' ? autoContentCount : (wordsPerStage + sentencesPerStage + dialoguesPerStage);
 
-        const checkedLevels = Array.from(document.querySelectorAll('.hell-level-cb:checked')).map(cb => parseInt(cb.value));
-        if (checkedLevels.length === 8) {
-            if (!confirm('你选择了所有 BIPA 等级（0-7）作为地狱关卡，这意味着普通模式将没有任何关卡。\n\n确定继续吗？')) return;
-        }
         const hellSettings = {
             enabled: document.getElementById('setHellModeEnabled').checked,
             splitMode,
-            levels: checkedLevels,
             questionType: document.getElementById('setHellQuestionType').value || 'mixed',
             questionCount,
             timeLimit: document.getElementById('setHellTimeLimitEnabled').checked ? (parseInt(document.getElementById('setHellTimeLimit').value) || 120) : 0,
@@ -1847,7 +1819,7 @@ let allUsers = [];
             hellSettings,
         };
         settings.hellModeEnabled = hellSettings.enabled;
-        settings.hellLevels = hellSettings.levels;
+        // settings.hellLevels removed
         settings.hellTimeLimit = hellSettings.timeLimit;
         settings.hellQuestionCount = hellSettings.questionCount;
         settings.hellQuestionType = hellSettings.questionType;
