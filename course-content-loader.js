@@ -159,10 +159,10 @@ const CourseContent = {
     //   manual: 按类型分别切分，使用 wordsPerStage/sentencesPerStage/dialoguesPerStage
     generateStages(levelId, mode) {
         const level = this.getLevel(levelId);
-        if (!level) { console.warn('[generateStages] level not found:', levelId); return []; }
+        if (!level) { return []; }
         const stages = [];
         const sysInfo = window._systemInfo || {};
-        console.log('[generateStages] levelId:', levelId, 'mode:', mode, 'normalSettings:', sysInfo.normalSettings, 'hellSettings:', sysInfo.hellSettings);
+        
 
         // 根据模式读取对应的配置（新结构优先，向后兼容旧字段）
         const modeSettings = mode === 'hell'

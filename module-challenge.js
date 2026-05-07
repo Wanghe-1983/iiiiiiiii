@@ -34,15 +34,14 @@ const ChallengeModule = {
     },
 
     _applyChallengeLevelFilter() {
-        const config = this._getChallengeLevelConfig();
-        // 过滤掉隐藏等级(state=0)的关卡，标记仅展示等级(state=1)
+        const config = this._getStudyLevelConfig();
+        // 用勤学苦练的课件等级控制来过滤关卡可见性
         this.allStages = this.allStages.filter(s => {
             const state = config[Number(s.levelId)];
             if (state === undefined || state === 2) return true; // 可闯关
             if (state === 0) return false; // 隐藏
             return true; // 仅展示：保留但标记
         });
-        // 标记仅展示等级
         this.allStages.forEach(s => {
             s._readonly = config[Number(s.levelId)] === 1;
         });
@@ -281,28 +280,26 @@ const ChallengeModule = {
     },
 
     _calcModeProgress(mode) {
-        const sysInfo = window._systemInfo || {};
-        const _hs = sysInfo.hellSettings || sysInfo;
-        const HELL_LEVELS = (_hs && (_hs.levels || _hs.hellLevels)) || [5, 6, 7];
-        const isHell = mode === 'hell';
-        // 用 getAllStages 生成所有等级的关卡，再按 HELL_LEVELS 过滤
+        // 用 getAllStages 按模式生成关卡，用 studyLevelConfig 控制可见性
         const allModeStages = CourseContent.getAllStages(mode);
-        console.log('[_calcModeProgress] mode:', mode, 'allModeStages:', allModeStages.length, 'HELL_LEVELS:', HELL_LEVELS);
-        const filtered = allModeStages.filter(s => {
-            const isHellStage = HELL_LEVELS.includes(Number(s.levelId));
-            return isHell ? isHellStage : !isHellStage;
-        });
-        console.log('[_calcModeProgress] filtered:', filtered.length);
-        // 应用等级过滤（与 _applyChallengeLevelFilter 一致）
-        const config = this._getChallengeLevelConfig();
-        const visible = filtered.filter(s => {
+        const config = this._getStudyLevelConfig();
+        const visible = allModeStages.filter(s => {
             const state = config[Number(s.levelId)];
-            return state !== 0;
+            return state === undefined || state === 2 || state === 1; // 0=隐藏
         });
         const cleared = visible.filter(s => this.serverProgress[s.id]?.cleared).length;
         const stars = visible.reduce((sum, s) => sum + (this.serverProgress[s.id]?.stars || 0), 0);
         const score = visible.reduce((sum, s) => sum + (this.serverProgress[s.id]?.bestScore || 0), 0);
         return { total: visible.length, cleared, stars, score: Math.round(score) };
+    },
+
+    _getStudyLevelConfig() {
+        const sysInfo = window._systemInfo || {};
+        const isAdmin = window._userInfo && (window._userInfo.role === 'admin');
+        const isVisitor = window._userInfo && (window._userInfo.userType === 'visitor');
+        if (isAdmin) return sysInfo.studyLevelConfigUser || sysInfo.challengeLevelConfigUser || {};
+        if (isVisitor) return sysInfo.studyLevelConfigVisitor || sysInfo.challengeLevelConfigVisitor || {};
+        return sysInfo.studyLevelConfigUser || sysInfo.challengeLevelConfigUser || {};
     },
 
     switchChallengeMode(mode) {
@@ -317,7 +314,7 @@ const ChallengeModule = {
     _regenerateStages() {
         // 根据当前模式重新生成关卡列表（使用对应的切分配置）
         this.allStages = CourseContent.getAllStages(this.challengeMode);
-        console.log('[_regenerateStages] mode:', this.challengeMode, 'totalStages:', this.allStages.length);
+        
     },
 
     switchSubTab(tab) {
@@ -332,15 +329,9 @@ const ChallengeModule = {
             return;
         }
 
-        const _hs = window._systemInfo && (window._systemInfo.hellSettings || window._systemInfo);
-        const HELL_LEVELS = (_hs && (_hs.levels || _hs.hellLevels)) || [5, 6, 7];
         const isHellMode = this.challengeMode === 'hell';
-
-        // 按 challengeMode 过滤关卡
-        const stages = this.allStages.filter(s => {
-            const isHellStage = HELL_LEVELS.includes(Number(s.levelId));
-            return isHellMode ? isHellStage : !isHellStage;
-        });
+        // 直接使用 allStages（已按模式生成，已按等级过滤）
+        const stages = this.allStages;
 
         if (stages.length === 0) {
             container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">' + (isHellMode ? '地狱模式暂无关卡' : '暂无关卡') + '</div>';
@@ -375,7 +366,7 @@ const ChallengeModule = {
             const lid = String(stage.levelId);
             if (lid !== currentLevelId) {
                 currentLevelId = lid;
-                currentGroup = { levelId: lid, levelName: levelNames[lid] || ('Level ' + lid), isHell: HELL_LEVELS.includes(Number(lid)), stages: [] };
+                currentGroup = { levelId: lid, levelName: levelNames[lid] || ('Level ' + lid), isHell: isHellMode, stages: [] };
                 groups.push(currentGroup);
             }
             currentGroup.stages.push({ stage, index: i });
@@ -472,9 +463,9 @@ const ChallengeModule = {
         this.currentStageId = stageId;
         // 检查地狱模式关卡是否开放
         const _hs = window._systemInfo && (window._systemInfo.hellSettings || window._systemInfo);
-        const HELL_LEVELS = (_hs && (_hs.levels || _hs.hellLevels)) || [5, 6, 7];
+        const isHellMode = this.challengeMode === 'hell';
         const hellEnabled = window._systemInfo ? (window._systemInfo.hellSettings ? window._systemInfo.hellSettings.enabled !== false : window._systemInfo.hellModeEnabled !== false) : true;
-        if (HELL_LEVELS.includes(Number(stage.levelId)) && !hellEnabled) {
+        if (false && !hellEnabled) {
             alert('地狱模式尚未开放，请耐心等待');
             this.currentStageId = null;
             this.render();
@@ -483,7 +474,7 @@ const ChallengeModule = {
 
         // 动态抽样：根据后台配置决定题目数量和类型
         const sysInfo = window._systemInfo || {};
-        const isHell = HELL_LEVELS.includes(Number(stage.levelId));
+        const isHell = this.challengeMode === 'hell';
 
         // 优先读取新结构 normalSettings/hellSettings，fallback 到旧字段
         const modeSettings = isHell
@@ -578,8 +569,7 @@ const ChallengeModule = {
         const q = state.questions[state.currentIndex];
         const currentStage = this.allStages.find(s => s.id === state.stageId);
         const stageType = currentStage ? currentStage.type : 'words';
-        const HELL_LEVELS_PRE = (window._systemInfo && window._systemInfo.hellLevels) || [5, 6, 7];
-        const _isHellStage = currentStage ? HELL_LEVELS_PRE.includes(Number(currentStage.levelId)) : false;
+        const _isHellStage = this.challengeMode === 'hell';
         const total = state.totalQuestions;
         const current = state.currentIndex + 1;
         const progressPct = Math.round(current / total * 100);
