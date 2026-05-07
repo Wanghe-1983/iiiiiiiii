@@ -524,6 +524,7 @@ async function initUI() {
         仅供学习・禁止商用 © 2026｜
         <span style="cursor:pointer;color:#60a5fa;" onclick="showUserGuide()"><i class="fas fa-circle-question" style="margin-right:2px;"></i>使用说明</span>｜
         <span style="cursor:pointer;color:#fbbf24;" onclick="showVersionChangelog()"><i class="fas fa-code-branch" style="margin-right:2px;"></i>更新日志</span>｜
+        v<span id="main-version-num" style="cursor:pointer;color:#34d399;" onclick="showVersionChangelog()">...</span>｜
         联系：<span style="color:var(--accent);cursor:pointer;" onclick="openQrModal()">王鹤</span>
         <span style="float:right;opacity:0.4;cursor:pointer;" onclick="openAdminModal()" title="管理员入口"><i class="fas fa-cog" style="font-size:0.8rem;"></i></span>
     </div>
