@@ -62,7 +62,7 @@ const ChallengeModule = {
             container.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#f87171;">数据加载失败</div>';
             return;
         }
-        this.allStages = CourseContent.getAllStages();
+        this._regenerateStages();
         // 按闯天关等级控制过滤关卡
         this._applyChallengeLevelFilter();
         await this.loadProgress();
@@ -120,7 +120,14 @@ const ChallengeModule = {
         this.challengeMode = mode;
         this.currentStageId = null;
         this.challengeState = null;
+        this._regenerateStages();
+        this._applyChallengeLevelFilter();
         this.render();
+    },
+
+    _regenerateStages() {
+        // 根据当前模式重新生成关卡列表（使用对应的切分配置）
+        this.allStages = CourseContent.getAllStages(this.challengeMode);
     },
 
     switchSubTab(tab) {
@@ -135,7 +142,8 @@ const ChallengeModule = {
             return;
         }
 
-        const HELL_LEVELS = (window._systemInfo && window._systemInfo.hellLevels) || [5, 6, 7];
+        const _hs = window._systemInfo && (window._systemInfo.hellSettings || window._systemInfo);
+        const HELL_LEVELS = (_hs && (_hs.levels || _hs.hellLevels)) || [5, 6, 7];
         const isHellMode = this.challengeMode === 'hell';
 
         // 按 challengeMode 过滤关卡
@@ -273,8 +281,9 @@ const ChallengeModule = {
         }
         this.currentStageId = stageId;
         // 检查地狱模式关卡是否开放
-        const HELL_LEVELS = (window._systemInfo && window._systemInfo.hellLevels) || [5, 6, 7];
-        const hellEnabled = window._systemInfo ? window._systemInfo.hellModeEnabled !== false : true;
+        const _hs = window._systemInfo && (window._systemInfo.hellSettings || window._systemInfo);
+        const HELL_LEVELS = (_hs && (_hs.levels || _hs.hellLevels)) || [5, 6, 7];
+        const hellEnabled = window._systemInfo ? (window._systemInfo.hellSettings ? window._systemInfo.hellSettings.enabled !== false : window._systemInfo.hellModeEnabled !== false) : true;
         if (HELL_LEVELS.includes(Number(stage.levelId)) && !hellEnabled) {
             alert('地狱模式尚未开放，请耐心等待');
             this.currentStageId = null;

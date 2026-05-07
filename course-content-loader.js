@@ -157,19 +157,27 @@ const CourseContent = {
     // 支持两种切分模式：
     //   auto: 按单元混合切分，每个单元内的单词/短句/对话混合后按 autoContentCount 分组
     //   manual: 按类型分别切分，使用 wordsPerStage/sentencesPerStage/dialoguesPerStage
-    generateStages(levelId) {
+    generateStages(levelId, mode) {
         const level = this.getLevel(levelId);
         if (!level) return [];
         const stages = [];
         const sysInfo = window._systemInfo || {};
 
-        // 判断切分模式：wordsPerStage === 0 表示自动模式
-        const isAutoMode = (sysInfo.wordsPerStage === 0 || sysInfo.autoContentCount > 0)
-            && !(sysInfo.wordsPerStage > 0 || sysInfo.sentencesPerStage > 0 || sysInfo.dialoguesPerStage > 0);
+        // 根据模式读取对应的配置（新结构优先，向后兼容旧字段）
+        const modeSettings = mode === 'hell'
+            ? (sysInfo.hellSettings || {})
+            : (sysInfo.normalSettings || {});
+        const autoContentCount = modeSettings.autoContentCount || sysInfo.autoContentCount || 5;
+        const wordsPerStage = modeSettings.wordsPerStage || sysInfo.wordsPerStage || 0;
+        const sentencesPerStage = modeSettings.sentencesPerStage || sysInfo.sentencesPerStage || 0;
+        const dialoguesPerStage = modeSettings.dialoguesPerStage || sysInfo.dialoguesPerStage || 0;
+
+        // 判断切分模式
+        const isAutoMode = (wordsPerStage === 0 || autoContentCount > 0)
+            && !(wordsPerStage > 0 || sentencesPerStage > 0 || dialoguesPerStage > 0);
 
         if (isAutoMode) {
             // ===== 自动分配模式：按单元混合切分 =====
-            const autoContentCount = sysInfo.autoContentCount || 5;
             for (let uIdx = 0; uIdx < level.units.length; uIdx++) {
                 const unit = level.units[uIdx];
                 const words = unit.words || [];
@@ -225,9 +233,9 @@ const CourseContent = {
             }
         } else {
             // ===== 手动分配模式：按类型分别切分 =====
-            const WORDS_PER_STAGE = sysInfo.wordsPerStage || 3;
-            const SENTENCES_PER_STAGE = sysInfo.sentencesPerStage || 1;
-            const DIALOGUES_PER_STAGE = sysInfo.dialoguesPerStage || 1;
+            const WORDS_PER_STAGE = wordsPerStage || 3;
+            const SENTENCES_PER_STAGE = sentencesPerStage || 1;
+            const DIALOGUES_PER_STAGE = dialoguesPerStage || 1;
             for (let uIdx = 0; uIdx < level.units.length; uIdx++) {
                 const unit = level.units[uIdx];
                 const words = unit.words || [];
@@ -281,12 +289,12 @@ const CourseContent = {
     },
 
     // 获取闯天关用的所有级别关卡
-    getAllStages() {
+    getAllStages(mode) {
         const allStages = [];
         const levels = this.getLevels();
         let offset = 0;
         for (const level of levels) {
-            const stages = this.generateStages(level.id);
+            const stages = this.generateStages(level.id, mode);
             stages.forEach(s => { s.globalNumber = ++offset; });
             allStages.push(...stages);
         }
