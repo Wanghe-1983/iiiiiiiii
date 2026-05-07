@@ -486,6 +486,8 @@ const ChallengeModule = {
             : (sysInfo.challengeQuestionType || 'mixed');
         const questionCount = modeSettings.questionCount || fallbackQC;
         const questionType = modeSettings.questionType || fallbackQT;
+        const questionOrder = modeSettings.questionOrder || 'random';
+        const shouldShuffle = questionOrder !== 'sequential';
 
         // 从关卡所属的unit数据中收集题目池
         const levelData = CourseContent.getLevel(stage.levelId);
@@ -494,8 +496,8 @@ const ChallengeModule = {
         let questions;
         if (stage.questions && stage.questions.length > 0 && (questionType === 'mixed' || questionType === stage.type)) {
             // 使用预切分内容，按 questionCount 洗牌后截取
-            const shuffled = this._shuffle(stage.questions.slice());
-            questions = shuffled.slice(0, questionCount);
+            const src = stage.questions.slice();
+            questions = shouldShuffle ? this._shuffle(src).slice(0, questionCount) : src.slice(0, questionCount);
         } else {
             // 从 unit 全量重新抽样（手动分配模式下 questionType 可能与 stage.type 不同）
             questions = this._sampleQuestions(levelData, stage.unitId, questionType, questionCount);
@@ -503,9 +505,9 @@ const ChallengeModule = {
 
         // 按题型权重扩展题目池：同一内容可生成多种题型
         questions = this._expandQuestionsByType(questions, modeSettings, isHell);
-        if (questions.length === 0) questions = this._expandQuestionsByType(this._shuffle(stage.questions.slice()), { choiceWeight: 10, fillWeight: 0, listeningWeight: 0 }, isHell);
-        // 洗牌
-        questions = this._shuffle(questions);
+        if (questions.length === 0) questions = this._expandQuestionsByType(shouldShuffle ? this._shuffle(stage.questions.slice()) : stage.questions.slice(), { choiceWeight: 10, fillWeight: 0, listeningWeight: 0 }, isHell);
+        // 洗牌（顺序模式下跳过）
+        if (shouldShuffle) questions = this._shuffle(questions);
 
         this.challengeState = {
             stageId,
@@ -578,29 +580,19 @@ const ChallengeModule = {
             return contents.map(c => ({ ...c, _qType: 'choice' }));
         }
         
-        // 按权重概率为每条内容分配一种题型
-        // 权重代表出现概率：如 10:10:10 各占 33.3%，10:5:0 选择 66.7% + 填空 33.3%
+        // 叠加模式：每个内容按启用的题型各生成一个副本，1题变多题
         const fillMode = typeConfig.fillMode || 'input';
         const listenSpeed = typeConfig.listeningSpeed || '1.0';
         const listenReplays = typeConfig.listeningReplays || 2;
         
-        const result = [];
+        const expanded = [];
         for (const item of contents) {
-            const rand = Math.random() * totalW;
-            let qType, extra = {};
-            if (rand < cw) {
-                qType = 'choice';
-            } else if (rand < cw + fw) {
-                qType = 'fill';
-                extra = { _fillMode: fillMode };
-            } else {
-                qType = 'listening';
-                extra = { _listenSpeed: listenSpeed, _listenReplays: listenReplays };
-            }
-            result.push({ ...item, _qType: qType, ...extra });
+            if (cw > 0) expanded.push({ ...item, _qType: 'choice' });
+            if (fw > 0) expanded.push({ ...item, _qType: 'fill', _fillMode: fillMode });
+            if (lw > 0) expanded.push({ ...item, _qType: 'listening', _listenSpeed: listenSpeed, _listenReplays: listenReplays });
         }
         
-        return result;
+        return expanded;
     },
 
     // ========== 填空题交互 ==========

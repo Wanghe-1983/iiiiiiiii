@@ -879,6 +879,7 @@
 
                     <!-- ====== 普通闯关配置 ====== -->
                     <div id="cmPanelNormal">
+                        <div id="cmPanelNormalInner">
                         <!-- 关卡切分 -->
                         <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:8px;margin-bottom:12px;">
                             <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-cut" style="color:#f472b6;margin-right:4px;"></i> 关卡切分</div>
@@ -1001,6 +1002,13 @@
                                 <div class="setting-control"><label class="toggle"><input type="checkbox" id="setNormalSequentialMode"><span class="slider"></span></label></div>
                             </div>
                             <div class="setting-row">
+                                <div class="setting-info"><div class="setting-label">题目顺序</div><div class="setting-desc">控制关卡内题目是否打乱 <span id="normal-question-order-hint" style="color:#60a5fa;margin-left:8px;font-size:0.8rem;">随机</span></div></div>
+                                <div class="setting-control"><select id="setNormalQuestionOrder" style="padding:6px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.85rem;width:auto;" onchange="document.getElementById('normal-question-order-hint').textContent=this.value==='random'?'随机':'顺序'">
+                                    <option value="random" selected>随机</option>
+                                    <option value="sequential">顺序</option>
+                                </select></div>
+                            </div>
+                            <div class="setting-row">
                                 <div class="setting-info"><div class="setting-label">限时答题</div><div class="setting-desc">开启后每关有时间限制 <span id="normal-timelimit-hint" style="color:#64748b;margin-left:8px;font-size:0.8rem;">已关闭</span></div></div>
                                 <div class="setting-control"><label class="toggle"><input type="checkbox" id="setNormalTimeLimitEnabled"><span class="slider"></span></label></div>
                             </div>
@@ -1044,9 +1052,11 @@
                         <div style="margin-top:20px;display:flex;gap:10px;">
                             <button class="hdr-btn primary" onclick="saveNormalChallengeSettings()" style="flex:1;"><i class="fas fa-shield-halved"></i> 保存普通模式</button>
                         </div>
+                        </div><!-- /cmPanelNormalInner -->
 
                     <!-- ====== 地狱闯关配置 ====== -->
                     <div id="cmPanelHell" style="display:none;">
+                        <div id="cmPanelHellInner">
                         <!-- 关卡切分 -->
                         <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:8px;margin-bottom:12px;">
                             <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-cut" style="color:#f472b6;margin-right:4px;"></i> 关卡切分</div>
@@ -1091,16 +1101,73 @@
                                 <div class="form-group">
                                     <label style="font-size:0.8rem;color:#64748b;">内容形式</label>
                                     <select id="setHellQuestionType" style="padding:10px 14px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
-                                        <option value="mixed" selected>混合模式</option>
+                                        <option value="mixed">混合模式</option>
                                         <option value="words">仅单词</option>
                                         <option value="sentences">仅短句</option>
                                         <option value="dialogues">仅对话</option>
                                     </select>
+                                    <div style="font-size:0.72rem;color:#475569;margin-top:4px;">答题时抽取的题目类型</div>
                                 </div>
                                 <div class="form-group">
                                     <label style="font-size:0.8rem;color:#64748b;">每关抽取题数</label>
-                                    <div id="setHellQuestionCountDisplay" style="padding:10px 14px;background:rgba(15,23,42,0.5);color:#64748b;border:1px solid rgba(255,255,255,0.05);border-radius:8px;font-size:0.85rem;width:100;">由内容分配自动决定</div>
-                                    <div style="font-size:0.72rem;color:#475569;margin-top:4px;">内容量约为普通模式 2 倍，由内容分配自动决定</div>
+                                    <div id="setHellQuestionCountDisplay" style="padding:10px 14px;background:rgba(15,23,42,0.5);color:#64748b;border:1px solid rgba(255,255,255,0.05);border-radius:8px;font-size:0.85rem;width:100%;">由内容分配自动决定</div>
+                                    <div style="font-size:0.72rem;color:#475569;margin-top:4px;">答题时从关卡中抽取的题目数量，等于每关的内容数</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 题型配置 -->
+                        <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:8px;margin-bottom:12px;">
+                            <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-shapes" style="color:#a78bfa;margin-right:4px;"></i> 题型配置</div>
+                            <p style="font-size:0.75rem;color:#64748b;margin-bottom:14px;">同一内容可以多种题型出现，权重越高出现频率越高（0 = 禁用该题型）</p>
+                            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px;">
+                                <div class="form-group">
+                                    <label style="font-size:0.8rem;color:#64748b;display:flex;align-items:center;gap:4px;"><i class="fas fa-check-circle" style="color:#60a5fa;"></i> 选择题权重</label>
+                                    <input type="number" id="setHellChoiceWeight" min="0" max="100" value="10" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
+                                    <div style="font-size:0.72rem;color:#475569;margin-top:4px;">给印尼语选中文释义</div>
+                                </div>
+                                <div class="form-group">
+                                    <label style="font-size:0.8rem;color:#64748b;display:flex;align-items:center;gap:4px;"><i class="fas fa-keyboard" style="color:#f59e0b;"></i> 填空题权重</label>
+                                    <input type="number" id="setHellFillWeight" oninput="toggleQuestionTypeOptions('Hell')" min="0" max="100" value="0" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
+                                    <div style="font-size:0.72rem;color:#475569;margin-top:4px;">给中文释义写印尼语</div>
+                                </div>
+                                <div class="form-group">
+                                    <label style="font-size:0.8rem;color:#64748b;display:flex;align-items:center;gap:4px;"><i class="fas fa-headphones" style="color:#10b981;"></i> 听力题权重</label>
+                                    <input type="number" id="setHellListeningWeight" oninput="toggleQuestionTypeOptions('Hell')" min="0" max="100" value="0" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
+                                    <div style="font-size:0.72rem;color:#475569;margin-top:4px;">听发音选中文释义</div>
+                                </div>
+                            </div>
+                            <!-- 填空题模式 -->
+                            <div id="hellFillOptions" style="display:none;border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:4px;">
+                                <div style="font-size:0.82rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-keyboard" style="color:#f59e0b;margin-right:4px;"></i> 填空题模式</div>
+                                <div style="display:flex;gap:12px;align-items:flex-start;">
+                                    <label style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);cursor:pointer;font-size:0.85rem;color:#e2e8f0;">
+                                        <input type="radio" name="hellFillMode" value="input" style="accent-color:#60a5fa;width:16px;height:16px;">
+                                        <div><div style="font-weight:600;">键盘输入</div><div style="font-size:0.72rem;color:#64748b;">用户手动输入印尼语</div></div>
+                                    </label>
+                                    <label style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);cursor:pointer;font-size:0.85rem;color:#e2e8f0;">
+                                        <input type="radio" name="hellFillMode" value="select" style="accent-color:#60a5fa;width:16px;height:16px;">
+                                        <div><div style="font-weight:600;">选项拼选</div><div style="font-size:0.72rem;color:#64748b;">从备选字母中选取拼出</div></div>
+                                    </label>
+                                </div>
+                            </div>
+                            <!-- 听力题配置 -->
+                            <div id="hellListeningOptions" style="display:none;border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:4px;">
+                                <div style="font-size:0.82rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-headphones" style="color:#10b981;margin-right:4px;"></i> 听力题配置</div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                                    <div class="form-group">
+                                        <label style="font-size:0.8rem;color:#64748b;">播放语速</label>
+                                        <select id="setHellListeningSpeed" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
+                                            <option value="0.6">0.6x 慢速</option>
+                                            <option value="0.8">0.8x 较慢</option>
+                                            <option value="1.0" selected>1.0x 正常</option>
+                                            <option value="1.2">1.2x 较快</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label style="font-size:0.8rem;color:#64748b;">自动播报次数</label>
+                                        <input type="number" id="setHellListeningReplays" min="1" max="5" value="2" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
+                                        <div style="font-size:0.72rem;color:#475569;margin-top:4px;">进入题目时自动播放次数</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1108,24 +1175,33 @@
                         <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:8px;margin-bottom:12px;">
                             <div style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin-bottom:10px;"><i class="fas fa-cog" style="color:#a78bfa;margin-right:4px;"></i> 闯关规则</div>
                             <div class="setting-row" style="border-top:none;padding-top:0;margin-top:0;">
-                                <div class="setting-info"><div class="setting-label">闯关顺序</div><div class="setting-desc" id="hell-sequential-hint" style="color:#22c55e;">默认顺序闯关</div></div>
-                                <div class="setting-control"><label class="toggle"><input type="checkbox" id="setHellSequentialMode" checked onchange="document.getElementById('hell-sequential-hint').textContent=this.checked?'顺序闯关':'可跳关';document.getElementById('hell-sequential-hint').style.color=this.checked?'#22c55e':'#64748b'"><span class="slider"></span></label></div>
+                                <div class="setting-info"><div class="setting-label">闯关顺序</div><div class="setting-desc">关闭后可自由选择任意关卡 <span id="hell-sequential-hint" style="color:#22c55e;margin-left:8px;font-size:0.8rem;">可跳关</span></div></div>
+                                <div class="setting-control"><label class="toggle"><input type="checkbox" id="setHellSequentialMode"><span class="slider"></span></label></div>
                             </div>
                             <div class="setting-row">
-                                <div class="setting-info"><div class="setting-label">限时答题</div><div class="setting-desc" id="hell-timelimit-hint" style="color:#22c55e;">默认限时答题</div></div>
-                                <div class="setting-control"><label class="toggle"><input type="checkbox" id="setHellTimeLimitEnabled" checked onchange="document.getElementById('hellTimeLimitRow').style.display=this.checked?'block':'none';document.getElementById('hell-timelimit-hint').textContent=this.checked?'已开启':'已关闭';document.getElementById('hell-timelimit-hint').style.color=this.checked?'#22c55e':'#64748b'"><span class="slider"></span></label></div>
-                            </div>
-                            <div class="setting-row" id="hellTimeLimitRow">
-                                <div class="setting-info"><div class="setting-label">每关时间限制</div><div class="setting-desc">答题最长时限（秒）</div></div>
-                                <div class="setting-control"><input type="number" class="setting-input" id="setHellTimeLimit" min="5" max="600" value="120" style="width:100px;"><span style="color:#64748b;font-size:0.8rem;">秒</span></div>
-                            </div>
-                            <div class="setting-row">
-                                <div class="setting-info"><div class="setting-label">语速调节</div><div class="setting-desc" style="color:#64748b;">地狱模式不支持语速调节</div></div>
-                                <div class="setting-control"><span style="color:#64748b;font-size:0.85rem;"><i class="fas fa-ban"></i> 不可用</span></div>
+                                <div class="setting-info"><div class="setting-label">题目顺序</div><div class="setting-desc">控制关卡内题目是否打乱 <span id="hell-question-order-hint" style="color:#f87171;margin-left:8px;font-size:0.8rem;">随机</span></div></div>
+                                <div class="setting-control"><select id="setHellQuestionOrder" style="padding:6px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.85rem;width:auto;" onchange="document.getElementById('hell-question-order-hint').textContent=this.value==='random'?'随机':'顺序'">
+                                    <option value="random" selected>随机</option>
+                                    <option value="sequential">顺序</option>
+                                </select></div>
                             </div>
                             <div class="setting-row">
-                                <div class="setting-info"><div class="setting-label">循环播放</div><div class="setting-desc" style="color:#64748b;">地狱模式不支持循环播放</div></div>
-                                <div class="setting-control"><span style="color:#64748b;font-size:0.85rem;"><i class="fas fa-ban"></i> 不可用</span></div>
+                                <div class="setting-info"><div class="setting-label">限时答题</div><div class="setting-desc">开启后每关有时间限制 <span id="hell-timelimit-hint" style="color:#64748b;margin-left:8px;font-size:0.8rem;">已关闭</span></div></div>
+                                <div class="setting-control"><label class="toggle"><input type="checkbox" id="setHellTimeLimitEnabled"><span class="slider"></span></label></div>
+                            </div>
+                            <div id="hellTimeLimitRow" style="display:none;">
+                                <div class="setting-row">
+                                    <div class="setting-info"><div class="setting-label">每关时间限制</div><div class="setting-desc">答题最长时限（秒）</div></div>
+                                    <div class="setting-control"><input type="number" class="setting-input" id="setHellTimeLimit" min="5" max="600" value="60" style="width:100px;"><span style="color:#64748b;font-size:0.8rem;">秒</span></div>
+                                </div>
+                            </div>
+                            <div class="setting-row">
+                                <div class="setting-info"><div class="setting-label">语速调节</div><div class="setting-desc">允许用户调整听力语速 <span id="hell-speed-hint" style="color:#22c55e;margin-left:8px;font-size:0.8rem;">已开启</span></div></div>
+                                <div class="setting-control"><label class="toggle"><input type="checkbox" id="setHellSpeedControl" checked><span class="slider"></span></label></div>
+                            </div>
+                            <div class="setting-row">
+                                <div class="setting-info"><div class="setting-label">循环播放</div><div class="setting-desc">允许用户循环播放听力内容 <span id="hell-loop-hint" style="color:#22c55e;margin-left:8px;font-size:0.8rem;">已开启</span></div></div>
+                                <div class="setting-control"><label class="toggle"><input type="checkbox" id="setHellLoopControl" checked><span class="slider"></span></label></div>
                             </div>
                         </div>
                         <!-- 星级评定 -->
@@ -1153,6 +1229,7 @@
                         <div style="margin-top:20px;display:flex;gap:10px;">
                             <button class="hdr-btn" onclick="saveHellChallengeSettings()" style="flex:1;background:rgba(248,113,113,0.2);color:#f87171;border:1px solid rgba(248,113,113,0.4);"><i class="fas fa-skull-crossbones"></i> 保存地狱模式</button>
                         </div>
+                        </div><!-- /cmPanelHellInner -->
 
                 </div>
             </div>
@@ -1587,6 +1664,8 @@ let allUsers = [];
         }
         document.getElementById('setNormalSequentialMode').checked = ns.sequentialMode === true || s.challengeSequentialMode === true;
         document.getElementById('normal-sequential-hint').textContent = (ns.sequentialMode || s.challengeSequentialMode) ? '顺序闯关' : '可跳关';
+        document.getElementById('setNormalQuestionOrder').value = ns.questionOrder || 'random';
+        document.getElementById('normal-question-order-hint').textContent = (ns.questionOrder || 'random') === 'random' ? '随机' : '顺序';
 
         // Time limit
         const tlEnabled = ns.timeLimitEnabled === true || (s.challengeTimeLimit > 0 && !ns.hasOwnProperty('timeLimitEnabled'));
@@ -1652,6 +1731,8 @@ let allUsers = [];
         document.getElementById('setHellSequentialMode').checked = hellSeqMode;
         document.getElementById('hell-sequential-hint').textContent = hellSeqMode ? '顺序闯关' : '可跳关';
         document.getElementById('hell-sequential-hint').style.color = hellSeqMode ? '#22c55e' : '#64748b';
+        document.getElementById('setHellQuestionOrder').value = hs.questionOrder || 'random';
+        document.getElementById('hell-question-order-hint').textContent = (hs.questionOrder || 'random') === 'random' ? '随机' : '顺序';
         // 地狱模式限时答题
         const hellTLEnabled = hs.timeLimitEnabled !== false; // 默认开启
         document.getElementById('setHellTimeLimitEnabled').checked = hellTLEnabled;
@@ -1659,6 +1740,14 @@ let allUsers = [];
         document.getElementById('hell-timelimit-hint').style.color = hellTLEnabled ? '#22c55e' : '#64748b';
         document.getElementById('hellTimeLimitRow').style.display = hellTLEnabled ? 'block' : 'none';
         document.getElementById('setHellTimeLimit').value = hs.timeLimit || s.hellTimeLimit || 120;
+
+        // Hell Speed & Loop
+        document.getElementById('setHellSpeedControl').checked = hs.speedControl !== false;
+        document.getElementById('hell-speed-hint').textContent = hs.speedControl !== false ? '已开启' : '已关闭';
+        document.getElementById('hell-speed-hint').style.color = hs.speedControl !== false ? '#22c55e' : '#64748b';
+        document.getElementById('setHellLoopControl').checked = hs.loopControl !== false;
+        document.getElementById('hell-loop-hint').textContent = hs.loopControl !== false ? '已开启' : '已关闭';
+        document.getElementById('hell-loop-hint').style.color = hs.loopControl !== false ? '#22c55e' : '#64748b';
 
         // Hell stars & weights
         document.getElementById('setHellStar3').value = hs.star3 || 90;
@@ -1838,6 +1927,7 @@ function toggleQuestionTypeOptions(mode) {
             listeningSpeed: document.getElementById('setNormalListeningSpeed').value || '1.0',
             listeningReplays: parseInt(document.getElementById('setNormalListeningReplays').value) || 2,
             sequentialMode: document.getElementById('setNormalSequentialMode').checked,
+            questionOrder: document.getElementById('setNormalQuestionOrder').value || 'random',
             timeLimitEnabled: document.getElementById('setNormalTimeLimitEnabled').checked,
             timeLimit: document.getElementById('setNormalTimeLimitEnabled').checked ? (parseInt(document.getElementById('setNormalTimeLimit').value) || 60) : 0,
             speedControl: document.getElementById('setNormalSpeedControl').checked,
@@ -1914,7 +2004,10 @@ function toggleQuestionTypeOptions(mode) {
             listeningReplays: parseInt(document.getElementById('setHellListeningReplays').value) || 2,
             timeLimit: document.getElementById('setHellTimeLimitEnabled').checked ? (parseInt(document.getElementById('setHellTimeLimit').value) || 120) : 0,
             sequentialMode: document.getElementById('setHellSequentialMode').checked,
+            questionOrder: document.getElementById('setHellQuestionOrder').value || 'random',
             timeLimitEnabled: document.getElementById('setHellTimeLimitEnabled').checked,
+            speedControl: document.getElementById('setHellSpeedControl').checked,
+            loopControl: document.getElementById('setHellLoopControl').checked,
             star3: parseInt(document.getElementById('setHellStar3').value) || 90,
             star2: parseInt(document.getElementById('setHellStar2').value) || 70,
             star1: parseInt(document.getElementById('setHellStar1').value) || 50,
