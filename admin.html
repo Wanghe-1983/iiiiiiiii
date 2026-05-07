@@ -1946,7 +1946,7 @@ function toggleQuestionTypeOptions(mode) {
         const nFillW = parseInt(document.getElementById('setNormalFillWeight').value) || 0;
         const nListenW = parseInt(document.getElementById('setNormalListeningWeight').value) || 0;
         const nTypeMultiplier = (nChoiceW > 0 ? 1 : 0) + (nFillW > 0 ? 1 : 0) + (nListenW > 0 ? 1 : 0) || 1;
-        const questionCount = contentCount * nTypeMultiplier;
+        const questionCount = contentCount;
 
         const normalSettings = {
             splitMode, questionType: document.getElementById('setNormalQuestionType').value || 'mixed',
@@ -2025,7 +2025,7 @@ function toggleQuestionTypeOptions(mode) {
         const hFillW = parseInt(document.getElementById('setHellFillWeight').value) || 0;
         const hListenW = parseInt(document.getElementById('setHellListeningWeight').value) || 0;
         const hTypeMultiplier = (hChoiceW > 0 ? 1 : 0) + (hFillW > 0 ? 1 : 0) + (hListenW > 0 ? 1 : 0) || 1;
-        const questionCount = contentCount * hTypeMultiplier;
+        const questionCount = contentCount;
 
         const hellSettings = {
             enabled: document.getElementById('setHellModeEnabled').checked,
