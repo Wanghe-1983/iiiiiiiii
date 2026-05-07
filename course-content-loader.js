@@ -89,7 +89,7 @@ const CourseContent = {
     async load() {
         if (this._loaded) return this._data;
         try {
-            const res = await fetch('./course-content.json?t=' + Date.now());
+            const res = await fetch('./public/course-content.json?t=' + Date.now());
             if (!res.ok) throw new Error('Failed to load');
             this._data = await res.json();
             this._loaded = true;

@@ -1520,7 +1520,7 @@ let allUsers = [];
         // 加载课程数据用于计算关卡数
         if (!window._adminCourseData) {
             try {
-                const cRes = await fetch('./course-content.json?t=' + Date.now());
+                const cRes = await fetch('./public/course-content.json?t=' + Date.now());
                 if (cRes.ok) window._adminCourseData = await cRes.json();
             } catch(e) { 
             console.error('Failed to load course data:', e); 
