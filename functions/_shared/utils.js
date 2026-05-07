@@ -134,7 +134,7 @@ function defaultSettings() {
         showRegCount: true,
         allowVisitorChallenge: false,
         visitorMultiDevice: true,
-        mainVersion: 'v2.33',              // 主界面版本号
+        mainVersion: 'v2.34',              // 主界面版本号
         mainChangelog: `v2.29
 - 新增：版本更新自动检测，后台发布新版本后用户端弹窗提示刷新
 - 新增：用户名单下载功能（CSV 格式，可选是否包含管理员）
