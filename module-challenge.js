@@ -24,8 +24,8 @@ const ChallengeModule = {
         const userInfo = JSON.parse(sessionStorage.getItem('fmi_user') || '{}');
         const isVisitor = userInfo.role === 'visitor';
         let config = isVisitor
-            ? sysInfo.levelConfigVisitor || sysInfo.challengeLevelConfigVisitor
-            : sysInfo.levelConfigUser || sysInfo.challengeLevelConfigUser;
+            ? sysInfo.levelConfigVisitor || sysInfo.studyLevelConfigVisitor || sysInfo.challengeLevelConfigVisitor
+            : sysInfo.levelConfigUser || sysInfo.studyLevelConfigUser || sysInfo.challengeLevelConfigUser;
         if (!config || typeof config !== 'object' || Array.isArray(config)) {
             config = {};
             for (let i = 0; i <= 7; i++) config[i] = 2;
@@ -295,11 +295,9 @@ const ChallengeModule = {
 
     _getStudyLevelConfig() {
         const sysInfo = window._systemInfo || {};
-        const isAdmin = window._userInfo && (window._userInfo.role === 'admin');
         const isVisitor = window._userInfo && (window._userInfo.userType === 'visitor');
-        if (isAdmin) return sysInfo.studyLevelConfigUser || sysInfo.challengeLevelConfigUser || {};
-        if (isVisitor) return sysInfo.studyLevelConfigVisitor || sysInfo.challengeLevelConfigVisitor || {};
-        return sysInfo.studyLevelConfigUser || sysInfo.challengeLevelConfigUser || {};
+        if (isVisitor) return sysInfo.levelConfigVisitor || sysInfo.studyLevelConfigVisitor || sysInfo.challengeLevelConfigVisitor || {};
+        return sysInfo.levelConfigUser || sysInfo.studyLevelConfigUser || sysInfo.challengeLevelConfigUser || {};
     },
 
     switchChallengeMode(mode) {
@@ -843,14 +841,6 @@ const ChallengeModule = {
 
                 <div class="challenge-question-area" id="challenge-question">
                     ${questionContent}
-                    <div class="challenge-options">
-                        ${options.map((opt, i) => `
-                            <button class="challenge-option" onclick="ChallengeModule.answerQuestion(this, '${encodeURIComponent(opt)}', '${encodeURIComponent(correctAnswer)}')">
-                                <span class="challenge-option-letter">${'ABCD'[i]}</span>
-                                <span class="challenge-option-text">${opt}</span>
-                            </button>
-                        `).join('')}
-                    </div>
                 </div>
                 ${_isHellStage ? '' : `<div style="margin:16px 0;padding:16px 20px;border-radius:14px;border:1px dashed var(--border-subtle);background:var(--accent-subtle);display:flex;align-items:center;gap:16px;">
                     <div class="sliders-col" style="flex:1;min-width:0;">
