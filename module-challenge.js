@@ -35,6 +35,18 @@ const ChallengeModule = {
 
     _applyChallengeLevelFilter() {
         const config = this._getStudyLevelConfig();
+        const sysInfo = window._systemInfo || {};
+        console.log('[闯天关调试] _applyChallengeLevelFilter:', {
+            config,
+            'sysInfo.levelConfigUser': sysInfo.levelConfigUser,
+            'sysInfo.studyLevelConfigUser': sysInfo.studyLevelConfigUser,
+            'sysInfo.challengeLevelConfigUser': sysInfo.challengeLevelConfigUser,
+            'normalSettings.sequentialMode': (sysInfo.normalSettings || {}).sequentialMode,
+            'challengeSequentialMode': sysInfo.challengeSequentialMode,
+            allStagesCount: this.allStages.length,
+            uniqueLevelIds: [...new Set(this.allStages.map(s => s.levelId))],
+            stageLevelIdSample: this.allStages.slice(0, 5).map(s => ({ levelId: s.levelId, levelIdType: typeof s.levelId, numLevelId: Number(s.levelId), configState: config[Number(s.levelId)] })),
+        });
         // 用勤学苦练的课件等级控制来过滤关卡可见性
         this.allStages = this.allStages.filter(s => {
             const state = config[Number(s.levelId)];
@@ -388,6 +400,7 @@ const ChallengeModule = {
                 const isHellLocked = sequentialMode && i > nextAvailable;
                 const isReadonly = stage._readonly === true;
                 const isLocked = isHellLocked || isReadonly;
+                if (i < 3) console.log('[闯天关调试] 关卡锁定:', i, { isHellLocked, isReadonly, isLocked, sequentialMode, nextAvailable, 'stage.levelId': stage.levelId, 'stage._readonly': stage._readonly });
                 const stars = p?.stars || 0;
 
                 let statusClass = isLocked ? 'locked' : isCleared ? 'cleared' : isCurrent ? 'current' : 'available';
