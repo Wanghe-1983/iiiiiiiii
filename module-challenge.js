@@ -753,27 +753,40 @@ const ChallengeModule = {
         const decodedText = decodeURIComponent(text);
         if (!decodedText) return;
         // 取消之前的语音
-        if (window._listenUtterance) speechSynthesis.cancel();
-        const utt = new SpeechSynthesisUtterance(decodedText);
-        utt.lang = 'id-ID';
-        utt.rate = parseFloat(speed) || 1.0;
-        utt.pitch = 1.0;
-        window._listenUtterance = utt;
-        let count = 0;
+        if (window._listenUtterance) { speechSynthesis.cancel(); window._listenUtterance = null; }
+        const normSpeed = parseFloat(speed) || 1.0;
         const totalReplays = parseInt(replays) || 2;
-        utt.onend = function() {
-            count++;
-            if (count < totalReplays) {
-                setTimeout(() => speechSynthesis.speak(utt), 300);
-            }
-        };
-        speechSynthesis.speak(utt);
-        // 更新按钮状态
+        let count = 0;
         const btn = document.getElementById('listen-play-btn');
-        if (btn) {
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            setTimeout(() => { if (btn) btn.innerHTML = '<i class="fas fa-volume-up"></i>'; }, totalReplays * 3000);
+        if (btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        function doListenPlay() {
+            if (typeof googleSpeech === 'function') {
+                googleSpeech(decodedText, normSpeed).then(() => {
+                    count++;
+                    if (count < totalReplays) { setTimeout(doListenPlay, 300); }
+                    else { if (btn) btn.innerHTML = '<i class="fas fa-volume-up"></i>'; }
+                }).catch(() => { synthFallbackListen(); });
+            } else {
+                synthFallbackListen();
+            }
         }
+
+        function synthFallbackListen() {
+            const utt = new SpeechSynthesisUtterance(decodedText);
+            utt.lang = 'id-ID';
+            utt.rate = normSpeed;
+            utt.pitch = 1.0;
+            window._listenUtterance = utt;
+            utt.onend = function() {
+                count++;
+                if (count < totalReplays) { setTimeout(() => speechSynthesis.speak(utt), 300); }
+                else { if (btn) btn.innerHTML = '<i class="fas fa-volume-up"></i>'; }
+            };
+            speechSynthesis.speak(utt);
+        }
+
+        doListenPlay();
     },
 
 
@@ -863,6 +876,10 @@ const ChallengeModule = {
 
         const isImmediateGrading = this._isImmediateGrading();
         const isAlreadyAnswered = !!state.answers[state.currentIndex];
+        // 语速/循环控制：根据后台设置决定是否显示
+        const _sysInfo2 = window._systemInfo || {};
+        const _modeSettings = _isHellStage ? (_sysInfo2.hellSettings || {}) : (_sysInfo2.normalSettings || {});
+        const showSliders = _modeSettings.speedControl !== false && _modeSettings.loopControl !== false;
 
         // 构建选项池
         let options = [];
@@ -1030,7 +1047,7 @@ const ChallengeModule = {
                     ${questionContent}
                 </div>
 
-                ${!_isHellStage ? `<div style="margin:16px 0;padding:16px 20px;border-radius:14px;border:1px dashed var(--border-subtle);background:var(--accent-subtle);display:flex;align-items:center;gap:16px;">
+                ${showSliders ? `<div style="margin:16px 0;padding:16px 20px;border-radius:14px;border:1px dashed var(--border-subtle);background:var(--accent-subtle);display:flex;align-items:center;gap:16px;">
                     <div class="sliders-col" style="flex:1;min-width:0;">
                         <div class="vslider-box">
                             <div class="vslider-label"><i class="fas fa-gauge-high"></i> \u8bed\u901f</div>
@@ -1061,7 +1078,7 @@ const ChallengeModule = {
 
         // 同步滑块
         setTimeout(() => {
-            if (!_isHellStage && typeof updateSliderFill === 'function') {
+            if (showSliders && typeof updateSliderFill === 'function') {
                 const rateSlider = document.getElementById('ch-rate-slider');
                 const loopSlider = document.getElementById('ch-loop-slider');
                 if (rateSlider) {
