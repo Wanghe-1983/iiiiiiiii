@@ -1167,7 +1167,7 @@ const ChallengeModule = {
             const subContent = document.getElementById('challenge-sub-content');
             if (subContent) this._renderPlayArea(subContent);
         }
-    }
+    },
 
     // 判断当前是否为即时阅卷模式
     _isImmediateGrading() {
@@ -1176,7 +1176,7 @@ const ChallengeModule = {
         const _sysInfo = window._systemInfo || {};
         const _hs = _sysInfo.hellSettings || {};
         return (_hs.gradingMode || 'immediate') === 'immediate';
-    }
+    },
 
     // 检查准确率淘汰（仅地狱模式）
     _checkAccuracyKnockout() {
@@ -1196,7 +1196,7 @@ const ChallengeModule = {
             return true;
         }
         return false;
-    }
+    },
 
     // 开始闯关（普通模式专用）
     startChallenge() {
@@ -1212,7 +1212,7 @@ const ChallengeModule = {
         window.addEventListener('beforeunload', this._beforeUnloadHandler);
         const subContent = document.getElementById('challenge-sub-content');
         if (subContent) this._renderPlayArea(subContent);
-    }
+    },
 
     // 跳过当前题
     skipQuestion() {
@@ -1226,7 +1226,7 @@ const ChallengeModule = {
         }
         const subContent = document.getElementById('challenge-sub-content');
         if (subContent) this._renderPlayArea(subContent);
-    }
+    },
 
     // 跳转到指定题目
     jumpToQuestion(index) {
@@ -1239,7 +1239,7 @@ const ChallengeModule = {
         state.currentIndex = index;
         const subContent = document.getElementById('challenge-sub-content');
         if (subContent) this._renderPlayArea(subContent);
-    }
+    },
 
     // 是否允许返回已答题目
     _canReturnToAnswered() {
@@ -1248,7 +1248,7 @@ const ChallengeModule = {
         const _sysInfo = window._systemInfo || {};
         const _hs = _sysInfo.hellSettings || {};
         return !!(_hs.allowReturn || false);
-    }
+    },
 
     // 是否允许跳题
     _canSkip() {
@@ -1257,7 +1257,7 @@ const ChallengeModule = {
         const _sysInfo = window._systemInfo || {};
         const _hs = _sysInfo.hellSettings || {};
         return !!(_hs.allowSkip || false);
-    }
+    },
 
     // 是否显示题号导航条
     _shouldShowNav() {
