@@ -2146,3 +2146,506 @@
     color: #fbbf24;
     transform: translateX(3px);
 }
+
+
+/* =============================================
+   闯天关首页 - 天堂/地狱 双卡片主题
+   ============================================= */
+
+/* -- 首页容器 -- */
+.ch-home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    padding: 16px 0 24px;
+    min-height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 首页背景氛围光 */
+.ch-home::before {
+    content: '';
+    position: absolute;
+    top: -60%;
+    left: -20%;
+    width: 60%;
+    height: 80%;
+    background: radial-gradient(ellipse, rgba(251, 191, 36, 0.06), transparent 70%);
+    pointer-events: none;
+    animation: ch-home-glow 8s ease-in-out infinite alternate;
+}
+.ch-home::after {
+    content: '';
+    position: absolute;
+    bottom: -40%;
+    right: -20%;
+    width: 60%;
+    height: 80%;
+    background: radial-gradient(ellipse, rgba(239, 68, 68, 0.05), transparent 70%);
+    pointer-events: none;
+    animation: ch-home-glow 8s ease-in-out infinite alternate-reverse;
+}
+@keyframes ch-home-glow {
+    0% { opacity: 0.5; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.15); }
+}
+
+/* -- 标题区 -- */
+.ch-home-header {
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+.ch-home-title-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+.ch-home-title-icon {
+    font-size: 1.4rem;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 2px 6px rgba(251, 191, 36, 0.3));
+}
+.ch-home-title {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #f1f5f9;
+    letter-spacing: 3px;
+    margin: 0;
+    text-shadow: 0 2px 12px rgba(99, 102, 241, 0.2);
+}
+.ch-home-subtitle {
+    font-size: 0.82rem;
+    color: #64748b;
+    margin: 8px 0 0;
+    letter-spacing: 1px;
+}
+
+/* -- 双卡片容器 -- */
+.ch-home-cards {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+    padding: 0 12px;
+    position: relative;
+    z-index: 1;
+}
+
+/* -- 模式卡片基础 -- */
+.ch-mode-card {
+    flex: 1;
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex;
+    flex-direction: column;
+    min-height: 340px;
+}
+.ch-mode-card:hover {
+    transform: translateY(-6px) scale(1.02);
+}
+
+/* -- 普通模式 - 天堂主题 -- */
+.ch-mode-heaven {
+    background: linear-gradient(160deg, #1e1b4b 0%, #172554 40%, #0c4a6e 100%);
+    border: 1px solid rgba(251, 191, 36, 0.12);
+    box-shadow: 0 4px 24px rgba(99, 102, 241, 0.1);
+}
+.ch-mode-heaven:hover {
+    border-color: rgba(251, 191, 36, 0.35);
+    box-shadow: 0 12px 40px rgba(251, 191, 36, 0.12), 0 4px 20px rgba(99, 102, 241, 0.1);
+}
+
+/* -- 地狱模式 -- */
+.ch-mode-hell {
+    background: linear-gradient(160deg, #1c0a00 0%, #450a0a 40%, #7f1d1d 100%);
+    border: 1px solid rgba(239, 68, 68, 0.12);
+    box-shadow: 0 4px 24px rgba(239, 68, 68, 0.06);
+}
+.ch-mode-hell:hover {
+    border-color: rgba(239, 68, 68, 0.35);
+    box-shadow: 0 12px 40px rgba(239, 68, 68, 0.12), 0 4px 20px rgba(185, 28, 28, 0.1);
+}
+
+/* -- 卡片背景纹理层 -- */
+.ch-mode-card-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+.ch-heaven-bg {
+    background:
+        radial-gradient(ellipse 50% 40% at 30% 20%, rgba(251, 191, 36, 0.08), transparent),
+        radial-gradient(ellipse 40% 50% at 70% 70%, rgba(99, 102, 241, 0.06), transparent),
+        radial-gradient(circle at 50% 0%, rgba(253, 224, 71, 0.04), transparent 60%);
+}
+.ch-hell-bg {
+    background:
+        radial-gradient(ellipse 50% 40% at 70% 20%, rgba(239, 68, 68, 0.1), transparent),
+        radial-gradient(ellipse 40% 50% at 30% 70%, rgba(245, 158, 11, 0.05), transparent),
+        radial-gradient(circle at 50% 100%, rgba(220, 38, 38, 0.06), transparent 60%);
+}
+
+/* -- 场景区（门+楼梯） -- */
+.ch-mode-card-scene {
+    position: relative;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 1;
+}
+.ch-heaven-scene {
+    background: linear-gradient(180deg, transparent 0%, rgba(251, 191, 36, 0.02) 100%);
+}
+.ch-hell-scene {
+    background: linear-gradient(0deg, transparent 0%, rgba(239, 68, 68, 0.02) 100%);
+}
+
+/* -- 楼梯 -- */
+.ch-stairs {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    opacity: 0.35;
+    transition: opacity 0.4s ease;
+}
+.ch-mode-card:hover .ch-stairs {
+    opacity: 0.55;
+}
+
+/* 普通模式楼梯 - 向上延伸（门左侧） */
+.ch-stairs-up {
+    left: 14px;
+    bottom: 10px;
+    flex-direction: column-reverse;
+}
+/* 地狱模式楼梯 - 向下延伸（门右侧） */
+.ch-stairs-down {
+    right: 14px;
+    top: 10px;
+}
+
+.ch-stair {
+    width: 32px;
+    height: 3px;
+    border-radius: 2px;
+    animation: ch-stair-fade 3s ease-in-out infinite;
+    animation-delay: calc(var(--i) * 0.5s);
+}
+.ch-mode-heaven .ch-stair {
+    background: linear-gradient(90deg, rgba(251, 191, 36, 0.6), rgba(251, 191, 36, 0.15));
+}
+.ch-mode-hell .ch-stair {
+    background: linear-gradient(90deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.6));
+}
+
+@keyframes ch-stair-fade {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+}
+
+/* -- 古门 -- */
+.ch-door {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: all 0.4s ease;
+}
+.ch-mode-card:hover .ch-door {
+    transform: scale(1.05);
+}
+
+/* 门框 */
+.ch-door-frame {
+    position: relative;
+    width: 80px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 拱顶 */
+.ch-door-arch {
+    width: 72px;
+    height: 36px;
+    border-radius: 36px 36px 0 0;
+    position: relative;
+    z-index: 2;
+}
+.ch-door-heaven .ch-door-arch {
+    background: linear-gradient(180deg, #92400e, #78350f);
+    border: 2px solid rgba(251, 191, 36, 0.35);
+    border-bottom: none;
+    box-shadow: 0 -4px 16px rgba(251, 191, 36, 0.15);
+}
+.ch-door-hell .ch-door-arch {
+    background: linear-gradient(180deg, #451a03, #3b0a0a);
+    border: 2px solid rgba(239, 68, 68, 0.3);
+    border-bottom: none;
+    box-shadow: 0 -4px 16px rgba(239, 68, 68, 0.15);
+}
+
+/* 门板 */
+.ch-door-body {
+    width: 72px;
+    height: 78px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    position: relative;
+    z-index: 2;
+    margin-top: -1px;
+}
+.ch-door-heaven .ch-door-body {
+    background: linear-gradient(180deg, #78350f 0%, #451a03 100%);
+    border: 2px solid rgba(251, 191, 36, 0.25);
+    border-top: none;
+    color: #fbbf24;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4);
+}
+.ch-door-hell .ch-door-body {
+    background: linear-gradient(180deg, #3b0a0a 0%, #1c0a00 100%);
+    border: 2px solid rgba(239, 68, 68, 0.25);
+    border-top: none;
+    color: #ef4444;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+/* 门板纹路（木纹装饰线） */
+.ch-door-body::before,
+.ch-door-body::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 60%;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.06);
+}
+.ch-door-body::before {
+    left: 14px;
+    top: 20%;
+}
+.ch-door-body::after {
+    right: 14px;
+    top: 20%;
+}
+
+/* 门光晕 */
+.ch-door-glow {
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    filter: blur(18px);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 0;
+}
+.ch-mode-card:hover .ch-door-glow {
+    opacity: 1;
+}
+.ch-door-glow-heaven {
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.2), transparent 70%);
+}
+.ch-door-glow-hell {
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.2), transparent 70%);
+}
+
+/* -- 门打开过渡动画 -- */
+.ch-mode-card:active .ch-door {
+    animation: ch-door-open 0.5s ease-out;
+}
+@keyframes ch-door-open {
+    0% { transform: scale(1.05); }
+    50% { transform: scale(1.12) rotateY(5deg); }
+    100% { transform: scale(0.95) rotateY(8deg); opacity: 0.7; }
+}
+
+/* -- 卡片信息区 -- */
+.ch-mode-card-info {
+    padding: 16px 18px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+}
+
+/* 徽章 */
+.ch-mode-badge {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: #fff;
+    margin-bottom: 2px;
+}
+.ch-badge-heaven {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    box-shadow: 0 4px 14px rgba(251, 191, 36, 0.3);
+}
+.ch-badge-hell {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+}
+
+/* 模式名称 */
+.ch-mode-name {
+    font-size: 1.2rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+.ch-name-heaven {
+    color: #fbbf24;
+    text-shadow: 0 0 16px rgba(251, 191, 36, 0.25);
+}
+.ch-name-hell {
+    color: #f87171;
+    text-shadow: 0 0 16px rgba(239, 68, 68, 0.25);
+}
+
+/* 模式描述 */
+.ch-mode-desc {
+    font-size: 0.72rem;
+    color: #64748b;
+    letter-spacing: 0.5px;
+}
+
+/* 进度区 */
+.ch-mode-progress {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+.ch-mode-progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.ch-progress-label {
+    font-size: 0.72rem;
+    color: #475569;
+    font-weight: 500;
+}
+.ch-progress-value {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #e2e8f0;
+}
+.ch-progress-total {
+    font-size: 0.72rem;
+    color: #475569;
+    font-weight: 500;
+}
+.ch-stars {
+    color: #fbbf24 !important;
+}
+.ch-stars i {
+    font-size: 0.7rem;
+    margin-left: 2px;
+}
+
+/* -- 底部入口 -- */
+.ch-home-footer {
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    z-index: 1;
+}
+.ch-footer-entry {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: rgba(30, 41, 59, 0.3);
+    border: 1px solid rgba(251, 191, 36, 0.1);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #94a3b8;
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+.ch-footer-entry:hover {
+    background: rgba(251, 191, 36, 0.05);
+    border-color: rgba(251, 191, 36, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(251, 191, 36, 0.06);
+    color: #f1f5f9;
+}
+.ch-footer-icon {
+    font-size: 1.1rem;
+    color: #fbbf24;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(251, 191, 36, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.ch-footer-arrow {
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: #475569;
+    transition: all 0.3s ease;
+}
+.ch-footer-entry:hover .ch-footer-arrow {
+    color: #fbbf24;
+    transform: translateX(3px);
+}
+
+/* =============================================
+   响应式适配
+   ============================================= */
+@media (max-width: 380px) {
+    .ch-mode-card {
+        min-height: 310px;
+    }
+    .ch-door-frame {
+        width: 66px;
+        height: 100px;
+    }
+    .ch-door-arch {
+        width: 60px;
+        height: 30px;
+        border-radius: 30px 30px 0 0;
+    }
+    .ch-door-body {
+        width: 60px;
+        height: 64px;
+        font-size: 1.2rem;
+    }
+    .ch-stair {
+        width: 26px;
+    }
+    .ch-home-title {
+        font-size: 1.35rem;
+    }
+    .ch-mode-name {
+        font-size: 1.05rem;
+    }
+}
