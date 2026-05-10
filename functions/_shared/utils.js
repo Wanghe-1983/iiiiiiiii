@@ -664,16 +664,28 @@ async function handleStudyStats(context) {
 async function handleAdminGetSettings(context) {
     await requireAdmin(context);
     const settings = await getSettings(context.env) || defaultSettings();
+    console.log('[handleAdminGetSettings] hellSettings:', JSON.stringify(settings.hellSettings));
     return json(settings);
 }
 
 async function handleAdminPutSettings(context) {
     await requireAdmin(context);
     const updates = await context.request.json();
+    console.log('[handleAdminPutSettings] updates keys:', Object.keys(updates));
+    if (updates.hellSettings) {
+        console.log('[handleAdminPutSettings] hellSettings:', JSON.stringify(updates.hellSettings));
+    }
     // 合并模式：读取现有设置，仅更新传入的字段，防止部分面板保存时覆盖其他面板数据
     const existing = await getSettings(context.env) || defaultSettings();
+    if (existing.hellSettings) {
+        console.log('[handleAdminPutSettings] existing hellSettings:', JSON.stringify(existing.hellSettings));
+    }
     const merged = { ...existing, ...updates };
+    if (merged.hellSettings) {
+        console.log('[handleAdminPutSettings] merged hellSettings keys:', Object.keys(merged.hellSettings));
+    }
     await setSettings(context.env, merged);
+    console.log('[handleAdminPutSettings] saved successfully');
     return jsonOK({ message: '设置已保存' });
 }
 
