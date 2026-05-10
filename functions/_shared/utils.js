@@ -134,7 +134,7 @@ function defaultSettings() {
         showRegCount: true,
         allowVisitorChallenge: false,
         visitorMultiDevice: true,
-        mainVersion: 'v2.51',              // 主界面版本号
+        mainVersion: 'v2.52',              // 主界面版本号
         mainChangelog: `v2.51
 - 修复：后台地狱模式设置保存不生效的问题（缺少启用开关元素）
 
@@ -200,6 +200,12 @@ v2.29
         hellModeEnabled: true,         // 地狱模式总开关
         hellSequentialMode: true,     // 地狱模式顺序闯关
         hellTimeLimitEnabled: true,   // 地狱模式限时答题
+        // 地狱模式高级设置（hellSettings结构中的默认值）
+        hellGradingMode: 'immediate',       // 地狱阅卷方式: immediate(即时阅卷) / batch(交卷阅卷)
+        hellAllowSkip: false,              // 地狱允许跳题
+        hellAllowReturn: false,            // 地狱允许返回修改已答题目
+        hellShowNav: false,                // 地狱显示题号导航条
+        hellAccuracyKnockout: 30,          // 地狱准确率淘汰线(%): 低于此值强制结算,0=不启用
         // 每关题目配置
         challengeQuestionCount: 10,     // 普通模式每关题目数量
         challengeQuestionType: 'words', // 题目类型: words(单词)/sentences(短句)/dialogues(对话)/mixed(混合)

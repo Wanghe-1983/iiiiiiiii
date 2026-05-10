@@ -137,81 +137,102 @@ const ChallengeModule = {
     },
 
     _renderHome(hellEnabled) {
-        const sysInfo = window._systemInfo || {};
         const normalProgress = this._calcModeProgress('normal');
         const hellProgress = this._calcModeProgress('hell');
-        const totalStars = normalProgress.stars + hellProgress.stars;
         return `
-        <div class="challenge-home">
-            <!-- 顶部英雄区 -->
-            <div class="challenge-hero" onclick="ChallengeModule.enterChallenge()">
-                <div class="challenge-hero-bg"></div>
-                <div class="challenge-hero-content">
-                    <div class="challenge-hero-icon">
-                        <i class="fas fa-dungeon"></i>
-                    </div>
-                    <div class="challenge-hero-text">
-                        <h2 class="challenge-hero-title">闯天关</h2>
-                        <p class="challenge-hero-desc">${hellEnabled ? '两种难度模式，层层挑战' : '基础闯关模式'}</p>
-                    </div>
-                    <div class="challenge-hero-arrow"><i class="fas fa-arrow-right"></i></div>
+        <div class="ch-home">
+            <!-- 标题区 -->
+            <div class="ch-home-header">
+                <div class="ch-home-title-wrap">
+                    <i class="fas fa-dungeon ch-home-title-icon"></i>
+                    <h2 class="ch-home-title">闯天关</h2>
                 </div>
-                <div class="challenge-hero-stats">
-                    <div class="challenge-hero-stat">
-                        <div class="challenge-hero-stat-icon" style="background:rgba(96,165,250,0.15);color:#60a5fa;"><i class="fas fa-shield-halved"></i></div>
-                        <div class="challenge-hero-stat-info">
-                            <span class="challenge-hero-stat-label">普通</span>
-                            <span class="challenge-hero-stat-value">${normalProgress.cleared}<span class="challenge-hero-stat-total">/${normalProgress.total}</span></span>
-                        </div>
-                        <div class="challenge-hero-stat-stars">
-                            ${normalProgress.stars > 0 ? '<i class="fas fa-star"></i> ' + normalProgress.stars : '<span class="challenge-hero-stat-empty">0 星</span>'}
-                        </div>
-                    </div>
-                    ${hellEnabled ? `<div class="challenge-hero-stat-divider"></div>
-                    <div class="challenge-hero-stat">
-                        <div class="challenge-hero-stat-icon" style="background:rgba(248,113,113,0.15);color:#f87171;"><i class="fas fa-fire"></i></div>
-                        <div class="challenge-hero-stat-info">
-                            <span class="challenge-hero-stat-label">地狱</span>
-                            <span class="challenge-hero-stat-value">${hellProgress.cleared}<span class="challenge-hero-stat-total">/${hellProgress.total}</span></span>
-                        </div>
-                        <div class="challenge-hero-stat-stars">
-                            ${hellProgress.stars > 0 ? '<i class="fas fa-star"></i> ' + hellProgress.stars : '<span class="challenge-hero-stat-empty">0 星</span>'}
-                        </div>
-                    </div>` : ''}
-                </div>
+                <p class="ch-home-subtitle">选择你的挑战之路</p>
             </div>
 
-            <!-- 快捷统计条 -->
-            <div class="challenge-quick-stats">
-                <div class="challenge-quick-stat">
-                    <i class="fas fa-layer-group"></i>
-                    <span>${normalProgress.total + hellProgress.total}</span>
-                    <label>总关卡</label>
+            <!-- 双模式卡片 -->
+            <div class="ch-home-cards">
+                <!-- 普通模式 - 天堂主题 -->
+                <div class="ch-mode-card ch-mode-heaven" onclick="ChallengeModule.selectMode('normal')">
+                    <div class="ch-mode-card-bg ch-heaven-bg"></div>
+                    <div class="ch-mode-card-scene ch-heaven-scene">
+                        <div class="ch-stairs ch-stairs-up">
+                            ${[1,2,3,4,5].map(n => `<div class="ch-stair" style="--i:${n}"></div>`).join('')}
+                        </div>
+                        <div class="ch-door ch-door-heaven">
+                            <div class="ch-door-frame">
+                                <div class="ch-door-arch"></div>
+                                <div class="ch-door-body">
+                                    <i class="fas fa-dove"></i>
+                                </div>
+                                <div class="ch-door-glow ch-door-glow-heaven"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ch-mode-card-info">
+                        <div class="ch-mode-badge ch-badge-heaven">
+                            <i class="fas fa-feather-alt"></i>
+                        </div>
+                        <div class="ch-mode-name ch-name-heaven">普通</div>
+                        <div class="ch-mode-desc">基础难度 · 入门闯关</div>
+                        <div class="ch-mode-progress">
+                            <div class="ch-mode-progress-row">
+                                <span class="ch-progress-label">关卡</span>
+                                <span class="ch-progress-value">${normalProgress.cleared}<span class="ch-progress-total">/${normalProgress.total}</span></span>
+                            </div>
+                            <div class="ch-mode-progress-row">
+                                <span class="ch-progress-label">星数</span>
+                                <span class="ch-progress-value ch-stars">${normalProgress.stars} <i class="fas fa-star"></i></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="challenge-quick-stat-divider"></div>
-                <div class="challenge-quick-stat">
-                    <i class="fas fa-check-double"></i>
-                    <span>${normalProgress.cleared + hellProgress.cleared}</span>
-                    <label>已通关</label>
-                </div>
-                <div class="challenge-quick-stat-divider"></div>
-                <div class="challenge-quick-stat">
-                    <i class="fas fa-star" style="color:#fbbf24;"></i>
-                    <span>${totalStars}</span>
-                    <label>总星数</label>
-                </div>
+
+                ${hellEnabled ? `
+                <!-- 地狱模式 -->
+                <div class="ch-mode-card ch-mode-hell" onclick="ChallengeModule.selectMode('hell')">
+                    <div class="ch-mode-card-bg ch-hell-bg"></div>
+                    <div class="ch-mode-card-scene ch-hell-scene">
+                        <div class="ch-stairs ch-stairs-down">
+                            ${[1,2,3,4,5].map(n => `<div class="ch-stair" style="--i:${n}"></div>`).join('')}
+                        </div>
+                        <div class="ch-door ch-door-hell">
+                            <div class="ch-door-frame">
+                                <div class="ch-door-arch"></div>
+                                <div class="ch-door-body">
+                                    <i class="fas fa-fire-flame-curved"></i>
+                                </div>
+                                <div class="ch-door-glow ch-door-glow-hell"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ch-mode-card-info">
+                        <div class="ch-mode-badge ch-badge-hell">
+                            <i class="fas fa-skull"></i>
+                        </div>
+                        <div class="ch-mode-name ch-name-hell">地狱</div>
+                        <div class="ch-mode-desc">高难度 · 内容更多更复杂</div>
+                        <div class="ch-mode-progress">
+                            <div class="ch-mode-progress-row">
+                                <span class="ch-progress-label">关卡</span>
+                                <span class="ch-progress-value">${hellProgress.cleared}<span class="ch-progress-total">/${hellProgress.total}</span></span>
+                            </div>
+                            <div class="ch-mode-progress-row">
+                                <span class="ch-progress-label">星数</span>
+                                <span class="ch-progress-value ch-stars">${hellProgress.stars} <i class="fas fa-star"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>` : ''}
             </div>
 
-            <!-- 排行榜入口 -->
-            <div class="challenge-rank-entry" onclick="ChallengeModule.enterRank()">
-                <div class="challenge-rank-icon">
-                    <i class="fas fa-trophy"></i>
+            <!-- 底部入口 -->
+            <div class="ch-home-footer">
+                <div class="ch-footer-entry" onclick="ChallengeModule.enterRank()">
+                    <i class="fas fa-trophy ch-footer-icon"></i>
+                    <span>排行榜</span>
+                    <i class="fas fa-chevron-right ch-footer-arrow"></i>
                 </div>
-                <div class="challenge-rank-info">
-                    <div class="challenge-rank-title">排行榜</div>
-                    <div class="challenge-rank-desc">查看闯关排名与最佳战绩</div>
-                </div>
-                <div class="challenge-rank-arrow"><i class="fas fa-chevron-right"></i></div>
             </div>
         </div>`;
     },
@@ -549,8 +570,9 @@ const ChallengeModule = {
             currentIndex: 0,
             correct: 0,
             answers: [],
-            startTime: Date.now(),
+            startTime: isHell ? Date.now() : null,
             totalQuestions: questions.length,
+            phase: isHell ? 'playing' : 'ready', // ready(普通-等开始) / playing(答题中)
         };
 
         this._inChallenge = true;
@@ -651,56 +673,79 @@ const ChallengeModule = {
     },
 
     submitFillAnswer() {
+        const state = this.challengeState;
+        if (!state) return;
         const answerBox = document.getElementById('fill-answer-box');
         const inputEl = document.getElementById('fill-input-answer');
-        const q = this.challengeState.questions[this.challengeState.currentIndex];
+        const q = state.questions[state.currentIndex];
         const isDialogue = q.lines !== undefined;
         const correctAnswer = (isDialogue ? (q.title || '') : (q.indonesian || '')).toLowerCase();
         let userAnswer = '';
 
         if (answerBox) {
-            // 拼选模式
             const chips = answerBox.querySelectorAll('.fill-chip');
             userAnswer = Array.from(chips).map(c => c.textContent.toLowerCase()).join('');
         } else if (inputEl) {
-            // 输入模式
             userAnswer = inputEl.value.trim().toLowerCase();
         }
 
         const isCorrect = userAnswer === correctAnswer;
-        this.challengeState.answers.push({ correct: isCorrect, question: q, userAnswer, correctAnswer });
+        if (isCorrect) state.correct++;
+        // 使用索引赋值（与answerQuestion一致），支持跳题和返回
+        state.answers[state.currentIndex] = { selected: userAnswer, correct: correctAnswer, isCorrect };
 
-        // 显示反馈
-        const container = document.getElementById('challenge-question');
-        if (container) {
-            const feedback = document.createElement('div');
-            feedback.style.cssText = `margin:16px 0;padding:14px 18px;border-radius:12px;text-align:center;font-weight:600;font-size:0.95rem;`;
-            if (isCorrect) {
-                feedback.style.background = 'rgba(16,185,129,0.15)';
-                feedback.style.color = '#10b981';
-                feedback.style.border = '1px solid rgba(16,185,129,0.3)';
-                feedback.innerHTML = '<i class="fas fa-check-circle" style="margin-right:6px;"></i>回答正确！';
-            } else {
-                feedback.style.background = 'rgba(239,68,68,0.15)';
-                feedback.style.color = '#f87171';
-                feedback.style.border = '1px solid rgba(239,68,68,0.3)';
-                feedback.innerHTML = `<i class="fas fa-times-circle" style="margin-right:6px;"></i>回答错误！正确答案：<span style="color:#e2e8f0;">${isDialogue ? q.title : q.indonesian}</span>`;
+        const isImmediateGrading = this._isImmediateGrading();
+
+        if (isImmediateGrading) {
+            // 即时阅卷：显示反馈
+            const container = document.getElementById('challenge-question');
+            if (container) {
+                const feedback = document.createElement('div');
+                feedback.style.cssText = 'margin:16px 0;padding:14px 18px;border-radius:12px;text-align:center;font-weight:600;font-size:0.95rem;';
+                if (isCorrect) {
+                    feedback.style.background = 'rgba(16,185,129,0.15)';
+                    feedback.style.color = '#10b981';
+                    feedback.style.border = '1px solid rgba(16,185,129,0.3)';
+                    feedback.innerHTML = '<i class="fas fa-check-circle" style="margin-right:6px;"></i>回答正确！';
+                } else {
+                    feedback.style.background = 'rgba(239,68,68,0.15)';
+                    feedback.style.color = '#f87171';
+                    feedback.style.border = '1px solid rgba(239,68,68,0.3)';
+                    feedback.innerHTML = '<i class="fas fa-times-circle" style="margin-right:6px;"></i>回答错误！正确答案：<span style="color:#e2e8f0;">' + (isDialogue ? q.title : q.indonesian) + '</span>';
+                }
+                const area = document.getElementById('challenge-question');
+                if (area) {
+                    area.querySelectorAll('button, input').forEach(el => { el.disabled = true; el.style.pointerEvents = 'none'; el.style.opacity = '0.5'; });
+                }
+                container.appendChild(feedback);
             }
-            // 禁用所有交互按钮
-            const area = document.getElementById('challenge-question');
-            if (area) {
-                area.querySelectorAll('button, input').forEach(el => { el.disabled = true; el.style.pointerEvents = 'none'; el.style.opacity = '0.5'; });
+
+            // 准确率淘汰检测
+            const knockout = this._checkAccuracyKnockout();
+            if (knockout) {
+                clearInterval(this._timerInterval);
+                setTimeout(() => {
+                    const subContent = document.getElementById('challenge-sub-content');
+                    if (subContent) this._renderStageResult(subContent, true);
+                }, 800);
+                return;
             }
-            container.appendChild(feedback);
+
+            // 自动跳转下一题
+            setTimeout(() => {
+                state.currentIndex++;
+                if (state.currentIndex >= state.totalQuestions) {
+                    clearInterval(this._timerInterval);
+                }
+                const subContent = document.getElementById('challenge-sub-content');
+                if (subContent) this._renderPlayArea(subContent);
+            }, 1200);
+        } else {
+            // 交卷阅卷模式：不显示反馈，直接跳下一题
+            state.currentIndex++;
+            const subContent = document.getElementById('challenge-sub-content');
+            if (subContent) this._renderPlayArea(subContent);
         }
-
-        // 更新分数
-        if (isCorrect) this.challengeState.correct++;
-        // 自动跳转下一题
-        setTimeout(() => {
-            this.challengeState.currentIndex++;
-            this.render();
-        }, 1200);
     },
 
     // ========== 听力题交互 ==========
@@ -737,17 +782,71 @@ const ChallengeModule = {
         const state = this.challengeState;
         if (!state) { this.currentStageId = null; this.renderStages(container); return; }
 
-        if (state.currentIndex >= state.totalQuestions) {
+        // 已完成所有题目且在playing状态 → 显示结果
+        if (state.currentIndex >= state.totalQuestions && state.phase === 'playing') {
             this._renderStageResult(container);
+            return;
+        }
+
+        const _isHellStage = this.challengeMode === 'hell';
+        const total = state.totalQuestions;
+        const stageIndex = this.allStages.findIndex(s => s.id === state.stageId) + 1;
+
+        // ===== ready 状态：显示"开始闯关"界面 =====
+        if (state.phase === 'ready') {
+            const stage = this.allStages.find(s => s.id === state.stageId);
+            const stageName = stage ? stage.name : ('\u7b2c' + stageIndex + '\u5173');
+            container.innerHTML = `
+                <div class="challenge-play-page">
+                    <div class="challenge-play-header">
+                        <div class="challenge-play-title">\u7b2c${stageIndex}\u5173 \u00b7 ${stageName}</div>
+                    </div>
+                    <div class="ch-ready-panel">
+                        <div class="ch-ready-icon"><i class="fas fa-play-circle"></i></div>
+                        <div class="ch-ready-title">\u51c6\u5907\u597d\u4e86\u5417\uff1f</div>
+                        <div class="ch-ready-desc">\u672c\u5173\u5171 <span class="ch-ready-count">${total}</span> \u9898\uff0c\u70b9\u51fb\u5f00\u59cb\u540e\u8ba1\u65f6</div>
+                        <div class="ch-ready-rules">
+                            <div class="ch-ready-rule"><i class="fas fa-check"></i> \u4ea4\u5377\u540e\u624d\u516c\u5e03\u6210\u7ee9</div>
+                            <div class="ch-ready-rule"><i class="fas fa-check"></i> \u53ef\u8df3\u8fc7\u4e0d\u4f1a\u7684\u9898</div>
+                            <div class="ch-ready-rule"><i class="fas fa-check"></i> \u53ef\u8fd4\u56de\u68c0\u67e5\u5df2\u7b54\u9898\u76ee</div>
+                        </div>
+                        <button class="ch-start-btn" onclick="ChallengeModule.startChallenge()">
+                            <i class="fas fa-rocket"></i> \u5f00\u59cb\u95ef\u5173
+                        </button>
+                    </div>
+                    <div style="margin-top:20px;display:flex;justify-content:center;">
+                        <button style="background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:0.78rem;display:flex;align-items:center;gap:5px;" onclick="ChallengeModule.confirmExit()">
+                            <i class="fas fa-arrow-left"></i> \u8fd4\u56de\u5173\u5361
+                        </button>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        // ===== playing 状态：所有题已浏览完 → 提示交卷 =====
+        if (state.currentIndex >= state.totalQuestions) {
+            container.innerHTML = `
+                <div class="challenge-play-page">
+                    <div class="challenge-play-header">
+                        <div class="challenge-play-title">\u7b2c${stageIndex}\u5173</div>
+                        <div class="challenge-timer"><i class="fas fa-clock"></i> --:--</div>
+                    </div>
+                    <div class="ch-ready-panel">
+                        <div class="ch-ready-icon" style="color:#fbbf24;"><i class="fas fa-clipboard-check"></i></div>
+                        <div class="ch-ready-title">\u6240\u6709\u9898\u76ee\u5df2\u4f5c\u7b54</div>
+                        <div class="ch-ready-desc">\u8bf7\u68c0\u67e5\u540e\u63d0\u4ea4\u8bd5\u5377</div>
+                        <button class="ch-start-btn" style="background:linear-gradient(135deg,rgba(251,191,36,0.25),rgba(251,191,36,0.15));color:#fbbf24;border-color:rgba(251,191,36,0.5);" onclick="ChallengeModule.confirmFinish()">
+                            <i class="fas fa-file-alt"></i> \u4ea4\u5377
+                        </button>
+                    </div>
+                </div>
+            `;
             return;
         }
 
         const q = state.questions[state.currentIndex];
         const qType = q._qType || 'choice';
-        const currentStage = this.allStages.find(s => s.id === state.stageId);
-        const stageType = currentStage ? currentStage.type : 'words';
-        const _isHellStage = this.challengeMode === 'hell';
-        const total = state.totalQuestions;
         const current = state.currentIndex + 1;
         const progressPct = Math.round(current / total * 100);
         const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
@@ -758,12 +857,14 @@ const ChallengeModule = {
         const correctAnswer = isDialogue ? (q.title || '') : (q.chinese || '');
         const indoText = isDialogue ? (q.title_id || '') : (q.indonesian || '');
 
-        // 题型标签
-        const qTypeLabel = qType === 'choice' ? '选择题' : qType === 'fill' ? '填空题' : '听力题';
+        const qTypeLabel = qType === 'choice' ? '\u9009\u62e9\u9898' : qType === 'fill' ? '\u586b\u7a7a\u9898' : '\u542c\u529b\u9898';
         const qTypeColor = qType === 'choice' ? '#60a5fa' : qType === 'fill' ? '#f59e0b' : '#10b981';
         const qTypeIcon = qType === 'choice' ? 'fa-check-circle' : qType === 'fill' ? 'fa-keyboard' : 'fa-headphones';
 
-        // 构建选项池（选择和听力题需要）
+        const isImmediateGrading = this._isImmediateGrading();
+        const isAlreadyAnswered = !!state.answers[state.currentIndex];
+
+        // 构建选项池
         let options = [];
         if (qType === 'choice' || qType === 'listening') {
             const allOptions = state.questions.map(item => {
@@ -777,7 +878,6 @@ const ChallengeModule = {
         let questionContent = '';
 
         if (qType === 'choice') {
-            // ===== 选择题：显示印尼语，选中文 =====
             if (isDialogue) {
                 questionContent = `
                     <div class="challenge-q-type"><i class="fas ${qTypeIcon}" style="color:${qTypeColor};margin-right:4px;"></i>${qTypeLabel}</div>
@@ -786,7 +886,7 @@ const ChallengeModule = {
                         ${q.title_id ? `<button class="circle-btn play-btn ch-speak-btn" onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.title_id)}')" style="flex-shrink:0;width:42px;height:42px;font-size:1rem;"><i class="fas fa-play ch-play-ico"></i></button>` : ''}
                         <div class="challenge-q-indo ch-speak-btn" ${q.title_id ? `onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.title_id)}')" style="cursor:pointer;"` : ''} style="flex:1;">${q.title_id || ''}</div>
                     </div>
-                    <div class="challenge-q-prompt">这个对话的主题是什么？</div>
+                    <div class="challenge-q-prompt">\u8fd9\u4e2a\u5bf9\u8bdd\u7684\u4e3b\u9898\u662f\u4ec0\u4e48\uff1f</div>
                 `;
             } else {
                 questionContent = `
@@ -795,79 +895,128 @@ const ChallengeModule = {
                         <button class="circle-btn play-btn ch-speak-btn" onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.indonesian)}')" style="flex-shrink:0;width:42px;height:42px;font-size:1rem;"><i class="fas fa-play ch-play-ico"></i></button>
                         <div class="challenge-q-indo ch-speak-btn" onclick="ChallengeModule.challengeToggleSpeak('${encodeURIComponent(q.indonesian)}')" style="cursor:pointer;flex:1;">${q.indonesian}</div>
                     </div>
-                    <div class="challenge-q-prompt">请选择正确的中文释义：</div>
+                    <div class="challenge-q-prompt">\u8bf7\u9009\u62e9\u6b63\u786e\u7684\u4e2d\u6587\u91ca\u4e49\uff1a</div>
                 `;
             }
             questionContent += `<div class="challenge-options">${options.map((opt, i) => `
-                <button class="challenge-option" onclick="ChallengeModule.answerQuestion(this, '${encodeURIComponent(opt)}', '${encodeURIComponent(correctAnswer)}')">
+                <button class="challenge-option${isAlreadyAnswered ? ' ch-option-locked' : ''}" ${isAlreadyAnswered ? 'disabled style="pointer-events:none;opacity:0.5;"' : `onclick="ChallengeModule.answerQuestion(this, '${encodeURIComponent(opt)}', '${encodeURIComponent(correctAnswer)}')"`}>
                     <span class="challenge-option-letter">${'ABCD'[i]}</span>
                     <span class="challenge-option-text">${opt}</span>
                 </button>`).join('')}</div>`;
 
         } else if (qType === 'fill') {
-            // ===== 填空题：显示中文，输入印尼语 =====
             const fillMode = q._fillMode || 'input';
             if (fillMode === 'select') {
-                // 选项拼选模式：打散正确答案的字母 + 加入干扰字母
                 const correctWord = (isDialogue ? (q.title || '') : (q.indonesian || '')).toLowerCase();
                 const letters = correctWord.split('');
-                // 加入干扰字母
                 const extraLetters = 'abcdefghijklmnopqrstuvwxyz'.split('').filter(l => !letters.includes(l));
                 const shuffledExtra = this._shuffle(extraLetters).slice(0, Math.max(4, 12 - letters.length));
                 const allLetters = this._shuffle([...letters, ...shuffledExtra]);
                 questionContent = `
-                    <div class="challenge-q-type"><i class="fas ${qTypeIcon}" style="color:${qTypeColor};margin-right:4px;"></i>${qTypeLabel}（拼选）</div>
+                    <div class="challenge-q-type"><i class="fas ${qTypeIcon}" style="color:${qTypeColor};margin-right:4px;"></i>${qTypeLabel}\uff08\u62fc\u9009\uff09</div>
                     <div style="font-size:1.15rem;color:#e2e8f0;font-weight:600;text-align:center;margin:12px 0;">${correctAnswer}</div>
-                    <div class="challenge-q-prompt">请从下方字母中拼选出正确的印尼语：</div>
+                    <div class="challenge-q-prompt">\u8bf7\u4ece\u4e0b\u65b9\u5b57\u6bcd\u4e2d\u62fc\u9009\u51fa\u6b63\u786e\u7684\u5370\u5c3c\u8bed\uff1a</div>
                     <div id="fill-answer-box" style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;min-height:48px;padding:10px;border:2px dashed rgba(255,255,255,0.15);border-radius:10px;margin:12px 0;background:rgba(15,23,42,0.4);" data-answer="${encodeURIComponent(correctWord)}"></div>
                     <div id="fill-letter-pool" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px;">
                         ${allLetters.map(l => `<button class="fill-letter-btn" onclick="ChallengeModule.pickFillLetter(this, '${l}')" style="width:40px;height:40px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(15,23,42,0.8);color:#e2e8f0;font-size:1rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;">${l}</button>`).join('')}
                     </div>
                     <button class="challenge-option" onclick="ChallengeModule.submitFillAnswer()" style="margin-top:16px;width:100%;padding:12px;text-align:center;border-radius:12px;background:rgba(251,191,36,0.2);color:#fbbf24;border:1px solid rgba(251,191,36,0.4);font-weight:600;font-size:0.95rem;cursor:pointer;">
-                        <i class="fas fa-paper-plane" style="margin-right:6px;"></i>确认提交
+                        <i class="fas fa-paper-plane" style="margin-right:6px;"></i>\u786e\u8ba4\u63d0\u4ea4
                     </button>
                 `;
             } else {
-                // 键盘输入模式
                 questionContent = `
-                    <div class="challenge-q-type"><i class="fas ${qTypeIcon}" style="color:${qTypeColor};margin-right:4px;"></i>${qTypeLabel}（输入）</div>
+                    <div class="challenge-q-type"><i class="fas ${qTypeIcon}" style="color:${qTypeColor};margin-right:4px;"></i>${qTypeLabel}\uff08\u8f93\u5165\uff09</div>
                     <div style="font-size:1.15rem;color:#e2e8f0;font-weight:600;text-align:center;margin:12px 0;">${correctAnswer}</div>
-                    <div class="challenge-q-prompt">请输入对应的印尼语：</div>
-                    <input type="text" id="fill-input-answer" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="输入印尼语..."
+                    <div class="challenge-q-prompt">\u8bf7\u8f93\u5165\u5bf9\u5e94\u7684\u5370\u5c3c\u8bed\uff1a</div>
+                    <input type="text" id="fill-input-answer" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="\u8f93\u5165\u5370\u5c3c\u8bed..."
                         style="width:100%;padding:14px 18px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:2px solid rgba(255,255,255,0.15);border-radius:12px;font-size:1.1rem;text-align:center;outline:none;margin:12px 0;font-family:inherit;"
                         onkeydown="if(event.key==='Enter')ChallengeModule.submitFillAnswer()">
                     <button class="challenge-option" onclick="ChallengeModule.submitFillAnswer()" style="width:100%;padding:12px;text-align:center;border-radius:12px;background:rgba(251,191,36,0.2);color:#fbbf24;border:1px solid rgba(251,191,36,0.4);font-weight:600;font-size:0.95rem;cursor:pointer;">
-                        <i class="fas fa-paper-plane" style="margin-right:6px;"></i>确认提交
+                        <i class="fas fa-paper-plane" style="margin-right:6px;"></i>\u786e\u8ba4\u63d0\u4ea4
                     </button>
                 `;
             }
 
         } else if (qType === 'listening') {
-            // ===== 听力题：只播放音频，选中文 =====
             const listenSpeed = q._listenSpeed || '1.0';
             const listenReplays = q._listenReplays || 2;
             questionContent = `
                 <div class="challenge-q-type"><i class="fas ${qTypeIcon}" style="color:${qTypeColor};margin-right:4px;"></i>${qTypeLabel}</div>
                 <div style="text-align:center;padding:20px 0;">
                     <button class="circle-btn play-btn" id="listen-play-btn" onclick="ChallengeModule.playListening('${encodeURIComponent(indoText)}', ${listenSpeed}, ${listenReplays})" style="width:72px;height:72px;font-size:1.6rem;margin:0 auto;display:flex;align-items:center;justify-content:center;border-radius:50%;"><i class="fas fa-volume-up"></i></button>
-                    <div style="font-size:0.8rem;color:#64748b;margin-top:10px;">点击播放音频（自动播放 ${listenReplays} 次）</div>
+                    <div style="font-size:0.8rem;color:#64748b;margin-top:10px;">\u70b9\u51fb\u64ad\u653e\u97f3\u9891\uff08\u81ea\u52a8\u64ad\u653e ${listenReplays} \u6b21\uff09</div>
                 </div>
-                <div class="challenge-q-prompt">听发音，选择正确的中文释义：</div>
+                <div class="challenge-q-prompt">\u542c\u53d1\u97f3\uff0c\u9009\u62e9\u6b63\u786e\u7684\u4e2d\u6587\u91ca\u4e49\uff1a</div>
             `;
             questionContent += `<div class="challenge-options">${options.map((opt, i) => `
-                <button class="challenge-option" onclick="ChallengeModule.answerQuestion(this, '${encodeURIComponent(opt)}', '${encodeURIComponent(correctAnswer)}')">
+                <button class="challenge-option${isAlreadyAnswered ? ' ch-option-locked' : ''}" ${isAlreadyAnswered ? 'disabled style="pointer-events:none;opacity:0.5;"' : `onclick="ChallengeModule.answerQuestion(this, '${encodeURIComponent(opt)}', '${encodeURIComponent(correctAnswer)}')"`}>
                     <span class="challenge-option-letter">${'ABCD'[i]}</span>
                     <span class="challenge-option-text">${opt}</span>
                 </button>`).join('')}</div>`;
         }
 
+        // ===== 题号导航条 =====
+        const showNav = this._shouldShowNav();
+        const canSkip = this._canSkip();
+        const canReturn = this._canReturnToAnswered();
+
+        let navBarHtml = '';
+        if (showNav) {
+            const answeredCount = state.answers.filter(a => a !== undefined && a !== null).length;
+            const skippedCount = state.answers.filter(a => a === null).length;
+            navBarHtml = `<div class="ch-question-nav">
+                <div class="ch-nav-stats">
+                    <span class="ch-nav-stat ch-nav-answered"><i class="fas fa-check"></i> ${answeredCount} \u5df2\u7b54</span>
+                    ${skippedCount > 0 ? `<span class="ch-nav-stat ch-nav-skipped"><i class="fas fa-forward"></i> ${skippedCount} \u8df3\u8fc7</span>` : ''}
+                    <span class="ch-nav-stat ch-nav-remaining"><i class="fas fa-circle"></i> ${total - answeredCount - skippedCount} \u672a\u7b54</span>
+                </div>
+                <div class="ch-nav-dots">
+                    ${state.questions.map((_, i) => {
+                        let cls = 'ch-nav-dot';
+                        let icon = (i + 1);
+                        if (state.answers[i] === null) { cls += ' ch-nav-dot-skipped'; icon = '<i class="fas fa-forward"></i>'; }
+                        else if (state.answers[i]) { cls += ' ch-nav-dot-answered'; icon = '<i class="fas fa-check"></i>'; }
+                        if (i === state.currentIndex) cls += ' ch-nav-dot-current';
+                        const clickable = (canReturn || i >= state.currentIndex) && i !== state.currentIndex;
+                        return `<button class="${cls}" ${clickable ? `onclick="ChallengeModule.jumpToQuestion(${i})"` : ''} title="\u7b2c${i+1}\u9898">${icon}</button>`;
+                    }).join('')}
+                </div>
+                ${!isImmediateGrading && skippedCount > 0 ? `<div class="ch-nav-quick-actions">
+                    <button class="ch-nav-quick-btn" onclick="ChallengeModule._jumpToFirstSkipped()" title="\u8df3\u8f6c\u5230\u7b2c\u4e00\u4e2a\u8df3\u8fc7\u7684\u9898"><i class="fas fa-forward"></i> \u8df3\u8fc7\u9898</button>
+                </div>` : ''}
+            </div>`;
+        }
+
+        // ===== 底部操作按钮 =====
+        let bottomBtns = '';
+        if (!isImmediateGrading) {
+            bottomBtns = `<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                <div style="display:flex;gap:8px;">
+                    <button style="background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:0.78rem;display:flex;align-items:center;gap:5px;" onclick="ChallengeModule.confirmExit()">
+                        <i class="fas fa-sign-out-alt"></i> \u9000\u51fa
+                    </button>
+                    ${canSkip ? `<button style="background:rgba(96,165,250,0.12);color:#60a5fa;border:1px solid rgba(96,165,250,0.3);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:0.78rem;display:flex;align-items:center;gap:5px;" onclick="ChallengeModule.skipQuestion()">
+                        <i class="fas fa-forward"></i> \u8df3\u8fc7
+                    </button>` : ''}
+                </div>
+                <button style="background:rgba(251,191,36,0.2);color:#fbbf24;border:1px solid rgba(251,191,36,0.4);padding:12px 28px;border-radius:12px;cursor:pointer;font-size:0.95rem;font-weight:600;display:flex;align-items:center;gap:8px;box-shadow:0 0 20px rgba(251,191,36,0.15);" onclick="ChallengeModule.confirmFinish()">
+                    <i class="fas fa-file-alt"></i> \u4ea4\u5377
+                </button>
+            </div>`;
+        } else {
+            bottomBtns = `<div style="margin-top:16px;display:flex;align-items:center;justify-content:flex-end;gap:10px;">
+                <button style="background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:0.78rem;display:flex;align-items:center;gap:5px;" onclick="ChallengeModule.confirmExit()">
+                    <i class="fas fa-sign-out-alt"></i> \u9000\u51fa
+                </button>
+            </div>`;
+        }
+
         container.innerHTML = `
             <div class="challenge-play-page">
                 <div class="challenge-play-header">
-                    
-                    <div class="challenge-play-title">第${this.allStages.findIndex(s => s.id === state.stageId) + 1}关</div>
+                    <div class="challenge-play-title">\u7b2c${stageIndex}\u5173</div>
                     <div class="challenge-timer"><i class="fas fa-clock"></i> ${mm}:${ss}</div>
-                    
                 </div>
 
                 <div class="challenge-progress-bar">
@@ -875,44 +1024,42 @@ const ChallengeModule = {
                 </div>
                 <div class="challenge-progress-text">${current} / ${total}</div>
 
+                ${navBarHtml}
+
                 <div class="challenge-question-area" id="challenge-question">
                     ${questionContent}
                 </div>
-                ${_isHellStage ? '' : `<div style="margin:16px 0;padding:16px 20px;border-radius:14px;border:1px dashed var(--border-subtle);background:var(--accent-subtle);display:flex;align-items:center;gap:16px;">
+
+                ${!_isHellStage ? `<div style="margin:16px 0;padding:16px 20px;border-radius:14px;border:1px dashed var(--border-subtle);background:var(--accent-subtle);display:flex;align-items:center;gap:16px;">
                     <div class="sliders-col" style="flex:1;min-width:0;">
                         <div class="vslider-box">
-                            <div class="vslider-label"><i class="fas fa-gauge-high"></i> 语速</div>`}
+                            <div class="vslider-label"><i class="fas fa-gauge-high"></i> \u8bed\u901f</div>
                             <div class="vslider-track-wrap">
                                 <input type="range" class="vslider vslider-rate" id="ch-rate-slider" min="1" max="15" value="${localStorage.getItem('fmi_rate') ? (RATE_LEVELS || []).indexOf(parseFloat(localStorage.getItem('fmi_rate'))) + 1 || 10 : 10}" step="1"
-                                    oninput="ChallengeModule.setRate(this.value)" title="拖动调整语速">
+                                    oninput="ChallengeModule.setRate(this.value)" title="\u62d6\u52a8\u8c03\u6574\u8bed\u901f">
                                 <div class="vslider-fill" id="ch-rate-fill"></div>
                                 <div class="vslider-thumb" id="ch-rate-thumb"><span id="ch-val-rate">${localStorage.getItem('fmi_rate') || '1.0'}x</span></div>
                             </div>
                             <div class="vslider-range"><span>0.1x</span><span>1.5x</span></div>
                         </div>
                         <div class="vslider-box">
-                            <div class="vslider-label"><i class="fas fa-redo"></i> 循环</div>
+                            <div class="vslider-label"><i class="fas fa-redo"></i> \u5faa\u73af</div>
                             <div class="vslider-track-wrap">
                                 <input type="range" class="vslider vslider-loop" id="ch-loop-slider" min="0" max="14" value="${(LOOP_LEVELS || []).indexOf(parseInt(localStorage.getItem('fmi_loop') || '1')) >= 0 ? (LOOP_LEVELS || []).indexOf(parseInt(localStorage.getItem('fmi_loop') || '1')) : 0}" step="1"
-                                    oninput="ChallengeModule.setLoop(this.value)" title="拖动调整循环次数">
+                                    oninput="ChallengeModule.setLoop(this.value)" title="\u62d6\u52a8\u8c03\u6574\u5faa\u73af\u6b21\u6570">
                                 <div class="vslider-fill" id="ch-loop-fill"></div>
-                                <div class="vslider-thumb" id="ch-loop-thumb"><span id="ch-val-loop">${localStorage.getItem('fmi_loop') || '1'}次</span></div>
+                                <div class="vslider-thumb" id="ch-loop-thumb"><span id="ch-val-loop">${localStorage.getItem('fmi_loop') || '1'}\u6b21</span></div>
                             </div>
-                            <div class="vslider-range"><span>1次</span><span>无限</span></div>
+                            <div class="vslider-range"><span>1\u6b21</span><span>\u65e0\u9650</span></div>
                         </div>
-                ${_isHellStage ? '' : '</div></div>'}
-                <div style="margin-top:16px;display:flex;align-items:center;justify-content:flex-end;gap:10px;">
-                    <button style="background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:0.78rem;display:flex;align-items:center;gap:5px;" onclick="ChallengeModule.confirmExitWithoutSave()">
-                        <i class="fas fa-sign-out-alt"></i> 退出
-                    </button>
-                    <button style="background:rgba(251,191,36,0.2);color:#fbbf24;border:1px solid rgba(251,191,36,0.4);padding:12px 28px;border-radius:12px;cursor:pointer;font-size:0.95rem;font-weight:600;display:flex;align-items:center;gap:8px;box-shadow:0 0 20px rgba(251,191,36,0.15);" onclick="ChallengeModule.confirmFinish()">
-                        <i class="fas fa-file-alt"></i> 交卷
-                    </button>
-                </div>
+                    </div>
+                </div>` : ''}
+
+                ${bottomBtns}
             </div>
         `;
 
-        // 同步滑块位置和填充条（地狱模式下跳过，因滑块已隐藏）
+        // 同步滑块
         setTimeout(() => {
             if (!_isHellStage && typeof updateSliderFill === 'function') {
                 const rateSlider = document.getElementById('ch-rate-slider');
@@ -928,7 +1075,7 @@ const ChallengeModule = {
             }
         }, 50);
 
-        // 更新计时器（支持时间限制倒计时）
+        // 计时器
         const _sysInfo = window._systemInfo || {};
         const _hellCfg = _sysInfo.hellSettings || {};
         let timeLimit;
@@ -942,24 +1089,33 @@ const ChallengeModule = {
         this._timerInterval = setInterval(() => {
             const el = document.querySelector('.challenge-timer');
             if (!el) { clearInterval(this._timerInterval); return; }
-            const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+            const elapsed2 = Math.floor((Date.now() - state.startTime) / 1000);
             if (timeLimit > 0) {
-                const remaining = Math.max(0, timeLimit - elapsed);
-                const mm = String(Math.floor(remaining / 60)).padStart(2, '0');
-                const ss = String(remaining % 60).padStart(2, '0');
+                const remaining = Math.max(0, timeLimit - elapsed2);
+                const mm2 = String(Math.floor(remaining / 60)).padStart(2, '0');
+                const ss2 = String(remaining % 60).padStart(2, '0');
                 const isWarning = remaining <= 10;
-                el.innerHTML = `<i class="fas fa-clock" style="color:${isWarning ? '#f87171' : ''}"></i> <span style="color:${isWarning ? '#f87171' : ''}">${mm}:${ss}</span>`;
+                el.innerHTML = `<i class="fas fa-clock" style="color:${isWarning ? '#f87171' : ''}"></i> <span style="color:${isWarning ? '#f87171' : ''}">${mm2}:${ss2}</span>`;
                 if (remaining <= 0) {
                     clearInterval(this._timerInterval);
                     this.confirmFinish();
                 }
             } else {
-                const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
-                const ss = String(elapsed % 60).padStart(2, '0');
-                el.innerHTML = `<i class="fas fa-clock"></i> ${mm}:${ss}`;
+                const mm2 = String(Math.floor(elapsed2 / 60)).padStart(2, '0');
+                const ss2 = String(elapsed2 % 60).padStart(2, '0');
+                el.innerHTML = `<i class="fas fa-clock"></i> ${mm2}:${ss2}`;
             }
         }, 1000);
     },
+
+    // 跳转到第一个跳过的题目
+    _jumpToFirstSkipped() {
+        const state = this.challengeState;
+        if (!state) return;
+        const idx = state.answers.findIndex(a => a === null);
+        if (idx >= 0) this.jumpToQuestion(idx);
+    },
+
 
     answerQuestion(btnEl, selectedEnc, correctEnc) {
         const state = this.challengeState;
@@ -972,30 +1128,157 @@ const ChallengeModule = {
         if (isCorrect) state.correct++;
         state.answers[state.currentIndex] = { selected, correct, isCorrect };
 
-        // 高亮
-        const allBtns = btnEl.parentElement.querySelectorAll('.challenge-option');
-        allBtns.forEach(btn => {
-            const text = btn.querySelector('.challenge-option-text').textContent;
-            btn.style.pointerEvents = 'none';
-            if (text === correct) btn.classList.add('correct');
-            else if (btn === btnEl && !isCorrect) btn.classList.add('wrong');
-        });
+        const isImmediateGrading = this._isImmediateGrading();
 
-        setTimeout(() => {
+        if (isImmediateGrading) {
+            // 即时阅卷：高亮对错
+            const allBtns = btnEl.parentElement.querySelectorAll('.challenge-option');
+            allBtns.forEach(btn => {
+                const text = btn.querySelector('.challenge-option-text').textContent;
+                btn.style.pointerEvents = 'none';
+                if (text === correct) btn.classList.add('correct');
+                else if (btn === btnEl && !isCorrect) btn.classList.add('wrong');
+            });
+        }
+
+        // 准确率淘汰检测（仅地狱模式且已配置淘汰线）
+        const knockout = this._checkAccuracyKnockout();
+        if (knockout) {
+            clearInterval(this._timerInterval);
+            setTimeout(() => {
+                const subContent = document.getElementById('challenge-sub-content');
+                if (subContent) this._renderStageResult(subContent, true);
+            }, isImmediateGrading ? 800 : 200);
+            return;
+        }
+
+        if (isImmediateGrading) {
+            setTimeout(() => {
+                state.currentIndex++;
+                if (state.currentIndex >= state.totalQuestions) {
+                    clearInterval(this._timerInterval);
+                }
+                const subContent = document.getElementById('challenge-sub-content');
+                if (subContent) this._renderPlayArea(subContent);
+            }, 1000);
+        } else {
+            // 交卷阅卷模式：跳到下一题
             state.currentIndex++;
-            if (state.currentIndex >= state.totalQuestions) {
-                clearInterval(this._timerInterval);
-            }
             const subContent = document.getElementById('challenge-sub-content');
             if (subContent) this._renderPlayArea(subContent);
-        }, 1000);
+        }
+    }
+
+    // 判断当前是否为即时阅卷模式
+    _isImmediateGrading() {
+        const isHell = this.challengeMode === 'hell';
+        if (!isHell) return false; // 普通模式固定交卷阅卷
+        const _sysInfo = window._systemInfo || {};
+        const _hs = _sysInfo.hellSettings || {};
+        return (_hs.gradingMode || 'immediate') === 'immediate';
+    }
+
+    // 检查准确率淘汰（仅地狱模式）
+    _checkAccuracyKnockout() {
+        const isHell = this.challengeMode === 'hell';
+        if (!isHell) return false;
+        const _sysInfo = window._systemInfo || {};
+        const _hs = _sysInfo.hellSettings || {};
+        const knockout = _hs.accuracyKnockout !== undefined ? _hs.accuracyKnockout : (_sysInfo.hellAccuracyKnockout !== undefined ? _sysInfo.hellAccuracyKnockout : 0);
+        if (knockout <= 0) return false;
+        const state = this.challengeState;
+        if (!state) return false;
+        const answered = state.answers.filter(a => a).length;
+        if (answered < 2) return false; // 至少答2题才检测
+        const accuracy = (state.correct / answered) * 100;
+        if (accuracy < knockout) {
+            state._knockout = true;
+            return true;
+        }
+        return false;
+    }
+
+    // 开始闯关（普通模式专用）
+    startChallenge() {
+        const state = this.challengeState;
+        if (!state || state.phase !== 'ready') return;
+        state.phase = 'playing';
+        state.startTime = Date.now();
+        this._beforeUnloadHandler = function(e) {
+            e.preventDefault();
+            e.returnValue = '闯关进行中，确定要离开吗？成绩将不会保存。';
+            return e.returnValue;
+        };
+        window.addEventListener('beforeunload', this._beforeUnloadHandler);
+        const subContent = document.getElementById('challenge-sub-content');
+        if (subContent) this._renderPlayArea(subContent);
+    }
+
+    // 跳过当前题
+    skipQuestion() {
+        const state = this.challengeState;
+        if (!state || state.phase !== 'playing') return;
+        // 标记为skipped但不判卷
+        state.answers[state.currentIndex] = null; // null表示跳过
+        state.currentIndex++;
+        if (state.currentIndex >= state.totalQuestions) {
+            // 最后一题也跳过了，不自动交卷，让用户手动交卷
+        }
+        const subContent = document.getElementById('challenge-sub-content');
+        if (subContent) this._renderPlayArea(subContent);
+    }
+
+    // 跳转到指定题目
+    jumpToQuestion(index) {
+        const state = this.challengeState;
+        if (!state || state.phase !== 'playing') return;
+        if (index < 0 || index >= state.totalQuestions) return;
+        // 检查是否允许返回（不能跳到已答过的前面题目）
+        const canReturn = this._canReturnToAnswered();
+        if (index <= state.currentIndex && !canReturn) return;
+        state.currentIndex = index;
+        const subContent = document.getElementById('challenge-sub-content');
+        if (subContent) this._renderPlayArea(subContent);
+    }
+
+    // 是否允许返回已答题目
+    _canReturnToAnswered() {
+        const isHell = this.challengeMode === 'hell';
+        if (!isHell) return true; // 普通模式始终允许
+        const _sysInfo = window._systemInfo || {};
+        const _hs = _sysInfo.hellSettings || {};
+        return !!(_hs.allowReturn || false);
+    }
+
+    // 是否允许跳题
+    _canSkip() {
+        const isHell = this.challengeMode === 'hell';
+        if (!isHell) return true; // 普通模式始终允许
+        const _sysInfo = window._systemInfo || {};
+        const _hs = _sysInfo.hellSettings || {};
+        return !!(_hs.allowSkip || false);
+    }
+
+    // 是否显示题号导航条
+    _shouldShowNav() {
+        const isHell = this.challengeMode === 'hell';
+        if (!isHell) return true; // 普通模式始终显示
+        const _sysInfo = window._systemInfo || {};
+        const _hs = _sysInfo.hellSettings || {};
+        return !!(_hs.showNav || false);
     },
 
     // ========== 闯关结果 ==========
-    _renderStageResult(container) {
+    _renderStageResult(container, isKnockout) {
         const state = this.challengeState;
+        if (!state || !state.startTime) return;
         const timeSpent = Math.floor((Date.now() - state.startTime) / 1000);
-        const accuracy = state.correct / state.totalQuestions * 100;
+        const answeredCount = state.answers.filter(a => a).length;
+        const isKnockoutMode = isKnockout || state._knockout || false;
+        // 淘汰模式下只计算已答题目的准确率
+        const accuracy = isKnockoutMode
+            ? (answeredCount > 0 ? (state.correct / answeredCount) * 100 : 0)
+            : (state.correct / state.totalQuestions * 100);
 
         // 计算综合得分
         const timeScore = Math.max(0, (1 - timeSpent / (Math.max(timeSpent, 10) * this.TIME_MULTIPLIER))) * 100;
@@ -1017,7 +1300,8 @@ const ChallengeModule = {
                 <div class="challenge-result-icon">
                     ${this._renderStars(stars)}
                 </div>
-                <div class="challenge-result-title">${stars >= 1 ? '闯关成功！' : '挑战失败'}</div>
+                <div class="challenge-result-title">${isKnockoutMode ? '准确率未达标，已被淘汰！' : (stars >= 1 ? '闯关成功！' : '挑战失败')}</div>
+                ${isKnockoutMode ? '<div class="ch-knockout-banner"><i class="fas fa-skull-crossbones"></i> 准确率低于淘汰线，强制结算</div>' : ''}
                 <div class="challenge-result-stats">
                     <div class="result-stat">
                         <div class="result-stat-label">准确率</div>
@@ -1115,25 +1399,34 @@ const ChallengeModule = {
     confirmFinish() {
         const state = this.challengeState;
         if (!state) return;
-        const answered = state.answers ? state.answers.filter(a => a).length : 0;
+        const answered = state.answers ? state.answers.filter(a => a !== undefined && a !== null).length : 0;
         if (answered === 0) {
             alert('您还没有答题，请先答题后再结束。');
             return;
         }
-        if (confirm('确定结束闯关并提交成绩吗？（已答 ' + answered + ' 题）')) {
-            // 将未答的题目视为错误
+        const skipped = state.answers ? state.answers.filter(a => a === null).length : 0;
+        const msg = skipped > 0
+            ? '确定交卷吗？（已答 ' + answered + ' 题，跳过 ' + skipped + ' 题，跳过题计0分）'
+            : '确定交卷并提交成绩吗？（已答 ' + answered + ' 题）';
+        if (confirm(msg)) {
+            // 将未答和跳过的题目视为错误
             for (let i = 0; i < state.totalQuestions; i++) {
                 if (!state.answers[i]) {
                     const q = state.questions[i];
-                    const correct = q.chinese || q.title_id || '';
+                    const isDialogue = q.lines !== undefined;
+                    const correct = isDialogue ? (q.title || '') : (q.chinese || '');
                     state.answers[i] = { selected: '', correct: correct, isCorrect: false };
                 }
             }
             state.currentIndex = state.totalQuestions;
             if (this._timerInterval) clearInterval(this._timerInterval);
+            if (this._beforeUnloadHandler) {
+                window.removeEventListener('beforeunload', this._beforeUnloadHandler);
+                this._beforeUnloadHandler = null;
+            }
+            this._inChallenge = false;
             const subContent = document.getElementById('challenge-sub-content');
             if (subContent) this._renderStageResult(subContent);
-            this._inChallenge = false;
         }
     },
 

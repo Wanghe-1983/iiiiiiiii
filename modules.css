@@ -2649,3 +2649,252 @@
         font-size: 1.05rem;
     }
 }
+
+
+/* ========== 闯天关 - 开始闯关界面 ========== */
+.ch-ready-panel {
+    text-align: center;
+    padding: 40px 20px;
+    background: rgba(30, 41, 59, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    margin: 20px 0;
+}
+
+.ch-ready-icon {
+    font-size: 3.5rem;
+    color: #60a5fa;
+    margin-bottom: 16px;
+    animation: ready-pulse 2s ease-in-out infinite;
+}
+
+@keyframes ready-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.08); opacity: 1; }
+}
+
+.ch-ready-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #e2e8f0;
+    margin-bottom: 10px;
+}
+
+.ch-ready-desc {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    margin-bottom: 24px;
+}
+
+.ch-ready-count {
+    color: #fbbf24;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.ch-ready-rules {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 28px;
+    text-align: left;
+    max-width: 240px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ch-ready-rule {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ch-ready-rule i {
+    color: #10b981;
+    font-size: 0.8rem;
+    width: 16px;
+    text-align: center;
+}
+
+.ch-start-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 40px;
+    background: linear-gradient(135deg, rgba(96, 165, 250, 0.25), rgba(96, 165, 250, 0.12));
+    color: #60a5fa;
+    border: 2px solid rgba(96, 165, 250, 0.5);
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 0 24px rgba(96, 165, 250, 0.15);
+}
+
+.ch-start-btn:hover {
+    background: linear-gradient(135deg, rgba(96, 165, 250, 0.35), rgba(96, 165, 250, 0.2));
+    transform: translateY(-2px);
+    box-shadow: 0 0 32px rgba(96, 165, 250, 0.25);
+}
+
+.ch-start-btn:active {
+    transform: translateY(0);
+}
+
+/* ========== 闯天关 - 题号导航条 ========== */
+.ch-question-nav {
+    background: rgba(30, 41, 59, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+}
+
+.ch-nav-stats {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.ch-nav-stat {
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ch-nav-stat i {
+    font-size: 0.65rem;
+}
+
+.ch-nav-answered {
+    color: #10b981;
+}
+
+.ch-nav-skipped {
+    color: #f59e0b;
+}
+
+.ch-nav-remaining {
+    color: #64748b;
+}
+
+.ch-nav-dots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+}
+
+.ch-nav-dot {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    background: rgba(30, 41, 59, 0.4);
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+}
+
+.ch-nav-dot:hover:not(.ch-nav-dot-current) {
+    border-color: rgba(96, 165, 250, 0.4);
+    background: rgba(96, 165, 250, 0.08);
+    color: #94a3b8;
+}
+
+.ch-nav-dot-current {
+    border-color: #60a5fa;
+    background: rgba(96, 165, 250, 0.2);
+    color: #60a5fa;
+    box-shadow: 0 0 10px rgba(96, 165, 250, 0.2);
+    transform: scale(1.08);
+}
+
+.ch-nav-dot-answered {
+    border-color: rgba(16, 185, 129, 0.35);
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+}
+
+.ch-nav-dot-answered.ch-nav-dot-current {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.25);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+}
+
+.ch-nav-dot-skipped {
+    border-color: rgba(245, 158, 11, 0.35);
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+}
+
+.ch-nav-dot-skipped.ch-nav-dot-current {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.25);
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+}
+
+.ch-nav-quick-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.ch-nav-quick-btn {
+    padding: 5px 14px;
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 8px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.15s;
+}
+
+.ch-nav-quick-btn:hover {
+    background: rgba(245, 158, 11, 0.2);
+}
+
+/* ========== 闯天关 - 淘汰提示 ========== */
+.ch-knockout-banner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    animation: knockout-shake 0.5s ease-in-out;
+}
+
+@keyframes knockout-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-4px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(2px); }
+}
+
+/* 已锁定（已答过）的选项样式 */
+.ch-option-locked {
+    cursor: default !important;
+}

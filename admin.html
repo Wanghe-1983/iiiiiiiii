@@ -1191,6 +1191,29 @@
                                 </select></div>
                             </div>
                             <div class="setting-row">
+                                <div class="setting-info"><div class="setting-label">阅卷方式</div><div class="setting-desc">即时阅卷=选完即判；交卷阅卷=全部答完后统一判卷 <span id="hell-grading-hint" style="color:#f87171;margin-left:8px;font-size:0.8rem;">即时阅卷</span></div></div>
+                                <div class="setting-control"><select id="setHellGradingMode" style="padding:6px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.85rem;width:auto;" onchange="document.getElementById('hell-grading-hint').textContent=this.value==='immediate'?'即时阅卷':'交卷阅卷'">
+                                    <option value="immediate" selected>即时阅卷</option>
+                                    <option value="batch">交卷阅卷</option>
+                                </select></div>
+                            </div>
+                            <div class="setting-row">
+                                <div class="setting-info"><div class="setting-label">允许跳题</div><div class="setting-desc">允许用户跳过当前不会的题 <span id="hell-skip-hint" style="color:#64748b;margin-left:8px;font-size:0.8rem;">已关闭</span></div></div>
+                                <div class="setting-control"><label class="toggle"><input type="checkbox" id="setHellAllowSkip"><span class="slider"></span></label></div>
+                            </div>
+                            <div class="setting-row">
+                                <div class="setting-info"><div class="setting-label">允许返回修改</div><div class="setting-desc">允许返回已答题目修改答案 <span id="hell-return-hint" style="color:#64748b;margin-left:8px;font-size:0.8rem;">已关闭</span></div></div>
+                                <div class="setting-control"><label class="toggle"><input type="checkbox" id="setHellAllowReturn"><span class="slider"></span></label></div>
+                            </div>
+                            <div class="setting-row">
+                                <div class="setting-info"><div class="setting-label">题号导航条</div><div class="setting-desc">显示题号列表方便快速跳转 <span id="hell-nav-hint" style="color:#64748b;margin-left:8px;font-size:0.8rem;">已关闭</span></div></div>
+                                <div class="setting-control"><label class="toggle"><input type="checkbox" id="setHellShowNav"><span class="slider"></span></label></div>
+                            </div>
+                            <div class="setting-row">
+                                <div class="setting-info"><div class="setting-label">准确率淘汰线</div><div class="setting-desc">低于此百分比立即强制结算（0=不启用）<span id="hell-knockout-hint" style="color:#f87171;margin-left:8px;font-size:0.8rem;">30%</span></div></div>
+                                <div class="setting-control"><div style="display:flex;align-items:center;gap:6px;"><input type="number" id="setHellAccuracyKnockout" min="0" max="100" value="30" style="width:70px;padding:6px 10px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.85rem;text-align:center;"><span style="color:#64748b;font-size:0.8rem;">%</span></div></div>
+                            </div>
+                            <div class="setting-row">
                                 <div class="setting-info"><div class="setting-label">限时答题</div><div class="setting-desc">开启后每关有时间限制 <span id="hell-timelimit-hint" style="color:#64748b;margin-left:8px;font-size:0.8rem;">已关闭</span></div></div>
                                 <div class="setting-control"><label class="toggle"><input type="checkbox" id="setHellTimeLimitEnabled"><span class="slider"></span></label></div>
                             </div>
@@ -1748,6 +1771,27 @@ let allUsers = [];
         document.getElementById('hell-sequential-hint').style.color = hellSeqMode ? '#22c55e' : '#64748b';
         document.getElementById('setHellQuestionOrder').value = hs.questionOrder || 'random';
         document.getElementById('hell-question-order-hint').textContent = (hs.questionOrder || 'random') === 'random' ? '随机' : '顺序';
+        // 地狱阅卷方式
+        document.getElementById('setHellGradingMode').value = hs.gradingMode || s.hellGradingMode || 'immediate';
+        document.getElementById('hell-grading-hint').textContent = (hs.gradingMode || s.hellGradingMode || 'immediate') === 'immediate' ? '即时阅卷' : '交卷阅卷';
+        document.getElementById('hell-grading-hint').style.color = (hs.gradingMode || s.hellGradingMode || 'immediate') === 'immediate' ? '#f87171' : '#60a5fa';
+        // 地狱允许跳题
+        document.getElementById('setHellAllowSkip').checked = hs.allowSkip || false;
+        document.getElementById('hell-skip-hint').textContent = (hs.allowSkip || false) ? '已开启' : '已关闭';
+        document.getElementById('hell-skip-hint').style.color = (hs.allowSkip || false) ? '#22c55e' : '#64748b';
+        // 地狱允许返回修改
+        document.getElementById('setHellAllowReturn').checked = hs.allowReturn || false;
+        document.getElementById('hell-return-hint').textContent = (hs.allowReturn || false) ? '已开启' : '已关闭';
+        document.getElementById('hell-return-hint').style.color = (hs.allowReturn || false) ? '#22c55e' : '#64748b';
+        // 地狱题号导航条
+        document.getElementById('setHellShowNav').checked = hs.showNav || false;
+        document.getElementById('hell-nav-hint').textContent = (hs.showNav || false) ? '已开启' : '已关闭';
+        document.getElementById('hell-nav-hint').style.color = (hs.showNav || false) ? '#22c55e' : '#64748b';
+        // 地狱准确率淘汰线
+        const knockoutVal = hs.accuracyKnockout !== undefined ? hs.accuracyKnockout : (s.hellAccuracyKnockout !== undefined ? s.hellAccuracyKnockout : 30);
+        document.getElementById('setHellAccuracyKnockout').value = knockoutVal;
+        document.getElementById('hell-knockout-hint').textContent = knockoutVal > 0 ? knockoutVal + '%' : '不启用';
+        document.getElementById('hell-knockout-hint').style.color = knockoutVal > 0 ? '#f87171' : '#64748b';
         // 地狱模式限时答题
         const hellTLEnabled = hs.timeLimitEnabled !== false; // 默认开启
         document.getElementById('setHellTimeLimitEnabled').checked = hellTLEnabled;
@@ -2037,6 +2081,12 @@ function toggleQuestionTypeOptions(mode) {
             splitMode,
             questionType: document.getElementById('setHellQuestionType').value || 'mixed',
             questionCount,
+            // 高级设置
+            gradingMode: document.getElementById('setHellGradingMode').value || 'immediate',
+            allowSkip: document.getElementById('setHellAllowSkip').checked,
+            allowReturn: document.getElementById('setHellAllowReturn').checked,
+            showNav: document.getElementById('setHellShowNav').checked,
+            accuracyKnockout: parseInt(document.getElementById('setHellAccuracyKnockout').value) || 0,
             // 题型配置
             choiceWeight: parseInt(document.getElementById('setHellChoiceWeight').value) || 0,
             fillWeight: parseInt(document.getElementById('setHellFillWeight').value) || 0,
@@ -2069,8 +2119,19 @@ function toggleQuestionTypeOptions(mode) {
         settings.hellQuestionType = hellSettings.questionType;
 
         var result = await adminFetch('admin/settings', { method: 'PUT', body: JSON.stringify(settings) });
+        // 更新hint显示
         var hmHint = document.getElementById('hell-mode-hint');
         if (hmHint) hmHint.textContent = hellSettings.enabled ? '已启用' : '已关闭';
+        document.getElementById('hell-grading-hint').textContent = hellSettings.gradingMode === 'immediate' ? '即时阅卷' : '交卷阅卷';
+        document.getElementById('hell-grading-hint').style.color = hellSettings.gradingMode === 'immediate' ? '#f87171' : '#60a5fa';
+        document.getElementById('hell-skip-hint').textContent = hellSettings.allowSkip ? '已开启' : '已关闭';
+        document.getElementById('hell-skip-hint').style.color = hellSettings.allowSkip ? '#22c55e' : '#64748b';
+        document.getElementById('hell-return-hint').textContent = hellSettings.allowReturn ? '已开启' : '已关闭';
+        document.getElementById('hell-return-hint').style.color = hellSettings.allowReturn ? '#22c55e' : '#64748b';
+        document.getElementById('hell-nav-hint').textContent = hellSettings.showNav ? '已开启' : '已关闭';
+        document.getElementById('hell-nav-hint').style.color = hellSettings.showNav ? '#22c55e' : '#64748b';
+        document.getElementById('hell-knockout-hint').textContent = hellSettings.accuracyKnockout > 0 ? hellSettings.accuracyKnockout + '%' : '不启用';
+        document.getElementById('hell-knockout-hint').style.color = hellSettings.accuracyKnockout > 0 ? '#f87171' : '#64748b';
         if (result && result.success) {
             showAdminToast('地狱模式设置已保存', 'success');
             updateStageCountEstimate();
