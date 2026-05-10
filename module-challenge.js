@@ -140,43 +140,78 @@ const ChallengeModule = {
         const sysInfo = window._systemInfo || {};
         const normalProgress = this._calcModeProgress('normal');
         const hellProgress = this._calcModeProgress('hell');
+        const totalStars = normalProgress.stars + hellProgress.stars;
         return `
-        <div style="padding:12px;display:flex;flex-direction:column;gap:16px;">
-            <div onclick="ChallengeModule.enterChallenge()" style="cursor:pointer;background:linear-gradient(135deg,rgba(99,102,241,0.12),rgba(139,92,246,0.08));border:1px solid rgba(99,102,241,0.25);border-radius:16px;padding:24px;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(99,102,241,0.5)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(99,102,241,0.25)';this.style.transform='none'">
-                <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
-                    <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;">
-                        <i class="fas fa-gamepad" style="font-size:1.4rem;color:#fff;"></i>
+        <div class="challenge-home">
+            <!-- 顶部英雄区 -->
+            <div class="challenge-hero" onclick="ChallengeModule.enterChallenge()">
+                <div class="challenge-hero-bg"></div>
+                <div class="challenge-hero-content">
+                    <div class="challenge-hero-icon">
+                        <i class="fas fa-dungeon"></i>
                     </div>
-                    <div>
-                        <div style="font-size:1.1rem;font-weight:700;color:#e2e8f0;">闯天关</div>
-                        <div style="font-size:0.78rem;color:#94a3b8;margin-top:2px;">${hellEnabled ? '普通 / 地狱两种难度模式' : '普通模式'}</div>
+                    <div class="challenge-hero-text">
+                        <h2 class="challenge-hero-title">闯天关</h2>
+                        <p class="challenge-hero-desc">${hellEnabled ? '两种难度模式，层层挑战' : '基础闯关模式'}</p>
                     </div>
-                    <i class="fas fa-chevron-right" style="margin-left:auto;color:#64748b;font-size:1rem;"></i>
+                    <div class="challenge-hero-arrow"><i class="fas fa-arrow-right"></i></div>
                 </div>
-                <div style="display:flex;gap:12px;">
-                    <div style="flex:1;background:rgba(96,165,250,0.1);border:1px solid rgba(96,165,250,0.2);border-radius:10px;padding:10px 12px;">
-                        <div style="font-size:0.7rem;color:#60a5fa;font-weight:600;margin-bottom:4px;"><i class="fas fa-shield-halved"></i> 普通</div>
-                        <div style="font-size:0.82rem;color:#e2e8f0;font-weight:700;">${normalProgress.cleared}<span style="font-size:0.7rem;color:#64748b;font-weight:400;">/${normalProgress.total}</span></div>
-                        <div style="font-size:0.65rem;color:#64748b;">${normalProgress.stars} <i class="fas fa-star" style="color:#fbbf24;font-size:0.55rem;"></i></div>
+                <div class="challenge-hero-stats">
+                    <div class="challenge-hero-stat">
+                        <div class="challenge-hero-stat-icon" style="background:rgba(96,165,250,0.15);color:#60a5fa;"><i class="fas fa-shield-halved"></i></div>
+                        <div class="challenge-hero-stat-info">
+                            <span class="challenge-hero-stat-label">普通</span>
+                            <span class="challenge-hero-stat-value">${normalProgress.cleared}<span class="challenge-hero-stat-total">/${normalProgress.total}</span></span>
+                        </div>
+                        <div class="challenge-hero-stat-stars">
+                            ${normalProgress.stars > 0 ? '<i class="fas fa-star"></i> ' + normalProgress.stars : '<span class="challenge-hero-stat-empty">0 星</span>'}
+                        </div>
                     </div>
-                    ${hellEnabled ? `<div style="flex:1;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.2);border-radius:10px;padding:10px 12px;">
-                        <div style="font-size:0.7rem;color:#f87171;font-weight:600;margin-bottom:4px;"><i class="fas fa-skull-crossbones"></i> 地狱</div>
-                        <div style="font-size:0.82rem;color:#e2e8f0;font-weight:700;">${hellProgress.cleared}<span style="font-size:0.7rem;color:#64748b;font-weight:400;">/${hellProgress.total}</span></div>
-                        <div style="font-size:0.65rem;color:#64748b;">${hellProgress.stars} <i class="fas fa-star" style="color:#fbbf24;font-size:0.55rem;"></i></div>
+                    ${hellEnabled ? `<div class="challenge-hero-stat-divider"></div>
+                    <div class="challenge-hero-stat">
+                        <div class="challenge-hero-stat-icon" style="background:rgba(248,113,113,0.15);color:#f87171;"><i class="fas fa-fire"></i></div>
+                        <div class="challenge-hero-stat-info">
+                            <span class="challenge-hero-stat-label">地狱</span>
+                            <span class="challenge-hero-stat-value">${hellProgress.cleared}<span class="challenge-hero-stat-total">/${hellProgress.total}</span></span>
+                        </div>
+                        <div class="challenge-hero-stat-stars">
+                            ${hellProgress.stars > 0 ? '<i class="fas fa-star"></i> ' + hellProgress.stars : '<span class="challenge-hero-stat-empty">0 星</span>'}
+                        </div>
                     </div>` : ''}
                 </div>
             </div>
-            <div onclick="ChallengeModule.enterRank()" style="cursor:pointer;background:linear-gradient(135deg,rgba(251,191,36,0.1),rgba(245,158,11,0.06));border:1px solid rgba(251,191,36,0.2);border-radius:16px;padding:24px;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(251,191,36,0.4)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(251,191,36,0.2)';this.style.transform='none'">
-                <div style="display:flex;align-items:center;gap:14px;">
-                    <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;">
-                        <i class="fas fa-trophy" style="font-size:1.4rem;color:#fff;"></i>
-                    </div>
-                    <div>
-                        <div style="font-size:1.1rem;font-weight:700;color:#e2e8f0;">排行榜</div>
-                        <div style="font-size:0.78rem;color:#94a3b8;margin-top:2px;">查看各模式下的闯关排名</div>
-                    </div>
-                    <i class="fas fa-chevron-right" style="margin-left:auto;color:#64748b;font-size:1rem;"></i>
+
+            <!-- 快捷统计条 -->
+            <div class="challenge-quick-stats">
+                <div class="challenge-quick-stat">
+                    <i class="fas fa-layer-group"></i>
+                    <span>${normalProgress.total + hellProgress.total}</span>
+                    <label>总关卡</label>
                 </div>
+                <div class="challenge-quick-stat-divider"></div>
+                <div class="challenge-quick-stat">
+                    <i class="fas fa-check-double"></i>
+                    <span>${normalProgress.cleared + hellProgress.cleared}</span>
+                    <label>已通关</label>
+                </div>
+                <div class="challenge-quick-stat-divider"></div>
+                <div class="challenge-quick-stat">
+                    <i class="fas fa-star" style="color:#fbbf24;"></i>
+                    <span>${totalStars}</span>
+                    <label>总星数</label>
+                </div>
+            </div>
+
+            <!-- 排行榜入口 -->
+            <div class="challenge-rank-entry" onclick="ChallengeModule.enterRank()">
+                <div class="challenge-rank-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <div class="challenge-rank-info">
+                    <div class="challenge-rank-title">排行榜</div>
+                    <div class="challenge-rank-desc">查看闯关排名与最佳战绩</div>
+                </div>
+                <div class="challenge-rank-arrow"><i class="fas fa-chevron-right"></i></div>
             </div>
         </div>`;
     },

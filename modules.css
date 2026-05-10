@@ -1900,3 +1900,249 @@
 /* 折叠面板 - 听力设置 */
 .ctrl-expanded .ctrl-body { display: flex !important; align-items: center; gap: 16px; }
 .ctrl-expanded > div:first-child i.fa-chevron-down { transform: rotate(180deg); }
+
+
+/* ============================================
+   闯天关首页 - 重新设计
+   ============================================ */
+.challenge-home {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* -- 英雄区卡片 -- */
+.challenge-hero {
+    position: relative;
+    cursor: pointer;
+    border-radius: 20px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1e1b4b 0%, #172554 50%, #0f172a 100%);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    transition: all 0.3s ease;
+}
+.challenge-hero:hover {
+    border-color: rgba(99, 102, 241, 0.45);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15);
+}
+.challenge-hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(99, 102, 241, 0.18), transparent),
+        radial-gradient(ellipse 50% 60% at 80% 80%, rgba(139, 92, 246, 0.12), transparent);
+    pointer-events: none;
+}
+.challenge-hero-content {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 24px 0;
+}
+.challenge-hero-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+    flex-shrink: 0;
+}
+.challenge-hero-text {
+    flex: 1;
+}
+.challenge-hero-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #f1f5f9;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+.challenge-hero-desc {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin: 4px 0 0;
+}
+.challenge-hero-arrow {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+.challenge-hero:hover .challenge-hero-arrow {
+    background: rgba(99, 102, 241, 0.2);
+    color: #a5b4fc;
+    transform: translateX(3px);
+}
+
+/* -- 英雄区底部模式统计 -- */
+.challenge-hero-stats {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 18px 24px 22px;
+    margin-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.challenge-hero-stat {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.challenge-hero-stat-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+.challenge-hero-stat-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+.challenge-hero-stat-label {
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: 500;
+}
+.challenge-hero-stat-value {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #e2e8f0;
+    line-height: 1.2;
+}
+.challenge-hero-stat-total {
+    font-size: 0.75rem;
+    color: #475569;
+    font-weight: 500;
+}
+.challenge-hero-stat-stars {
+    margin-left: auto;
+    font-size: 0.78rem;
+    color: #fbbf24;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.challenge-hero-stat-empty {
+    font-size: 0.72rem;
+    color: #475569;
+}
+.challenge-hero-stat-divider {
+    width: 1px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.06);
+    margin: 0 6px;
+    flex-shrink: 0;
+}
+
+/* -- 快捷统计条 -- */
+.challenge-quick-stats {
+    display: flex;
+    align-items: center;
+    background: rgba(30, 41, 59, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 14px 8px;
+}
+.challenge-quick-stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+.challenge-quick-stat i {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+.challenge-quick-stat span {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #e2e8f0;
+}
+.challenge-quick-stat label {
+    font-size: 0.68rem;
+    color: #475569;
+    font-weight: 500;
+}
+.challenge-quick-stat-divider {
+    width: 1px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.06);
+    flex-shrink: 0;
+}
+
+/* -- 排行榜入口 -- */
+.challenge-rank-entry {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    background: rgba(30, 41, 59, 0.3);
+    border: 1px solid rgba(251, 191, 36, 0.12);
+    border-radius: 16px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+.challenge-rank-entry:hover {
+    background: rgba(251, 191, 36, 0.06);
+    border-color: rgba(251, 191, 36, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(251, 191, 36, 0.08);
+}
+.challenge-rank-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
+    flex-shrink: 0;
+}
+.challenge-rank-info {
+    flex: 1;
+    min-width: 0;
+}
+.challenge-rank-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #e2e8f0;
+}
+.challenge-rank-desc {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 3px;
+}
+.challenge-rank-arrow {
+    color: #475569;
+    font-size: 0.85rem;
+    transition: all 0.25s ease;
+    flex-shrink: 0;
+}
+.challenge-rank-entry:hover .challenge-rank-arrow {
+    color: #fbbf24;
+    transform: translateX(3px);
+}
