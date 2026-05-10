@@ -454,10 +454,10 @@ const ChallengeModule = {
                     : isCurrent ? '<i class="fas fa-play-circle"></i>'
                     : '';
 
-                // 地狱模式：根据 levelId 添加门造型
-                const _hellGateInfo = group.isHell ? this._getHellGateStyle(group.levelId, isLocked, isCleared, isCurrent) : null;
-                const _gateHtml = _hellGateInfo ? _hellGateInfo.html : '';
-                const _gateExtraClass = _hellGateInfo ? ' stage-gate' : '';
+                // 根据模式和 levelId 添加门造型
+                const _gateInfo = this._getGateStyle(group.isHell, group.levelId, isLocked, isCleared, isCurrent);
+                const _gateHtml = _gateInfo.html;
+                const _gateExtraClass = ' stage-gate';
 
                 stageGrid += `<div class="stage-card ${statusClass} ${group.isHell ? 'stage-hell' : ''}${_gateExtraClass}" onclick="${isLocked ? '' : `ChallengeModule.enterStage('${stage.id}')`}" ${isReadonly ? 'title="该课程暂未开放"' : ''}>
                     ${_gateHtml}
@@ -498,23 +498,42 @@ const ChallengeModule = {
 
 
     // 地狱关卡门造型：根据 BIPA 等级返回对应的小门 HTML
-    _getHellGateStyle(levelId, isLocked, isCleared, isCurrent) {
+    // 关卡门造型：根据模式和 BIPA 等级返回对应的小门 HTML
+    _getGateStyle(isHell, levelId, isLocked, isCleared, isCurrent) {
         const lv = parseInt(levelId) || 0;
-        const gates = [
-            { icon: 'fa-door-open',     color: '#a0845c', glow: 'rgba(160,132,92,0.3)',  label: '木门',     border: '#8b7355' },
-            { icon: 'fa-archway',       color: '#94a3b8', glow: 'rgba(148,163,184,0.3)', label: '石拱门',   border: '#64748b' },
-            { icon: 'fa-dungeon',       color: '#78716c', glow: 'rgba(120,113,108,0.3)', label: '铁门',     border: '#57534e' },
-            { icon: 'fa-torii-gate',    color: '#cd7f32', glow: 'rgba(205,127,50,0.4)',  label: '青铜门',   border: '#a0622a' },
-            { icon: 'fa-landmark',      color: '#c0c0c0', glow: 'rgba(192,192,192,0.4)', label: '银门',     border: '#a0a0a0' },
-            { icon: 'fa-church',        color: '#fbbf24', glow: 'rgba(251,191,36,0.4)',  label: '金门',     border: '#d4a017' },
-            { icon: 'fa-gem',           color: '#67e8f9', glow: 'rgba(103,232,249,0.4)', label: '水晶门',   border: '#22d3ee' },
-            { icon: 'fa-fire',          color: '#f87171', glow: 'rgba(248,113,113,0.5)', label: '烈焰门',   border: '#dc2626' },
+
+        // 普通模式门造型：清新、自然、成长感
+        const normalGates = [
+            { icon: 'fa-seedling',       color: '#4ade80', glow: 'rgba(74,222,128,0.3)',  label: '萌芽之门' },
+            { icon: 'fa-leaf',           color: '#34d399', glow: 'rgba(52,211,153,0.3)',  label: '翠叶之门' },
+            { icon: 'fa-tree',           color: '#22c55e', glow: 'rgba(34,197,94,0.3)',   label: '林木之门' },
+            { icon: 'fa-sun',            color: '#fbbf24', glow: 'rgba(251,191,36,0.35)', label: '阳光之门' },
+            { icon: 'fa-cloud-sun',      color: '#38bdf8', glow: 'rgba(56,189,248,0.35)', label: '晴空之门' },
+            { icon: 'fa-snowflake',      color: '#67e8f9', glow: 'rgba(103,232,249,0.35)',label: '冰雪之门' },
+            { icon: 'fa-star',           color: '#f59e0b', glow: 'rgba(245,158,11,0.4)',  label: '星辰之门' },
+            { icon: 'fa-crown',          color: '#facc15', glow: 'rgba(250,204,21,0.45)', label: '王者之门' },
         ];
+
+        // 地狱模式门造型：暗黑、金属、压迫感
+        const hellGates = [
+            { icon: 'fa-door-open',      color: '#a0845c', glow: 'rgba(160,132,92,0.3)',  label: '木门' },
+            { icon: 'fa-archway',        color: '#94a3b8', glow: 'rgba(148,163,184,0.3)', label: '石拱门' },
+            { icon: 'fa-dungeon',        color: '#78716c', glow: 'rgba(120,113,108,0.3)', label: '铁门' },
+            { icon: 'fa-torii-gate',     color: '#cd7f32', glow: 'rgba(205,127,50,0.4)',  label: '青铜门' },
+            { icon: 'fa-landmark',       color: '#c0c0c0', glow: 'rgba(192,192,192,0.4)', label: '银门' },
+            { icon: 'fa-church',         color: '#fbbf24', glow: 'rgba(251,191,36,0.4)',  label: '金门' },
+            { icon: 'fa-gem',            color: '#67e8f9', glow: 'rgba(103,232,249,0.4)', label: '水晶门' },
+            { icon: 'fa-fire',           color: '#f87171', glow: 'rgba(248,113,113,0.5)', label: '烈焰门' },
+        ];
+
+        const gates = isHell ? hellGates : normalGates;
         const g = gates[Math.min(lv, 7)];
+        const pulseColor = isHell ? 'rgba(239, 68, 68,' : 'rgba(99, 102, 241,';
         const dimmed = isLocked ? 'opacity:0.3;filter:grayscale(0.8);' : '';
         const clearedStyle = isCleared ? 'filter:saturate(0.5);' : '';
-        const currentPulse = isCurrent ? 'animation:sg-pulse 2s ease-in-out infinite;' : '';
-        const html = `<div class="sg-icon" style="${dimmed}${clearedStyle}${currentPulse}" title="${g.label}">
+        const currentPulse = isCurrent ? `animation:sg-pulse 2s ease-in-out infinite;` : '';
+        const glowBg = isCurrent ? `background:radial-gradient(circle,${g.glow},transparent 70%);` : '';
+        const html = `<div class="sg-icon${isHell ? ' sg-hell' : ' sg-normal'}" style="${glowBg}${dimmed}${clearedStyle}${currentPulse}" title="${g.label}">
             <i class="fas ${g.icon}" style="color:${g.color};font-size:1.4rem;"></i>
         </div>`;
         return { html, gate: g };

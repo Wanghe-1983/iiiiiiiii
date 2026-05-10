@@ -1028,7 +1028,7 @@
     color: var(--accent, #6366f1);
     font-weight: 600;
 }
-/* ========== 地狱关卡门造型 ========== */
+/* ========== 关卡门造型（普通+地狱） ========== */
 .stage-gate {
     position: relative;
 }
@@ -1042,24 +1042,58 @@
     margin-bottom: 2px;
     border-radius: 50%;
     position: relative;
+    transition: transform 0.2s;
 }
 
-.sg-icon::after {
+.stage-gate.available:hover .sg-icon {
+    transform: scale(1.15);
+}
+
+/* 普通模式门：清新圆环 */
+.sg-normal::before {
     content: '';
     position: absolute;
-    inset: -4px;
+    inset: -3px;
     border-radius: 50%;
-    border: 1.5px solid rgba(255,255,255,0.08);
+    border: 2px solid rgba(99, 102, 241, 0.2);
     pointer-events: none;
 }
 
-.stage-gate .stage-number {
-    margin-top: -2px;
+.sg-normal::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(99,102,241,0.08), transparent 70%);
+    pointer-events: none;
+}
+
+/* 地狱模式门：暗红棱角 */
+.sg-hell {
+    border-radius: 10px;
+}
+
+.sg-hell::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 12px;
+    border: 2px solid rgba(239, 68, 68, 0.15);
+    pointer-events: none;
+}
+
+.sg-hell::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    background: radial-gradient(circle, rgba(239,68,68,0.06), transparent 70%);
+    pointer-events: none;
 }
 
 @keyframes sg-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-    50% { box-shadow: 0 0 12px 4px rgba(239, 68, 68, 0.2); }
+    0%, 100% { box-shadow: 0 0 0 0 transparent; }
+    50% { box-shadow: 0 0 14px 4px rgba(239, 68, 68, 0.2); }
 }
 
 .stage-gate.cleared .sg-icon {
@@ -1071,22 +1105,6 @@
     filter: grayscale(0.8);
 }
 
-
-
-.mini-stars {
-    display: flex;
-    gap: 2px;
-    justify-content: center;
-}
-
-.mini-stars .fa-star {
-    font-size: 0.75rem;
-    color: #475569;
-}
-
-.mini-stars .fa-star.earned {
-    color: #fbbf24;
-}
 
 /* ========== 闯天关 - 答题 ========== */
 .challenge-play-page {
