@@ -134,8 +134,14 @@ function defaultSettings() {
         showRegCount: true,
         allowVisitorChallenge: false,
         visitorMultiDevice: true,
-        mainVersion: 'v2.49',              // 主界面版本号
-        mainChangelog: `v2.29
+        mainVersion: 'v2.50',              // 主界面版本号
+        mainChangelog: `v2.50
+- 新增：闯天关首页天堂/地狱双卡片主题设计
+- 新增：古门造型关卡入口，普通模式向上楼梯、地狱模式向下楼梯
+- 新增：卡片hover光晕与点击开门过渡动画
+- 优化：闯天关首页布局重设计，双模式卡片并排展示
+
+v2.29
 - 新增：版本更新自动检测，后台发布新版本后用户端弹窗提示刷新
 - 新增：用户名单下载功能（CSV 格式，可选是否包含管理员）
 - 新增：用户列表显示明文密码，支持管理员查看和修改
