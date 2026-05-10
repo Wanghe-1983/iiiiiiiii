@@ -134,8 +134,11 @@ function defaultSettings() {
         showRegCount: true,
         allowVisitorChallenge: false,
         visitorMultiDevice: true,
-        mainVersion: 'v2.50',              // 主界面版本号
-        mainChangelog: `v2.50
+        mainVersion: 'v2.51',              // 主界面版本号
+        mainChangelog: `v2.51
+- 修复：后台地狱模式设置保存不生效的问题（缺少启用开关元素）
+
+v2.50
 - 新增：闯天关首页天堂/地狱双卡片主题设计
 - 新增：古门造型关卡入口，普通模式向上楼梯、地狱模式向下楼梯
 - 新增：卡片hover光晕与点击开门过渡动画
@@ -664,28 +667,16 @@ async function handleStudyStats(context) {
 async function handleAdminGetSettings(context) {
     await requireAdmin(context);
     const settings = await getSettings(context.env) || defaultSettings();
-    console.log('[handleAdminGetSettings] hellSettings:', JSON.stringify(settings.hellSettings));
     return json(settings);
 }
 
 async function handleAdminPutSettings(context) {
     await requireAdmin(context);
     const updates = await context.request.json();
-    console.log('[handleAdminPutSettings] updates keys:', Object.keys(updates));
-    if (updates.hellSettings) {
-        console.log('[handleAdminPutSettings] hellSettings:', JSON.stringify(updates.hellSettings));
-    }
     // 合并模式：读取现有设置，仅更新传入的字段，防止部分面板保存时覆盖其他面板数据
     const existing = await getSettings(context.env) || defaultSettings();
-    if (existing.hellSettings) {
-        console.log('[handleAdminPutSettings] existing hellSettings:', JSON.stringify(existing.hellSettings));
-    }
     const merged = { ...existing, ...updates };
-    if (merged.hellSettings) {
-        console.log('[handleAdminPutSettings] merged hellSettings keys:', Object.keys(merged.hellSettings));
-    }
     await setSettings(context.env, merged);
-    console.log('[handleAdminPutSettings] saved successfully');
     return jsonOK({ message: '设置已保存' });
 }
 
