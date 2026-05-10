@@ -1028,6 +1028,50 @@
     color: var(--accent, #6366f1);
     font-weight: 600;
 }
+/* ========== 地狱关卡门造型 ========== */
+.stage-gate {
+    position: relative;
+}
+
+.sg-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 2px;
+    border-radius: 50%;
+    position: relative;
+}
+
+.sg-icon::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    pointer-events: none;
+}
+
+.stage-gate .stage-number {
+    margin-top: -2px;
+}
+
+@keyframes sg-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    50% { box-shadow: 0 0 12px 4px rgba(239, 68, 68, 0.2); }
+}
+
+.stage-gate.cleared .sg-icon {
+    filter: saturate(0.5) brightness(0.8);
+}
+
+.stage-gate.locked .sg-icon {
+    opacity: 0.3;
+    filter: grayscale(0.8);
+}
+
+
 
 .mini-stars {
     display: flex;
