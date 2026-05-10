@@ -135,7 +135,13 @@ function defaultSettings() {
         allowVisitorChallenge: false,
         visitorMultiDevice: true,
         mainVersion: 'v2.52',              // 主界面版本号
-        mainChangelog: `v2.51
+        mainChangelog: `v2.52
+- 新增：跳题功能（跳过当前题、返回检查、题号导航条快速定位空题）
+- 新增：普通模式交卷制（点击"开始闯关"才看题+计时，交卷才统计成绩）
+- 新增：地狱模式高级配置项全后台可配置（阅卷方式/允许跳题/允许返回/显示导航/准确率淘汰线）
+- 优化：地狱模式准确率淘汰线默认值调整为30%
+
+v2.51
 - 修复：后台地狱模式设置保存不生效的问题（缺少启用开关元素）
 
 v2.50

@@ -2760,11 +2760,14 @@ function toggleQuestionTypeOptions(mode) {
             if (tab === 'whitelist') { loadEmployees(); }
             if (tab === 'settings') loadSystemSettings();
             if (tab === 'visitor') loadVisitorSettings();
-            if (tab === 'challenge') loadChallengeSettings();
+            if (tab === 'challenge') { loadChallengeSettings(); loadMainVersionInfo(); }
             if (tab === 'study') { loadStudySettings(); loadStudyStats(); }
             if (tab === 'changelog') { loadChangelog(); loadMainVersionInfo(); }
             if (tab === 'broadcast') { loadBroadcastList(); loadBroadcastConfig(); }
-        };
+        }
+
+        // 后台加载时自动从KV读取版本号回显
+        loadMainVersionInfo();;
     // ========== 学习统计管理 ==========
     
     // ========== 勤学苦练设置 - 加载 ==========
