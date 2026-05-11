@@ -18,7 +18,7 @@ const CONFIG = {
     apiBase: "",
 
     // 版本
-    version: "2.53"
+    version: "2.54"
 };
 
 /**

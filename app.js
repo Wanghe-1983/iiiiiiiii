@@ -2458,7 +2458,52 @@ function escHtml(str) {
 // ============================================================
 // 【v1.2 页面导航切换】
 // ============================================================
-function switchMainPage(page) {
+
+// 页面切换过渡完成处理
+function _finishPageTransition(pageEl) {
+    const overlay = document.getElementById('page-transition-overlay');
+    if (overlay) {
+        overlay.className = 'page-transition-overlay done';
+        setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 400);
+    }
+    if (pageEl) {
+        pageEl.classList.add('page-fade-in');
+        setTimeout(() => pageEl.classList.remove('page-fade-in'), 400);
+    }
+}
+
+async function switchMainPage(page) {
+    if (page === currentPage) return;
+
+    // === 页面切换过渡动画 ===
+    const activePage = document.querySelector('#page-home[style*="display: """], #page-home[style*="display:"]') 
+        || document.querySelector('#page-study[style*="display: """], #page-study[style*="display:"]')
+        || document.querySelector('#page-challenge[style*="display: """], #page-challenge[style*="display:"]');
+    
+    // 创建过渡遮罩
+    let overlay = document.getElementById('page-transition-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'page-transition-overlay';
+        overlay.className = 'page-transition-overlay';
+        overlay.innerHTML = '<div class="pt-bar"></div>';
+        document.body.appendChild(overlay);
+    }
+    
+    // 淡出当前页面
+    const pages = document.querySelectorAll('#page-home, #page-study, #page-challenge');
+    pages.forEach(p => {
+        if (p.style.display !== 'none') {
+            p.classList.add('page-fade-out');
+        }
+    });
+    
+    overlay.className = 'page-transition-overlay active';
+    await new Promise(r => setTimeout(r, 200));
+    
+    // 清理淡出class
+    pages.forEach(p => p.classList.remove('page-fade-out'));
+    
     currentPage = page;
 
     const mainContainer = document.querySelector('.main-container');
@@ -2499,6 +2544,7 @@ function switchMainPage(page) {
         const homeBar = document.getElementById('home-user-bar');
         if (homeBar) homeBar.style.display = '';
         renderHomeUserBar();
+        _finishPageTransition(pageHome);
     } else if (page === 'study') {
         // 勤学苦练：显示侧边栏，导航栏改为返回+标题
         if (mainContainer) {
@@ -2527,7 +2573,7 @@ function switchMainPage(page) {
         // 延迟初始化子模块
         if (subTab === 'practice') initPracticePage();
         else if (subTab === 'stats') initDashboardPage();
-
+        _finishPageTransition(pageStudy);
     } else if (page === 'challenge') {
         // 闯天关：访客检查
         const isVisitor = sessionStorage.getItem('fmi_visitor_login');
@@ -2540,8 +2586,21 @@ function switchMainPage(page) {
             } else {
                 alert('访客无法使用闯天关功能，请注册账号后体验。');
             }
-            switchMainPage('home');
-            return;
+            currentPage = 'home'; // 重置，防止递归
+            _finishPageTransition(null);
+            // 走home分支逻辑
+            if (pageHome) pageHome.style.display = '';
+            if (mainContainer) mainContainer.classList.add('full-width');
+            if (navTabs) { navTabs.style.display = 'none'; navTabs.style.justifyContent = ''; }
+            if (sidebar) sidebar.style.display = 'none';
+            if (toggleTab) toggleTab.style.display = 'none';
+            if (mainHeader) mainHeader.style.display = 'none';
+            if (copyRight) copyRight.style.display = '';
+            const homeBar2 = document.getElementById('home-user-bar');
+            if (homeBar2) homeBar2.style.display = '';
+            renderHomeUserBar();
+            _finishPageTransition(pageHome);
+            return; // 重要：防止继续执行challenge分支
         }
         // 闯天关：隐藏侧边栏，导航栏改为返回+标题
         if (mainContainer) mainContainer.classList.add('full-width');
@@ -2557,6 +2616,7 @@ function switchMainPage(page) {
         if (copyRight) copyRight.style.display = '';
         // 延迟初始化
         initChallengePage();
+        _finishPageTransition(pageChallenge);
     }
 }
 

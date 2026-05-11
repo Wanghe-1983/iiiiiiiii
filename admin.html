@@ -10,9 +10,9 @@
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理后台 - 印尼语学习助手</title>
-    <link rel="stylesheet" href="style.css?v=20260511">
+    <link rel="stylesheet" href="style.css?v=202605112200">
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="config.js?v=20260511"></script>
+    <script src="config.js?v=202605112200"></script>
     <script>
     // ========== 后台管理本地 Fallback 模式 ==========
     // 当 API 不可用时，自动降级到 localStorage 管理
@@ -1253,7 +1253,57 @@
                     </div>
 
 
-                        <!-- 保存地狱模式 -->
+                        
+                        <!-- BOSS战配置 -->
+                        <div style="margin-top:20px;">
+                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:12px 16px;background:linear-gradient(135deg,rgba(220,38,38,0.15),rgba(168,85,247,0.15));border:1px solid rgba(220,38,38,0.3);border-radius:12px;">
+                                <i class="fas fa-dragon" style="font-size:1.3rem;color:#ef4444;"></i>
+                                <span style="font-size:1rem;font-weight:700;color:#fbbf24;">BOSS 战配置</span>
+                                <span id="boss-config-hint" style="margin-left:auto;font-size:0.75rem;color:#64748b;">已启用</span>
+                            </div>
+                            <div style="background:rgba(15,23,42,0.5);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:16px;">
+                                <!-- 全局开关 -->
+                                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                                    <label style="font-size:0.85rem;color:#cbd5e1;">启用BOSS战</label>
+                                    <label style="position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;">
+                                        <input type="checkbox" id="setBossEnabled" checked style="opacity:0;width:0;height:0;">
+                                        <span style="position:absolute;inset:0;background:rgba(100,116,139,0.4);border-radius:24px;transition:.3s;"></span>
+                                        <span style="position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;"></span>
+                                    </label>
+                                </div>
+                                <!-- 题目来源 -->
+                                <div style="margin-bottom:14px;">
+                                    <label style="display:block;font-size:0.8rem;color:#64748b;margin-bottom:6px;">题目来源模式</label>
+                                    <select id="setBossQuestionSource" style="padding:8px 12px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:0.9rem;width:100%;">
+                                        <option value="random">随机（当前等级及之前）</option>
+                                        <option value="specific">指定范围（70%当前+30%复习）</option>
+                                    </select>
+                                    <span style="font-size:0.7rem;color:#64748b;">BOSS关卡题目抽取方式</span>
+                                </div>
+                                <!-- 等级BOSS配置表 -->
+                                <div style="margin-bottom:10px;">
+                                    <label style="display:block;font-size:0.8rem;color:#64748b;margin-bottom:8px;">各等级BOSS配置</label>
+                                    <div id="bossLevelConfigContainer" style="max-height:420px;overflow-y:auto;padding-right:4px;">
+                                        <!-- 由JS动态生成 -->
+                                    </div>
+                                </div>
+                                <button type="button" onclick="addBossLevelRow()" style="width:100%;padding:8px;background:rgba(34,197,94,0.1);color:#22c55e;border:1px dashed rgba(34,197,94,0.4);border-radius:8px;font-size:0.8rem;cursor:pointer;margin-bottom:12px;">
+                                    <i class="fas fa-plus"></i> 添加等级配置
+                                </button>
+                                <!-- 操作提示 -->
+                                <div style="padding:10px 14px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:8px;">
+                                    <div style="font-size:0.75rem;color:#fbbf24;font-weight:600;margin-bottom:4px;"><i class="fas fa-info-circle"></i> 说明</div>
+                                    <div style="font-size:0.7rem;color:#94a3b8;line-height:1.6;">
+                                        BOSS HP = BOSS血量（答错减少，归零即通关）<br>
+                                        用户HP = 用户生命值（答错扣血，归零即失败）<br>
+                                        题量 = 该BOSS关的总题目数<br>
+                                        题目范围 = 从哪些等级抽取题目（逗号分隔）<br>
+                                        小BOSS在等级内均匀分布，大BOSS在等级末尾
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+<!-- 保存地狱模式 -->
                         <div style="margin-top:20px;display:flex;gap:10px;">
                             <button class="hdr-btn" onclick="saveHellChallengeSettings()" style="flex:1;background:rgba(248,113,113,0.2);color:#f87171;border:1px solid rgba(248,113,113,0.4);"><i class="fas fa-skull-crossbones"></i> 保存地狱模式</button>
                         </div>
@@ -1836,9 +1886,193 @@ let allUsers = [];
         document.getElementById('hellFillOptions').style.display = (hs.fillWeight > 0) ? 'block' : 'none';
         document.getElementById('hellListeningOptions').style.display = (hs.listeningWeight > 0) ? 'block' : 'none';
 
+        // BOSS战配置加载
+        loadBossConfigToUI(hs.bossConfig || null);
+
         // 初始化完成后计算关卡数
         updateStageCountEstimate();
     }
+
+
+// ==================== BOSS战配置 ====================
+const BOSS_DEFAULT_LEVELS = ['0','1','2','3','4','5','6','7'];
+
+function createBossLevelRow(levelId, data) {
+    const d = data || {};
+    const miniEnabled = d.mini && d.mini.enabled;
+    const bigEnabled = d.big && d.big.enabled;
+    const mini = d.mini || {};
+    const big = d.big || {};
+    
+    const row = document.createElement('div');
+    row.className = 'boss-level-row';
+    row.dataset.level = levelId;
+    row.style.cssText = 'margin-bottom:12px;padding:12px;background:rgba(30,41,59,0.4);border:1px solid rgba(255,255,255,0.06);border-radius:10px;';
+    
+    row.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <span style="font-size:0.85rem;font-weight:600;color:#e2e8f0;"><i class="fas fa-layer-group" style="color:#fbbf24;margin-right:6px;"></i>等级 ${levelId}</span>
+            <button type="button" onclick="this.closest('.boss-level-row').remove()" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:0.8rem;padding:4px 8px;"><i class="fas fa-trash"></i></button>
+        </div>
+        <!-- 大BOSS -->
+        <div style="padding:8px 10px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15);border-radius:8px;margin-bottom:8px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                <i class="fas fa-dragon" style="color:#ef4444;font-size:0.9rem;"></i>
+                <span style="font-size:0.8rem;color:#fbbf24;font-weight:600;">大BOSS</span>
+                <label style="margin-left:auto;position:relative;display:inline-block;width:40px;height:22px;cursor:pointer;">
+                    <input type="checkbox" class="boss-big-enabled" ${bigEnabled ? 'checked' : ''} style="opacity:0;width:0;height:0;">
+                    <span style="position:absolute;inset:0;background:rgba(100,116,139,0.4);border-radius:22px;transition:.3s;"></span>
+                    <span style="position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;"></span>
+                </label>
+            </div>
+            <div class="boss-big-fields" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                <div><label style="font-size:0.7rem;color:#64748b;">BOSS HP</label><input type="number" class="boss-big-hp" min="1" max="50" value="${big.bossHp||10}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+                <div><label style="font-size:0.7rem;color:#64748b;">用户HP</label><input type="number" class="boss-big-userhp" min="1" max="10" value="${big.userHp||3}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+                <div><label style="font-size:0.7rem;color:#64748b;">题量</label><input type="number" class="boss-big-questions" min="3" max="50" value="${big.questionCount||12}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+                <div style="grid-column:span 3;"><label style="font-size:0.7rem;color:#64748b;">题目范围（等级ID，逗号分隔）</label><input type="text" class="boss-big-range" value="${(big.questionRange||[]).join(',')}" placeholder="如: 0,1,2" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+            </div>
+        </div>
+        <!-- 小BOSS -->
+        <div style="padding:8px 10px;background:rgba(168,85,247,0.08);border:1px solid rgba(168,85,247,0.15);border-radius:8px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                <i class="fas fa-ghost" style="color:#a855f7;font-size:0.9rem;"></i>
+                <span style="font-size:0.8rem;color:#c084fc;font-weight:600;">小BOSS</span>
+                <label style="margin-left:auto;position:relative;display:inline-block;width:40px;height:22px;cursor:pointer;">
+                    <input type="checkbox" class="boss-mini-enabled" ${miniEnabled ? 'checked' : ''} style="opacity:0;width:0;height:0;">
+                    <span style="position:absolute;inset:0;background:rgba(100,116,139,0.4);border-radius:22px;transition:.3s;"></span>
+                    <span style="position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;"></span>
+                </label>
+            </div>
+            <div class="boss-mini-fields" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;">
+                <div><label style="font-size:0.7rem;color:#64748b;">数量</label><input type="number" class="boss-mini-count" min="1" max="10" value="${mini.count||2}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+                <div><label style="font-size:0.7rem;color:#64748b;">间隔(关)</label><input type="number" class="boss-mini-interval" min="5" max="50" value="${mini.interval||20}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+                <div><label style="font-size:0.7rem;color:#64748b;">BOSS HP</label><input type="number" class="boss-mini-hp" min="1" max="30" value="${mini.bossHp||5}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+                <div><label style="font-size:0.7rem;color:#64748b;">用户HP</label><input type="number" class="boss-mini-userhp" min="1" max="10" value="${mini.userHp||3}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+                <div><label style="font-size:0.7rem;color:#64748b;">题量</label><input type="number" class="boss-mini-questions" min="3" max="30" value="${mini.questionCount||8}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+                <div style="grid-column:span 3;"><label style="font-size:0.7rem;color:#64748b;">题目范围（等级ID，逗号分隔）</label><input type="text" class="boss-mini-range" value="${(mini.questionRange||[]).join(',')}" placeholder="如: 0,1,2,3" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+            </div>
+        </div>
+    `;
+    
+    // Toggle开关样式联动
+    const toggleSwitches = row.querySelectorAll('input[type="checkbox"]');
+    toggleSwitches.forEach(cb => {
+        const updateSwitch = () => {
+            const track = cb.nextElementSibling;
+            const thumb = track.nextElementSibling;
+            if (cb.checked) {
+                track.style.background = 'rgba(34,197,94,0.6)';
+                thumb.style.transform = 'translateX(20px)';
+            } else {
+                track.style.background = 'rgba(100,116,139,0.4)';
+                thumb.style.transform = 'translateX(0)';
+            }
+        };
+        updateSwitch();
+        cb.addEventListener('change', updateSwitch);
+    });
+    
+    return row;
+}
+
+function addBossLevelRow(levelId, data) {
+    if (!levelId) {
+        // 自动选择下一个可用等级
+        const existing = document.querySelectorAll('.boss-level-row');
+        const usedLevels = new Set();
+        existing.forEach(r => usedLevels.add(r.dataset.level));
+        for (let i = 0; i <= 20; i++) {
+            if (!usedLevels.has(String(i))) { levelId = String(i); break; }
+        }
+        if (!levelId) levelId = String(existing.length);
+    }
+    const container = document.getElementById('bossLevelConfigContainer');
+    container.appendChild(createBossLevelRow(levelId, data));
+}
+
+function collectBossConfig() {
+    const rows = document.querySelectorAll('.boss-level-row');
+    const levelBosses = {};
+    rows.forEach(row => {
+        const lvl = row.dataset.level;
+        const miniEnabled = row.querySelector('.boss-mini-enabled').checked;
+        const bigEnabled = row.querySelector('.boss-big-enabled').checked;
+        
+        const parseRange = (val) => {
+            if (!val || !val.trim()) return null;
+            return val.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+        };
+        
+        const config = {};
+        
+        if (miniEnabled || bigEnabled) {
+            if (miniEnabled) {
+                config.mini = {
+                    enabled: true,
+                    count: parseInt(row.querySelector('.boss-mini-count').value) || 2,
+                    interval: parseInt(row.querySelector('.boss-mini-interval').value) || 20,
+                    bossLevel: lvl,
+                    bossHp: parseInt(row.querySelector('.boss-mini-hp').value) || 5,
+                    userHp: parseInt(row.querySelector('.boss-mini-userhp').value) || 3,
+                    questionCount: parseInt(row.querySelector('.boss-mini-questions').value) || 8,
+                    questionRange: parseRange(row.querySelector('.boss-mini-range').value) || null
+                };
+            } else {
+                config.mini = { enabled: false };
+            }
+            if (bigEnabled) {
+                config.big = {
+                    enabled: true,
+                    bossLevel: lvl,
+                    bossHp: parseInt(row.querySelector('.boss-big-hp').value) || 10,
+                    userHp: parseInt(row.querySelector('.boss-big-userhp').value) || 3,
+                    questionCount: parseInt(row.querySelector('.boss-big-questions').value) || 12,
+                    questionRange: parseRange(row.querySelector('.boss-big-range').value) || null
+                };
+            } else {
+                config.big = { enabled: false };
+            }
+        }
+        
+        if (Object.keys(config).length > 0) levelBosses[lvl] = config;
+    });
+    
+    return {
+        enabled: document.getElementById('setBossEnabled').checked,
+        questionSource: document.getElementById('setBossQuestionSource').value || 'random',
+        levelBosses
+    };
+}
+
+function loadBossConfigToUI(bossConfig) {
+    const bc = bossConfig || {};
+    document.getElementById('setBossEnabled').checked = bc.enabled !== false;
+    
+    // 更新开关样式
+    const mainToggle = document.getElementById('setBossEnabled');
+    const mainTrack = mainToggle.nextElementSibling;
+    const mainThumb = mainTrack.nextElementSibling;
+    if (bc.enabled !== false) {
+        mainTrack.style.background = 'rgba(34,197,94,0.6)';
+        mainThumb.style.transform = 'translateX(20px)';
+    }
+    
+    document.getElementById('setBossQuestionSource').value = bc.questionSource || 'random';
+    document.getElementById('boss-config-hint').textContent = bc.enabled !== false ? '已启用' : '已关闭';
+    document.getElementById('boss-config-hint').style.color = bc.enabled !== false ? '#22c55e' : '#64748b';
+    
+    const container = document.getElementById('bossLevelConfigContainer');
+    container.innerHTML = '';
+    
+    const levels = bc.levelBosses || {};
+    const levelIds = Object.keys(levels).sort((a, b) => parseInt(a) - parseInt(b));
+    if (levelIds.length === 0) {
+        // 使用默认配置
+        BOSS_DEFAULT_LEVELS.forEach(lvl => addBossLevelRow(lvl, null));
+    } else {
+        levelIds.forEach(lvl => addBossLevelRow(lvl, levels[lvl]));
+    }
+}
 
 // 题型权重变化联动：填空/听力选项区显隐
 function toggleQuestionTypeOptions(mode) {
@@ -2020,6 +2254,8 @@ function toggleQuestionTypeOptions(mode) {
             timeWeight: parseFloat(document.getElementById('setNormalTimeWeight').value) || 0.1,
             timeMultiplier: parseInt(document.getElementById('setNormalTimeMultiplier').value) || 5,
             autoContentCount, wordsPerStage, sentencesPerStage, dialoguesPerStage,
+            // BOSS战配置
+            bossConfig: collectBossConfig(),
         };
 
         var settings = {

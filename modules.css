@@ -3831,3 +3831,370 @@
     user-select: none;
     cursor: default;
 }
+
+/* ========== 闯天关UI升级 v2.54 ========== */
+
+/* 页面过渡动画 */
+.page-transition-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 99999;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.page-transition-overlay .pt-bar {
+    width: 0%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--accent, #6366f1), transparent);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.page-transition-overlay.active .pt-bar {
+    width: 60%;
+}
+
+.page-transition-overlay.done .pt-bar {
+    width: 100%;
+    opacity: 0;
+    transition: width 0.2s ease, opacity 0.2s ease 0.1s;
+}
+
+/* 页面内容淡入淡出 */
+.page-fade-in {
+    animation: pageFadeIn 0.35s ease-out;
+}
+
+@keyframes pageFadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.page-fade-out {
+    animation: pageFadeOut 0.2s ease-in;
+}
+
+@keyframes pageFadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-8px); }
+}
+
+/* 关卡卡片升级 */
+.stage-card {
+    backdrop-filter: blur(4px);
+    position: relative;
+    overflow: hidden;
+}
+
+.stage-card::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.02), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+
+.stage-card:hover::before {
+    opacity: 1;
+}
+
+.stage-card.available:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 8px 25px rgba(99,102,241,0.15);
+}
+
+.stage-card.current {
+    box-shadow: 0 0 20px rgba(99,102,241,0.1);
+}
+
+.stage-card.current:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 8px 30px rgba(99,102,241,0.25);
+}
+
+/* 关卡图标升级 */
+.sg-icon {
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.sg-icon:hover {
+    transform: scale(1.1) rotate(3deg);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+/* 关卡数字升级 */
+.stage-number {
+    text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    letter-spacing: 0.5px;
+}
+
+/* 关卡网格升级 */
+.stage-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
+    gap: 10px;
+    padding: 4px 0;
+}
+
+/* 总结卡片升级 */
+.stages-summary {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.summary-card {
+    flex: 1;
+    text-align: center;
+    padding: 12px 8px;
+    background: rgba(30, 41, 59, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    transition: transform 0.2s;
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+}
+
+.summary-num {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #e2e8f0;
+    margin-bottom: 2px;
+}
+
+.summary-label {
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* BOSS关卡标签升级 */
+.stage-boss-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #c084fc;
+    text-shadow: 0 0 8px rgba(192,132,252,0.3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 72px;
+}
+
+/* 关卡最佳成绩 */
+.stage-best {
+    font-size: 0.6rem;
+    color: #10b981;
+    font-weight: 600;
+    text-shadow: 0 0 6px rgba(16,185,129,0.2);
+}
+
+/* 关卡提示 */
+.stage-hint {
+    font-size: 0.6rem;
+    color: var(--accent, #6366f1);
+    font-weight: 600;
+    animation: hintBlink 2s ease-in-out infinite;
+}
+
+@keyframes hintBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* 闯天关首页卡片升级 */
+.ch-mode-card {
+    min-height: 280px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+}
+
+.ch-mode-card:hover {
+    box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+}
+
+/* 闯天关首页头部优化 */
+.ch-home {
+    gap: 20px;
+    padding: 12px 0 20px;
+}
+
+.ch-home-title {
+    font-size: 1.6rem;
+    background: linear-gradient(135deg, #6366f1, #a78bfa, #6366f1);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: titleShimmer 3s ease-in-out infinite;
+}
+
+@keyframes titleShimmer {
+    0%, 100% { background-position: 0% center; }
+    50% { background-position: 200% center; }
+}
+
+.ch-home-subtitle {
+    font-size: 0.82rem;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+/* 关卡等级标题样式 */
+.stages-level-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 4px 4px;
+    position: relative;
+}
+
+.stages-level-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.06), transparent);
+    margin-left: 8px;
+}
+
+/* 隐藏页脚版权在闯天关模块中 */
+.challenge-module ~ #copyright,
+.challenge-module + .copyright {
+    display: none;
+}
+
+
+/* ========== 称号佩戴功能 ========== */
+.title-wall-item.equipped {
+    border-color: rgba(250, 204, 21, 0.5) !important;
+    box-shadow: 0 0 16px rgba(250, 204, 21, 0.15);
+}
+
+.title-wall-item.equipped::after {
+    content: '';
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 18px; height: 18px;
+    background: rgba(250, 204, 21, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.title-equip-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    margin-top: 6px;
+    background: rgba(99, 102, 241, 0.15);
+    color: #818cf8;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 8px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.title-equip-btn:hover {
+    background: rgba(99, 102, 241, 0.25);
+    transform: translateY(-1px);
+}
+
+.title-equip-btn.equipped {
+    background: rgba(250, 204, 21, 0.15);
+    color: #fbbf24;
+    border-color: rgba(250, 204, 21, 0.4);
+}
+
+.title-equip-btn.equipped:hover {
+    background: rgba(250, 204, 21, 0.25);
+}
+
+
+/* ========== BOSS图鉴 ========== */
+.boss-codex-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 20px;
+}
+
+.boss-codex-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s;
+}
+
+.boss-codex-card:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.boss-codex-card.final-boss {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(220, 38, 38, 0.04));
+    border-color: rgba(239, 68, 68, 0.25);
+}
+
+.boss-codex-avatar {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.boss-codex-info {
+    flex: 1;
+}
+
+.boss-codex-name {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.boss-codex-level {
+    font-size: 0.7rem;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.boss-codex-desc {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.boss-codex-final-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    margin-top: 6px;
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 600;
+}

@@ -827,7 +827,7 @@ const ChallengeModule = {
                 ">
                     ${innerContent}
                 </div>
-                ${isMini ? `<div style="position:absolute;top:4px;right:4px;font-size:0.55rem;padding:1px 4px;border-radius:4px;background:${color}22;color:${color};font-weight:600;">小</div>` : 
+                ${isMini ? `<div style="position:absolute;top:4px;right:4px;font-size:0.55rem;padding:1px 4px;border-radius:4px;background:${color}22;color:${color};font-weight:600;">小</div>` :
                 `<div style="position:absolute;top:4px;right:4px;font-size:0.55rem;padding:1px 4px;border-radius:4px;background:${color}44;color:${color};font-weight:600;">BOSS</div>`}
             </div>
         `;
@@ -835,36 +835,100 @@ const ChallengeModule = {
         return { html };
     },
 
+    // 称号佩戴
+    equipTitle(titleId) {
+        if (!this._earnedTitles[titleId]) return;
+        this._equippedTitleId = titleId;
+        // 保存到后端
+        if (typeof API !== 'undefined' && API.saveEquippedTitle) {
+            API.saveEquippedTitle(titleId).catch(() => {});
+        } else {
+            // fallback: 使用localStorage
+            try { localStorage.setItem('challenge_equipped_title', titleId); } catch(e) {}
+        }
+        // 显示提示
+        const def = this._titleDefs[titleId];
+        if (def) {
+            this._showToast(`已佩戴称号：${def.name}`, 'success');
+        }
+        // 刷新称号墙
+        const subContent = document.getElementById('challenge-sub-content');
+        if (subContent) this._renderTitlesWall(subContent);
+    }
+    // BOSS图鉴
+    renderBossCodex() {
+        const defs = this._bossDefs;
+        const subContent = document.getElementById('challenge-sub-content');
+        if (!subContent) return;
 
+        let html = `
+            <div class="ch-header">
+                <button class="ch-back-btn" onclick="ChallengeModule.enterTitles()">
+                    <i class="fas fa-arrow-left"></i> 返回称号墙
+                </button>
+                <h2 class="ch-title">BOSS 图鉴</h2>
+                <div class="ch-header-spacer"></div>
+            </div>
+            <div style="padding:8px 4px 4px;">
+                <p style="font-size:0.75rem;color:#64748b;margin-bottom:12px;text-align:center;">
+                    闯天关地狱模式中，每个等级末尾将出现大BOSS，4级起还有小BOSS出没。<br>击败它们可获得专属称号！
+                </p>
+                <div class="boss-codex-grid">
+        `;
 
+        const levels = Object.keys(defs).sort((a, b) => parseInt(a) - parseInt(b));
+        for (const lv of levels) {
+            const d = defs[lv];
+            const isFinalBoss = lv === '7';
+            html += `
+                <div class="boss-codex-card ${isFinalBoss ? 'final-boss' : ''}" style="border-color:${d.color}33;">
+                    <div class="boss-codex-avatar" style="background:radial-gradient(circle,${d.color}22,transparent 70%);border:2px solid ${d.color}44;">
+                        <i class="fas ${d.icon}" style="font-size:2rem;color:${d.color};filter:drop-shadow(0 0 8px ${d.color});"></i>
+                    </div>
+                    <div class="boss-codex-info">
+                        <div class="boss-codex-name" style="color:${d.color};">${d.name}</div>
+                        <div class="boss-codex-level">等级 ${lv} 守关者</div>
+                        <div class="boss-codex-desc">${d.desc}</div>
+                        ${isFinalBoss ? '<div class="boss-codex-final-tag"><i class="fas fa-crown"></i> 终极BOSS</div>' : ''}
+                    </div>
+                </div>
+            `;
+        }
 
+        html += `
+                </div>
+            </div>
+        `;
+
+        subContent.innerHTML = html;
+    },
     // 地狱关卡门造型：根据 BIPA 等级返回对应的小门 HTML
     // 关卡门造型：根据模式和 BIPA 等级返回对应的小门 HTML
     _getGateStyle(isHell, levelId, isLocked, isCleared, isCurrent) {
         const lv = parseInt(levelId) || 0;
 
-        // 普通模式门造型：清新、自然、成长感
+        // 普通模式门造型：冒险、旅程、探索感
         const normalGates = [
-            { icon: 'fa-seedling',       color: '#4ade80', glow: 'rgba(74,222,128,0.3)',  label: '萌芽之门' },
-            { icon: 'fa-leaf',           color: '#34d399', glow: 'rgba(52,211,153,0.3)',  label: '翠叶之门' },
-            { icon: 'fa-tree',           color: '#22c55e', glow: 'rgba(34,197,94,0.3)',   label: '林木之门' },
-            { icon: 'fa-sun',            color: '#fbbf24', glow: 'rgba(251,191,36,0.35)', label: '阳光之门' },
-            { icon: 'fa-cloud-sun',      color: '#38bdf8', glow: 'rgba(56,189,248,0.35)', label: '晴空之门' },
-            { icon: 'fa-snowflake',      color: '#67e8f9', glow: 'rgba(103,232,249,0.35)',label: '冰雪之门' },
-            { icon: 'fa-star',           color: '#f59e0b', glow: 'rgba(245,158,11,0.4)',  label: '星辰之门' },
-            { icon: 'fa-crown',          color: '#facc15', glow: 'rgba(250,204,21,0.45)', label: '王者之门' },
+            { icon: 'fa-mountain-sun',   color: '#34d399', glow: 'rgba(52,211,153,0.25)', label: '启程山门',  bg: 'linear-gradient(135deg,rgba(52,211,153,0.12),rgba(16,185,129,0.06))' },
+            { icon: 'fa-compass',        color: '#2dd4bf', glow: 'rgba(45,212,191,0.25)', label: '指南之门',  bg: 'linear-gradient(135deg,rgba(45,212,191,0.12),rgba(20,184,166,0.06))' },
+            { icon: 'fa-ship',           color: '#38bdf8', glow: 'rgba(56,189,248,0.25)', label: '远航之门',  bg: 'linear-gradient(135deg,rgba(56,189,248,0.12),rgba(14,165,233,0.06))' },
+            { icon: 'fa-hat-wizard',     color: '#a78bfa', glow: 'rgba(167,139,250,0.25)',label: '智慧之门',  bg: 'linear-gradient(135deg,rgba(167,139,250,0.12),rgba(139,92,246,0.06))' },
+            { icon: 'fa-wand-sparkles',  color: '#c084fc', glow: 'rgba(192,132,252,0.25)',label: '魔法之门',  bg: 'linear-gradient(135deg,rgba(192,132,252,0.12),rgba(168,85,247,0.06))' },
+            { icon: 'fa-shield-halved',  color: '#60a5fa', glow: 'rgba(96,165,250,0.25)', label: '守护之门',  bg: 'linear-gradient(135deg,rgba(96,165,250,0.12),rgba(59,130,246,0.06))' },
+            { icon: 'fa-chess-rook',     color: '#fbbf24', glow: 'rgba(251,191,36,0.25)', label: '城堡之门',  bg: 'linear-gradient(135deg,rgba(251,191,36,0.12),rgba(245,158,11,0.06))' },
+            { icon: 'fa-trophy',         color: '#f59e0b', glow: 'rgba(245,158,11,0.3)',  label: '荣耀之门',  bg: 'linear-gradient(135deg,rgba(245,158,11,0.12),rgba(217,119,6,0.06))' },
         ];
 
         // 地狱模式门造型：暗黑、金属、压迫感
         const hellGates = [
-            { icon: 'fa-door-open',      color: '#a0845c', glow: 'rgba(160,132,92,0.3)',  label: '木门' },
-            { icon: 'fa-archway',        color: '#94a3b8', glow: 'rgba(148,163,184,0.3)', label: '石拱门' },
-            { icon: 'fa-dungeon',        color: '#78716c', glow: 'rgba(120,113,108,0.3)', label: '铁门' },
-            { icon: 'fa-torii-gate',     color: '#cd7f32', glow: 'rgba(205,127,50,0.4)',  label: '青铜门' },
-            { icon: 'fa-landmark',       color: '#c0c0c0', glow: 'rgba(192,192,192,0.4)', label: '银门' },
-            { icon: 'fa-church',         color: '#fbbf24', glow: 'rgba(251,191,36,0.4)',  label: '金门' },
-            { icon: 'fa-gem',            color: '#67e8f9', glow: 'rgba(103,232,249,0.4)', label: '水晶门' },
-            { icon: 'fa-fire',           color: '#f87171', glow: 'rgba(248,113,113,0.5)', label: '烈焰门' },
+            { icon: 'fa-door-open',      color: '#a0845c', glow: 'rgba(160,132,92,0.3)',  label: '木门',      bg: 'linear-gradient(135deg,rgba(160,132,92,0.1),rgba(120,113,108,0.05))' },
+            { icon: 'fa-archway',        color: '#94a3b8', glow: 'rgba(148,163,184,0.3)', label: '石拱门',    bg: 'linear-gradient(135deg,rgba(148,163,184,0.1),rgba(100,116,139,0.05))' },
+            { icon: 'fa-dungeon',        color: '#78716c', glow: 'rgba(120,113,108,0.3)', label: '铁门',      bg: 'linear-gradient(135deg,rgba(120,113,108,0.1),rgba(87,83,78,0.05))' },
+            { icon: 'fa-torii-gate',     color: '#cd7f32', glow: 'rgba(205,127,50,0.4)',  label: '青铜门',    bg: 'linear-gradient(135deg,rgba(205,127,50,0.12),rgba(180,83,9,0.06))' },
+            { icon: 'fa-landmark',       color: '#c0c0c0', glow: 'rgba(192,192,192,0.4)', label: '银门',      bg: 'linear-gradient(135deg,rgba(192,192,192,0.12),rgba(148,163,184,0.06))' },
+            { icon: 'fa-church',         color: '#fbbf24', glow: 'rgba(251,191,36,0.4)',  label: '金门',      bg: 'linear-gradient(135deg,rgba(251,191,36,0.12),rgba(245,158,11,0.06))' },
+            { icon: 'fa-gem',            color: '#67e8f9', glow: 'rgba(103,232,249,0.4)', label: '水晶门',    bg: 'linear-gradient(135deg,rgba(103,232,249,0.12),rgba(34,211,238,0.06))' },
+            { icon: 'fa-fire',           color: '#f87171', glow: 'rgba(248,113,113,0.5)', label: '烈焰门',    bg: 'linear-gradient(135deg,rgba(248,113,113,0.15),rgba(239,68,68,0.08))' },
         ];
 
         const gates = isHell ? hellGates : normalGates;
@@ -873,7 +937,8 @@ const ChallengeModule = {
         const dimmed = isLocked ? 'opacity:0.3;filter:grayscale(0.8);' : '';
         const clearedStyle = isCleared ? 'filter:saturate(0.5);' : '';
         const currentPulse = isCurrent ? `animation:sg-pulse 2s ease-in-out infinite;` : '';
-        const glowBg = isCurrent ? `background:radial-gradient(circle,${g.glow},transparent 70%);` : '';
+        const gateBg = g.bg || '';
+        const glowBg = isCurrent ? `background:radial-gradient(circle,${g.glow},transparent 70%),${gateBg};` : (gateBg ? `background:${gateBg};` : '');
         const html = `<div class="sg-icon${isHell ? ' sg-hell' : ' sg-normal'}" style="${glowBg}${dimmed}${clearedStyle}${currentPulse}" title="${g.label}">
             <i class="fas ${g.icon}" style="color:${g.color};font-size:1.4rem;"></i>
         </div>`;
@@ -2662,7 +2727,11 @@ const ChallengeModule = {
                 const data = JSON.parse(cached);
                 this._earnedTitles = data.earnedTitles || {};
                 this._selectedTitle = data.selectedTitle || null;
-            } catch(e) {}
+                // 加载佩戴的称号
+                try { this._equippedTitleId = localStorage.getItem('challenge_equipped_title') || ''; } catch(e) { this._equippedTitleId = ''; }
+            } catch(e) {
+                this._equippedTitleId = '';
+            }
         }
 
         // 从服务端同步
@@ -2915,6 +2984,7 @@ const ChallengeModule = {
     _renderTitlesWall(container) {
         const defs = this._titleDefs;
         const earned = this._earnedTitles;
+        const equippedId = this._equippedTitleId || '';
 
         const categories = [
             { key: 'normal', label: '普通模式通关', icon: 'fa-book' },
@@ -2930,7 +3000,9 @@ const ChallengeModule = {
                     <i class="fas fa-arrow-left"></i> 返回
                 </button>
                 <h2 class="ch-title">称号墙</h2>
-                <div class="ch-header-spacer"></div>
+                <button class="ch-back-btn" onclick="ChallengeModule.renderBossCodex()" style="background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.3);" title="BOSS图鉴">
+                    <i class="fas fa-book-skull"></i> BOSS图鉴
+                </button>
             </div>
         `;
 
@@ -2963,14 +3035,18 @@ const ChallengeModule = {
 
             for (const t of catTitles) {
                 const isEarned = !!earned[t.id];
+                const isEquipped = equippedId === t.id;
                 html += `
-                    <div class="title-wall-item ${isEarned ? 'earned' : 'locked'} ${cat.key}">
+                    <div class="title-wall-item ${isEarned ? 'earned' : 'locked'} ${cat.key} ${isEquipped ? 'equipped' : ''}" data-title-id="${t.id}">
                         <div class="title-wall-icon">
                             <i class="fas ${isEarned ? t.icon : 'fa-lock'}"></i>
                         </div>
                         <div class="title-wall-name">${isEarned ? t.name : '???'}</div>
                         <div class="title-wall-desc">${t.desc}</div>
                         ${isEarned ? `<div class="title-wall-date">${this._formatTitleDate(earned[t.id])}</div>` : ''}
+                        ${isEarned ? `<button class="title-equip-btn ${isEquipped ? 'equipped' : ''}" onclick="ChallengeModule.equipTitle('${t.id}')">
+                            <i class="fas ${isEquipped ? 'fa-crown' : 'fa-hand-pointer'}"></i> ${isEquipped ? '已佩戴' : '佩戴'}
+                        </button>` : ''}
                     </div>
                 `;
             }
@@ -2997,30 +3073,33 @@ const ChallengeModule = {
         const earnedIds = Object.keys(earned);
         if (earnedIds.length === 0) return '';
 
-        // 称号优先级排序（从高到低）
-        const priority = [
-            'hell_star_7', 'hell_clear_7', 'hell_star_6', 'hell_clear_6',
-            'hell_star_5', 'hell_clear_5', 'hell_star_4', 'hell_clear_4',
-            'boss_final', 'boss_hunter_15', 'boss_perfect',
-            'hell_star_3', 'hell_clear_3', 'hell_star_2', 'hell_clear_2',
-            'hell_star_1', 'hell_clear_1', 'hell_star_0', 'hell_clear_0',
-            'hell_clear_all',
-            'normal_star_7', 'normal_clear_7', 'normal_star_6', 'normal_clear_6',
-            'normal_star_5', 'normal_clear_5', 'normal_star_4', 'normal_clear_4',
-            'normal_star_3', 'normal_clear_3', 'normal_star_2', 'normal_clear_2',
-            'normal_star_1', 'normal_clear_1', 'normal_star_0', 'normal_clear_0',
-            'normal_clear_all',
-            'boss_hunter_5', 'boss_first', 'clear_100',
-            'hell_streak_15', 'streak_20', 'speedrun', 'retry_star',
-            'words_2000', 'words_500', 'study_days_100', 'study_days_30',
-            'study_days_7', 'login_first',
-        ];
-
+        // 优先显示佩戴的称号，否则按优先级自动选择
         let bestTitleId = null;
-        for (const pid of priority) {
-            if (earned[pid]) { bestTitleId = pid; break; }
+        if (this._equippedTitleId && earned[this._equippedTitleId]) {
+            bestTitleId = this._equippedTitleId;
+        } else {
+            const priority = [
+                'hell_star_7', 'hell_clear_7', 'hell_star_6', 'hell_clear_6',
+                'hell_star_5', 'hell_clear_5', 'hell_star_4', 'hell_clear_4',
+                'boss_final', 'boss_hunter_15', 'boss_perfect',
+                'hell_star_3', 'hell_clear_3', 'hell_star_2', 'hell_clear_2',
+                'hell_star_1', 'hell_clear_1', 'hell_star_0', 'hell_clear_0',
+                'hell_clear_all',
+                'normal_star_7', 'normal_clear_7', 'normal_star_6', 'normal_clear_6',
+                'normal_star_5', 'normal_clear_5', 'normal_star_4', 'normal_clear_4',
+                'normal_star_3', 'normal_clear_3', 'normal_star_2', 'normal_clear_2',
+                'normal_star_1', 'normal_clear_1', 'normal_star_0', 'normal_clear_0',
+                'normal_clear_all',
+                'boss_hunter_5', 'boss_first', 'clear_100',
+                'hell_streak_15', 'streak_20', 'speedrun', 'retry_star',
+                'words_2000', 'words_500', 'study_days_100', 'study_days_30',
+                'study_days_7', 'login_first',
+            ];
+            for (const pid of priority) {
+                if (earned[pid]) { bestTitleId = pid; break; }
+            }
+            if (!bestTitleId) bestTitleId = earnedIds[0];
         }
-        if (!bestTitleId) bestTitleId = earnedIds[0];
 
         const def = this._titleDefs[bestTitleId];
         if (!def) return '';

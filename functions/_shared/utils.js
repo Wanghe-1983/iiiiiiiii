@@ -134,8 +134,18 @@ function defaultSettings() {
         showRegCount: true,
         allowVisitorChallenge: false,
         visitorMultiDevice: true,
-        mainVersion: 'v2.53',              // 主界面版本号
-        mainChangelog: `v2.53
+        mainVersion: 'v2.54',              // 主界面版本号
+        mainChangelog: `v2.54
+- 新增：管理后台BOSS配置UI（等级BOSS的HP/题量/题目范围/小BOSS数量间隔全可配）
+- 新增：BOSS图鉴（称号墙入口，展示8个BOSS形象/名称/等级/描述）
+- 新增：称号佩戴功能（已获称号可选择佩戴，佩戴后优先显示）
+- 优化：关卡图标体系升级（普通模式改为冒险主题：启程山门/指南之门/远航之门等）
+- 优化：地狱模式门造型增加渐变背景
+- 新增：菜单切换过渡动画（淡出+进度条+淡入效果）
+- 优化：闯天关首页标题渐变动画、卡片阴影、关卡悬浮交互
+- 优化：关卡网格尺寸/总结卡片/BOSS标签等细节样式提升
+
+v2.53
 - 新增：地狱模式BOSS战系统（生命值制，答对扣BOSS HP，答错扣用户HP）
 - 新增：8个BOSS独特造型（声之魔灵/婆罗多神将/Raksasa巨魔/Naga蛇龙/Garuda伽鲁达等）
 - 新增：BOSS暴怒模式（HP低于25%时触发抖动+脉冲特效）
