@@ -477,6 +477,19 @@ const ChallengeModule = {
         '5': { name: '浮屠守殿者', icon: 'fa-landmark', theme: 'temple', color: '#fb923c', desc: '高级进阶的石像守卫', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiU4rW5E' },
         '6': { name: 'Dewa 天神', icon: 'fa-bolt', theme: 'deity', color: '#38bdf8', desc: '精通篇的半神形态', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiUKszBI' },
         '7': { name: 'Ratu Iblis 魔王', icon: 'fa-skull', theme: 'demon', color: '#ef4444', desc: '卓越篇的终极魔王', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiUSGW74' },
+
+    // 用户角色形象定义（按等级成长）
+    _heroDefs: {
+        '0': { name: '初心学徒', icon: 'fa-person-hiking', color: '#34d399', desc: '手持木剑的少年冒险者', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjuqwzZY' },
+        '1': { name: '旅人剑士', icon: 'fa-person-military-rifle', color: '#2dd4bf', desc: '装备铁甲的年轻剑士', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjuXs35s' },
+        '2': { name: '荒野游侠', icon: 'fa-person-walking', color: '#4ade80', desc: '身披斗篷的弓箭手', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjvfkMhw' },
+        '3': { name: '龙骑士学徒', icon: 'fa-hat-wizard', color: '#fb923c', desc: '骑小龙的初级龙骑士', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjvlRyh0' },
+        '4': { name: '圣殿骑士', icon: 'fa-shield-halved', color: '#fbbf24', desc: '身披银甲的圣殿守卫', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjvOODO6' },
+        '5': { name: '元素法师', icon: 'fa-wand-magic-sparkles', color: '#c084fc', desc: '操控元素的强大法师', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjwaXlGC' },
+        '6': { name: '半神行者', icon: 'fa-bolt', color: '#38bdf8', desc: '身带神光的超凡存在', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjwMZB7g' },
+        '7': { name: '传奇勇者', icon: 'fa-crown', color: '#f59e0b', desc: '全身铠甲散发圣光的终极勇者', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjxpSEcC' },
+    },
+
     },
 
     _regenerateStages() {
@@ -1585,6 +1598,7 @@ const ChallengeModule = {
                     <div class="challenge-play-title">\u7b2c${stageIndex}\u5173</div>
                     <div class="challenge-timer"><i class="fas fa-clock"></i> ${mm}:${ss}</div>
                 </div>
+                ${this._renderBossHpBars(state)}
 
                 <div class="challenge-progress-bar">
                     <div class="challenge-progress-fill" style="width:${progressPct}%"></div>
@@ -2248,7 +2262,7 @@ const ChallengeModule = {
     // ========== BOSS 战核心方法 ==========
 
     /**
-     * 渲染 BOSS HP 条
+     * 渲染 BOSS 战对峙界面（双方形象 + HP条 + 动画）
      */
     _renderBossHpBars(state) {
         if (!state.isBoss) return '';
@@ -2259,16 +2273,42 @@ const ChallengeModule = {
         const rageClass = isRage ? ' boss-hp-rage' : '';
         const rageGlow = isRage ? 'animation:boss-hp-rage-pulse 0.8s ease-in-out infinite;' : '';
 
+        // 用户角色：根据当前关卡等级取对应形象
+        const heroLevel = String(state.bossLevel || 0);
+        const heroDef = this._heroDefs[heroLevel] || this._heroDefs['0'];
+        const heroColor = heroDef.color || '#60a5fa';
+        const heroName = heroDef.name || '勇者';
+
+        // BOSS形象图
+        const bossImg = bossDef.image
+            ? `<img src="${bossDef.image}" id="boss-battle-img" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid ${bossColor};box-shadow:0 0 20px ${bossColor}66;${isRage ? 'animation:boss-shake 0.3s ease-in-out infinite;' : ''}" alt="${bossName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><div style="display:none;width:64px;height:64px;border-radius:50%;border:3px solid ${bossColor};align-items:center;justify-content:center;box-shadow:0 0 20px ${bossColor}66;${isRage ? 'animation:boss-shake 0.3s ease-in-out infinite;' : ''}"><i class="fas ${bossDef.icon || 'fa-skull'}" style="color:${bossColor};font-size:24px;"></i></div>`
+            : `<div style="width:64px;height:64px;border-radius:50%;border:3px solid ${bossColor};display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px ${bossColor}66;${isRage ? 'animation:boss-shake 0.3s ease-in-out infinite;' : ''}"><i class="fas ${bossDef.icon || 'fa-skull'}" style="color:${bossColor};font-size:24px;"></i></div>`;
+
+        // 用户形象图
+        const heroImg = heroDef.image
+            ? `<img src="${heroDef.image}" id="hero-battle-img" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid ${heroColor};box-shadow:0 0 15px ${heroColor}44;" alt="${heroName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><div style="display:none;width:52px;height:52px;border-radius:50%;border:2px solid ${heroColor};display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px ${heroColor}44;"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};font-size:18px;"></i></div>`
+            : `<div style="width:52px;height:52px;border-radius:50%;border:2px solid ${heroColor};display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px ${heroColor}44;"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};font-size:18px;"></i></div>`;
+
         return `
-        <div class="boss-battle-ui">
-            <!-- BOSS 信息 -->
-            <div class="boss-info-row">
-                <div class="boss-avatar" style="border-color:${bossColor};${isRage ? 'box-shadow:0 0 15px '+bossColor+';' : ''}">
-                    <i class="fas ${bossDef.icon || 'fa-skull'}" style="color:${bossColor};font-size:22px;${isRage ? 'animation:boss-shake 0.3s ease-in-out infinite;' : ''}"></i>
+        <div class="boss-battle-ui" id="boss-battle-ui">
+            <!-- VS 对峙区域 -->
+            <div class="boss-vs-area" style="display:flex;align-items:center;justify-content:center;gap:12px;padding:10px 0 14px;">
+                <div class="boss-vs-hero" id="boss-vs-hero" style="text-align:center;">
+                    ${heroImg}
+                    <div style="font-size:0.65rem;color:${heroColor};margin-top:4px;font-weight:600;">${heroName}</div>
                 </div>
+                <div style="font-size:1.1rem;font-weight:900;color:#f59e0b;text-shadow:0 0 10px rgba(245,158,11,0.5);letter-spacing:2px;">VS</div>
+                <div class="boss-vs-boss" id="boss-vs-boss" style="text-align:center;">
+                    ${bossImg}
+                    <div style="font-size:0.65rem;color:${bossColor};margin-top:4px;font-weight:600;">${bossName}</div>
+                </div>
+            </div>
+
+            <!-- BOSS HP 条 -->
+            <div class="boss-info-row">
                 <div class="boss-hp-section" style="flex:1;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
-                        <span class="boss-name" style="color:${bossColor};">${bossName}</span>
+                        <span class="boss-name" style="color:${bossColor};"><i class="fas fa-skull-crossbones" style="margin-right:3px;font-size:0.7rem;"></i>${bossName}</span>
                         <span class="boss-hp-text" style="color:${bossColor};">${state.bossHp}/${state.bossMaxHp}</span>
                     </div>
                     <div class="boss-hp-bar${rageClass}" style="background:#1e293b;border:1px solid ${bossColor}44;border-radius:6px;overflow:hidden;height:14px;position:relative;${rageGlow}">
@@ -2277,19 +2317,16 @@ const ChallengeModule = {
                 </div>
             </div>
 
-            <!-- 用户 HP -->
-            <div class="user-hp-row">
+            <!-- 用户 HP 条 -->
+            <div class="user-hp-row" style="margin-top:6px;">
                 <div class="user-hp-section" style="flex:1;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
-                        <span style="font-size:0.75rem;color:#94a3b8;"><i class="fas fa-heart"></i> 我的HP</span>
+                        <span style="font-size:0.75rem;color:#94a3b8;"><i class="fas fa-heart" style="color:#f87171;margin-right:3px;"></i>${heroName}</span>
                         <span class="user-hp-text" style="color:#f87171;">${state.userHp}/${state.userMaxHp}</span>
                     </div>
                     <div style="background:#1e293b;border:1px solid #f8717133;border-radius:6px;overflow:hidden;height:12px;">
                         <div class="user-hp-fill" id="user-hp-fill" style="height:100%;background:linear-gradient(90deg,#f87171cc,#f87171);border-radius:5px;transition:width 0.4s ease;width:${state.userMaxHp > 0 ? (state.userHp / state.userMaxHp * 100) : 0}%;"></div>
                     </div>
-                </div>
-                <div class="user-avatar">
-                    <i class="fas fa-user" style="color:#60a5fa;font-size:16px;"></i>
                 </div>
             </div>
 
@@ -2347,29 +2384,52 @@ const ChallengeModule = {
      */
     _bossDamageEffect(damageType) {
         if (damageType === 'boss') {
-            // BOSS 受伤动画
-            const bossAvatar = document.querySelector('.boss-avatar');
+            // 用户攻击 BOSS：用户冲刺 → BOSS受击
+            const heroEl = document.getElementById('boss-vs-hero');
+            const bossEl = document.getElementById('boss-vs-boss');
             const bossHpFill = document.getElementById('boss-hp-fill');
-            if (bossAvatar) {
-                bossAvatar.style.animation = 'boss-hit 0.4s ease';
-                setTimeout(() => bossAvatar.style.animation = '', 400);
+            // 用户冲刺动画
+            if (heroEl) {
+                heroEl.style.animation = 'hero-attack 0.4s ease';
+                setTimeout(() => heroEl.style.animation = '', 400);
             }
+            // BOSS 受伤闪烁
+            setTimeout(() => {
+                if (bossEl) {
+                    bossEl.style.animation = 'boss-hit 0.4s ease';
+                    setTimeout(() => bossEl.style.animation = '', 400);
+                }
+            }, 200);
             if (bossHpFill) {
                 bossHpFill.style.transition = 'width 0.4s ease, background 0.2s';
                 bossHpFill.style.background = '#fff';
                 setTimeout(() => {
-                    bossHpFill.style.background = 'linear-gradient(90deg, #ef4444cc, #ef4444)';
+                    bossHpFill.style.background = '';
                     bossHpFill.style.transition = 'width 0.4s ease';
                 }, 200);
             }
         } else if (damageType === 'user') {
-            // 用户受伤动画
+            // BOSS 攻击用户：BOSS冲刺 → 用户受击
+            const heroEl = document.getElementById('boss-vs-hero');
+            const bossEl = document.getElementById('boss-vs-boss');
             const userHpFill = document.getElementById('user-hp-fill');
             const playPage = document.querySelector('.challenge-play-page');
+            // BOSS 冲刺动画
+            if (bossEl) {
+                bossEl.style.animation = 'boss-attack 0.4s ease';
+                setTimeout(() => bossEl.style.animation = '', 400);
+            }
+            // 用户受击闪烁
+            setTimeout(() => {
+                if (heroEl) {
+                    heroEl.style.animation = 'hero-hit 0.4s ease';
+                    setTimeout(() => heroEl.style.animation = '', 400);
+                }
+            }, 200);
             if (userHpFill) {
                 userHpFill.style.background = '#fff';
                 setTimeout(() => {
-                    userHpFill.style.background = 'linear-gradient(90deg, #f87171cc, #f87171)';
+                    userHpFill.style.background = '';
                 }, 200);
             }
             if (playPage) {
