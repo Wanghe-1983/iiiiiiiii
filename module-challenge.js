@@ -563,8 +563,6 @@ const ChallengeModule = {
         return bossInserts.length;
     },
 
-    ,
-
     /**
      * 创建 BOSS 关卡数据
      * @param {string} bossLevel - BOSS对应的等级(0-7)
