@@ -469,25 +469,25 @@ const ChallengeModule = {
 
     // BOSS 造型定义
     _bossDefs: {
-        '0': { name: '声之魔灵', icon: 'fa-wand-sparkles', theme: 'sound', color: '#a78bfa', desc: '掌控万音的魔灵', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiPPSYLR' },
-        '1': { name: '婆罗多神将', icon: 'fa-shield-halved', theme: 'warrior', color: '#60a5fa', desc: 'Dasar 基础的守关者', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiRzblWm' },
-        '2': { name: 'Raksasa 巨魔', icon: 'fa-hand-fist', theme: 'brute', color: '#4ade80', desc: '中级篇的野蛮守卫', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiSclZTg' },
-        '3': { name: 'Naga 蛇龙', icon: 'fa-dragon', theme: 'dragon', color: '#f87171', desc: '中高级的盘踞之龙', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiSNP33M' },
-        '4': { name: 'Garuda 伽鲁达', icon: 'fa-dove', theme: 'garuda', color: '#fbbf24', desc: '高级篇的神鸟之王', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiTqquKy' },
-        '5': { name: '浮屠守殿者', icon: 'fa-landmark', theme: 'temple', color: '#fb923c', desc: '高级进阶的石像守卫', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiU4rW5E' },
-        '6': { name: 'Dewa 天神', icon: 'fa-bolt', theme: 'deity', color: '#38bdf8', desc: '精通篇的半神形态', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiUKszBI' },
-        '7': { name: 'Ratu Iblis 魔王', icon: 'fa-skull', theme: 'demon', color: '#ef4444', desc: '卓越篇的终极魔王', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiUSGW74' },
+        '0': { name: '声之魔灵', icon: 'fa-wand-sparkles', theme: 'sound', color: '#a78bfa', desc: '掌控万音的魔灵', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjM8KCfO' },
+        '1': { name: '婆罗多神将', icon: 'fa-shield-halved', theme: 'warrior', color: '#60a5fa', desc: 'Dasar 基础的守关者', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMfyZDS' },
+        '2': { name: 'Raksasa 巨魔', icon: 'fa-hand-fist', theme: 'brute', color: '#4ade80', desc: '中级篇的野蛮守卫', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMleXYE' },
+        '3': { name: 'Naga 蛇龙', icon: 'fa-dragon', theme: 'dragon', color: '#f87171', desc: '中高级的盘踞之龙', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMqUWzW' },
+        '4': { name: 'Garuda 伽鲁达', icon: 'fa-dove', theme: 'garuda', color: '#fbbf24', desc: '高级篇的神鸟之王', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMz9jlO' },
+        '5': { name: '浮屠守殿者', icon: 'fa-landmark', theme: 'temple', color: '#fb923c', desc: '高级进阶的石像守卫', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMIw4DW' },
+        '6': { name: 'Dewa 天神', icon: 'fa-bolt', theme: 'deity', color: '#38bdf8', desc: '精通篇的半神形态', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMOtEUk' },
+        '7': { name: 'Ratu Iblis 魔王', icon: 'fa-skull', theme: 'demon', color: '#ef4444', desc: '卓越篇的终极魔王', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMVi1uQ' },
 
     // 用户角色形象定义（按等级成长）
     _heroDefs: {
-        '0': { name: '初心学徒', icon: 'fa-person-hiking', color: '#34d399', desc: '手持木剑的少年冒险者', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjuqwzZY' },
-        '1': { name: '旅人剑士', icon: 'fa-person-military-rifle', color: '#2dd4bf', desc: '装备铁甲的年轻剑士', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjuXs35s' },
-        '2': { name: '荒野游侠', icon: 'fa-person-walking', color: '#4ade80', desc: '身披斗篷的弓箭手', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjvfkMhw' },
-        '3': { name: '龙骑士学徒', icon: 'fa-hat-wizard', color: '#fb923c', desc: '骑小龙的初级龙骑士', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjvlRyh0' },
-        '4': { name: '圣殿骑士', icon: 'fa-shield-halved', color: '#fbbf24', desc: '身披银甲的圣殿守卫', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjvOODO6' },
-        '5': { name: '元素法师', icon: 'fa-wand-magic-sparkles', color: '#c084fc', desc: '操控元素的强大法师', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjwaXlGC' },
-        '6': { name: '半神行者', icon: 'fa-bolt', color: '#38bdf8', desc: '身带神光的超凡存在', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjwMZB7g' },
-        '7': { name: '传奇勇者', icon: 'fa-crown', color: '#f59e0b', desc: '全身铠甲散发圣光的终极勇者', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjxpSEcC' },
+        '0': { name: '初心学徒', icon: 'fa-person-hiking', color: '#34d399', desc: '手持木剑的少年冒险者', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjKr9PRO' },
+        '1': { name: '旅人剑士', icon: 'fa-person-military-rifle', color: '#2dd4bf', desc: '装备铁甲的年轻剑士', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjLb8QWg' },
+        '2': { name: '荒野游侠', icon: 'fa-person-walking', color: '#4ade80', desc: '身披斗篷的弓箭手', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjLjnevG' },
+        '3': { name: '龙骑士学徒', icon: 'fa-hat-wizard', color: '#fb923c', desc: '骑小龙的初级龙骑士', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjLt1A8k' },
+        '4': { name: '圣殿骑士', icon: 'fa-shield-halved', color: '#fbbf24', desc: '身披银甲的圣殿守卫', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjLEnxkU' },
+        '5': { name: '元素法师', icon: 'fa-wand-magic-sparkles', color: '#c084fc', desc: '操控元素的强大法师', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjLMkiYI' },
+        '6': { name: '半神行者', icon: 'fa-bolt', color: '#38bdf8', desc: '身带神光的超凡存在', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjLShSI4' },
+        '7': { name: '传奇勇者', icon: 'fa-crown', color: '#f59e0b', desc: '全身铠甲散发圣光的终极勇者', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjM0wftW' },
     },
 
     },
