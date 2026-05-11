@@ -429,11 +429,12 @@
                             <button class="hdr-btn primary" onclick="showAddUser()"><i class="fas fa-user-plus"></i> 添加用户</button>
                             <button class="hdr-btn ghost" onclick="loadUsers()"><i class="fas fa-refresh"></i> 刷新</button>
                             <button class="hdr-btn ghost" onclick="downloadUserList()"><i class="fas fa-download"></i> 下载名单</button>
+                            <button class="hdr-btn danger" id="batchDeleteBtn" onclick="batchDeleteUsers()" style="display:none;"><i class="fas fa-trash-can"></i> 批量删除 (<span id="batchDeleteCount">0</span>)</button>
                         </div>
                     </div>
                     <div class="table-wrap">
                         <table class="data-table">
-                            <thead><tr><th>用户名</th><th>昵称</th><th>角色</th><th>状态</th><th>密码</th><th>注册时间</th><th>操作</th></tr></thead>
+                            <thead><tr><th style="width:36px;"><input type="checkbox" id="selectAllUsers" onchange="toggleSelectAll(this)" title="全选"></th><th>用户名</th><th>昵称</th><th>角色</th><th>状态</th><th>密码</th><th>注册时间</th><th>操作</th></tr></thead>
                             <tbody id="userList"></tbody>
                         </table>
                     </div>
@@ -1468,8 +1469,11 @@ let allUsers = [];
             tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#64748b;">暂无用户</td></tr>';
             return;
         }
-        tbody.innerHTML = users.map(u => `<tr>
-            <td style="font-weight:600;">${esc(u.username)}</td>
+        tbody.innerHTML = users.map(u => {
+            const isAdmin = u.role === 'admin';
+            return `<tr data-username="${esc(u.username)}" data-role="${u.role || 'user'}">
+            <td style="width:36px;text-align:center;">${isAdmin ? '' : `<input type="checkbox" class="user-select-cb" value="${esc(u.username)}" onchange="updateBatchUI()">`}</td>
+            <td style="font-weight:600;">${esc(u.username)}</td>`;}).join('');
             <td>${esc(u.name || '-')}</td>
             <td><span class="badge ${u.role === 'admin' ? 'badge-admin' : ''}">${u.role === 'admin' ? '<i class="fas fa-crown"></i> 管理员' : '用户'}</span></td>
             <td>${u.isBanned ? '<span class="badge badge-banned"><i class="fas fa-ban"></i> 已封禁</span>' : u.isOnline ? '<span class="badge badge-online"><i class="fas fa-circle"></i> 在线</span>' : '<span class="badge badge-offline">离线</span>'}</td>
@@ -1481,7 +1485,7 @@ let allUsers = [];
                 <button class="action-btn edit" onclick="editUser('${esc(u.username)}')" title="编辑"><i class="fas fa-pen"></i></button>
                 ${u.role !== 'admin' ? `<button class="action-btn del" onclick="deleteUser('${esc(u.username)}')" title="删除"><i class="fas fa-trash"></i></button>` : ''}
             </td>
-        </tr>`).join('');
+        </tr>`;}).join('');
     }
 
     function downloadUserList() {
@@ -1573,6 +1577,52 @@ let allUsers = [];
         if (result.success) { loadUsers(); loadOverview(); }
         else if (result.error) showAdminToast(result.error, 'error');
     }
+    // 全选/取消全选
+    function toggleSelectAll(masterCb) {
+        const cbs = document.querySelectorAll('.user-select-cb');
+        cbs.forEach(cb => { cb.checked = masterCb.checked; });
+        updateBatchUI();
+    }
+
+    // 更新批量删除按钮状态
+    function updateBatchUI() {
+        const cbs = document.querySelectorAll('.user-select-cb:checked');
+        const btn = document.getElementById('batchDeleteBtn');
+        const countEl = document.getElementById('batchDeleteCount');
+        const allCb = document.getElementById('selectAllUsers');
+        if (cbs.length > 0) {
+            btn.style.display = '';
+            countEl.textContent = cbs.length;
+        } else {
+            btn.style.display = 'none';
+        }
+        // 更新全选状态
+        const allCbs = document.querySelectorAll('.user-select-cb');
+        if (allCbs.length > 0) {
+            allCb.checked = allCbs.length === cbs.length;
+            allCb.indeterminate = cbs.length > 0 && cbs.length < allCbs.length;
+        }
+    }
+
+    // 批量删除用户
+    async function batchDeleteUsers() {
+        const cbs = document.querySelectorAll('.user-select-cb:checked');
+        if (cbs.length === 0) return;
+        const names = Array.from(cbs).map(cb => cb.value);
+        if (!confirm('确定要删除以下 ' + names.length + ' 个用户吗？\n\n' + names.join('\n') + '\n\n该操作不可恢复。')) return;
+        let success = 0, fail = 0;
+        for (const name of names) {
+            try {
+                const r = await adminFetch('admin/users', { method: 'PUT', body: JSON.stringify({ action: 'delete', username: name }) });
+                if (r.success) success++; else fail++;
+            } catch(e) { fail++; }
+        }
+        showAdminToast(`已删除 ${success} 个用户` + (fail > 0 ? `，${fail} 个失败` : ''), success > 0 ? 'success' : 'error');
+        document.getElementById('selectAllUsers').checked = false;
+        loadUsers();
+        loadOverview();
+    }
+
 
     async function kickUser(username) {
         if (!confirm('确定要将 ' + username + ' 踢下线吗？')) return;
