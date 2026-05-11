@@ -470,7 +470,7 @@ const ChallengeModule = {
     // BOSS 造型定义
     _bossDefs: {
         '0': { name: '声之魔灵', icon: 'fa-wand-sparkles', theme: 'sound', color: '#a78bfa', desc: '掌控万音的魔灵', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjM8KCfO' },
-        '1': { name: '婆罗多神将', icon: 'fa-shield-halved', theme: 'warrior', color: '#60a5fa', desc: 'Dasar 基础的守关者', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMfyZDS' },
+        '1': { name: '婆罗多神将', icon: 'fa-shield-halved', theme: 'warrior', color: '#60a5fa', desc: 'Dasar 基础的守关者', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjNDR2UY' },
         '2': { name: 'Raksasa 巨魔', icon: 'fa-hand-fist', theme: 'brute', color: '#4ade80', desc: '中级篇的野蛮守卫', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMleXYE' },
         '3': { name: 'Naga 蛇龙', icon: 'fa-dragon', theme: 'dragon', color: '#f87171', desc: '中高级的盘踞之龙', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMqUWzW' },
         '4': { name: 'Garuda 伽鲁达', icon: 'fa-dove', theme: 'garuda', color: '#fbbf24', desc: '高级篇的神鸟之王', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMz9jlO' },
