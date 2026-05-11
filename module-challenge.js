@@ -2645,7 +2645,7 @@ const ChallengeModule = {
         study_days_100:{ id: 'study_days_100',name: '百日修行', icon: 'fa-trophy', category: 'general', desc: '累计学习天数达到100天' },
         words_500:     { id: 'words_500',     name: '词汇新星', icon: 'fa-star', category: 'general', desc: '累计学习500个单词' },
         words_2000:    { id: 'words_2000',    name: '词汇大师', icon: 'fa-gem', category: 'general', desc: '累计学习2000个单词' },
-    },,
+    },
 
     _earnedTitles: {}, // { titleId: earnedAt }
     _titleLoaded: false,
