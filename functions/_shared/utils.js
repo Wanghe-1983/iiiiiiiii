@@ -100,6 +100,9 @@ async function getSettings(env) {
     // 与默认值合并，确保新增字段自动补齐
     const defaults = defaultSettings();
     const merged = { ...defaults, ...stored };
+    // mainVersion 始终以代码默认值为准，防止KV旧值覆盖
+    merged.mainVersion = defaults.mainVersion;
+    merged.mainChangelog = defaults.mainChangelog;
     // 数组类型字段不覆盖（如 hellLevels、等级配置等）
     if (stored.hellLevels) merged.hellLevels = stored.hellLevels;
     if (stored.challengeLevelConfigUser) merged.challengeLevelConfigUser = stored.challengeLevelConfigUser;
