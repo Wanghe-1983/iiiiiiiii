@@ -128,7 +128,7 @@ const ChallengeModule = {
 
         if (view === 'stages') {
             const subContent = document.getElementById('challenge-sub-content');
-            if (subContent) this.renderStages(subContent);
+            if (subContent) { this._loadEquippedFrame(); this.renderStages(subContent); }
         } else if (view === 'rank') {
             const subContent = document.getElementById('challenge-sub-content');
             if (subContent) this.renderRank(subContent);
@@ -943,6 +943,73 @@ const ChallengeModule = {
             <i class="fas ${g.icon}" style="color:${g.color};font-size:1.4rem;"></i>
         </div>`;
         return { html, gate: g };
+    },
+
+
+    // ========== 边框装备逻辑 ==========
+    /** 获取用户已解锁的边框列表 */
+    _getUnlockedFrames() {
+        const frames = [];
+        for (const [key, def] of Object.entries(this._frameDefs)) {
+            if (this._earnedTitles[def.titleReq]) {
+                frames.push({ ...def, key, equipped: this._equippedFrameId === def.id });
+            }
+        }
+        return frames;
+    },
+
+    /** 装备/卸下边框 */
+    _equipFrame(frameId) {
+        if (frameId && !this._frameDefs['frame_' + frameId]) return;
+        const prevId = this._equippedFrameId;
+        this._equippedFrameId = (frameId && prevId !== frameId) ? frameId : null;
+        // 保存到 localStorage
+        try { localStorage.setItem('challenge_equipped_frame', this._equippedFrameId || ''); } catch(e) {}
+        // 刷新关卡网格
+        const container = document.getElementById('challenge-sub-content');
+        if (container) this._renderStages(container);
+    },
+
+    /** 加载已装备的边框 */
+    _loadEquippedFrame() {
+        try {
+            const saved = localStorage.getItem('challenge_equipped_frame');
+            if (saved) this._equippedFrameId = saved;
+        } catch(e) {}
+        // 校验：确保装备的边框已解锁
+        if (this._equippedFrameId) {
+            const def = this._frameDefs['frame_' + this._equippedFrameId];
+            if (!def || !this._earnedTitles[def.titleReq]) {
+                this._equippedFrameId = null;
+            }
+        }
+    },
+
+    /** 在称号墙中显示边框选择区域 */
+    _renderFrameSelector(container) {
+        const unlocked = this._getUnlockedFrames();
+        if (unlocked.length === 0) return ''; // 没有解锁任何边框则不显示
+
+        let html = `
+            <div style="margin-top:16px;padding:12px;background:rgba(15,23,42,0.6);border-radius:12px;border:1px solid rgba(99,102,241,0.15);">
+                <div style="font-size:0.78rem;color:#94a3b8;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+                    <i class="fas fa-border-all" style="color:#818cf8;"></i> 关卡边框
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                    <div class="frame-option" onclick="ChallengeModule._equipFrame(null)" 
+                         style="padding:6px 12px;border-radius:8px;border:2px solid ${!this._equippedFrameId ? '#6366f1' : 'rgba(99,102,241,0.2)'};background:${!this._equippedFrameId ? 'rgba(99,102,241,0.1)' : 'transparent'};cursor:pointer;font-size:0.72rem;color:#94a3b8;transition:all 0.2s;">
+                        无边框
+                    </div>
+                    ${unlocked.map(f => `
+                        <div class="frame-option" onclick="ChallengeModule._equipFrame('${f.id}')"
+                             style="padding:6px 12px;border-radius:8px;border:2px solid ${f.equipped ? f.color : 'rgba(99,102,241,0.2)'};background:${f.equipped ? f.color + '15' : 'transparent'};cursor:pointer;font-size:0.72rem;color:${f.color};font-weight:${f.equipped ? '700' : '400'};transition:all 0.2s;">
+                            <i class="fas fa-square" style="margin-right:4px;font-size:0.6rem;"></i>${f.name}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        return html;
     },
 
     _renderStars(count) {
@@ -2711,6 +2778,21 @@ const ChallengeModule = {
         words_500:     { id: 'words_500',     name: '词汇新星', icon: 'fa-star', category: 'general', desc: '累计学习500个单词' },
         words_2000:    { id: 'words_2000',    name: '词汇大师', icon: 'fa-gem', category: 'general', desc: '累计学习2000个单词' },
     },
+    // ========== 边框装饰定义 ==========
+    _frameDefs: {
+        'frame_01': { id: '01', name: '翡翠流光', desc: '击败声之魔灵后解锁', titleReq: 'boss_voice_slayer', color: '#34d399', gradient: 'linear-gradient(135deg,#34d399,#10b981)' },
+        'frame_02': { id: '02', name: '赤焰之环', desc: '击败婆罗多神将后解锁', titleReq: 'boss_bharata_slayer', color: '#f87171', gradient: 'linear-gradient(135deg,#f87171,#ef4444)' },
+        'frame_03': { id: '03', name: '金砂纹章', desc: '击败Raksasa巨魔后解锁', titleReq: 'boss_raksasa_slayer', color: '#fbbf24', gradient: 'linear-gradient(135deg,#fbbf24,#f59e0b)' },
+        'frame_04': { id: '04', name: '深海之盾', desc: '击败Naga蛇龙后解锁', titleReq: 'boss_naga_slayer', color: '#38bdf8', gradient: 'linear-gradient(135deg,#38bdf8,#0ea5e9)' },
+        'frame_05': { id: '05', name: '紫晶幻境', desc: '击败Garuda伽鲁达后解锁', titleReq: 'boss_garuda_slayer', color: '#a78bfa', gradient: 'linear-gradient(135deg,#a78bfa,#8b5cf6)' },
+        'frame_06': { id: '06', name: '烈焰荆棘', desc: '击败最终BOSS后解锁', titleReq: 'boss_final_slayer', color: '#ef4444', gradient: 'linear-gradient(135deg,#ef4444,#fbbf24)' },
+        'frame_07': { id: '07', name: '星辉环冕', desc: '通关全部普通模式后解锁', titleReq: 'normal_all_clear', color: '#fbbf24', gradient: 'linear-gradient(135deg,#fbbf24,#f59e0b)' },
+        'frame_08': { id: '08', name: '极光幻彩', desc: '通关全部地狱模式后解锁', titleReq: 'hell_all_clear', color: '#a78bfa', gradient: 'linear-gradient(135deg,#34d399,#a78bfa,#38bdf8)' },
+        'frame_09': { id: '09', name: '彩虹碎片', desc: '完成特殊挑战后解锁', titleReq: 'challenge_master', color: '#f59e0b', gradient: 'linear-gradient(135deg,#f59e0b,#ef4444,#8b5cf6,#3b82f6,#10b981)' },
+    },
+
+    _equippedFrameId: null, // 当前装备的边框
+,
 
     _earnedTitles: {}, // { titleId: earnedAt }
     _titleLoaded: false,
@@ -3053,6 +3135,9 @@ const ChallengeModule = {
 
             html += `</div></div>`;
         }
+
+        // 追加边框选择区域
+        html += this._renderFrameSelector(container);
 
         container.innerHTML = html;
     },

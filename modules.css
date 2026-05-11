@@ -922,13 +922,14 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 14px 8px;
+    padding: 10px 4px;
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s;
     border: 2px solid transparent;
     text-align: center;
-    min-height: 90px;
+    height: 85px;
+    overflow: hidden;
 }
 
 .stage-card.available {
@@ -1464,7 +1465,7 @@
         grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
         gap: 6px;
     }
-    .stage-card { padding: 10px 4px; min-height: 70px; }
+    .stage-card { padding: 10px 4px; height: 85px; }
     .stage-card.stage-hell { border-color: rgba(239, 68, 68, 0.2); }
     .stage-number { font-size: 0.9rem; }
     .stage-name { font-size: 0.6rem; max-width: 60px; }
@@ -4197,4 +4198,127 @@
     border-radius: 6px;
     font-size: 0.65rem;
     font-weight: 600;
+}
+
+
+/* ========== 关卡边框装饰系统 ========== */
+/* 通过装备称号解锁不同边框样式，渲染时以 stage-frame-{id} class 应用到 .stage-card 上 */
+
+/* 默认无边框（无称号装备时） */
+.stage-card .frame-border {
+    position: absolute;
+    inset: -3px;
+    border-radius: 14px;
+    pointer-events: none;
+    z-index: 0;
+    transition: all 0.3s;
+}
+
+/* 边框01: 翡翠流光 - 击败声之魔灵获得 */
+.stage-card.frame-01 .frame-border {
+    border: 2px solid rgba(52, 211, 153, 0.6);
+    box-shadow: 0 0 12px rgba(52, 211, 153, 0.2), inset 0 0 12px rgba(52, 211, 153, 0.05);
+    background: linear-gradient(135deg, rgba(52, 211, 153, 0.05), transparent 60%);
+}
+.stage-card.frame-01:hover .frame-border {
+    border-color: rgba(52, 211, 153, 0.9);
+    box-shadow: 0 0 20px rgba(52, 211, 153, 0.35), inset 0 0 20px rgba(52, 211, 153, 0.08);
+}
+
+/* 边框02: 赤焰之环 - 击败婆罗多神将获得 */
+.stage-card.frame-02 .frame-border {
+    border: 2px solid rgba(248, 113, 113, 0.6);
+    box-shadow: 0 0 12px rgba(248, 113, 113, 0.2), inset 0 0 12px rgba(248, 113, 113, 0.05);
+    background: linear-gradient(135deg, rgba(248, 113, 113, 0.05), transparent 60%);
+}
+.stage-card.frame-02:hover .frame-border {
+    border-color: rgba(248, 113, 113, 0.9);
+    box-shadow: 0 0 20px rgba(248, 113, 113, 0.35);
+}
+
+/* 边框03: 金砂纹章 - 击败Raksasa巨魔获得 */
+.stage-card.frame-03 .frame-border {
+    border: 2px solid rgba(251, 191, 36, 0.6);
+    box-shadow: 0 0 12px rgba(251, 191, 36, 0.2), inset 0 0 12px rgba(251, 191, 36, 0.05);
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.05), transparent 60%);
+}
+.stage-card.frame-03:hover .frame-border {
+    border-color: rgba(251, 191, 36, 0.9);
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.35);
+}
+
+/* 边框04: 深海之盾 - 击败Naga蛇龙获得 */
+.stage-card.frame-04 .frame-border {
+    border: 2px solid rgba(56, 189, 248, 0.6);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.2), inset 0 0 12px rgba(56, 189, 248, 0.05);
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.05), transparent 60%);
+}
+.stage-card.frame-04:hover .frame-border {
+    border-color: rgba(56, 189, 248, 0.9);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
+}
+
+/* 边框05: 紫晶幻境 - 击败Garuda伽鲁达获得 */
+.stage-card.frame-05 .frame-border {
+    border: 2px solid rgba(167, 139, 250, 0.6);
+    box-shadow: 0 0 12px rgba(167, 139, 250, 0.25), inset 0 0 12px rgba(167, 139, 250, 0.06);
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.06), transparent 60%);
+}
+.stage-card.frame-05:hover .frame-border {
+    border-color: rgba(167, 139, 250, 0.95);
+    box-shadow: 0 0 24px rgba(167, 139, 250, 0.4);
+}
+
+/* 边框06: 烈焰荆棘 - 击败最终BOSS获得 */
+.stage-card.frame-06 .frame-border {
+    border: 2px solid rgba(239, 68, 68, 0.7);
+    box-shadow: 0 0 16px rgba(239, 68, 68, 0.3), 0 0 4px rgba(251, 191, 36, 0.2), inset 0 0 16px rgba(239, 68, 68, 0.06);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(251, 191, 36, 0.03), transparent 60%);
+    animation: frame-06-glow 3s ease-in-out infinite;
+}
+.stage-card.frame-06:hover .frame-border {
+    border-color: rgba(239, 68, 68, 1);
+    box-shadow: 0 0 28px rgba(239, 68, 68, 0.45), 0 0 8px rgba(251, 191, 36, 0.3);
+}
+
+@keyframes frame-06-glow {
+    0%, 100% { box-shadow: 0 0 12px rgba(239, 68, 68, 0.3), 0 0 4px rgba(251, 191, 36, 0.15); }
+    50% { box-shadow: 0 0 22px rgba(239, 68, 68, 0.5), 0 0 8px rgba(251, 191, 36, 0.3); }
+}
+
+/* 边框07: 星辉环冕 - 通关全部普通模式获得 */
+.stage-card.frame-07 .frame-border {
+    border: 2px solid rgba(251, 191, 36, 0.5);
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.15);
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.04), rgba(245, 158, 11, 0.02), transparent 60%);
+}
+.stage-card.frame-07:hover .frame-border {
+    border-color: rgba(251, 191, 36, 0.8);
+    box-shadow: 0 0 18px rgba(251, 191, 36, 0.3);
+}
+
+/* 边框08: 极光幻彩 - 通关全部地狱模式获得 */
+.stage-card.frame-08 .frame-border {
+    border: 2px solid transparent;
+    background: linear-gradient(135deg, rgba(52, 211, 153, 0.06), rgba(167, 139, 250, 0.06), rgba(56, 189, 248, 0.06), transparent 60%) border-box;
+    box-shadow: 0 0 14px rgba(167, 139, 250, 0.2);
+    animation: frame-08-aurora 4s ease-in-out infinite;
+}
+.stage-card.frame-08:hover .frame-border {
+    box-shadow: 0 0 24px rgba(167, 139, 250, 0.35), 0 0 8px rgba(52, 211, 153, 0.2);
+}
+
+@keyframes frame-08-aurora {
+    0%, 100% { border-color: rgba(52, 211, 153, 0.5); box-shadow: 0 0 12px rgba(52, 211, 153, 0.2); }
+    33% { border-color: rgba(167, 139, 250, 0.5); box-shadow: 0 0 12px rgba(167, 139, 250, 0.2); }
+    66% { border-color: rgba(56, 189, 248, 0.5); box-shadow: 0 0 12px rgba(56, 189, 248, 0.2); }
+}
+
+/* 边框09: 彩虹碎片 - 完成特殊挑战获得 */
+.stage-card.frame-09 .frame-border {
+    border: 2px solid transparent;
+    border-image: linear-gradient(135deg, #f59e0b, #ef4444, #8b5cf6, #3b82f6, #10b981) 1;
+}
+.stage-card.frame-09:hover .frame-border {
+    filter: brightness(1.3);
 }
