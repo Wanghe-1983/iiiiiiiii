@@ -1,9 +1,8 @@
 /**
  * 闯天关 - 提交成绩 API
  * POST /api/challenge/submit
- * Body: { stageId, accuracy, timeSpent, score, stars, answers }
+ * Body: { stageId, accuracy, timeSpent, score, stars, answers, mode }
  */
-import { onRequest } from "../../_shared/utils.js";
 
 export async function onRequestPost(context) {
     const { request, env } = context;
@@ -20,19 +19,14 @@ export async function onRequestPost(context) {
         return new Response(JSON.stringify({ error: '参数不完整' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
 
-    // 自动建表
+    const currentMode = mode || 'normal';
+
+    // 自动建表（只建本文件负责的表，challenge_progress 由 progress.js 负责）
     await env.INDO_LEARN_DB.prepare(`CREATE TABLE IF NOT EXISTS challenge_records (
         id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, stage_id TEXT NOT NULL,
         score REAL NOT NULL DEFAULT 0, accuracy REAL NOT NULL DEFAULT 0, time_spent INTEGER NOT NULL DEFAULT 0,
         stars INTEGER NOT NULL DEFAULT 0, attempts INTEGER NOT NULL DEFAULT 1,
         is_best INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL DEFAULT (datetime('now'))
-    )`).run();
-    await env.INDO_LEARN_DB.prepare(`CREATE TABLE IF NOT EXISTS challenge_progress (
-        username TEXT NOT NULL, stage_id TEXT NOT NULL, mode TEXT NOT NULL DEFAULT 'normal',
-        first_score REAL DEFAULT 0, best_score REAL DEFAULT 0, best_accuracy REAL DEFAULT 0,
-        best_time INTEGER DEFAULT 0, stars INTEGER DEFAULT 0, attempts INTEGER DEFAULT 0,
-        cleared INTEGER DEFAULT 0, updated_at TEXT DEFAULT (datetime('now')),
-        PRIMARY KEY (username, stage_id)
     )`).run();
     await env.INDO_LEARN_DB.prepare(`CREATE TABLE IF NOT EXISTS challenge_weekly (
         id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, name TEXT NOT NULL DEFAULT '',
@@ -41,12 +35,15 @@ export async function onRequestPost(context) {
         UNIQUE(username, week_key)
     )`).run();
 
+    // 迁移：确保 mode 列存在（兼容旧表）
+    try { await env.INDO_LEARN_DB.prepare(`ALTER TABLE challenge_progress ADD COLUMN mode TEXT NOT NULL DEFAULT 'normal'`).run(); } catch(e) {}
+
     const now = new Date().toISOString();
 
-    // 查询历史最佳
+    // 查询历史最佳（按 username + stage_id + mode 精确匹配）
     const progress = await env.INDO_LEARN_DB
-        .prepare('SELECT * FROM challenge_progress WHERE username = ? AND stage_id = ?')
-        .bind(username, stageId).first();
+        .prepare('SELECT * FROM challenge_progress WHERE username = ? AND stage_id = ? AND mode = ?')
+        .bind(username, stageId, currentMode).first();
 
     let isBest = false;
     let newStars = stars || 0;
@@ -56,18 +53,18 @@ export async function onRequestPost(context) {
         if (score > progress.best_score) {
             isBest = true;
             await env.INDO_LEARN_DB.prepare(
-                `UPDATE challenge_progress SET mode = ?, best_score = ?, best_accuracy = ?, best_time = ?, stars = ?, attempts = ?, cleared = ?, updated_at = ? WHERE username = ? AND stage_id = ?`
-            ).bind(mode || 'normal', score, accuracy, timeSpent, newStars, currentAttempts, stars >= 1 ? 1 : 1, now, username, stageId).run();
+                `UPDATE challenge_progress SET best_score = ?, best_accuracy = ?, best_time = ?, stars = ?, attempts = ?, cleared = ?, updated_at = ? WHERE username = ? AND stage_id = ? AND mode = ?`
+            ).bind(score, accuracy, timeSpent, newStars, currentAttempts, 1, now, username, stageId, currentMode).run();
         } else {
             await env.INDO_LEARN_DB.prepare(
-                `UPDATE challenge_progress SET attempts = ?, updated_at = ? WHERE username = ? AND stage_id = ?`
-            ).bind(currentAttempts, now, username, stageId).run();
+                `UPDATE challenge_progress SET attempts = ?, updated_at = ? WHERE username = ? AND stage_id = ? AND mode = ?`
+            ).bind(currentAttempts, now, username, stageId, currentMode).run();
         }
     } else {
         isBest = true;
         await env.INDO_LEARN_DB.prepare(
-            `INSERT INTO challenge_progress (username, stage_id, mode, first_score, best_score, best_accuracy, best_time, stars, attempts, cleared, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`
-        ).bind(username, stageId, mode || 'normal', score, score, accuracy, timeSpent, newStars, 1, stars >= 1 ? 1 : 0, now, now).run();
+            `INSERT INTO challenge_progress (username, stage_id, mode, first_score, best_score, best_accuracy, best_time, stars, attempts, cleared, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1, ?)`
+        ).bind(username, stageId, currentMode, score, score, accuracy, timeSpent, newStars, 1, now).run();
     }
 
     // 插入本次记录
@@ -108,5 +105,3 @@ function getWeekKey() {
     const weekNum = Math.ceil((days + start.getDay() + 1) / 7);
     return `${now.getFullYear()}-W${weekNum.toString().padStart(2, '0')}`;
 }
-
-export { onRequestPost as onRequest };

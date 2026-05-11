@@ -4,7 +4,6 @@
  * GET /api/challenge/leaderboard/my?period=weekly
  * GET /api/challenge/leaderboard/champion
  */
-import { onRequest } from "../../_shared/utils.js";
 
 export async function onRequestGet(context) {
     const { request, env } = context;
@@ -178,26 +177,6 @@ async function handleChampion(context) {
     });
 }
 
-async function handleMyProgress(context, url) {
-    const { request, env } = context;
-    const authHeader = request.headers.get('Authorization') || '';
-    const token = authHeader.replace('Bearer ', '').trim();
-    if (!token) return new Response(JSON.stringify({ error: '未登录' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-
-    const username = await env.INDO_LEARN_KV.get('token_' + token);
-    if (!username) return new Response(JSON.stringify({ error: '登录已过期' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
-
-    await ensureTables(env);
-
-    const progress = await env.INDO_LEARN_DB.prepare(
-        'SELECT stage_id, best_score as bestScore, best_accuracy as bestAccuracy, best_time as bestTime, stars, attempts, cleared FROM challenge_progress WHERE username = ?'
-    ).bind(username).all();
-
-    return new Response(JSON.stringify({ success: true, progress: progress.results }), {
-        status: 200, headers: { 'Content-Type': 'application/json' }
-    });
-}
-
 function getWeekKey() {
     const now = new Date();
     const start = new Date(now.getFullYear(), 0, 1);
@@ -207,13 +186,7 @@ function getWeekKey() {
 }
 
 async function ensureTables(env) {
-    await env.INDO_LEARN_DB.prepare(`CREATE TABLE IF NOT EXISTS challenge_progress (
-        username TEXT NOT NULL, stage_id TEXT NOT NULL,
-        first_score REAL DEFAULT 0, best_score REAL DEFAULT 0, best_accuracy REAL DEFAULT 0,
-        best_time INTEGER DEFAULT 0, stars INTEGER DEFAULT 0, attempts INTEGER DEFAULT 0,
-        cleared INTEGER DEFAULT 0, updated_at TEXT DEFAULT (datetime('now')),
-        PRIMARY KEY (username, stage_id)
-    )`).run();
+    // challenge_progress 由 progress.js 创建，这里只创建排行榜专用表
     await env.INDO_LEARN_DB.prepare(`CREATE TABLE IF NOT EXISTS challenge_weekly (
         id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, name TEXT NOT NULL DEFAULT '',
         week_key TEXT NOT NULL, total_score REAL NOT NULL DEFAULT 0, stages_cleared INTEGER NOT NULL DEFAULT 0,
@@ -227,5 +200,3 @@ async function ensureTables(env) {
         is_best INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL DEFAULT (datetime('now'))
     )`).run();
 }
-
-export { onRequestGet as onRequest };
