@@ -346,6 +346,7 @@
                     sessionStorage.removeItem('fmi_visitor_expire');
                     if (visitorTimerInterval) { clearInterval(visitorTimerInterval); visitorTimerInterval = null; }
                     sessionStorage.setItem('fmi_login_status', JSON.stringify({ isLogin: true, user: result.user, backend: true }));
+                    sessionStorage.setItem('fmi_user', JSON.stringify(result.user || { username: result.user, role: 'user' }));
                     setTimeout(function() { window.location.href = 'index.html'; }, 100);
                 } else if (result.error === 'network') {
                     fallbackLogin(username, password);
@@ -366,6 +367,7 @@
                 sessionStorage.removeItem('fmi_visitor_login');
                 sessionStorage.removeItem('fmi_visitor_expire');
                 sessionStorage.setItem('fmi_login_status', JSON.stringify({ isLogin: true, user: user, backend: false }));
+                sessionStorage.setItem('fmi_user', JSON.stringify({ username: user.username, name: user.name, role: user.role || (user.username === 'admin' ? 'admin' : 'user') }));
                 setTimeout(function() { window.location.href = 'index.html'; }, 100);
             } else { showTip('login-tip', '用户名或密码错误', 'error'); }
         }
