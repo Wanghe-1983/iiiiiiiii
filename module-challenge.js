@@ -480,7 +480,7 @@ const ChallengeModule = {
 
     // 用户角色形象定义（按等级成长）
     _heroDefs: {
-        '0': { name: '初心学徒', icon: 'fa-person-hiking', color: '#34d399', desc: '手持木剑的少年冒险者', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjKr9PRO' },
+        '0': { name: '初心学徒', icon: 'fa-person-hiking', color: '#34d399', desc: '手持木剑的少年冒险者', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjPeDsrW' },
         '1': { name: '旅人剑士', icon: 'fa-person-military-rifle', color: '#2dd4bf', desc: '装备铁甲的年轻剑士', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjLb8QWg' },
         '2': { name: '荒野游侠', icon: 'fa-person-walking', color: '#4ade80', desc: '身披斗篷的弓箭手', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjLjnevG' },
         '3': { name: '龙骑士学徒', icon: 'fa-hat-wizard', color: '#fb923c', desc: '骑小龙的初级龙骑士', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjLt1A8k' },
