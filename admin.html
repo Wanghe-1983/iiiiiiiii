@@ -10,9 +10,9 @@
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理后台 - 印尼语学习助手</title>
-    <link rel="stylesheet" href="style.css?v=202605120100">
+    <link rel="stylesheet" href="style.css?v=202605120200">
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="config.js?v=202605120100"></script>
+    <script src="config.js?v=202605120200"></script>
     <script>
     // ========== 后台管理本地 Fallback 模式 ==========
     // 当 API 不可用时，自动降级到 localStorage 管理
@@ -1295,11 +1295,12 @@
                                 <div style="padding:10px 14px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.2);border-radius:8px;">
                                     <div style="font-size:0.75rem;color:#fbbf24;font-weight:600;margin-bottom:4px;"><i class="fas fa-info-circle"></i> 说明</div>
                                     <div style="font-size:0.7rem;color:#94a3b8;line-height:1.6;">
-                                        BOSS HP = BOSS血量（答错减少，归零即通关）<br>
+                                        <span style="color:#ef4444;">*</span> = 必填项，留空将无法保存<br>
+                                        BOSS HP = BOSS血量（答对扣血，归零即通关）<br>
                                         用户HP = 用户生命值（答错扣血，归零即失败）<br>
                                         题量 = 该BOSS关的总题目数<br>
-                                        题目范围 = 从哪些等级抽取题目（逗号分隔）<br>
-                                        小BOSS在等级内均匀分布，大BOSS在等级末尾
+                                        小BOSS间隔 = 每隔N关出现一个小BOSS，不限总数量<br>
+                                        大BOSS自动出现在等级末尾，无需额外配置
                                     </div>
                                 </div>
                             </div>
@@ -1976,10 +1977,9 @@ function createBossLevelRow(levelId, data) {
                 </label>
             </div>
             <div class="boss-big-fields" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-                <div><label style="font-size:0.7rem;color:#64748b;">BOSS HP</label><input type="number" class="boss-big-hp" min="1" max="50" value="${big.bossHp||10}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
-                <div><label style="font-size:0.7rem;color:#64748b;">用户HP</label><input type="number" class="boss-big-userhp" min="1" max="10" value="${big.userHp||3}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
-                <div><label style="font-size:0.7rem;color:#64748b;">题量</label><input type="number" class="boss-big-questions" min="3" max="50" value="${big.questionCount||12}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
-                <div style="grid-column:span 3;"><label style="font-size:0.7rem;color:#64748b;">题目范围（等级ID，逗号分隔）</label><input type="text" class="boss-big-range" value="${(big.questionRange||[]).join(',')}" placeholder="如: 0,1,2" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+                <div><label style="font-size:0.7rem;color:#64748b;">BOSS HP <span style="color:#ef4444;">*</span></label><input type="number" class="boss-big-hp" min="1" max="999" value="${big.bossHp||10}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+                <div><label style="font-size:0.7rem;color:#64748b;">用户HP <span style="color:#ef4444;">*</span></label><input type="number" class="boss-big-userhp" min="1" max="99" value="${big.userHp||3}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+                <div><label style="font-size:0.7rem;color:#64748b;">题量 <span style="color:#ef4444;">*</span></label><input type="number" class="boss-big-questions" min="1" max="200" value="${big.questionCount||12}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
             </div>
         </div>
         <!-- 小BOSS -->
@@ -1993,13 +1993,11 @@ function createBossLevelRow(levelId, data) {
                     <span style="position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;"></span>
                 </label>
             </div>
-            <div class="boss-mini-fields" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;">
-                <div><label style="font-size:0.7rem;color:#64748b;">数量</label><input type="number" class="boss-mini-count" min="1" max="10" value="${mini.count||2}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
-                <div><label style="font-size:0.7rem;color:#64748b;">间隔(关)</label><input type="number" class="boss-mini-interval" min="5" max="50" value="${mini.interval||20}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
-                <div><label style="font-size:0.7rem;color:#64748b;">BOSS HP</label><input type="number" class="boss-mini-hp" min="1" max="30" value="${mini.bossHp||5}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
-                <div><label style="font-size:0.7rem;color:#64748b;">用户HP</label><input type="number" class="boss-mini-userhp" min="1" max="10" value="${mini.userHp||3}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
-                <div><label style="font-size:0.7rem;color:#64748b;">题量</label><input type="number" class="boss-mini-questions" min="3" max="30" value="${mini.questionCount||8}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
-                <div style="grid-column:span 3;"><label style="font-size:0.7rem;color:#64748b;">题目范围（等级ID，逗号分隔）</label><input type="text" class="boss-mini-range" value="${(mini.questionRange||[]).join(',')}" placeholder="如: 0,1,2,3" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+            <div class="boss-mini-fields" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+                <div><label style="font-size:0.7rem;color:#64748b;">间隔(关) <span style="color:#ef4444;">*</span></label><input type="number" class="boss-mini-interval" min="2" max="50" value="${mini.interval||5}" placeholder="每N关一个小BOSS" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+                <div><label style="font-size:0.7rem;color:#64748b;">BOSS HP <span style="color:#ef4444;">*</span></label><input type="number" class="boss-mini-hp" min="1" max="99" value="${mini.bossHp||5}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+                <div><label style="font-size:0.7rem;color:#64748b;">用户HP <span style="color:#ef4444;">*</span></label><input type="number" class="boss-mini-userhp" min="1" max="99" value="${mini.userHp||3}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+                <div><label style="font-size:0.7rem;color:#64748b;">题量 <span style="color:#ef4444;">*</span></label><input type="number" class="boss-mini-questions" min="1" max="100" value="${mini.questionCount||8}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
             </div>
         </div>
     `;
@@ -2048,40 +2046,40 @@ function collectBossConfig() {
         const miniEnabled = row.querySelector('.boss-mini-enabled').checked;
         const bigEnabled = row.querySelector('.boss-big-enabled').checked;
         
-        const parseRange = (val) => {
-            if (!val || !val.trim()) return null;
-            return val.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
-        };
-        
         const config = {};
         
-        if (miniEnabled || bigEnabled) {
-            if (miniEnabled) {
-                config.mini = {
-                    enabled: true,
-                    count: parseInt(row.querySelector('.boss-mini-count').value) || 2,
-                    interval: parseInt(row.querySelector('.boss-mini-interval').value) || 20,
-                    bossLevel: lvl,
-                    bossHp: parseInt(row.querySelector('.boss-mini-hp').value) || 5,
-                    userHp: parseInt(row.querySelector('.boss-mini-userhp').value) || 3,
-                    questionCount: parseInt(row.querySelector('.boss-mini-questions').value) || 8,
-                    questionRange: parseRange(row.querySelector('.boss-mini-range').value) || null
-                };
-            } else {
-                config.mini = { enabled: false };
-            }
-            if (bigEnabled) {
-                config.big = {
-                    enabled: true,
-                    bossLevel: lvl,
-                    bossHp: parseInt(row.querySelector('.boss-big-hp').value) || 10,
-                    userHp: parseInt(row.querySelector('.boss-big-userhp').value) || 3,
-                    questionCount: parseInt(row.querySelector('.boss-big-questions').value) || 12,
-                    questionRange: parseRange(row.querySelector('.boss-big-range').value) || null
-                };
-            } else {
-                config.big = { enabled: false };
-            }
+        if (miniEnabled) {
+            const interval = parseInt(row.querySelector('.boss-mini-interval').value);
+            const bossHp = parseInt(row.querySelector('.boss-mini-hp').value);
+            const userHp = parseInt(row.querySelector('.boss-mini-userhp').value);
+            const qCount = parseInt(row.querySelector('.boss-mini-questions').value);
+            if (!interval || interval < 2) { alert('等级 ' + lvl + ' 小BOSS间隔不能小于2'); throw new Error('validation'); }
+            if (!bossHp || bossHp < 1) { alert('等级 ' + lvl + ' 小BOSS HP不能为空'); throw new Error('validation'); }
+            if (!userHp || userHp < 1) { alert('等级 ' + lvl + ' 用户HP不能为空'); throw new Error('validation'); }
+            if (!qCount || qCount < 1) { alert('等级 ' + lvl + ' 题量不能为空'); throw new Error('validation'); }
+            config.mini = {
+                enabled: true,
+                interval: interval,
+                bossLevel: lvl,
+                bossHp: bossHp,
+                userHp: userHp,
+                questionCount: qCount
+            };
+        }
+        if (bigEnabled) {
+            const bossHp = parseInt(row.querySelector('.boss-big-hp').value);
+            const userHp = parseInt(row.querySelector('.boss-big-userhp').value);
+            const qCount = parseInt(row.querySelector('.boss-big-questions').value);
+            if (!bossHp || bossHp < 1) { alert('等级 ' + lvl + ' 大BOSS HP不能为空'); throw new Error('validation'); }
+            if (!userHp || userHp < 1) { alert('等级 ' + lvl + ' 用户HP不能为空'); throw new Error('validation'); }
+            if (!qCount || qCount < 1) { alert('等级 ' + lvl + ' 题量不能为空'); throw new Error('validation'); }
+            config.big = {
+                enabled: true,
+                bossLevel: lvl,
+                bossHp: bossHp,
+                userHp: userHp,
+                questionCount: qCount
+            };
         }
         
         if (Object.keys(config).length > 0) levelBosses[lvl] = config;

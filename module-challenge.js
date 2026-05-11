@@ -501,18 +501,13 @@ const ChallengeModule = {
             if (!lvConfig) continue;
             const normalCount = group.length; // 当前等级的普通关卡数
 
-            // === 小BOSS ===
+            // === 小BOSS（间隔模式：每隔N关一个，不限总数）===
             const mini = lvConfig.mini || {};
-            if (mini.enabled && mini.count > 0) {
-                let interval = mini.interval || Math.floor(normalCount / (mini.count + 1));
-                if (interval < 1) interval = 1;
-                // 均匀分布：将normalCount关分成(count+1)段，在每段末尾插入
-                const segmentSize = Math.floor(normalCount / (mini.count + 1));
-                const adjustedInterval = segmentSize > 0 ? segmentSize : 1;
-
-                for (let b = 0; b < mini.count; b++) {
-                    const insertAtNormal = adjustedInterval * (b + 1); // 在第N段末尾
-                    const actualIdx = Math.min(insertAtNormal, normalCount) - 1;
+            if (mini.enabled && mini.interval > 0) {
+                const interval = mini.interval;
+                // 从第interval关开始，每隔interval关插入一个小BOSS（但不在大BOSS之前插入）
+                for (let pos = interval; pos < normalCount; pos += interval) {
+                    const actualIdx = pos - 1;
                     if (actualIdx < 0 || actualIdx >= group.length) continue;
 
                     const insertAfter = group[actualIdx].globalIndex;
@@ -520,7 +515,6 @@ const ChallengeModule = {
                         bossHp: mini.bossHp || 5,
                         userHp: mini.userHp || 3,
                         questionCount: mini.questionCount || 8,
-                        questionRange: mini.questionRange || [levelId],
                         questionSource: config.questionSource || 'random'
                     };
                     bossInserts.push({
@@ -2802,6 +2796,17 @@ const ChallengeModule = {
      * 加载称号数据（从服务端拉取 + 本地缓存）
      */
     async _loadTitles() {
+        // 管理员自动拥有所有称号和边框（用于预览效果）
+        const userInfo = JSON.parse(sessionStorage.getItem('fmi_user') || '{}');
+        if (userInfo.role === 'admin') {
+            const allTitles = {};
+            for (const key of Object.keys(this._titleDefs)) {
+                allTitles[key] = '2026-01-01T00:00:00Z';
+            }
+            this._earnedTitles = allTitles;
+            return; // 管理员跳过服务端同步
+        }
+
         // 先从本地读取缓存
         const cached = localStorage.getItem('fmi_titles');
         if (cached) {
