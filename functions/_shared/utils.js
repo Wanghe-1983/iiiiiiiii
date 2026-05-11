@@ -300,8 +300,11 @@ async function dbRun(env, sql, params = []) {
 // ========== 系统信息 ==========
 
 async function handleSystemInfo(context) {
-    const { env } = context;
+    const { env, request } = context;
     const settings = await getSettings(env) || defaultSettings();
+
+    // 从 Cloudflare Pages 环境变量获取 commit hash
+    const commitHash = (typeof CF_PAGES_COMMIT_SHA !== 'undefined' ? CF_PAGES_COMMIT_SHA : '').substring(0, 7);
 
     // D1: 统计用户数
     const totalUsers = (await dbGet(env, 'SELECT COUNT(*) as c FROM users')).c;
@@ -322,6 +325,7 @@ async function handleSystemInfo(context) {
 
     return json({
         ...settings,
+        commitHash,
         currentOnline,
         totalUsers,
         registeredCount,

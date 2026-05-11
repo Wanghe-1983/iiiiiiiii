@@ -18,10 +18,7 @@ const CONFIG = {
     apiBase: "",
 
     // 版本
-    version: "2.54",
-
-    // 最近一次部署的 Git commit hash（每次推送前手动更新）
-    commitHash: "895b648"
+    version: "2.54"
 };
 
 /**
