@@ -70,6 +70,15 @@ CREATE TABLE IF NOT EXISTS changelogs (
 );
 
 -- 广播消息
+
+-- 用户称号
+CREATE TABLE IF NOT EXISTS user_titles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL,
+    title_id TEXT NOT NULL,
+    earned_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(username, title_id)
+);
 CREATE TABLE IF NOT EXISTS broadcasts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL DEFAULT '',
@@ -122,6 +131,8 @@ CREATE INDEX IF NOT EXISTS idx_employees_code ON employees(company_code, emp_no)
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
 CREATE INDEX IF NOT EXISTS idx_leaderboard_period ON leaderboard_entries(period_key);
 CREATE INDEX IF NOT EXISTS idx_changelogs_id ON changelogs(id);
+CREATE INDEX IF NOT EXISTS idx_user_titles_username ON user_titles(username);
+CREATE INDEX IF NOT EXISTS idx_user_titles_id ON user_titles(title_id);
 CREATE INDEX IF NOT EXISTS idx_broadcasts_active ON broadcasts(is_active, display_order);
 CREATE INDEX IF NOT EXISTS idx_challenge_records_username ON challenge_records(username);
 CREATE INDEX IF NOT EXISTS idx_challenge_records_stage ON challenge_records(stage_id);

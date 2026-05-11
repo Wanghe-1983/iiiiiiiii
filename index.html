@@ -13,19 +13,33 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.bootcdn.net/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=2026050716">
-    <link rel="stylesheet" href="modules.css?v=2026051002">
+    <link rel="stylesheet" href="style.css?v=20260511">
+    <link rel="stylesheet" href="modules.css?v=20260511">
 </head>
 <body>
     <div id="app"></div>
-    <script src="config.js?v=2026050716"></script>
+    <script src="config.js?v=20260511"></script>
     <!-- 旧版功能（侧边栏、统计页、管理后台等兼容保留） -->
-    <script src="app.js?v=2026050918"></script>
+    <script src="app.js?v=20260511"></script>
     <!-- 新版模块 -->
-    <script src="course-content-loader.js?v=2026050716"></script>
-    <script src="module-study.js?v=2026050716"></script>
-    <script src="module-study-practice.js?v=2026050716"></script>
-    <script src="module-challenge.js?v=2026051002"></script>
+    <script src="course-content-loader.js?v=20260511"></script>
+    <script src="module-study.js?v=20260511"></script>
+    <script src="module-study-practice.js?v=20260511"></script>
+    <script src="module-challenge.js?v=20260511">
+            // 显示版本号
+            (async function showVersion() {
+                var ver = (typeof CONFIG !== 'undefined' && CONFIG.version) ? CONFIG.version : '';
+                try {
+                    var info = await API.getSystemInfo();
+                    if (info && info.mainVersion) ver = info.mainVersion;
+                } catch(e) {}
+                if (ver) {
+                    document.getElementById('app-version').textContent = 'v' + ver.replace(/^v/i, '');
+                }
+            })();
+
+</script>
     <!-- app-v2.js 已移除，课程模块集成到 app.js -->
+<div class="app-version" id="app-version"></div>
 </body>
 </html>

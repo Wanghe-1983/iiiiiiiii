@@ -5,7 +5,7 @@
  */
 
 const ChallengeModule = {
-    currentView: 'home', // home | modes | stages | rank-modes | rank
+    currentView: 'home', // home | modes | stages | rank-modes | rank | titles
     challengeMode: 'normal', // normal | hell
     allStages: [],
     serverProgress: {}, // 从D1加载
@@ -65,6 +65,8 @@ const ChallengeModule = {
         // 按闯天关等级控制过滤关卡
         this._applyChallengeLevelFilter();
         await this.loadProgress();
+        // 加载称号数据（后台静默同步）
+        this._loadTitles();
         this.render();
     },
 
@@ -98,11 +100,11 @@ const ChallengeModule = {
                 <span style="color:#e2e8f0;font-size:0.8rem;font-weight:600;">闯天关</span>
                 ${view === 'stages' ? `<i class="fas fa-chevron-right" style="color:#475569;font-size:0.6rem;"></i><span style="color:${this.challengeMode === 'hell' ? '#f87171' : '#60a5fa'};font-size:0.8rem;font-weight:600;">${this.challengeMode === 'hell' ? '地狱模式' : '普通模式'}</span>` : ''}
             </div>`;
-        } else if (view === 'rank-modes' || view === 'rank') {
+        } else if (view === 'rank-modes' || view === 'rank' || view === 'titles') {
             breadcrumb = `<div style="padding:8px 12px;display:flex;align-items:center;gap:6px;">
                 <span style="cursor:pointer;color:#64748b;font-size:0.8rem;" onclick="ChallengeModule.goHome()"><i class="fas fa-home"></i> 首页</span>
                 <i class="fas fa-chevron-right" style="color:#475569;font-size:0.6rem;"></i>
-                <span style="color:#e2e8f0;font-size:0.8rem;font-weight:600;">排行榜</span>
+                <span style="color:#e2e8f0;font-size:0.8rem;font-weight:600;">${view === 'titles' ? '称号墙' : '排行榜'}</span>
                 ${view === 'rank' ? '' : ''}
             </div>`;
         }
@@ -118,6 +120,8 @@ const ChallengeModule = {
             bodyHtml = this._renderRankModeCards(hellEnabled);
         } else if (view === 'rank') {
             bodyHtml = '<div id="challenge-sub-content"></div>';
+        } else if (view === 'titles') {
+            bodyHtml = '<div id="challenge-sub-content"></div>';
         }
 
         this.container.innerHTML = `<div class="challenge-module">${breadcrumb}${bodyHtml}</div>`;
@@ -128,6 +132,9 @@ const ChallengeModule = {
         } else if (view === 'rank') {
             const subContent = document.getElementById('challenge-sub-content');
             if (subContent) this.renderRank(subContent);
+        } else if (view === 'titles') {
+            const subContent = document.getElementById('challenge-sub-content');
+            if (subContent) this._renderTitlesWall(subContent);
         }
     },
 
@@ -228,6 +235,11 @@ const ChallengeModule = {
 
             <!-- 底部入口 -->
             <div class="ch-home-footer">
+                <div class="ch-footer-entry" onclick="ChallengeModule.enterTitles()">
+                    <i class="fas fa-medal ch-footer-icon"></i>
+                    <span>称号墙</span>
+                    <i class="fas fa-chevron-right ch-footer-arrow"></i>
+                </div>
                 <div class="ch-footer-entry" onclick="ChallengeModule.enterRank()">
                     <i class="fas fa-trophy ch-footer-icon"></i>
                     <span>排行榜</span>
@@ -365,10 +377,279 @@ const ChallengeModule = {
         this.render();
     },
 
+    // BOSS 配置定义（由后台 hellSettings.bossConfig 覆盖，此处为默认值）
+    _bossConfig: {
+        enabled: true,
+        // 题目来源模式: 'random' = 从当前等级及之前随机抽题, 'specific' = 按等级指定范围
+        questionSource: 'random',
+        // 各等级BOSS配置（后台可通过 hellSettings.bossConfig 覆盖）
+        // levelBosses: {
+        //   levelId: { mini: { enabled, count, interval, bossLevel, ...hp配置 }, big: { enabled, bossLevel, ...hp配置 } }
+        // }
+        levelBosses: {
+            '0': {
+                mini: { enabled: false },
+                big: { enabled: true, bossLevel: '0', bossHp: 6,  userHp: 3, questionCount: 10, questionRange: [0] }
+            },
+            '1': {
+                mini: { enabled: false },
+                big: { enabled: true, bossLevel: '1', bossHp: 8,  userHp: 3, questionCount: 12, questionRange: [0, 1] }
+            },
+            '2': {
+                mini: { enabled: false },
+                big: { enabled: true, bossLevel: '2', bossHp: 10, userHp: 3, questionCount: 14, questionRange: [0, 1, 2] }
+            },
+            '3': {
+                mini: { enabled: false },
+                big: { enabled: true, bossLevel: '3', bossHp: 12, userHp: 2, questionCount: 16, questionRange: [0, 1, 2, 3] }
+            },
+            '4': {
+                mini: { enabled: true, count: 3, interval: 20, bossLevel: '0', bossHp: 5,  userHp: 3, questionCount: 8,  questionRange: [0, 1, 2, 3, 4] },
+                big: { enabled: true, bossLevel: '4', bossHp: 12, userHp: 2, questionCount: 16, questionRange: [0, 1, 2, 3, 4] }
+            },
+            '5': {
+                mini: { enabled: true, count: 2, interval: 21, bossLevel: '1', bossHp: 6,  userHp: 3, questionCount: 10, questionRange: [0, 1, 2, 3, 4, 5] },
+                big: { enabled: true, bossLevel: '5', bossHp: 15, userHp: 2, questionCount: 18, questionRange: [0, 1, 2, 3, 4, 5] }
+            },
+            '6': {
+                mini: { enabled: true, count: 2, interval: 16, bossLevel: '2', bossHp: 8,  userHp: 2, questionCount: 12, questionRange: [0, 1, 2, 3, 4, 5, 6] },
+                big: { enabled: true, bossLevel: '6', bossHp: 18, userHp: 2, questionCount: 20, questionRange: [0, 1, 2, 3, 4, 5, 6] }
+            },
+            '7': {
+                mini: { enabled: true, count: 2, interval: 10, bossLevel: '3', bossHp: 10, userHp: 2, questionCount: 14, questionRange: [0, 1, 2, 3, 4, 5, 6, 7] },
+                big: { enabled: true, bossLevel: '7', bossHp: 22, userHp: 1, questionCount: 25, questionRange: [0, 1, 2, 3, 4, 5, 6, 7] }
+            }
+        }
+    },
+
+    _getBossConfig() {
+        const sysInfo = window._systemInfo || {};
+        const hell = sysInfo.hellSettings || {};
+        const override = hell.bossConfig || {};
+        if (Object.keys(override).length === 0) return this._bossConfig;
+
+        // 浅合并顶层字段
+        const merged = { ...this._bossConfig, ...override };
+
+        // 深层合并 levelBosses：后台配置覆盖默认值，但保留未指定的等级
+        if (override.levelBosses) {
+            merged.levelBosses = {};
+            const allLevels = new Set([
+                ...Object.keys(this._bossConfig.levelBosses || {}),
+                ...Object.keys(override.levelBosses)
+            ]);
+            for (const lv of allLevels) {
+                const def = (this._bossConfig.levelBosses || {})[lv] || {};
+                const over = override.levelBosses[lv] || {};
+                merged.levelBosses[lv] = { ...def, ...over };
+                // 再深层合并 mini 和 big
+                if (over.mini && def.mini) {
+                    merged.levelBosses[lv].mini = { ...def.mini, ...over.mini };
+                }
+                if (over.big && def.big) {
+                    merged.levelBosses[lv].big = { ...def.big, ...over.big };
+                }
+            }
+        }
+        return merged;
+    },
+
+    // BOSS 造型定义
+    _bossDefs: {
+        '0': { name: '声之魔灵', icon: 'fa-wand-sparkles', theme: 'sound', color: '#a78bfa', desc: '掌控万音的魔灵' },
+        '1': { name: '婆罗多神将', icon: 'fa-shield-halved', theme: 'warrior', color: '#60a5fa', desc: 'Dasar 基础的守关者' },
+        '2': { name: 'Raksasa 巨魔', icon: 'fa-hand-fist', theme: 'brute', color: '#4ade80', desc: '中级篇的野蛮守卫' },
+        '3': { name: 'Naga 蛇龙', icon: 'fa-dragon', theme: 'dragon', color: '#f87171', desc: '中高级的盘踞之龙' },
+        '4': { name: 'Garuda 伽鲁达', icon: 'fa-dove', theme: 'garuda', color: '#fbbf24', desc: '高级篇的神鸟之王' },
+        '5': { name: '浮屠守殿者', icon: 'fa-landmark', theme: 'temple', color: '#fb923c', desc: '高级进阶的石像守卫' },
+        '6': { name: 'Dewa 天神', icon: 'fa-bolt', theme: 'deity', color: '#38bdf8', desc: '精通篇的半神形态' },
+        '7': { name: 'Ratu Iblis 魔王', icon: 'fa-skull', theme: 'demon', color: '#ef4444', desc: '卓越篇的终极魔王' },
+    },
+
     _regenerateStages() {
         // 根据当前模式重新生成关卡列表（使用对应的切分配置）
         this.allStages = CourseContent.getAllStages(this.challengeMode);
         
+        // 地狱模式下注入 BOSS 关卡
+        if (this.challengeMode === 'hell') {
+            this._injectBossStages();
+        }
+    },
+
+    /**
+     * 在地狱模式关卡列表中注入 BOSS 关卡
+     * - 小BOSS: BIPA 4-7 每10关插入一个（4级用0级BOSS，5用1，6用2，7用3）
+     * - 大BOSS: 每个等级通关后的守关BOSS
+     */
+    _injectBossStages() {
+        const config = this._getBossConfig();
+        if (!config.enabled) return;
+
+        const stages = this.allStages;
+        // 按等级分组（记录原始索引，用于插入）
+        const levelGroups = {};
+        stages.forEach((s, idx) => {
+            const lid = String(s.levelId);
+            if (!levelGroups[lid]) levelGroups[lid] = [];
+            levelGroups[lid].push({ stage: s, globalIndex: idx });
+        });
+
+        const bossInserts = []; // { afterGlobalIndex, bossStage }
+
+        for (const [levelId, group] of Object.entries(levelGroups)) {
+            const lvConfig = (config.levelBosses || {})[levelId];
+            if (!lvConfig) continue;
+            const normalCount = group.length; // 当前等级的普通关卡数
+
+            // === 小BOSS ===
+            const mini = lvConfig.mini || {};
+            if (mini.enabled && mini.count > 0) {
+                let interval = mini.interval || Math.floor(normalCount / (mini.count + 1));
+                if (interval < 1) interval = 1;
+                // 均匀分布：将normalCount关分成(count+1)段，在每段末尾插入
+                const segmentSize = Math.floor(normalCount / (mini.count + 1));
+                const adjustedInterval = segmentSize > 0 ? segmentSize : 1;
+
+                for (let b = 0; b < mini.count; b++) {
+                    const insertAtNormal = adjustedInterval * (b + 1); // 在第N段末尾
+                    const actualIdx = Math.min(insertAtNormal, normalCount) - 1;
+                    if (actualIdx < 0 || actualIdx >= group.length) continue;
+
+                    const insertAfter = group[actualIdx].globalIndex;
+                    const params = {
+                        bossHp: mini.bossHp || 5,
+                        userHp: mini.userHp || 3,
+                        questionCount: mini.questionCount || 8,
+                        questionRange: mini.questionRange || [levelId],
+                        questionSource: config.questionSource || 'random'
+                    };
+                    bossInserts.push({
+                        afterGlobalIndex: insertAfter,
+                        bossStage: this._createBossStage(
+                            mini.bossLevel || levelId, levelId, 'mini', params,
+                            group[Math.min(actualIdx + 1, group.length - 1)].stage
+                        ),
+                    });
+                }
+            }
+
+            // === 大BOSS（等级末尾）===
+            const big = lvConfig.big || {};
+            if (big.enabled) {
+                const lastItem = group[group.length - 1];
+                const params = {
+                    bossHp: big.bossHp || 10,
+                    userHp: big.userHp || 3,
+                    questionCount: big.questionCount || 15,
+                    questionRange: big.questionRange || [levelId],
+                    questionSource: config.questionSource || 'random'
+                };
+                bossInserts.push({
+                    afterGlobalIndex: lastItem.globalIndex,
+                    bossStage: this._createBossStage(
+                        big.bossLevel || levelId, levelId, 'big', params, lastItem.stage
+                    ),
+                });
+            }
+        }
+
+        // 按afterGlobalIndex排序后倒序插入（避免索引错位）
+        bossInserts.sort((a, b) => a.afterGlobalIndex - b.afterGlobalIndex);
+        for (let i = bossInserts.length - 1; i >= 0; i--) {
+            const insertIdx = bossInserts[i].afterGlobalIndex + 1;
+            this.allStages.splice(insertIdx, 0, bossInserts[i].bossStage);
+        }
+
+        return bossInserts.length;
+    },
+
+    ,
+
+    /**
+     * 创建 BOSS 关卡数据
+     * @param {string} bossLevel - BOSS对应的等级(0-7)
+     * @param {string} contextLevel - 所在的课程等级
+     * @param {string} bossType - 'mini' | 'big'
+     * @param {object} params - { bossHp, userHp, questionCount }
+     * @param {object} refStage - 参考关卡（用于取题目素材）
+     */
+    _createBossStage(bossLevel, contextLevel, bossType, params, refStage) {
+        const bossDef = this._bossDefs[bossLevel] || this._bossDefs['0'];
+        const typeLabel = bossType === 'mini' ? '小BOSS' : '大BOSS';
+        const id = `boss-${contextLevel}-${bossLevel}-${bossType}`;
+        const questionSource = params.questionSource || 'random';
+        const questionRange = params.questionRange || [contextLevel];
+
+        // 收集题目
+        const allQuestions = [];
+        if (typeof CourseContent !== 'undefined' && CourseContent.getLevels) {
+            const levels = CourseContent.getLevels();
+            const rangeSet = new Set(questionRange.map(String));
+
+            for (const lv of levels) {
+                if (!rangeSet.has(String(lv.id))) continue;
+                for (const u of lv.units) {
+                    const items = [...(u.words || []), ...(u.sentences || []), ...(u.dialogues || [])];
+                    allQuestions.push(...items);
+                }
+            }
+        }
+
+        // 抽取题目
+        let questions;
+        if (questionSource === 'random') {
+            // 随机模式：打乱后截取
+            const shuffled = this._shuffle([...allQuestions]);
+            questions = shuffled.slice(0, params.questionCount);
+        } else {
+            // 指定模式：从尾部优先抽取（考察最新学的内容）
+            // 先打乱，但更倾向高等级的题目
+            const rangeSet = new Set(questionRange.map(String));
+            const recentQuestions = [];
+            const olderQuestions = [];
+            const levels = CourseContent.getLevels();
+            for (const lv of levels) {
+                if (!rangeSet.has(String(lv.id))) continue;
+                for (const u of lv.units) {
+                    const items = [...(u.words || []), ...(u.sentences || []), ...(u.dialogues || [])];
+                    if (String(lv.id) === String(contextLevel)) {
+                        recentQuestions.push(...items);
+                    } else {
+                        olderQuestions.push(...items);
+                    }
+                }
+            }
+            // 70%来自当前等级，30%来自之前等级
+            const shuffledRecent = this._shuffle([...recentQuestions]);
+            const shuffledOlder = this._shuffle([...olderQuestions]);
+            const recentCount = Math.min(
+                Math.ceil(params.questionCount * 0.7),
+                shuffledRecent.length
+            );
+            const olderCount = Math.min(params.questionCount - recentCount, shuffledOlder.length);
+            const remaining = params.questionCount - recentCount - olderCount;
+            questions = [
+                ...shuffledRecent.slice(0, recentCount),
+                ...shuffledOlder.slice(0, olderCount),
+                ...shuffledRecent.slice(recentCount, recentCount + remaining)
+            ];
+        }
+
+        return {
+            id: id,
+            levelId: contextLevel,
+            unitId: 'boss',
+            type: 'boss',
+            bossType: bossType,
+            bossLevel: bossLevel,
+            bossDef: bossDef,
+            bossParams: params,
+            name: `${typeLabel}: ${bossDef.name}`,
+            label: `${params.bossHp}HP vs ${params.userHp}HP`,
+            questions: questions,
+            totalQuestions: questions.length,
+            _isBoss: true,
+        };
     },
 
     switchSubTab(tab) {
@@ -431,6 +712,7 @@ const ChallengeModule = {
             const hellTag = group.isHell ? `<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);border-radius:6px;font-size:0.7rem;font-weight:600;"><i class="fas fa-skull-crossbones"></i> 地狱模式</span>` : '';
             stageGrid += `<div style="grid-column:1/-1;padding:8px 4px 2px;display:flex;align-items:center;gap:8px;"><span style="font-size:0.75rem;color:#64748b;font-weight:600;">${group.levelName}</span>${hellTag}</div>`;
             group.stages.forEach(({stage, index: i}) => {
+                const isBoss = stage._isBoss === true;
                 const p = this.serverProgress[stage.id];
                 const isCleared = p && p.cleared;
                 const isCurrent = i === nextAvailable;
@@ -448,6 +730,7 @@ const ChallengeModule = {
                 const stars = p?.stars || 0;
 
                 let statusClass = isLocked ? 'locked' : isCleared ? 'cleared' : isCurrent ? 'current' : 'available';
+                if (isBoss) statusClass = isLocked ? 'locked' : isCleared ? 'boss-cleared' : isCurrent ? 'boss-current' : 'boss-available';
                 let statusIcon = isLocked
                     ? (isReadonly ? '<i class="fas fa-lock" style="color:#f59e0b;"></i>' : '<i class="fas fa-lock"></i>')
                     : isCleared ? this._renderStars(stars)
@@ -455,16 +738,23 @@ const ChallengeModule = {
                     : '';
 
                 // 根据模式和 levelId 添加门造型
-                const _gateInfo = this._getGateStyle(group.isHell, group.levelId, isLocked, isCleared, isCurrent);
-                const _gateHtml = _gateInfo.html;
-                const _gateExtraClass = ' stage-gate';
+                let _gateInfo, _gateHtml, _gateExtraClass;
+                if (isBoss) {
+                    _gateInfo = this._getBossGateStyle(stage.bossDef, stage.bossType, isLocked, isCleared, isCurrent);
+                    _gateHtml = _gateInfo.html;
+                    _gateExtraClass = ' stage-boss-gate';
+                } else {
+                    _gateInfo = this._getGateStyle(group.isHell, group.levelId, isLocked, isCleared, isCurrent);
+                    _gateHtml = _gateInfo.html;
+                    _gateExtraClass = ' stage-gate';
+                }
 
                 stageGrid += `<div class="stage-card ${statusClass} ${group.isHell ? 'stage-hell' : ''}${_gateExtraClass}" onclick="${isLocked ? '' : `ChallengeModule.enterStage('${stage.id}')`}" ${isReadonly ? 'title="该课程暂未开放"' : ''}>
                     ${_gateHtml}
-                    <div class="stage-number">${i + 1}</div>
-                    <div class="stage-icon">${statusIcon}</div>
-                    ${isCleared ? `<div class="stage-best">最佳 ${p.bestScore.toFixed(0)}分</div>` : ''}
-                    ${isCurrent && !isLocked ? '<div class="stage-hint">可挑战</div>' : ''}
+                    ${isBoss ? `<div class="stage-boss-label"><i class="fas ${stage.bossDef.icon}"></i> ${stage.bossDef.name}</div>` : `<div class="stage-number">${i + 1}</div>`}
+                    <div class="stage-icon">${isBoss ? (isLocked ? '<i class="fas fa-lock"></i>' : isCleared ? '<i class="fas fa-skull"></i>' : '<i class="fas fa-skull-crossbones"></i>') : statusIcon}</div>
+                    ${isCleared ? `<div class="stage-best">${isBoss ? '已击败' : '最佳 ' + p.bestScore.toFixed(0) + '分'}</div>` : ''}
+                    ${isCurrent && !isLocked ? `<div class="stage-hint">${isBoss ? 'BOSS战!' : '可挑战'}</div>` : ''}
                 </div>`;
             });
         });
@@ -475,7 +765,10 @@ const ChallengeModule = {
                     <span style="font-size:0.82rem;color:${isHellMode ? '#f87171' : '#60a5fa'};font-weight:700;">
                         ${isHellMode ? '<i class="fas fa-skull-crossbones"></i> 地狱模式' : '<i class="fas fa-shield-halved"></i> 普通模式'}
                     </span>
-                    <span style="font-size:0.72rem;color:#64748b;">共 ${stages.length} 关</span>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        ${this._getTitleBadgeHTML()}
+                        <span style="font-size:0.72rem;color:#64748b;">共 ${stages.length} 关</span>
+                    </div>
                 </div>
                 <div class="stages-summary">
                     <div class="summary-card">
@@ -495,6 +788,56 @@ const ChallengeModule = {
             </div>
         `;
     },
+    /**
+     * BOSS 关卡门造型
+     */
+    _getBossGateStyle(bossDef, bossType, isLocked, isCleared, isCurrent) {
+        const icon = bossDef ? bossDef.icon : 'fa-skull';
+        const color = bossDef ? bossDef.color : '#ef4444';
+        const isMini = bossType === 'mini';
+        
+        const bgOpacity = isLocked ? '0.2' : isCleared ? '0.3' : '0.5';
+        const borderColor = isLocked ? '#334155' : isCleared ? color + '66' : color;
+        const glowIntensity = isCurrent ? '20px' : isCleared ? '8px' : '12px';
+
+        let innerContent;
+        if (isLocked) {
+            innerContent = `<i class="fas fa-lock" style="font-size:16px;color:#475569;"></i>`;
+        } else if (isCleared) {
+            innerContent = `<i class="fas fa-trophy" style="font-size:18px;color:#fbbf24;"></i>`;
+        } else {
+            innerContent = `<i class="fas ${icon}" style="font-size:22px;color:${color};filter:drop-shadow(0 0 6px ${color});"></i>`;
+        }
+
+        const html = `
+            <div class="boss-gate" style="
+                position:absolute;top:0;left:0;right:0;bottom:0;
+                display:flex;align-items:center;justify-content:center;
+                background:radial-gradient(ellipse at center, ${isMini ? color + '15' : color + '25'} 0%, transparent 70%);
+                border-radius:14px;
+                pointer-events:none;
+            ">
+                <div style="
+                    width:${isMini ? '44px' : '52px'};height:${isMini ? '44px' : '52px'};
+                    border-radius:${isMini ? '50%' : '14px'};
+                    border:2px solid ${borderColor};
+                    background:rgba(15,23,42,${bgOpacity});
+                    display:flex;align-items:center;justify-content:center;
+                    box-shadow:0 0 ${glowIntensity} ${color}${isLocked ? '20' : '40'},
+                               inset 0 0 ${glowIntensity} ${color}${isLocked ? '10' : '20'};
+                    ${!isLocked && isCurrent ? 'animation:boss-gate-pulse 2s ease-in-out infinite;' : ''}
+                ">
+                    ${innerContent}
+                </div>
+                ${isMini ? `<div style="position:absolute;top:4px;right:4px;font-size:0.55rem;padding:1px 4px;border-radius:4px;background:${color}22;color:${color};font-weight:600;">小</div>` : 
+                `<div style="position:absolute;top:4px;right:4px;font-size:0.55rem;padding:1px 4px;border-radius:4px;background:${color}44;color:${color};font-weight:600;">BOSS</div>`}
+            </div>
+        `;
+
+        return { html };
+    },
+
+
 
 
     // 地狱关卡门造型：根据 BIPA 等级返回对应的小门 HTML
@@ -613,6 +956,10 @@ const ChallengeModule = {
         // 洗牌（顺序模式下跳过）
         if (shouldShuffle) questions = this._shuffle(questions);
 
+        const isBoss = stage._isBoss === true;
+        const bossParams = isBoss ? (stage.bossParams || { bossHp: 5, userHp: 3 }) : null;
+        const bossDef = isBoss ? stage.bossDef : null;
+
         this.challengeState = {
             stageId,
             questions: questions,
@@ -622,6 +969,20 @@ const ChallengeModule = {
             startTime: isHell ? Date.now() : null,
             totalQuestions: questions.length,
             phase: isHell ? 'playing' : 'ready', // ready(普通-等开始) / playing(答题中)
+            // BOSS 战相关
+            isBoss: isBoss,
+            bossParams: bossParams,
+            bossDef: bossDef,
+            bossType: isBoss ? stage.bossType : null,
+            bossLevel: isBoss ? stage.bossLevel : null,
+            bossHp: isBoss ? bossParams.bossHp : 0,
+            bossMaxHp: isBoss ? bossParams.bossHp : 0,
+            userHp: isBoss ? bossParams.userHp : 0,
+            userMaxHp: isBoss ? bossParams.userHp : 0,
+            bossPhase: isBoss ? 'normal' : null, // normal | rage | defeated
+            userTookDamage: false, // 追踪用户是否掉过血（用于完美击杀称号）
+            currentStreak: 0, // 当前连胜（连续答对题数）
+            maxStreak: 0, // 本关最大连胜
         };
 
         this._inChallenge = true;
@@ -1183,7 +1544,7 @@ const ChallengeModule = {
     },
 
 
-    answerQuestion(btnEl, selectedEnc, correctEnc) {
+        answerQuestion(btnEl, selectedEnc, correctEnc) {
         const state = this.challengeState;
         if (!state || state.answers[state.currentIndex]) return; // 已答过
 
@@ -1206,6 +1567,42 @@ const ChallengeModule = {
                 else if (btn === btnEl && !isCorrect) btn.classList.add('wrong');
             });
         }
+
+        // ===== BOSS战处理 =====
+        if (state.isBoss) {
+            const bossResult = this._bossHandleAnswer(state, isCorrect);
+            // 播放受击动画
+            if (bossResult.damageType) {
+                this._bossDamageEffect(bossResult.damageType);
+            }
+            // 更新BOSS HP显示
+            this._updateBossHpDisplay(state);
+
+            if (bossResult.gameOver) {
+                clearInterval(this._timerInterval);
+                const delay = isImmediateGrading ? 1200 : 300;
+                setTimeout(() => {
+                    const subContent = document.getElementById('challenge-sub-content');
+                    if (subContent) this._renderBossResult(subContent, bossResult.result);
+                }, delay);
+                return;
+            }
+
+            // BOSS战未结束，继续下一题
+            if (isImmediateGrading) {
+                setTimeout(() => {
+                    state.currentIndex++;
+                    const subContent = document.getElementById('challenge-sub-content');
+                    if (subContent) this._renderPlayArea(subContent);
+                }, 1200);
+            } else {
+                state.currentIndex++;
+                const subContent = document.getElementById('challenge-sub-content');
+                if (subContent) this._renderPlayArea(subContent);
+            }
+            return;
+        }
+        // ===== BOSS战处理结束 =====
 
         // 准确率淘汰检测（仅地狱模式且已配置淘汰线）
         const knockout = this._checkAccuracyKnockout();
@@ -1422,11 +1819,13 @@ const ChallengeModule = {
         try {
             await API.request('challenge/submit', {
                 method: 'POST',
-                body: JSON.stringify({ stageId, accuracy, timeSpent, score, stars }),
+                body: JSON.stringify({ stageId, accuracy, timeSpent, score, stars, mode: this.challengeMode }),
             });
         } catch (e) {
             console.warn('Failed to submit score:', e);
         }
+        // 检查称号
+        this._checkAndSyncTitles();
     },
 
     // 退出闯关确认（带提示，不保存成绩）
@@ -1704,7 +2103,945 @@ const ChallengeModule = {
         });
     },
 
-    _shuffle(arr) {
+
+    
+    // ========== BOSS 战核心方法 ==========
+
+    /**
+     * 渲染 BOSS HP 条
+     */
+    _renderBossHpBars(state) {
+        if (!state.isBoss) return '';
+        const bossDef = state.bossDef || {};
+        const bossColor = bossDef.color || '#ef4444';
+        const bossName = bossDef.name || 'BOSS';
+        const isRage = state.bossHp <= state.bossMaxHp * 0.25 && state.bossHp > 0;
+        const rageClass = isRage ? ' boss-hp-rage' : '';
+        const rageGlow = isRage ? 'animation:boss-hp-rage-pulse 0.8s ease-in-out infinite;' : '';
+
+        return `
+        <div class="boss-battle-ui">
+            <!-- BOSS 信息 -->
+            <div class="boss-info-row">
+                <div class="boss-avatar" style="border-color:${bossColor};${isRage ? 'box-shadow:0 0 15px '+bossColor+';' : ''}">
+                    <i class="fas ${bossDef.icon || 'fa-skull'}" style="color:${bossColor};font-size:22px;${isRage ? 'animation:boss-shake 0.3s ease-in-out infinite;' : ''}"></i>
+                </div>
+                <div class="boss-hp-section" style="flex:1;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+                        <span class="boss-name" style="color:${bossColor};">${bossName}</span>
+                        <span class="boss-hp-text" style="color:${bossColor};">${state.bossHp}/${state.bossMaxHp}</span>
+                    </div>
+                    <div class="boss-hp-bar${rageClass}" style="background:#1e293b;border:1px solid ${bossColor}44;border-radius:6px;overflow:hidden;height:14px;position:relative;${rageGlow}">
+                        <div class="boss-hp-fill" id="boss-hp-fill" style="height:100%;background:linear-gradient(90deg,${bossColor}cc,${bossColor});border-radius:5px;transition:width 0.4s ease;width:${state.bossMaxHp > 0 ? (state.bossHp / state.bossMaxHp * 100) : 0}%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 用户 HP -->
+            <div class="user-hp-row">
+                <div class="user-hp-section" style="flex:1;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+                        <span style="font-size:0.75rem;color:#94a3b8;"><i class="fas fa-heart"></i> 我的HP</span>
+                        <span class="user-hp-text" style="color:#f87171;">${state.userHp}/${state.userMaxHp}</span>
+                    </div>
+                    <div style="background:#1e293b;border:1px solid #f8717133;border-radius:6px;overflow:hidden;height:12px;">
+                        <div class="user-hp-fill" id="user-hp-fill" style="height:100%;background:linear-gradient(90deg,#f87171cc,#f87171);border-radius:5px;transition:width 0.4s ease;width:${state.userMaxHp > 0 ? (state.userHp / state.userMaxHp * 100) : 0}%;"></div>
+                    </div>
+                </div>
+                <div class="user-avatar">
+                    <i class="fas fa-user" style="color:#60a5fa;font-size:16px;"></i>
+                </div>
+            </div>
+
+            ${isRage ? '<div class="boss-rage-banner"><i class="fas fa-fire"></i> BOSS 暴怒中!</div>' : ''}
+        </div>
+        `;
+    },
+
+    /**
+     * BOSS 战答题处理：答对扣BOSS HP，答错扣用户HP
+     * @returns {{ gameOver: boolean, result: 'win'|'lose'|null, damageType: 'boss'|'user'|null }}
+     */
+    _bossHandleAnswer(state, isCorrect) {
+        if (!state.isBoss) return { gameOver: false, result: null, damageType: null };
+
+        let damageType = null;
+        let result = null;
+
+        if (isCorrect) {
+            // 答对：扣BOSS 1 HP
+            state.bossHp = Math.max(0, state.bossHp - 1);
+            state.correct++;
+            state.currentStreak++;
+            state.maxStreak = Math.max(state.maxStreak, state.currentStreak);
+            damageType = 'boss';
+
+            // 检查BOSS是否被击败
+            if (state.bossHp <= 0) {
+                state.bossPhase = 'defeated';
+                result = 'win';
+            }
+            // 检查是否进入暴怒
+            else if (state.bossHp <= state.bossMaxHp * 0.25) {
+                state.bossPhase = 'rage';
+            }
+        } else {
+            // 答错：扣用户 1 HP
+            state.userHp = Math.max(0, state.userHp - 1);
+            state.currentStreak = 0;
+            state.userTookDamage = true;
+            damageType = 'user';
+
+            // 检查用户是否被击败
+            if (state.userHp <= 0) {
+                result = 'lose';
+            }
+        }
+
+        const gameOver = result !== null;
+        return { gameOver, result, damageType };
+    },
+
+    /**
+     * BOSS 答题后的动画效果
+     */
+    _bossDamageEffect(damageType) {
+        if (damageType === 'boss') {
+            // BOSS 受伤动画
+            const bossAvatar = document.querySelector('.boss-avatar');
+            const bossHpFill = document.getElementById('boss-hp-fill');
+            if (bossAvatar) {
+                bossAvatar.style.animation = 'boss-hit 0.4s ease';
+                setTimeout(() => bossAvatar.style.animation = '', 400);
+            }
+            if (bossHpFill) {
+                bossHpFill.style.transition = 'width 0.4s ease, background 0.2s';
+                bossHpFill.style.background = '#fff';
+                setTimeout(() => {
+                    bossHpFill.style.background = 'linear-gradient(90deg, #ef4444cc, #ef4444)';
+                    bossHpFill.style.transition = 'width 0.4s ease';
+                }, 200);
+            }
+        } else if (damageType === 'user') {
+            // 用户受伤动画
+            const userHpFill = document.getElementById('user-hp-fill');
+            const playPage = document.querySelector('.challenge-play-page');
+            if (userHpFill) {
+                userHpFill.style.background = '#fff';
+                setTimeout(() => {
+                    userHpFill.style.background = 'linear-gradient(90deg, #f87171cc, #f87171)';
+                }, 200);
+            }
+            if (playPage) {
+                playPage.style.animation = 'screen-shake 0.3s ease';
+                setTimeout(() => playPage.style.animation = '', 300);
+            }
+        }
+    },
+
+    /**
+     * 更新 BOSS HP 条显示
+     */
+    _updateBossHpDisplay(state) {
+        if (!state.isBoss) return;
+        const bossHpFill = document.getElementById('boss-hp-fill');
+        const userHpFill = document.getElementById('user-hp-fill');
+        const bossHpText = document.querySelector('.boss-hp-text');
+        const userHpText = document.querySelector('.user-hp-text');
+
+        if (bossHpFill) bossHpFill.style.width = (state.bossMaxHp > 0 ? (state.bossHp / state.bossMaxHp * 100) : 0) + '%';
+        if (userHpFill) userHpFill.style.width = (state.userMaxHp > 0 ? (state.userHp / state.userMaxHp * 100) : 0) + '%';
+        if (bossHpText) bossHpText.textContent = state.bossHp + '/' + state.bossMaxHp;
+        if (userHpText) userHpText.textContent = state.userHp + '/' + state.userMaxHp;
+
+        // 暴怒状态
+        const rageBanner = document.querySelector('.boss-rage-banner');
+        const bossAvatar = document.querySelector('.boss-avatar');
+        if (state.bossPhase === 'rage') {
+            if (!rageBanner) {
+                const bossUI = document.querySelector('.boss-battle-ui');
+                if (bossUI) {
+                    const banner = document.createElement('div');
+                    banner.className = 'boss-rage-banner';
+                    banner.innerHTML = '<i class="fas fa-fire"></i> BOSS 暴怒中!';
+                    bossUI.appendChild(banner);
+                }
+            }
+            if (bossAvatar) {
+                const bossDef = state.bossDef || {};
+                bossAvatar.style.boxShadow = '0 0 15px ' + (bossDef.color || '#ef4444');
+                const icon = bossAvatar.querySelector('i');
+                if (icon) icon.style.animation = 'boss-shake 0.3s ease-in-out infinite';
+            }
+        }
+    },
+
+    /**
+     * 记录 BOSS 击败统计（localStorage）
+     */
+    _recordBossDefeat(bossLevel, bossType, isPerfect) {
+        const stats = JSON.parse(localStorage.getItem('fmi_boss_stats') || '{"defeated":0,"perfect":false,"bosses":{}}');
+        stats.defeated++;
+        if (isPerfect) stats.perfect = true;
+        const key = bossType === 'big' ? bossLevel + '_final' : bossLevel + '_mini';
+        stats.bosses[key] = (stats.bosses[key] || 0) + 1;
+        localStorage.setItem('fmi_boss_stats', JSON.stringify(stats));
+    },
+
+    /**
+     * 记录连胜数据（用于条件称号）
+     */
+    _recordStreak(isHell) {
+        const data = JSON.parse(localStorage.getItem('fmi_streaks') || '{"maxStreak":0,"hellMaxStreak":0}');
+        const state = this.challengeState;
+        if (!state) return;
+        if (isHell) {
+            data.hellMaxStreak = Math.max(data.hellMaxStreak, state.maxStreak);
+        }
+        data.maxStreak = Math.max(data.maxStreak, state.maxStreak);
+        localStorage.setItem('fmi_streaks', JSON.stringify(data));
+    },
+    // ========== BOSS战结果页面 ==========
+
+    /**
+     * BOSS战结果页面入口
+     */
+    _renderBossResult(container, result) {
+        const state = this.challengeState;
+        if (!state || !state.isBoss) return;
+
+        const bossDef = state.bossDef || {};
+        const bossName = bossDef.name || 'BOSS';
+        const bossIcon = bossDef.icon || 'fa-skull';
+        const bossColor = bossDef.color || '#ef4444';
+        const bossType = state.bossParams?.type || 'mini';
+        const bossLevel = state.bossParams?.level ?? 0;
+
+        // 记录BOSS击败统计
+        if (result === 'win') {
+            const isPerfect = state.userHp === state.userMaxHp;
+            this._recordBossDefeat(bossLevel, bossType, isPerfect);
+        }
+
+        // 记录连胜
+        this._recordStreak(true);
+
+        // 保存BOSS关卡进度
+        this._saveBossProgress(result);
+
+        // 更新称号
+        this._updateTitlesAfterBoss(result, bossLevel, bossType);
+
+        if (result === 'win') {
+            this._renderBossVictoryPage(container, state, bossDef);
+        } else {
+            this._renderBossDefeatPage(container, state, bossDef);
+        }
+    },
+
+    /**
+     * BOSS战胜利页面
+     */
+    _renderBossVictoryPage(container, state, bossDef) {
+        const bossName = bossDef.name || 'BOSS';
+        const bossIcon = bossDef.icon || 'fa-skull';
+        const bossColor = bossDef.color || '#ef4444';
+        const bossType = state.bossParams?.type || 'mini';
+        const isPerfect = state.userHp === state.userMaxHp;
+        const timeSpent = Math.floor((Date.now() - state.startTime) / 1000);
+        const totalQ = state.totalQuestions;
+        const correctCount = state.correct;
+        const accuracy = totalQ > 0 ? Math.round((correctCount / totalQ) * 100) : 0;
+
+        const isBigBoss = bossType === 'big';
+        const pageTitle = isBigBoss ? `${bossName} 已被击败！` : `${bossName} 被击败了！`;
+        const subtitleText = isBigBoss
+            ? `恭喜你击败了${bossName}！你的印尼语实力已经得到了证明！`
+            : `你成功击败了小BOSS ${bossName}！继续前进吧！`;
+
+        container.innerHTML = `
+        <div class="boss-result-page boss-victory-page">
+            <div class="boss-result-particles" id="boss-particles"></div>
+            <div class="boss-result-card victory-card">
+                <div class="boss-result-badge victory-badge">
+                    <i class="fas ${bossIcon} boss-defeated-icon" style="color:${bossColor};"></i>
+                </div>
+                <h2 class="boss-result-title victory-title">${pageTitle}</h2>
+                <p class="boss-result-subtitle">${subtitleText}</p>
+
+                <div class="boss-result-stats">
+                    <div class="boss-stat-item">
+                        <div class="boss-stat-value victory-value">${accuracy}%</div>
+                        <div class="boss-stat-label">准确率</div>
+                    </div>
+                    <div class="boss-stat-item">
+                        <div class="boss-stat-value victory-value">${correctCount}/${totalQ}</div>
+                        <div class="boss-stat-label">答对/总题</div>
+                    </div>
+                    <div class="boss-stat-item">
+                        <div class="boss-stat-value victory-value">${state.maxStreak}</div>
+                        <div class="boss-stat-label">最大连胜</div>
+                    </div>
+                    <div class="boss-stat-item">
+                        <div class="boss-stat-value victory-value">${this._formatTime(timeSpent)}</div>
+                        <div class="boss-stat-label">用时</div>
+                    </div>
+                </div>
+
+                ${isPerfect ? `
+                <div class="boss-perfect-notice">
+                    <i class="fas fa-crown"></i> 完美通关！零失误击败BOSS！
+                </div>
+                ` : `
+                <div class="boss-hp-remaining">
+                    <i class="fas fa-heart"></i> 剩余HP: ${state.userHp}/${state.userMaxHp}
+                </div>
+                `}
+
+                ${isBigBoss ? `
+                <div class="boss-result-title-unlock">
+                    <i class="fas fa-trophy"></i>
+                    <span>称号已解锁：击败${bossName}</span>
+                </div>
+                ` : ''}
+
+                <div class="boss-result-actions">
+                    <button class="boss-btn boss-btn-return" onclick="ChallengeModule._returnToMap()">
+                        <i class="fas fa-map"></i> 返回关卡地图
+                    </button>
+                </div>
+            </div>
+        </div>`;
+
+        // 启动胜利粒子动画
+        this._startVictoryParticles();
+    },
+
+    /**
+     * BOSS战失败页面
+     */
+    _renderBossDefeatPage(container, state, bossDef) {
+        const bossName = bossDef.name || 'BOSS';
+        const bossIcon = bossDef.icon || 'fa-skull';
+        const bossColor = bossDef.color || '#ef4444';
+        const timeSpent = Math.floor((Date.now() - state.startTime) / 1000);
+        const totalQ = state.totalQuestions;
+        const correctCount = state.correct;
+        const bossHpLeft = state.bossHp;
+        const bossMaxHp = state.bossMaxHp;
+        const bossProgress = Math.round(((bossMaxHp - bossHpLeft) / bossMaxHp) * 100);
+
+        const encourageMessages = [
+            `${bossName}很强大，但不要放弃！再试一次吧！`,
+            `你离击败${bossName}只差一步了！回来再战！`,
+            `不要气馁！${bossName}虽然强大，但你可以通过更多练习来战胜它！`,
+            `每次挑战都是学习的机会！回去复习一下再来吧！`,
+        ];
+        const randomMsg = encourageMessages[Math.floor(Math.random() * encourageMessages.length)];
+
+        container.innerHTML = `
+        <div class="boss-result-page boss-defeat-page">
+            <div class="boss-result-card defeat-card">
+                <div class="boss-result-badge defeat-badge">
+                    <i class="fas fa-heart-broken boss-defeat-icon"></i>
+                </div>
+                <h2 class="boss-result-title defeat-title">你被击败了...</h2>
+                <p class="boss-result-subtitle">${randomMsg}</p>
+
+                <div class="boss-result-stats">
+                    <div class="boss-stat-item">
+                        <div class="boss-stat-value defeat-value">${bossProgress}%</div>
+                        <div class="boss-stat-label">BOSS伤害</div>
+                    </div>
+                    <div class="boss-stat-item">
+                        <div class="boss-stat-value defeat-value">${bossHpLeft}/${bossMaxHp}</div>
+                        <div class="boss-stat-label">BOSS剩余HP</div>
+                    </div>
+                    <div class="boss-stat-item">
+                        <div class="boss-stat-value defeat-value">${correctCount}/${totalQ}</div>
+                        <div class="boss-stat-label">答对/总题</div>
+                    </div>
+                    <div class="boss-stat-item">
+                        <div class="boss-stat-value defeat-value">${this._formatTime(timeSpent)}</div>
+                        <div class="boss-stat-label">用时</div>
+                    </div>
+                </div>
+
+                <div class="boss-defeat-hp-bar">
+                    <div class="boss-defeat-hp-label">BOSS 血量</div>
+                    <div class="boss-defeat-hp-track">
+                        <div class="boss-defeat-hp-fill" style="width:${Math.round((bossHpLeft/bossMaxHp)*100)}%; background:${bossColor};"></div>
+                    </div>
+                </div>
+
+                <div class="boss-result-actions">
+                    <button class="boss-btn boss-btn-retry" onclick="ChallengeModule._retryBoss()">
+                        <i class="fas fa-redo"></i> 再战一次
+                    </button>
+                    <button class="boss-btn boss-btn-return" onclick="ChallengeModule._returnToMap()">
+                        <i class="fas fa-map"></i> 返回关卡地图
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    },
+
+    /**
+     * 保存BOSS关卡进度到serverProgress
+     */
+    _saveBossProgress(result) {
+        const state = this.challengeState;
+        if (!state || !state.isBoss) return;
+        const key = 'fmi_server_progress';
+        const progress = JSON.parse(localStorage.getItem(key) || '{}');
+        const stageKey = String(state.stageId || 'unknown');
+
+        if (!progress[stageKey]) progress[stageKey] = {};
+        progress[stageKey].bossCleared = result === 'win';
+        progress[stageKey].bossAttempts = (progress[stageKey].bossAttempts || 0) + 1;
+        if (result === 'win') {
+            progress[stageKey].bossBestHp = Math.max(
+                progress[stageKey].bossBestHp || 0,
+                state.userHp
+            );
+            progress[stageKey].bossBestTime = Math.min(
+                progress[stageKey].bossBestTime || Infinity,
+                Math.floor((Date.now() - state.startTime) / 1000)
+            );
+        }
+        localStorage.setItem(key, JSON.stringify(progress));
+    },
+
+    /**
+     * BOSS胜利后更新称号
+     */
+    _updateTitlesAfterBoss(result, bossLevel, bossType) {
+        if (result !== 'win') return;
+        // 称号会在下次查看称号墙时自动重新计算
+        const key = 'fmi_boss_stats';
+        const stats = JSON.parse(localStorage.getItem(key) || '{}');
+        const bossKey = `${bossLevel}_${bossType}`;
+        if (!stats[bossKey]) stats[bossKey] = {};
+        stats[bossKey].lastDefeat = Date.now();
+        localStorage.setItem(key, JSON.stringify(stats));
+    },
+
+    /**
+     * 返回关卡地图
+     */
+    _returnToMap() {
+        clearInterval(this._timerInterval);
+        this.challengeState = null;
+        const subContent = document.getElementById('challenge-sub-content');
+        if (subContent) {
+            this._renderStageMap(subContent);
+        }
+    },
+
+    /**
+     * 重试BOSS战
+     */
+    _retryBoss() {
+        const state = this.challengeState;
+        if (!state || !state.isBoss) return;
+        // 重新开始同一个BOSS关卡（使用stageId重新进入）
+        const stageId = state.stageId;
+        if (stageId) {
+            this._inChallenge = false;
+            this.challengeState = null;
+            this.enterStage(stageId);
+        }
+    },
+
+    /**
+     * 胜利粒子动画
+     */
+    _startVictoryParticles() {
+        const container = document.getElementById('boss-particles');
+        if (!container) return;
+        const colors = ['#fbbf24', '#f59e0b', '#a78bfa', '#60a5fa', '#34d399', '#f87171'];
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'boss-victory-particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 2 + 's';
+            particle.style.animationDuration = (2 + Math.random() * 3) + 's';
+            particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.setProperty('--tx', (Math.random() * 200 - 100) + 'px');
+            particle.style.setProperty('--ty', -(100 + Math.random() * 300) + 'px');
+            container.appendChild(particle);
+        }
+        // 清理粒子
+        setTimeout(() => { if (container) container.innerHTML = ''; }, 6000);
+    },
+
+    /**
+     * 格式化时间
+     */
+    _formatTime(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return m > 0 ? `${m}分${s.toString().padStart(2, '0')}秒` : `${s}秒`;
+    },
+
+    // ========== 称号系统 ==========
+
+// ========== 称号系统 ==========
+    _titleDefs: {
+        // ====== 课程通关型称号 - 普通模式 ======
+        normal_clear_0:  { id: 'normal_clear_0',  name: '发音学徒', icon: 'fa-music', category: 'normal', desc: '通关 BIPA 0 基础发音篇全部关卡', levelId: '0' },
+        normal_star_0:   { id: 'normal_star_0',   name: '发音大师', icon: 'fa-headphones', category: 'normal', desc: 'BIPA 0 全部关卡获得三星', levelId: '0' },
+        normal_clear_1:  { id: 'normal_clear_1',  name: '巴厘新芽', icon: 'fa-seedling', category: 'normal', desc: '通关 BIPA 1 基础篇全部关卡', levelId: '1' },
+        normal_star_1:   { id: 'normal_star_1',   name: '巴厘之花', icon: 'fa-leaf', category: 'normal', desc: 'BIPA 1 全部关卡获得三星', levelId: '1' },
+        normal_clear_2:  { id: 'normal_clear_2',  name: '群岛行者', icon: 'fa-compass', category: 'normal', desc: '通关 BIPA 2 中级篇全部关卡', levelId: '2' },
+        normal_star_2:   { id: 'normal_star_2',   name: '群岛领航', icon: 'fa-ship', category: 'normal', desc: 'BIPA 2 全部关卡获得三星', levelId: '2' },
+        normal_clear_3:  { id: 'normal_clear_3',  name: '珊瑚守护者', icon: 'fa-fish', category: 'normal', desc: '通关 BIPA 3 中高级全部关卡', levelId: '3' },
+        normal_star_3:   { id: 'normal_star_3',   name: '珊瑚之王', icon: 'fa-crown', category: 'normal', desc: 'BIPA 3 全部关卡获得三星', levelId: '3' },
+        normal_clear_4:  { id: 'normal_clear_4',  name: '伽鲁达之翼', icon: 'fa-dove', category: 'normal', desc: '通关 BIPA 4 高级篇全部关卡', levelId: '4' },
+        normal_star_4:   { id: 'normal_star_4',   name: '伽鲁达之王', icon: 'fa-crown', category: 'normal', desc: 'BIPA 4 全部关卡获得三星', levelId: '4' },
+        normal_clear_5:  { id: 'normal_clear_5',  name: '浮屠朝圣者', icon: 'fa-landmark', category: 'normal', desc: '通关 BIPA 5 高级进阶全部关卡', levelId: '5' },
+        normal_star_5:   { id: 'normal_star_5',   name: '浮屠守护者', icon: 'fa-shield', category: 'normal', desc: 'BIPA 5 全部关卡获得三星', levelId: '5' },
+        normal_clear_6:  { id: 'normal_clear_6',  name: '诸神语者', icon: 'fa-comments', category: 'normal', desc: '通关 BIPA 6 精通篇全部关卡', levelId: '6' },
+        normal_star_6:   { id: 'normal_star_6',   name: '神谕使者', icon: 'fa-hat-wizard', category: 'normal', desc: 'BIPA 6 全部关卡获得三星', levelId: '6' },
+        normal_clear_7:  { id: 'normal_clear_7',  name: '印尼语宗师', icon: 'fa-scroll', category: 'normal', desc: '通关 BIPA 7 卓越篇全部关卡', levelId: '7' },
+        normal_star_7:   { id: 'normal_star_7',   name: '语言之神', icon: 'fa-star', category: 'normal', desc: 'BIPA 7 全部关卡获得三星（最高荣誉）', levelId: '7' },
+        normal_clear_all:{ id: 'normal_clear_all',name: '全境征服者', icon: 'fa-trophy', category: 'normal', desc: '通关全部 BIPA 0-7 普通模式', levelId: 'all' },
+
+        // ====== 课程通关型称号 - 地狱模式 ======
+        hell_clear_0:  { id: 'hell_clear_0',  name: '幽冥之声', icon: 'fa-wand-sparkles', category: 'hell', desc: '地狱通关 BIPA 0 基础发音篇', levelId: '0' },
+        hell_star_0:   { id: 'hell_star_0',   name: '万鬼齐喑', icon: 'fa-ghost', category: 'hell', desc: '地狱 BIPA 0 全部三星通关', levelId: '0' },
+        hell_clear_1:  { id: 'hell_clear_1',  name: '暗影新兵', icon: 'fa-user-ninja', category: 'hell', desc: '地狱通关 BIPA 1 基础篇', levelId: '1' },
+        hell_star_1:   { id: 'hell_star_1',   name: '暗影猎手', icon: 'fa-crosshairs', category: 'hell', desc: '地狱 BIPA 1 全部三星通关', levelId: '1' },
+        hell_clear_2:  { id: 'hell_clear_2',  name: '熔岩行者', icon: 'fa-fire', category: 'hell', desc: '地狱通关 BIPA 2 中级篇', levelId: '2' },
+        hell_star_2:   { id: 'hell_star_2',   name: '熔岩之王', icon: 'fa-fire-flame-curved', category: 'hell', desc: '地狱 BIPA 2 全部三星通关', levelId: '2' },
+        hell_clear_3:  { id: 'hell_clear_3',  name: '深渊守卫', icon: 'fa-shield-halved', category: 'hell', desc: '地狱通关 BIPA 3 中高级', levelId: '3' },
+        hell_star_3:   { id: 'hell_star_3',   name: '深渊之主', icon: 'fa-chess-rook', category: 'hell', desc: '地狱 BIPA 3 全部三星通关', levelId: '3' },
+        hell_clear_4:  { id: 'hell_clear_4',  name: '暗黑伽鲁达', icon: 'fa-feather-pointed', category: 'hell', desc: '地狱通关 BIPA 4 高级篇', levelId: '4' },
+        hell_star_4:   { id: 'hell_star_4',   name: '伽鲁达觉醒', icon: 'fa-sun', category: 'hell', desc: '地狱 BIPA 4 全部三星通关', levelId: '4' },
+        hell_clear_5:  { id: 'hell_clear_5',  name: '魔窟朝圣者', icon: 'fa-gopuram', category: 'hell', desc: '地狱通关 BIPA 5 高级进阶', levelId: '5' },
+        hell_star_5:   { id: 'hell_star_5',   name: '魔窟之主', icon: 'fa-skull-crossbones', category: 'hell', desc: '地狱 BIPA 5 全部三星通关', levelId: '5' },
+        hell_clear_6:  { id: 'hell_clear_6',  name: '逆神者', icon: 'fa-bolt', category: 'hell', desc: '地狱通关 BIPA 6 精通篇', levelId: '6' },
+        hell_star_6:   { id: 'hell_star_6',   name: '弑神者', icon: 'fa-hand-fist', category: 'hell', desc: '地狱 BIPA 6 全部三星通关', levelId: '6' },
+        hell_clear_7:  { id: 'hell_clear_7',  name: '地狱终焉', icon: 'fa-skull', category: 'hell', desc: '地狱通关 BIPA 7 卓越篇', levelId: '7' },
+        hell_star_7:   { id: 'hell_star_7',   name: '万魔之王', icon: 'fa-dragon', category: 'hell', desc: '地狱 BIPA 7 全部三星（终极荣耀）', levelId: '7' },
+        hell_clear_all:{ id: 'hell_clear_all',name: '地狱征服者', icon: 'fa-fire-flame-simple', category: 'hell', desc: '地狱通关全部 BIPA 0-7', levelId: 'all' },
+
+        // ====== BOSS 相关称号 ======
+        boss_first:    { id: 'boss_first',    name: '首席屠龙者', icon: 'fa-shield-halved', category: 'boss', desc: '首次击败任意 BOSS' },
+        boss_hunter_5: { id: 'boss_hunter_5', name: '猎魔先锋', icon: 'fa-crosshairs', category: 'boss', desc: '累计击败 5 个 BOSS' },
+        boss_hunter_15:{ id: 'boss_hunter_15',name: 'BOSS 猎人', icon: 'fa-skull-crossbones', category: 'boss', desc: '累计击败 15 个 BOSS' },
+        boss_final:    { id: 'boss_final',    name: '诸魔克星', icon: 'fa-dragon', category: 'boss', desc: '击败 BIPA 7 终极 BOSS' },
+        boss_perfect:  { id: 'boss_perfect',  name: '完美击杀', icon: 'fa-gem', category: 'boss', desc: '无伤通关任意 BOSS（用户HP不掉）' },
+
+        // ====== 条件称号 ======
+        speedrun:      { id: 'speedrun',      name: '速通达人', icon: 'fa-bolt', category: 'condition', desc: '任意关卡 accuracy=100% 且用时低于时限30%' },
+        retry_star:    { id: 'retry_star',    name: '不屈意志', icon: 'fa-heart-crack', category: 'condition', desc: '单关重试5次后三星通关' },
+        clear_100:     { id: 'clear_100',     name: '百关斩将', icon: 'fa-shield', category: 'condition', desc: '累计通关100关（普通+地狱）' },
+        streak_20:     { id: 'streak_20',     name: '连胜传说', icon: 'fa-fire', category: 'condition', desc: '单次闯关中连续答对20题' },
+        hell_streak_15:{ id: 'hell_streak_15',name: '地狱连胜', icon: 'fa-fire-flame-curved', category: 'condition', desc: '地狱模式连续答对15题' },
+
+        // ====== 通用称号 ======
+        login_first:   { id: 'login_first',   name: '踏入门内', icon: 'fa-door-open', category: 'general', desc: '首次登录系统' },
+        study_days_7:  { id: 'study_days_7',  name: '坚持不懈', icon: 'fa-calendar-check', category: 'general', desc: '累计学习天数达到7天' },
+        study_days_30: { id: 'study_days_30', name: '学习达人', icon: 'fa-calendar-days', category: 'general', desc: '累计学习天数达到30天' },
+        study_days_100:{ id: 'study_days_100',name: '百日修行', icon: 'fa-trophy', category: 'general', desc: '累计学习天数达到100天' },
+        words_500:     { id: 'words_500',     name: '词汇新星', icon: 'fa-star', category: 'general', desc: '累计学习500个单词' },
+        words_2000:    { id: 'words_2000',    name: '词汇大师', icon: 'fa-gem', category: 'general', desc: '累计学习2000个单词' },
+    },,
+
+    _earnedTitles: {}, // { titleId: earnedAt }
+    _titleLoaded: false,
+    _selectedTitle: null, // 用户当前佩戴的称号
+
+    /**
+     * 加载称号数据（从服务端拉取 + 本地缓存）
+     */
+    async _loadTitles() {
+        // 先从本地读取缓存
+        const cached = localStorage.getItem('fmi_titles');
+        if (cached) {
+            try {
+                const data = JSON.parse(cached);
+                this._earnedTitles = data.earnedTitles || {};
+                this._selectedTitle = data.selectedTitle || null;
+            } catch(e) {}
+        }
+
+        // 从服务端同步
+        try {
+            const res = await API.request('user/titles');
+            if (res.success && res.titles) {
+                const newEarned = {};
+                for (const t of res.titles) {
+                    if (t.earned) newEarned[t.id] = t.earnedAt;
+                }
+                this._earnedTitles = newEarned;
+
+                // 同步前端计算的挑战模式称号到服务端
+                const challengeTitles = this._computeChallengeTitles();
+                if (challengeTitles.length > 0) {
+                    await API.request('user/titles', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            titles: challengeTitles.map(id => ({
+                                id,
+                                earnedAt: this._earnedTitles[id] || new Date().toISOString(),
+                            })),
+                        }),
+                    });
+                }
+
+                // 处理新获得的通用称号通知
+                if (res.newTitles && res.newTitles.length > 0) {
+                    for (const t of res.newTitles) {
+                        this._showTitleNotification(t);
+                    }
+                }
+
+                // 保存到本地
+                this._saveTitlesCache();
+                this._titleLoaded = true;
+            }
+        } catch(e) {
+            console.warn('Failed to load titles:', e);
+            this._titleLoaded = true;
+        }
+    },
+
+    _saveTitlesCache() {
+        localStorage.setItem('fmi_titles', JSON.stringify({
+            earnedTitles: this._earnedTitles,
+            selectedTitle: this._selectedTitle,
+        }));
+    },
+
+    /**
+     * 计算当前应得的挑战模式称号（前端计算，因为前端有完整的 mode + progress 信息）
+     */
+    _computeChallengeTitles() {
+        const newTitles = [];
+        const progress = this.serverProgress;
+
+        if (typeof CourseContent === 'undefined' || !CourseContent.getAllStages) return newTitles;
+
+        const config = this._getStudyLevelConfig ? this._getStudyLevelConfig() : {};
+        const levels = ['0','1','2','3','4','5','6','7'];
+
+        // 辅助：检查某等级某模式是否全部通关/全三星
+        const checkLevelProgress = (levelId, mode) => {
+            const stages = CourseContent.getAllStages(mode);
+            const filtered = stages.filter(s => {
+                const st = config[Number(s.levelId)];
+                return st !== 0; // 非隐藏
+            });
+            const levelStages = filtered.filter(s => String(s.levelId) === String(levelId));
+            if (levelStages.length === 0) return { total: 0, cleared: 0, starred: 0 };
+            let cleared = 0, starred = 0;
+            for (const s of levelStages) {
+                const p = progress[s.id];
+                if (p && p.cleared) cleared++;
+                if (p && p.stars >= 3) starred++;
+            }
+            return { total: levelStages.length, cleared, starred };
+        };
+
+        // === 普通模式课程通关称号 ===
+        let normalAllCleared = true;
+        for (const lv of levels) {
+            const r = checkLevelProgress(lv, 'normal');
+            if (r.total > 0) {
+                if (r.cleared === r.total) {
+                    newTitles.push('normal_clear_' + lv);
+                } else {
+                    if (lv !== 'all') normalAllCleared = false; // 有等级未通关则不能给全部通关
+                }
+                if (r.starred === r.total) {
+                    newTitles.push('normal_star_' + lv);
+                }
+            }
+        }
+        if (normalAllCleared) newTitles.push('normal_clear_all');
+
+        // === 地狱模式课程通关称号 ===
+        let hellAllCleared = true;
+        for (const lv of levels) {
+            const r = checkLevelProgress(lv, 'hell');
+            if (r.total > 0) {
+                if (r.cleared === r.total) {
+                    newTitles.push('hell_clear_' + lv);
+                } else {
+                    if (lv !== 'all') hellAllCleared = false;
+                }
+                if (r.starred === r.total) {
+                    newTitles.push('hell_star_' + lv);
+                }
+            }
+        }
+        if (hellAllCleared) newTitles.push('hell_clear_all');
+
+        // === BOSS 相关称号 ===
+        const bossStats = JSON.parse(localStorage.getItem('fmi_boss_stats') || '{"defeated":0,"perfect":false,"bosses":{}}');
+        if (bossStats.defeated >= 1) newTitles.push('boss_first');
+        if (bossStats.defeated >= 5) newTitles.push('boss_hunter_5');
+        if (bossStats.defeated >= 15) newTitles.push('boss_hunter_15');
+        if (bossStats.bosses['7_final']) newTitles.push('boss_final');
+        if (bossStats.perfect) newTitles.push('boss_perfect');
+
+        // === 条件称号 ===
+        // 速通达人
+        const allProgress = Object.values(progress);
+        for (const p of allProgress) {
+            if (p.stars >= 3 && p.bestAccuracy >= 100 && p.bestTime > 0) {
+                // 用时低于时限30%：总题数*每题平均时间*0.3作为阈值
+                // 简化：直接标记（前端答题时记录speedrun标记）
+                const speedRuns = JSON.parse(localStorage.getItem('fmi_speedruns') || '[]');
+                if (speedRuns.length > 0) { newTitles.push('speedrun'); break; }
+            }
+        }
+
+        // 不屈意志
+        for (const p of allProgress) {
+            if (p.attempts >= 5 && p.cleared && p.stars >= 3) {
+                newTitles.push('retry_star'); break;
+            }
+        }
+
+        // 百关斩将
+        let totalCleared = 0;
+        const seen = new Set();
+        for (const sId of Object.keys(progress)) {
+            const baseId = sId.replace(/-hell$/, ''); // 去掉可能的hell后缀
+            if (!seen.has(baseId) && progress[sId].cleared) {
+                totalCleared++;
+                seen.add(baseId);
+            }
+        }
+        if (totalCleared >= 100) newTitles.push('clear_100');
+
+        // 连胜记录
+        const streakData = JSON.parse(localStorage.getItem('fmi_streaks') || '{"maxStreak":0,"hellMaxStreak":0}');
+        if (streakData.maxStreak >= 20) newTitles.push('streak_20');
+        if (streakData.hellMaxStreak >= 15) newTitles.push('hell_streak_15');
+
+        return newTitles;
+    },
+
+    /**
+     * 每次提交成绩后检查新称号
+     */
+    _checkAndSyncTitles() {
+        const titles = this._computeChallengeTitles();
+        const newOnes = [];
+        const now = new Date().toISOString();
+
+        for (const tid of titles) {
+            if (!this._earnedTitles[tid]) {
+                this._earnedTitles[tid] = now;
+                newOnes.push(tid);
+            }
+        }
+
+        if (newOnes.length > 0) {
+            this._saveTitlesCache();
+
+            // 显示称号获得通知
+            for (const tid of newOnes) {
+                const def = this._titleDefs[tid];
+                if (def) this._showTitleNotification(def);
+            }
+
+            // 同步到服务端
+            API.request('user/titles', {
+                method: 'POST',
+                body: JSON.stringify({
+                    titles: newOnes.map(id => ({
+                        id,
+                        earnedAt: this._earnedTitles[id],
+                    })),
+                }),
+            }).catch(e => console.warn('Failed to sync titles:', e));
+        }
+    },
+
+    /**
+     * 显示称号获得通知弹窗
+     */
+    _showTitleNotification(titleDef) {
+        if (!titleDef) return;
+        const categoryLabel = {
+            normal: '普通模式',
+            hell: '地狱模式',
+            general: '通用',
+        }[titleDef.category] || '';
+
+        const categoryClass = {
+            normal: 'title-normal',
+            hell: 'title-hell',
+            general: 'title-general',
+        }[titleDef.category] || '';
+
+        // 创建弹窗
+        const overlay = document.createElement('div');
+        overlay.className = 'title-notification-overlay';
+        overlay.innerHTML = `
+            <div class="title-notification-card ${categoryClass}">
+                <div class="title-notification-sparkle"></div>
+                <div class="title-notification-icon">
+                    <i class="fas ${titleDef.icon}"></i>
+                </div>
+                <div class="title-notification-text">
+                    <div class="title-notification-label">称号解锁</div>
+                    <div class="title-notification-name">${titleDef.name}</div>
+                    <div class="title-notification-desc">${titleDef.desc}</div>
+                    ${categoryLabel ? `<div class="title-notification-category">${categoryLabel}</div>` : ''}
+                </div>
+                <button class="title-notification-close" onclick="this.closest('.title-notification-overlay').remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        // 3秒后自动关闭
+        setTimeout(() => {
+            if (overlay.parentNode) {
+                overlay.classList.add('title-notification-fade-out');
+                setTimeout(() => overlay.remove(), 500);
+            }
+        }, 4000);
+    },
+
+    /**
+     * 渲染称号墙页面
+     */
+    _renderTitlesWall(container) {
+        const defs = this._titleDefs;
+        const earned = this._earnedTitles;
+
+        const categories = [
+            { key: 'normal', label: '普通模式通关', icon: 'fa-book' },
+            { key: 'hell', label: '地狱模式通关', icon: 'fa-fire' },
+            { key: 'boss', label: 'BOSS 击杀', icon: 'fa-dragon' },
+            { key: 'condition', label: '挑战成就', icon: 'fa-medal' },
+            { key: 'general', label: '通用称号', icon: 'fa-star' },
+        ];
+
+        let html = `
+            <div class="ch-header">
+                <button class="ch-back-btn" onclick="ChallengeModule.enterRank(); ChallengeModule.render();">
+                    <i class="fas fa-arrow-left"></i> 返回
+                </button>
+                <h2 class="ch-title">称号墙</h2>
+                <div class="ch-header-spacer"></div>
+            </div>
+        `;
+
+        const earnedCount = Object.keys(earned).length;
+        const totalCount = Object.keys(defs).length;
+        html += `
+            <div class="title-wall-summary">
+                <div class="title-wall-count">
+                    <span class="title-count-num">${earnedCount}</span> / <span class="title-count-total">${totalCount}</span>
+                </div>
+                <div class="title-wall-progress-bar">
+                    <div class="title-wall-progress-fill" style="width:${totalCount > 0 ? (earnedCount / totalCount * 100) : 0}%"></div>
+                </div>
+            </div>
+        `;
+
+        for (const cat of categories) {
+            const catTitles = Object.values(defs).filter(d => d.category === cat.key);
+            const catEarned = catTitles.filter(d => earned[d.id]);
+
+            html += `
+                <div class="title-wall-category">
+                    <div class="title-wall-cat-header ${cat.key}">
+                        <i class="fas ${cat.icon}"></i>
+                        <span>${cat.label}</span>
+                        <span class="title-wall-cat-count">${catEarned.length}/${catTitles.length}</span>
+                    </div>
+                    <div class="title-wall-grid">
+            `;
+
+            for (const t of catTitles) {
+                const isEarned = !!earned[t.id];
+                html += `
+                    <div class="title-wall-item ${isEarned ? 'earned' : 'locked'} ${cat.key}">
+                        <div class="title-wall-icon">
+                            <i class="fas ${isEarned ? t.icon : 'fa-lock'}"></i>
+                        </div>
+                        <div class="title-wall-name">${isEarned ? t.name : '???'}</div>
+                        <div class="title-wall-desc">${t.desc}</div>
+                        ${isEarned ? `<div class="title-wall-date">${this._formatTitleDate(earned[t.id])}</div>` : ''}
+                    </div>
+                `;
+            }
+
+            html += `</div></div>`;
+        }
+
+        container.innerHTML = html;
+    },
+
+    _formatTitleDate(dateStr) {
+        if (!dateStr) return '';
+        try {
+            const d = new Date(dateStr);
+            return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate();
+        } catch(e) { return ''; }
+    },
+
+    /**
+     * 获取当前用户最高档次称号的HTML徽章（用于关卡列表等地方显示）
+     */
+    _getTitleBadgeHTML() {
+        const earned = this._earnedTitles;
+        const earnedIds = Object.keys(earned);
+        if (earnedIds.length === 0) return '';
+
+        // 称号优先级排序（从高到低）
+        const priority = [
+            'hell_star_7', 'hell_clear_7', 'hell_star_6', 'hell_clear_6',
+            'hell_star_5', 'hell_clear_5', 'hell_star_4', 'hell_clear_4',
+            'boss_final', 'boss_hunter_15', 'boss_perfect',
+            'hell_star_3', 'hell_clear_3', 'hell_star_2', 'hell_clear_2',
+            'hell_star_1', 'hell_clear_1', 'hell_star_0', 'hell_clear_0',
+            'hell_clear_all',
+            'normal_star_7', 'normal_clear_7', 'normal_star_6', 'normal_clear_6',
+            'normal_star_5', 'normal_clear_5', 'normal_star_4', 'normal_clear_4',
+            'normal_star_3', 'normal_clear_3', 'normal_star_2', 'normal_clear_2',
+            'normal_star_1', 'normal_clear_1', 'normal_star_0', 'normal_clear_0',
+            'normal_clear_all',
+            'boss_hunter_5', 'boss_first', 'clear_100',
+            'hell_streak_15', 'streak_20', 'speedrun', 'retry_star',
+            'words_2000', 'words_500', 'study_days_100', 'study_days_30',
+            'study_days_7', 'login_first',
+        ];
+
+        let bestTitleId = null;
+        for (const pid of priority) {
+            if (earned[pid]) { bestTitleId = pid; break; }
+        }
+        if (!bestTitleId) bestTitleId = earnedIds[0];
+
+        const def = this._titleDefs[bestTitleId];
+        if (!def) return '';
+
+        const catColor = { normal: '#60a5fa', hell: '#f87171', boss: '#a78bfa', condition: '#34d399', general: '#fbbf24' }[def.category] || '#fbbf24';
+        const catBg = { normal: 'rgba(96,165,250,0.12)', hell: 'rgba(239,68,68,0.12)', boss: 'rgba(167,139,250,0.12)', condition: 'rgba(52,211,153,0.12)', general: 'rgba(250,204,21,0.12)' }[def.category] || 'rgba(250,204,21,0.12)';
+
+        return `<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 10px;background:${catBg};color:${catColor};border:1px solid ${catColor}33;border-radius:12px;font-size:0.7rem;font-weight:600;cursor:pointer;" onclick="ChallengeModule.enterTitles()" title="${def.desc}">
+            <i class="fas ${def.icon}"></i> ${def.name}
+        </span>`;
+    },
+
+    /** 进入称号墙 */
+    enterTitles() {
+        this.currentView = 'titles';
+        this.render();
+    },
+
+        _shuffle(arr) {
         const a = [...arr];
         for (let i = a.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));

@@ -15,7 +15,7 @@ export async function onRequestPost(context) {
     if (!username) return new Response(JSON.stringify({ error: '登录已过期' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
 
     const body = await request.json();
-    const { stageId, accuracy, timeSpent, score, stars, answers } = body;
+    const { stageId, accuracy, timeSpent, score, stars, answers, mode } = body;
     if (!stageId || accuracy === undefined || timeSpent === undefined || score === undefined) {
         return new Response(JSON.stringify({ error: '参数不完整' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
@@ -28,7 +28,7 @@ export async function onRequestPost(context) {
         is_best INTEGER NOT NULL DEFAULT 0, created_at TEXT NOT NULL DEFAULT (datetime('now'))
     )`).run();
     await env.INDO_LEARN_DB.prepare(`CREATE TABLE IF NOT EXISTS challenge_progress (
-        username TEXT NOT NULL, stage_id TEXT NOT NULL,
+        username TEXT NOT NULL, stage_id TEXT NOT NULL, mode TEXT NOT NULL DEFAULT 'normal',
         first_score REAL DEFAULT 0, best_score REAL DEFAULT 0, best_accuracy REAL DEFAULT 0,
         best_time INTEGER DEFAULT 0, stars INTEGER DEFAULT 0, attempts INTEGER DEFAULT 0,
         cleared INTEGER DEFAULT 0, updated_at TEXT DEFAULT (datetime('now')),
@@ -56,8 +56,8 @@ export async function onRequestPost(context) {
         if (score > progress.best_score) {
             isBest = true;
             await env.INDO_LEARN_DB.prepare(
-                `UPDATE challenge_progress SET best_score = ?, best_accuracy = ?, best_time = ?, stars = ?, attempts = ?, cleared = ?, updated_at = ? WHERE username = ? AND stage_id = ?`
-            ).bind(score, accuracy, timeSpent, newStars, currentAttempts, stars >= 1 ? 1 : 1, now, username, stageId).run();
+                `UPDATE challenge_progress SET mode = ?, best_score = ?, best_accuracy = ?, best_time = ?, stars = ?, attempts = ?, cleared = ?, updated_at = ? WHERE username = ? AND stage_id = ?`
+            ).bind(mode || 'normal', score, accuracy, timeSpent, newStars, currentAttempts, stars >= 1 ? 1 : 1, now, username, stageId).run();
         } else {
             await env.INDO_LEARN_DB.prepare(
                 `UPDATE challenge_progress SET attempts = ?, updated_at = ? WHERE username = ? AND stage_id = ?`
@@ -66,8 +66,8 @@ export async function onRequestPost(context) {
     } else {
         isBest = true;
         await env.INDO_LEARN_DB.prepare(
-            `INSERT INTO challenge_progress (username, stage_id, first_score, best_score, best_accuracy, best_time, stars, attempts, cleared, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`
-        ).bind(username, stageId, score, score, accuracy, timeSpent, newStars, stars >= 1 ? 1 : 0, now, now).run();
+            `INSERT INTO challenge_progress (username, stage_id, mode, first_score, best_score, best_accuracy, best_time, stars, attempts, cleared, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)`
+        ).bind(username, stageId, mode || 'normal', score, score, accuracy, timeSpent, newStars, 1, stars >= 1 ? 1 : 0, now, now).run();
     }
 
     // 插入本次记录

@@ -1,6 +1,6 @@
 /**
  * 印尼语学习助手 - 全局配置
- * Ver 2.0 - 接入 Cloudflare KV 后端
+ * Ver 2.53 - BOSS战系统 + 称号系统重构
  */
 
 const CONFIG = {
@@ -18,7 +18,7 @@ const CONFIG = {
     apiBase: "",
 
     // 版本
-    version: "2.0"
+    version: "2.53"
 };
 
 /**

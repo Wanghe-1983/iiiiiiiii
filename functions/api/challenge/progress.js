@@ -17,7 +17,7 @@ export async function onRequestGet(context) {
     await ensureTables(env);
 
     const results = await env.INDO_LEARN_DB.prepare(
-        `SELECT stage_id, first_score as firstScore, best_score as bestScore,
+        `SELECT stage_id, mode, first_score as firstScore, best_score as bestScore,
                 best_accuracy as bestAccuracy, best_time as bestTime,
                 stars, attempts, cleared
          FROM challenge_progress WHERE username = ?`
@@ -28,6 +28,7 @@ export async function onRequestGet(context) {
         progress[r.stage_id] = {
             firstScore: r.firstScore, bestScore: r.bestScore, bestAccuracy: r.bestAccuracy,
             bestTime: r.bestTime, stars: r.stars, attempts: r.attempts, cleared: r.cleared,
+            mode: r.mode || 'normal',
         };
     }
 

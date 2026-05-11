@@ -2960,3 +2960,874 @@
 .ch-option-locked {
     cursor: default !important;
 }
+
+
+/* ========== 称号系统样式 ========== */
+
+/* 称号获得通知弹窗 */
+.title-notification-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: title-notif-in 0.4s ease;
+}
+.title-notification-fade-out {
+    animation: title-notif-out 0.5s ease forwards;
+}
+@keyframes title-notif-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes title-notif-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+.title-notification-card {
+    position: relative;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border-radius: 20px;
+    padding: 32px 36px;
+    max-width: 360px;
+    width: 90%;
+    text-align: center;
+    animation: title-card-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+}
+.title-notification-card.normal {
+    border: 2px solid rgba(96, 165, 250, 0.5);
+    box-shadow: 0 0 30px rgba(96, 165, 250, 0.15);
+}
+.title-notification-card.hell {
+    border: 2px solid rgba(239, 68, 68, 0.5);
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.15);
+}
+.title-notification-card.general {
+    border: 2px solid rgba(250, 204, 21, 0.5);
+    box-shadow: 0 0 30px rgba(250, 204, 21, 0.15);
+}
+.title-notification-card.boss {
+    border: 2px solid rgba(167, 139, 250, 0.5);
+    box-shadow: 0 0 30px rgba(167, 139, 250, 0.15);
+}
+.title-notification-card.condition {
+    border: 2px solid rgba(52, 211, 153, 0.5);
+    box-shadow: 0 0 30px rgba(52, 211, 153, 0.15);
+}
+
+@keyframes title-card-pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.title-notification-sparkle {
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,215,0,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(255,215,0,0.05) 0%, transparent 50%);
+    animation: sparkle-rotate 4s linear infinite;
+    pointer-events: none;
+}
+@keyframes sparkle-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.title-notification-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    animation: title-icon-float 2s ease-in-out infinite;
+}
+.title-notification-card.normal .title-notification-icon { color: #60a5fa; }
+.title-notification-card.hell .title-notification-icon { color: #f87171; }
+.title-notification-card.general .title-notification-icon { color: #fbbf24; }
+.title-notification-card.boss .title-notification-icon { color: #a78bfa; }
+.title-notification-card.condition .title-notification-icon { color: #34d399; }
+
+@keyframes title-icon-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+
+.title-notification-label {
+    font-size: 12px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 4px;
+}
+.title-notification-name {
+    font-size: 28px;
+    font-weight: 700;
+    color: #f1f5f9;
+    margin-bottom: 8px;
+}
+.title-notification-desc {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 12px;
+}
+.title-notification-category {
+    display: inline-block;
+    padding: 2px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.title-notification-card.normal .title-notification-category {
+    background: rgba(96, 165, 250, 0.15);
+    color: #60a5fa;
+}
+.title-notification-card.hell .title-notification-category {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+.title-notification-card.general .title-notification-category {
+    background: rgba(250, 204, 21, 0.15);
+    color: #fbbf24;
+}
+.title-notification-card.boss .title-notification-category {
+    background: rgba(167, 139, 250, 0.15);
+    color: #a78bfa;
+}
+.title-notification-card.condition .title-notification-category {
+    background: rgba(52, 211, 153, 0.15);
+    color: #34d399;
+}
+
+.title-notification-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s;
+}
+.title-notification-close:hover { color: #e2e8f0; }
+
+/* 称号墙页面 */
+.title-wall-summary {
+    text-align: center;
+    padding: 16px 20px 8px;
+}
+.title-wall-count {
+    font-size: 14px;
+    color: #94a3b8;
+    margin-bottom: 8px;
+}
+.title-count-num {
+    font-size: 24px;
+    font-weight: 700;
+    color: #fbbf24;
+}
+.title-count-total {
+    font-size: 16px;
+    color: #64748b;
+}
+.title-wall-progress-bar {
+    height: 6px;
+    background: #1e293b;
+    border-radius: 3px;
+    overflow: hidden;
+    max-width: 200px;
+    margin: 0 auto;
+}
+.title-wall-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #60a5fa, #fbbf24, #f87171);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+.title-wall-category {
+    margin: 16px 12px 0;
+}
+.title-wall-cat-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+.title-wall-cat-header.normal {
+    background: rgba(96, 165, 250, 0.1);
+    color: #60a5fa;
+}
+.title-wall-cat-header.hell {
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+}
+.title-wall-cat-header.general {
+    background: rgba(250, 204, 21, 0.1);
+    color: #fbbf24;
+}
+.title-wall-cat-header.boss {
+    background: rgba(167, 139, 250, 0.1);
+    color: #a78bfa;
+}
+.title-wall-cat-header.condition {
+    background: rgba(52, 211, 153, 0.1);
+    color: #34d399;
+}
+.title-wall-cat-count {
+    margin-left: auto;
+    font-size: 13px;
+    font-weight: 400;
+    opacity: 0.7;
+}
+
+.title-wall-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+}
+
+.title-wall-item {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 16px 10px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+}
+.title-wall-item.earned {
+    border: 1px solid rgba(250, 204, 21, 0.2);
+}
+.title-wall-item.earned:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.title-wall-item.locked {
+    opacity: 0.4;
+    border: 1px solid #334155;
+}
+.title-wall-item.earned.normal { border-color: rgba(96, 165, 250, 0.25); }
+.title-wall-item.earned.hell { border-color: rgba(239, 68, 68, 0.25); }
+.title-wall-item.earned.general { border-color: rgba(250, 204, 21, 0.25); }
+.title-wall-item.earned.boss { border-color: rgba(167, 139, 250, 0.25); }
+.title-wall-item.earned.condition { border-color: rgba(52, 211, 153, 0.25); }
+
+.title-wall-icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+.title-wall-item.earned.normal .title-wall-icon { color: #60a5fa; }
+.title-wall-item.earned.hell .title-wall-icon { color: #f87171; }
+.title-wall-item.earned.general .title-wall-icon { color: #fbbf24; }
+.title-wall-item.earned.boss .title-wall-icon { color: #a78bfa; }
+.title-wall-item.earned.condition .title-wall-icon { color: #34d399; }
+.title-wall-item.locked .title-wall-icon { color: #475569; }
+
+.title-wall-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+}
+.title-wall-item.locked .title-wall-name { color: #64748b; }
+
+.title-wall-desc {
+    font-size: 11px;
+    color: #64748b;
+    line-height: 1.4;
+    margin-bottom: 4px;
+}
+
+.title-wall-date {
+    font-size: 10px;
+    color: #475569;
+}
+
+
+/* ========== BOSS战动画 ========== */
+
+/* BOSS受击动画 */
+@keyframes boss-hit {
+    0% { transform: translateX(0) scale(1); }
+    15% { transform: translateX(-8px) scale(1.02); filter: brightness(2) saturate(0); }
+    30% { transform: translateX(6px) scale(0.98); }
+    45% { transform: translateX(-4px) scale(1.01); }
+    60% { transform: translateX(3px) scale(0.99); }
+    75% { transform: translateX(-1px); }
+    100% { transform: translateX(0) scale(1); filter: brightness(1) saturate(1); }
+}
+.boss-hit-anim {
+    animation: boss-hit 0.5s ease-out;
+}
+
+/* 屏幕震动 */
+@keyframes screen-shake {
+    0%, 100% { transform: translate(0, 0); }
+    10% { transform: translate(-3px, -2px); }
+    20% { transform: translate(4px, 1px); }
+    30% { transform: translate(-2px, 3px); }
+    40% { transform: translate(3px, -1px); }
+    50% { transform: translate(-1px, 2px); }
+    60% { transform: translate(2px, -3px); }
+    70% { transform: translate(-3px, 1px); }
+    80% { transform: translate(1px, -2px); }
+    90% { transform: translate(-2px, 3px); }
+}
+.screen-shake-anim {
+    animation: screen-shake 0.4s ease-out;
+}
+
+/* BOSS震动（暴怒状态） */
+@keyframes boss-shake {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    10% { transform: scale(1.05) rotate(-2deg); }
+    20% { transform: scale(0.97) rotate(2deg); }
+    30% { transform: scale(1.03) rotate(-1deg); }
+    40% { transform: scale(0.99) rotate(1deg); }
+    50% { transform: scale(1.02) rotate(-1deg); }
+    60% { transform: scale(1); }
+}
+.boss-shake-anim {
+    animation: boss-shake 0.6s ease-in-out infinite;
+}
+
+/* BOSS HP暴怒脉冲 */
+@keyframes boss-hp-rage-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+    50% { box-shadow: 0 0 15px 5px rgba(239, 68, 68, 0.7); }
+}
+.boss-hp-rage .boss-hp-bar-boss-track {
+    animation: boss-hp-rage-pulse 1s ease-in-out infinite;
+}
+
+/* BOSS门脉冲动画 */
+@keyframes boss-gate-pulse {
+    0%, 100% { box-shadow: 0 0 10px rgba(167, 139, 250, 0.3), inset 0 0 10px rgba(167, 139, 250, 0.1); }
+    50% { box-shadow: 0 0 25px rgba(167, 139, 250, 0.6), inset 0 0 20px rgba(167, 139, 250, 0.2); }
+}
+
+/* 用户受击闪红 */
+@keyframes user-damage-flash {
+    0%, 100% { background-color: transparent; }
+    50% { background-color: rgba(239, 68, 68, 0.15); }
+}
+.user-damage-flash {
+    animation: user-damage-flash 0.4s ease-out;
+}
+
+/* ========== BOSS战结果页面 ========== */
+
+.boss-result-page {
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.boss-result-card {
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    border-radius: 20px;
+    padding: 32px 28px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.victory-card {
+    border: 2px solid rgba(251, 191, 36, 0.4);
+    box-shadow: 0 0 40px rgba(251, 191, 36, 0.15), 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.defeat-card {
+    border: 2px solid rgba(239, 68, 68, 0.3);
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.1), 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.boss-result-badge {
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.victory-badge {
+    background: linear-gradient(145deg, #fbbf24, #f59e0b);
+    box-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
+}
+
+.defeat-badge {
+    background: linear-gradient(145deg, #374151, #1f2937);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+.boss-defeated-icon {
+    font-size: 36px;
+    animation: boss-defeated-spin 1s ease-out;
+}
+
+@keyframes boss-defeated-spin {
+    0% { transform: rotate(0deg) scale(1.5); opacity: 0; }
+    50% { transform: rotate(180deg) scale(1.2); opacity: 1; }
+    100% { transform: rotate(360deg) scale(1); opacity: 1; }
+}
+
+.boss-defeat-icon {
+    font-size: 36px;
+    color: #ef4444;
+    animation: boss-defeat-icon-appear 0.6s ease-out;
+}
+
+@keyframes boss-defeat-icon-appear {
+    0% { transform: scale(0.3); opacity: 0; }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.boss-result-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.victory-title {
+    color: #fbbf24;
+    text-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
+}
+
+.defeat-title {
+    color: #f87171;
+}
+
+.boss-result-subtitle {
+    font-size: 14px;
+    color: #94a3b8;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.boss-result-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.boss-stat-item {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 12px 8px;
+}
+
+.boss-stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.victory-value {
+    color: #fbbf24;
+}
+
+.defeat-value {
+    color: #f87171;
+}
+
+.boss-stat-label {
+    font-size: 11px;
+    color: #64748b;
+}
+
+.boss-perfect-notice {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.1));
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fbbf24;
+    animation: perfect-glow 2s ease-in-out infinite;
+}
+
+@keyframes perfect-glow {
+    0%, 100% { box-shadow: 0 0 10px rgba(251, 191, 36, 0.2); }
+    50% { box-shadow: 0 0 25px rgba(251, 191, 36, 0.4); }
+}
+
+.boss-perfect-notice i {
+    margin-right: 8px;
+}
+
+.boss-hp-remaining {
+    background: rgba(52, 211, 153, 0.1);
+    border: 1px solid rgba(52, 211, 153, 0.25);
+    border-radius: 12px;
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #34d399;
+}
+
+.boss-hp-remaining i {
+    margin-right: 8px;
+    color: #f87171;
+}
+
+.boss-result-title-unlock {
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.15), rgba(139, 92, 246, 0.1));
+    border: 1px solid rgba(167, 139, 250, 0.3);
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #a78bfa;
+}
+
+.boss-result-title-unlock i {
+    margin-right: 8px;
+}
+
+/* BOSS失败页 - BOSS HP进度条 */
+.boss-defeat-hp-bar {
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+.boss-defeat-hp-label {
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 6px;
+}
+
+.boss-defeat-hp-track {
+    height: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.boss-defeat-hp-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 1s ease-out;
+}
+
+/* BOSS结果页按钮 */
+.boss-result-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.boss-btn {
+    padding: 12px 24px;
+    border-radius: 12px;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.boss-btn-retry {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+}
+
+.boss-btn-retry:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+.boss-btn-return {
+    background: rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.boss-btn-return:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+    transform: translateY(-2px);
+}
+
+/* 胜利粒子 */
+.boss-result-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.boss-victory-particle {
+    position: absolute;
+    bottom: -10px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    opacity: 0;
+    animation: particle-rise 3s ease-out forwards;
+}
+
+@keyframes particle-rise {
+    0% { opacity: 1; transform: translateY(0) translateX(0) scale(1); }
+    50% { opacity: 0.8; transform: translateY(calc(var(--ty) * 0.5)) translateX(var(--tx)) scale(0.8); }
+    100% { opacity: 0; transform: translateY(var(--ty)) translateX(var(--tx)) scale(0); }
+}
+
+/* ========== BOSS战Playing页面增强 ========== */
+
+/* BOSS战信息栏 */
+.boss-battle-header {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.boss-battle-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #a78bfa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.boss-battle-subtitle {
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* BOSS HP条容器 */
+.boss-hp-container {
+    margin-bottom: 16px;
+}
+
+.boss-hp-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.boss-hp-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.boss-hp-avatar.boss-avatar {
+    background: linear-gradient(135deg, #7f1d1d, #991b1b);
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+}
+
+.boss-hp-avatar.boss-avatar.rage-mode {
+    background: linear-gradient(135deg, #991b1b, #dc2626);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+    animation: boss-shake 0.6s ease-in-out infinite;
+}
+
+.boss-hp-avatar.user-avatar {
+    background: linear-gradient(135deg, #1e3a5f, #1e40af);
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+.boss-hp-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.boss-hp-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.boss-hp-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+.boss-hp-numbers {
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.boss-hp-bar-boss-track {
+    height: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+
+.boss-hp-bar-user-track {
+    height: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.boss-hp-bar-fill {
+    height: 100%;
+    border-radius: inherit;
+    transition: width 0.5s ease-out;
+    position: relative;
+}
+
+.boss-hp-bar-fill.boss-hp-fill {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.boss-hp-bar-fill.user-hp-fill {
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+
+.boss-hp-bar-fill.low-hp {
+    background: linear-gradient(90deg, #f59e0b, #ef4444) !important;
+}
+
+.boss-hp-vs {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 800;
+    color: #475569;
+    margin: 2px 0;
+    letter-spacing: 2px;
+}
+
+/* BOSS连胜显示 */
+.boss-streak-display {
+    text-align: center;
+    font-size: 13px;
+    color: #fbbf24;
+    margin-bottom: 12px;
+    min-height: 20px;
+}
+
+.boss-streak-display i {
+    margin-right: 4px;
+}
+
+.boss-streak-display.active {
+    animation: streak-fire 0.5s ease-out;
+}
+
+@keyframes streak-fire {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); color: #f59e0b; }
+    100% { transform: scale(1); }
+}
+
+/* BOSS关卡卡片样式 (关卡地图) */
+.stage-card.boss-cleared {
+    border-color: rgba(167, 139, 250, 0.4) !important;
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.08), rgba(139, 92, 246, 0.04)) !important;
+}
+
+.stage-card.boss-current {
+    border-color: rgba(167, 139, 250, 0.6) !important;
+    background: linear-gradient(135deg, rgba(167, 139, 250, 0.12), rgba(139, 92, 246, 0.06)) !important;
+    animation: boss-gate-pulse 2s ease-in-out infinite;
+}
+
+.stage-card.boss-available {
+    border-color: rgba(167, 139, 250, 0.3) !important;
+}
+
+/* BOSS关卡序号特殊样式 */
+.boss-stage-number {
+    background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
+    color: white !important;
+}
+
+.boss-stage-number i {
+    font-size: inherit;
+}
+
+/* BOSS标签 */
+.boss-stage-label {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: 4px;
+}
+
+.boss-stage-label.active {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+}
+
+.boss-stage-label.defeated {
+    background: rgba(52, 211, 153, 0.15);
+    color: #34d399;
+}
+
+/* 响应式调整 */
+@media (max-width: 480px) {
+    .boss-result-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .boss-stat-value {
+        font-size: 16px;
+    }
+    .boss-result-card {
+        padding: 24px 20px;
+    }
+    .boss-result-title {
+        font-size: 20px;
+    }
+}
+
+
+/* ========== 版本号显示 ========== */
+.app-version {
+    position: fixed;
+    bottom: 8px;
+    right: 12px;
+    font-size: 0.7rem;
+    color: rgba(100, 116, 139, 0.5);
+    z-index: 5;
+    user-select: none;
+    cursor: default;
+}

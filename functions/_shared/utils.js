@@ -134,8 +134,19 @@ function defaultSettings() {
         showRegCount: true,
         allowVisitorChallenge: false,
         visitorMultiDevice: true,
-        mainVersion: 'v2.52',              // 主界面版本号
-        mainChangelog: `v2.52
+        mainVersion: 'v2.53',              // 主界面版本号
+        mainChangelog: `v2.53
+- 新增：地狱模式BOSS战系统（生命值制，答对扣BOSS HP，答错扣用户HP）
+- 新增：8个BOSS独特造型（声之魔灵/婆罗多神将/Raksasa巨魔/Naga蛇龙/Garuda伽鲁达等）
+- 新增：BOSS暴怒模式（HP低于25%时触发抖动+脉冲特效）
+- 新增：BOSS战胜利/失败结果页面（粒子特效/统计/鼓励文案/重试）
+- 新增：小BOSS系统（4-7级均匀分布，题目70%当前等级+30%复习）
+- 新增：BOSS参数全后台可配置（hellSettings.bossConfig深层合并）
+- 新增：49个称号定义（课程通关33+BOSS击杀5+挑战条件5+通用6）
+- 新增：称号墙5分类tab（普通/地狱/BOSS/挑战/通用）
+- 优化：BOSS掉HP屏幕震动+受击闪白，用户掉HP闪红动画
+
+v2.52
 - 新增：跳题功能（跳过当前题、返回检查、题号导航条快速定位空题）
 - 新增：普通模式交卷制（点击"开始闯关"才看题+计时，交卷才统计成绩）
 - 新增：地狱模式高级配置项全后台可配置（阅卷方式/允许跳题/允许返回/显示导航/准确率淘汰线）
