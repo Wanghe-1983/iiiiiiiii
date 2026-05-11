@@ -34,7 +34,8 @@
                     if (info && info.mainVersion) ver = info.mainVersion;
                 } catch(e) {}
                 if (ver) {
-                    document.getElementById('app-version').textContent = 'v' + ver.replace(/^v/i, '');
+                    var hash = (typeof CONFIG !== 'undefined' && CONFIG.commitHash) ? CONFIG.commitHash.substring(0,7) : '';
+                    document.getElementById('app-version').textContent = 'v' + ver.replace(/^v/i, '') + (hash ? ' (' + hash + ')' : '');
                 }
             })();
 
