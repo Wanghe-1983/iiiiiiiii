@@ -26,7 +26,15 @@ const StudyModule = {
         return this._studyConfig;
     },
 
-    // 获取当前用户的等级配置 {levelId: state} (2=可学习,1=仅展示,0=隐藏)
+    /** 管理员判断 */
+    _isAdmin() {
+        try {
+            const u = JSON.parse(sessionStorage.getItem('fmi_user') || '{}');
+            return u.role === 'admin';
+        } catch(e) { return false; }
+    },
+
+        // 获取当前用户的等级配置 {levelId: state} (2=可学习,1=仅展示,0=隐藏)
     _getLevelConfig() {
         if (this._levelConfigCache) return this._levelConfigCache;
         const sysInfo = window._systemInfo || {};
@@ -47,14 +55,16 @@ const StudyModule = {
         return config;
     },
 
-    // 获取当前用户可见的课程等级列表（state > 0 的等级）
+    // 获取当前用户可见的课程等级列表（state > 0 的等级，管理员可见全部）
     _getVisibleLevels() {
+        if (this._isAdmin()) return [0,1,2,3,4,5,6,7];
         const config = this._getLevelConfig();
         return Object.entries(config).filter(([,state]) => state > 0).map(([id]) => Number(id));
     },
 
-    // 检查指定等级是否可学习（state=2）
+    // 检查指定等级是否可学习（state=2，管理员不受限）
     _isLevelLearnable(levelId) {
+        if (this._isAdmin()) return true;
         return this._getLevelConfig()[Number(levelId)] === 2;
     },
 

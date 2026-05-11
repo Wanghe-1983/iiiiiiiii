@@ -33,8 +33,21 @@ const ChallengeModule = {
         return config;
     },
 
+    /** 管理员判断 */
+    _isAdmin() {
+        try {
+            const u = JSON.parse(sessionStorage.getItem('fmi_user') || '{}');
+            return u.role === 'admin';
+        } catch(e) { return false; }
+    },
+
     _applyChallengeLevelFilter() {
         const config = this._getStudyLevelConfig();
+        // 管理员不受等级配置限制：所有关卡可见且可闯关
+        if (this._isAdmin()) {
+            this.allStages.forEach(s => { s._readonly = false; });
+            return;
+        }
         // 用勤学苦练的课件等级控制来过滤关卡可见性
         this.allStages = this.allStages.filter(s => {
             const state = config[Number(s.levelId)];
@@ -50,9 +63,9 @@ const ChallengeModule = {
     // ========== 初始化 ==========
     async init(container) {
         this.container = container;
-        // 检查闯天关是否启用
+        // 检查闯天关是否启用（管理员不受限）
         const sysInfo = window._systemInfo || {};
-        if (sysInfo.challengeEnabled === false) {
+        if (sysInfo.challengeEnabled === false && !this._isAdmin()) {
             container.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#94a3b8;"><i class="fas fa-lock" style="font-size:2rem;margin-bottom:12px;display:block;"></i>闯天关功能尚未开放</div>';
             return;
         }
@@ -456,14 +469,14 @@ const ChallengeModule = {
 
     // BOSS 造型定义
     _bossDefs: {
-        '0': { name: '声之魔灵', icon: 'fa-wand-sparkles', theme: 'sound', color: '#a78bfa', desc: '掌控万音的魔灵' },
-        '1': { name: '婆罗多神将', icon: 'fa-shield-halved', theme: 'warrior', color: '#60a5fa', desc: 'Dasar 基础的守关者' },
-        '2': { name: 'Raksasa 巨魔', icon: 'fa-hand-fist', theme: 'brute', color: '#4ade80', desc: '中级篇的野蛮守卫' },
-        '3': { name: 'Naga 蛇龙', icon: 'fa-dragon', theme: 'dragon', color: '#f87171', desc: '中高级的盘踞之龙' },
-        '4': { name: 'Garuda 伽鲁达', icon: 'fa-dove', theme: 'garuda', color: '#fbbf24', desc: '高级篇的神鸟之王' },
-        '5': { name: '浮屠守殿者', icon: 'fa-landmark', theme: 'temple', color: '#fb923c', desc: '高级进阶的石像守卫' },
-        '6': { name: 'Dewa 天神', icon: 'fa-bolt', theme: 'deity', color: '#38bdf8', desc: '精通篇的半神形态' },
-        '7': { name: 'Ratu Iblis 魔王', icon: 'fa-skull', theme: 'demon', color: '#ef4444', desc: '卓越篇的终极魔王' },
+        '0': { name: '声之魔灵', icon: 'fa-wand-sparkles', theme: 'sound', color: '#a78bfa', desc: '掌控万音的魔灵', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiPPSYLR' },
+        '1': { name: '婆罗多神将', icon: 'fa-shield-halved', theme: 'warrior', color: '#60a5fa', desc: 'Dasar 基础的守关者', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiRzblWm' },
+        '2': { name: 'Raksasa 巨魔', icon: 'fa-hand-fist', theme: 'brute', color: '#4ade80', desc: '中级篇的野蛮守卫', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiSclZTg' },
+        '3': { name: 'Naga 蛇龙', icon: 'fa-dragon', theme: 'dragon', color: '#f87171', desc: '中高级的盘踞之龙', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiSNP33M' },
+        '4': { name: 'Garuda 伽鲁达', icon: 'fa-dove', theme: 'garuda', color: '#fbbf24', desc: '高级篇的神鸟之王', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiTqquKy' },
+        '5': { name: '浮屠守殿者', icon: 'fa-landmark', theme: 'temple', color: '#fb923c', desc: '高级进阶的石像守卫', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiU4rW5E' },
+        '6': { name: 'Dewa 天神', icon: 'fa-bolt', theme: 'deity', color: '#38bdf8', desc: '精通篇的半神形态', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiUKszBI' },
+        '7': { name: 'Ratu Iblis 魔王', icon: 'fa-skull', theme: 'demon', color: '#ef4444', desc: '卓越篇的终极魔王', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fiUSGW74' },
     },
 
     _regenerateStages() {
@@ -715,8 +728,8 @@ const ChallengeModule = {
             const _normalSeq = _ns2.sequentialMode === true || _sysInfo2.challengeSequentialMode === true;
             const _hellSeq = _hs2.sequentialMode !== false;
             const sequentialMode = isHellMode ? _hellSeq : _normalSeq;
-                const isHellLocked = sequentialMode && i > nextAvailable;
-                const isReadonly = stage._readonly === true;
+                const isHellLocked = sequentialMode && i > nextAvailable && !this._isAdmin();
+                const isReadonly = stage._readonly === true && !this._isAdmin();
                 const isLocked = isHellLocked || isReadonly;
 
                 const stars = p?.stars || 0;
@@ -874,10 +887,13 @@ const ChallengeModule = {
         for (const lv of levels) {
             const d = defs[lv];
             const isFinalBoss = lv === '7';
+            const avatarContent = d.image
+                ? `<img src="${d.image}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;filter:drop-shadow(0 0 10px ${d.color});" alt="${d.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><div style="display:none;width:80px;height:80px;border-radius:50%;align-items:center;justify-content:center;"><i class="fas ${d.icon}" style="font-size:2rem;color:${d.color};filter:drop-shadow(0 0 8px ${d.color});"></i></div>`
+                : `<i class="fas ${d.icon}" style="font-size:2rem;color:${d.color};filter:drop-shadow(0 0 8px ${d.color});"></i>`;
             html += `
                 <div class="boss-codex-card ${isFinalBoss ? 'final-boss' : ''}" style="border-color:${d.color}33;">
                     <div class="boss-codex-avatar" style="background:radial-gradient(circle,${d.color}22,transparent 70%);border:2px solid ${d.color}44;">
-                        <i class="fas ${d.icon}" style="font-size:2rem;color:${d.color};filter:drop-shadow(0 0 8px ${d.color});"></i>
+                        ${avatarContent}
                     </div>
                     <div class="boss-codex-info">
                         <div class="boss-codex-name" style="color:${d.color};">${d.name}</div>
@@ -1017,15 +1033,15 @@ const ChallengeModule = {
 
     // ========== 答题界面 ==========
     enterStage(stageId) {
-        // 检查闯天关是否启用
-        if (window._systemInfo && window._systemInfo.challengeEnabled === false) {
+        // 检查闯天关是否启用（管理员不受限）
+        if (window._systemInfo && window._systemInfo.challengeEnabled === false && !this._isAdmin()) {
             alert('闯天关功能尚未开放');
             return;
         }
         // 检查关卡是否为仅展示（锁定）
         const stage = this.allStages.find(s => s.id === stageId);
         if (!stage) return;
-        if (stage._readonly) {
+        if (stage._readonly && !this._isAdmin()) {
             alert('该课程暂未开放闯关，请耐心等待');
             return;
         }
@@ -2786,7 +2802,6 @@ const ChallengeModule = {
     },
 
     _equippedFrameId: null, // 当前装备的边框
-,
 
     _earnedTitles: {}, // { titleId: earnedAt }
     _titleLoaded: false,
