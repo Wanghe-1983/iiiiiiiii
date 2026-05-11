@@ -1,4 +1,5 @@
 // 全局变量
+// build: 20260511183815
 const app = document.getElementById('app');
 let db = {}; // 词库数据
 let favs = JSON.parse(localStorage.getItem('fmi_v1_favs') || '[]'); // 收藏

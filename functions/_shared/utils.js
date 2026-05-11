@@ -1,4 +1,5 @@
 /**
+// build: 20260511183815
  * 印尼语学习助手 - Cloudflare Pages Functions 后端路由
  * KV（配置）+ D1（用户数据）混合架构
  */

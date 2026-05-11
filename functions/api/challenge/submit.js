@@ -1,4 +1,5 @@
 /**
+// build: 20260511183815
  * 闯天关 - 提交成绩 API
  * POST /api/challenge/submit
  * Body: { stageId, accuracy, timeSpent, score, stars, answers, mode }

@@ -1,4 +1,5 @@
 /**
+// build: 20260511183815
  * module-study.js
  * 勤学苦练模块 - 包含课程选择、学习页面、练习页面
  * 子Tab: 课程(Course) / 学习(Learn) / 练习(Practice)
