@@ -2476,9 +2476,9 @@ async function switchMainPage(page) {
     if (page === currentPage) return;
 
     // === 页面切换过渡动画 ===
-    const activePage = document.querySelector('#page-home[style*="display: """], #page-home[style*="display:"]') 
-        || document.querySelector('#page-study[style*="display: """], #page-study[style*="display:"]')
-        || document.querySelector('#page-challenge[style*="display: """], #page-challenge[style*="display:"]');
+    const activePage = document.querySelector('#page-home:not([style*="display: none"])') 
+        || document.querySelector('#page-study:not([style*="display: none"])')
+        || document.querySelector('#page-challenge:not([style*="display: none"])');
     
     // 创建过渡遮罩
     let overlay = document.getElementById('page-transition-overlay');

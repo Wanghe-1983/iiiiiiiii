@@ -854,7 +854,7 @@ const ChallengeModule = {
         // 刷新称号墙
         const subContent = document.getElementById('challenge-sub-content');
         if (subContent) this._renderTitlesWall(subContent);
-    }
+    },
     // BOSS图鉴
     renderBossCodex() {
         const defs = this._bossDefs;
