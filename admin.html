@@ -10,9 +10,9 @@
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理后台 - 印尼语学习助手</title>
-    <link rel="stylesheet" href="style.css?v=202605120000">
+    <link rel="stylesheet" href="style.css?v=202605120010">
     <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="config.js?v=202605120000"></script>
+    <script src="config.js?v=202605120010"></script>
     <script>
     // ========== 后台管理本地 Fallback 模式 ==========
     // 当 API 不可用时，自动降级到 localStorage 管理
@@ -1473,7 +1473,7 @@ let allUsers = [];
             const isAdmin = u.role === 'admin';
             return `<tr data-username="${esc(u.username)}" data-role="${u.role || 'user'}">
             <td style="width:36px;text-align:center;">${isAdmin ? '' : `<input type="checkbox" class="user-select-cb" value="${esc(u.username)}" onchange="updateBatchUI()">`}</td>
-            <td style="font-weight:600;">${esc(u.username)}</td>`;}).join('');
+            <td style="font-weight:600;">${esc(u.username)}</td>
             <td>${esc(u.name || '-')}</td>
             <td><span class="badge ${u.role === 'admin' ? 'badge-admin' : ''}">${u.role === 'admin' ? '<i class="fas fa-crown"></i> 管理员' : '用户'}</span></td>
             <td>${u.isBanned ? '<span class="badge badge-banned"><i class="fas fa-ban"></i> 已封禁</span>' : u.isOnline ? '<span class="badge badge-online"><i class="fas fa-circle"></i> 在线</span>' : '<span class="badge badge-offline">离线</span>'}</td>
