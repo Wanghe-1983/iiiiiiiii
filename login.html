@@ -499,27 +499,14 @@
             updateRegLimitBar();
             // 显示版本号
             (async function showVersion() {
-                var ver = (typeof CONFIG !== 'undefined' && CONFIG.version) ? CONFIG.version : '';
                 var hash = '';
                 try {
                     var info = await API.getSystemInfo();
-                    if (info && info.mainVersion) ver = info.mainVersion;
                     if (info && info.commitHash) hash = info.commitHash.substring(0, 7);
                 } catch(e) {}
-                if (ver) {
-                    var el = document.getElementById('app-version');
-                    if (el) el.textContent = 'v' + ver.replace(/^v/i, '') + (hash ? ' (' + hash + ')' : '');
-                }
-                // 记录本次 hash 到 sessionStorage，下次加载对比
                 if (hash) {
-                    var prevHash = sessionStorage.getItem('fmi_commit_hash');
-                    sessionStorage.setItem('fmi_commit_hash', hash);
-                    if (prevHash && prevHash !== hash) {
-                        // hash 变化说明部署了新版本，提示用户刷新
-                        if (confirm('检测到新版本 (' + hash + ')，点击确定刷新页面以加载最新内容。')) {
-                            location.reload(true);
-                        }
-                    }
+                    var el = document.getElementById('app-version');
+                    if (el) el.textContent = hash;
                 }
             })();
 
