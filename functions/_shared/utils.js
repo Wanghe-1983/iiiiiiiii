@@ -1,3 +1,4 @@
+// BUILD: 20260512082541 //
 /**
 // build: 20260511183815
  * 印尼语学习助手 - Cloudflare Pages Functions 后端路由
@@ -138,7 +139,7 @@ function defaultSettings() {
         showRegCount: true,
         allowVisitorChallenge: false,
         visitorMultiDevice: true,
-        mainVersion: 'v2.54',              // 主界面版本号
+        mainVersion: '',                    // 已废弃：主界面只显示 commit hash
         mainChangelog: `v2.54
 - 新增：管理后台BOSS配置UI（等级BOSS的HP/题量/题目范围/小BOSS数量间隔全可配）
 - 新增：BOSS图鉴（称号墙入口，展示8个BOSS形象/名称/等级/描述）

@@ -1,3 +1,4 @@
+// BUILD: 20260512082541 //
 // 全局变量
 // build: 20260511183815
 const app = document.getElementById('app');
@@ -4003,8 +4004,8 @@ function showVersionChangelog() {
 
     // 从后端动态获取版本号和更新日志
     fetch((CONFIG.apiBase || location.origin) + '/api/system/info').then(r => r.json()).then(data => {
-        var ver = data.mainVersion || '2.26';
-        var changelog = data.mainChangelog || '';
+        var ver = data.commitHash ? data.commitHash.substring(0, 7) : 'unknown';
+        var changelog = data.commitHash || '';
         var body = document.getElementById('version-changelog-body');
         if (!body) return;
         if (!changelog) {
@@ -4015,7 +4016,7 @@ function showVersionChangelog() {
         var lines = changelog.split('\n').filter(l => l.trim());
         var listHtml = lines.map(l => '<li style="margin-bottom:4px;">' + l.replace(/^[-*]\s*/, '') + '</li>').join('');
         body.innerHTML = '<div style="border-left:3px solid #f59e0b;padding:15px 20px;border-radius:0 10px 10px 0;">' +
-            '<div style="color:#fbbf24;font-weight:700;margin-bottom:10px;">Ver ' + ver + '</div>' +
+            '<div style="color:#fbbf24;font-weight:700;margin-bottom:10px;">Build ' + ver + '</div>' +
             '<ul style="color:#cbd5e1;font-size:0.9rem;line-height:1.8;padding-left:18px;">' + listHtml + '</ul></div>';
     }).catch(() => {
         var body = document.getElementById('version-changelog-body');
@@ -4030,10 +4031,10 @@ document.addEventListener('DOMContentLoaded', function() {
         if (copyright) {
             // admin entry moved to ⚙ gear icon
         }
-        // 从后端加载版本号
+        // 从后端加载 commit hash 作为版本号
         fetch((CONFIG.apiBase || location.origin) + '/api/system/info').then(r => r.json()).then(data => {
             var verEl = document.getElementById('main-version-num');
-            if (verEl && data.mainVersion) verEl.textContent = data.mainVersion;
+            if (verEl && data.commitHash) verEl.textContent = data.commitHash.substring(0, 7);
         }).catch(() => {});
     }, 1000);
 });
@@ -4195,21 +4196,22 @@ window.speak = function(encodedText) {
 
 // ========== 版本更新检测 ==========
 (function() {
-    let _lastKnownVersion = '';
+    let _lastKnownHash = '';
     let _updateCheckTimer = null;
     let _updateDismissed = false;
 
     function checkForUpdate() {
         if (_updateDismissed) return;
         fetch('/api/system/info').then(r => r.json()).then(data => {
-            if (!data || data.error || !data.mainVersion) return;
-            if (!_lastKnownVersion) {
-                _lastKnownVersion = data.mainVersion;
+            if (!data || data.error || !data.commitHash) return;
+            var h = data.commitHash.substring(0, 7);
+            if (!_lastKnownHash) {
+                _lastKnownHash = h;
                 return;
             }
-            if (data.mainVersion !== _lastKnownVersion) {
-                _lastKnownVersion = data.mainVersion;
-                showUpdateDialog(data.mainVersion);
+            if (h !== _lastKnownHash) {
+                _lastKnownHash = h;
+                showUpdateDialog(h);
             }
         }).catch(() => {});
     }
@@ -4221,7 +4223,7 @@ window.speak = function(encodedText) {
         overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:999999;backdrop-filter:blur(4px);';
         overlay.innerHTML = '<div id="_update-card" style="background:#1e293b;border:1px solid rgba(99,102,241,0.3);border-radius:20px;padding:32px 36px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.5);">'
             + '<div id="_update-icon" style="width:56px;height:56px;margin:0 auto 16px;border-radius:50%;background:rgba(99,102,241,0.15);display:flex;align-items:center;justify-content:center;"><i class="fas fa-arrow-up-right-dots" style="font-size:1.4rem;color:#818cf8;"></i></div>'
-            + '<div id="_update-title" style="font-size:1.15rem;font-weight:700;color:#e2e8f0;margin-bottom:8px;">发现新版本 v' + newVersion + '</div>'
+            + '<div id="_update-title" style="font-size:1.15rem;font-weight:700;color:#e2e8f0;margin-bottom:8px;">发现新版本 ' + newVersion + '</div>'
             + '<div id="_update-desc" style="font-size:0.85rem;color:#94a3b8;margin-bottom:24px;line-height:1.5;">平台已更新，建议刷新页面以获取最新内容和功能</div>'
             + '<div id="_update-actions" style="display:flex;gap:12px;justify-content:center;">'
             + '<button id="_updateLaterBtn" style="padding:10px 24px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#94a3b8;cursor:pointer;font-size:0.9rem;">稍后再说</button>'
