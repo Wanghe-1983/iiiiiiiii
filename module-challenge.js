@@ -1,4 +1,4 @@
-// BUILD: 20260512082541 //
+// BUILD: 20260512083925 //
 /**
 // build: 20260511183815
  * module-challenge.js
@@ -480,6 +480,8 @@ const ChallengeModule = {
         '6': { name: 'Dewa 天神', icon: 'fa-bolt', theme: 'deity', color: '#38bdf8', desc: '精通篇的半神形态', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMOtEUk' },
         '7': { name: 'Ratu Iblis 魔王', icon: 'fa-skull', theme: 'demon', color: '#ef4444', desc: '卓越篇的终极魔王', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMVi1uQ' },
 
+    },
+
     // 用户角色形象定义（按等级成长）
     _heroDefs: {
         '0': { name: '初心学徒', icon: 'fa-person-hiking', color: '#34d399', desc: '手持木剑的少年冒险者', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjPeDsrW' },
@@ -490,8 +492,6 @@ const ChallengeModule = {
         '5': { name: '元素法师', icon: 'fa-wand-magic-sparkles', color: '#c084fc', desc: '操控元素的强大法师', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjLMkiYI' },
         '6': { name: '半神行者', icon: 'fa-bolt', color: '#38bdf8', desc: '身带神光的超凡存在', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjLShSI4' },
         '7': { name: '传奇勇者', icon: 'fa-crown', color: '#f59e0b', desc: '全身铠甲散发圣光的终极勇者', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjM0wftW' },
-    },
-
     },
 
     _regenerateStages() {
