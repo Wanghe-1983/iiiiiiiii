@@ -1,10 +1,11 @@
 # Cloudflare Pages _headers
-# 禁用所有缓存（开发阶段，确保每次都拉取最新文件）
+# 开发阶段：禁用所有缓存，确保每次拉取最新文件
 /*
   Cache-Control: no-cache, no-store, must-revalidate
   Pragma: no-cache
   Expires: 0
 
-# API routes: no cache
+# API routes: no cache + CORS
 /api/*
   Cache-Control: no-cache, no-store, must-revalidate
+  Access-Control-Allow-Origin: *

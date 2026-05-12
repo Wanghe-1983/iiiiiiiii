@@ -1,6 +1,4 @@
-// BUILD: 20260512083925 //
 /**
-// build: 20260511183815
  * module-challenge.js
  * 闯天关模块 - 包含关卡地图、答题界面、排行榜
  * 子Tab: 闯关(Challenge) / 排行榜(Rank)

@@ -1,6 +1,4 @@
-// BUILD: 20260512082541 //
 /**
-// build: 20260511183815
  * 闯天关 - 个人进度 API
  * GET  /api/challenge/progress - 获取所有关卡进度
  * POST /api/challenge/progress - 同步本地进度到服务端（备用）

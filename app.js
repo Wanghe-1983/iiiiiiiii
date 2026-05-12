@@ -1,6 +1,4 @@
-// BUILD: 20260512082541 //
 // 全局变量
-// build: 20260511183815
 const app = document.getElementById('app');
 let db = {}; // 词库数据
 let favs = JSON.parse(localStorage.getItem('fmi_v1_favs') || '[]'); // 收藏
@@ -4005,7 +4003,7 @@ function showVersionChangelog() {
     // 从后端动态获取版本号和更新日志
     fetch((CONFIG.apiBase || location.origin) + '/api/system/info').then(r => r.json()).then(data => {
         var ver = data.commitHash ? data.commitHash.substring(0, 7) : 'unknown';
-        var changelog = data.commitHash || '';
+        var changelog = data.mainChangelog || '';
         var body = document.getElementById('version-changelog-body');
         if (!body) return;
         if (!changelog) {

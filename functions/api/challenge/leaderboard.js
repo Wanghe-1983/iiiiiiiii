@@ -1,6 +1,4 @@
-// BUILD: 20260512082541 //
 /**
-// build: 20260511183815
  * 闯天关 - 排行榜 API
  * GET /api/challenge/leaderboard?period=weekly|monthly|alltime
  * GET /api/challenge/leaderboard/my?period=weekly
