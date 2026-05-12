@@ -66,7 +66,7 @@ function checkLoginStatus() {
                     <div style="position:relative;">
                         <span onclick="toggleUserMenu()" style="cursor:pointer;display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:8px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
                             <i class="fas fa-user-circle" style="color:#a5b4fc;font-size:1.1rem;"></i>
-                            欢迎，${loginStatus.user.name}
+                            ${getEquippedTitleHTML()}欢迎，${loginStatus.user.name}
                             <i class="fas fa-chevron-down" style="font-size:0.65rem;color:#64748b;"></i>
                         </span>
                         <div id="user-dropdown" style="display:none;position:absolute;top:100%;right:0;margin-top:8px;background:rgba(30,41,59,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:6px;min-width:150px;z-index:9999;backdrop-filter:blur(20px);box-shadow:0 10px 40px rgba(0,0,0,0.6);">
@@ -2126,6 +2126,40 @@ function showFavWord(catId, idx, lessonId = "1") {
     showWord(catId, idx, lessonId);
 }
 
+
+// ========== 称号显示系统 ==========
+
+// 获取佩戴称号的HTML徽章（显示在用户名前）
+function getEquippedTitleHTML() {
+    try {
+        var equippedId = localStorage.getItem('challenge_equipped_title') || '';
+        if (!equippedId) return '';
+        
+        // 从称号墙数据读取定义
+        if (typeof ChallengeModule !== 'undefined' && ChallengeModule._titleDefs && ChallengeModule._titleDefs[equippedId]) {
+            var def = ChallengeModule._titleDefs[equippedId];
+            var catColors = { normal: '#60a5fa', hell: '#f87171', boss: '#a78bfa', condition: '#34d399', general: '#fbbf24' };
+            var color = catColors[def.category] || '#fbbf24';
+            return '<span style="display:inline-flex;align-items:center;gap:3px;padding:1px 8px;margin-right:4px;background:' + color + '18;color:' + color + ';border:1px solid ' + color + '33;border-radius:10px;font-size:0.65rem;font-weight:600;vertical-align:middle;"><i class="fas ' + def.icon + '" style="font-size:0.55rem;"></i>' + def.name + '</span>';
+        }
+    } catch(e) {}
+    return '';
+}
+
+// 更新header中称号显示（称号变更后调用）
+function updateEquippedTitleInHeader() {
+    var userStatusEl = document.getElementById('user-status');
+    if (!userStatusEl) return;
+    var welcomeSpan = userStatusEl.querySelector('span[onclick]');
+    if (!welcomeSpan) return;
+    var userInfo = JSON.parse(sessionStorage.getItem('fmi_user') || '{}');
+    var name = userInfo.name || userInfo.username || '';
+    // 替换欢迎语（保留已有的称号或其他前缀）
+    var titleHTML = getEquippedTitleHTML();
+    var chevron = ' <i class="fas fa-chevron-down" style="font-size:0.65rem;color:#64748b;"></i>';
+    welcomeSpan.innerHTML = titleHTML + '欢迎，' + name + chevron;
+}
+
 // 打开个人设置弹窗
 function showProfileDialog() {
     const userInfo = JSON.parse(sessionStorage.getItem('fmi_user') || '{}');
@@ -2190,7 +2224,7 @@ function showProfileDialog() {
                 if (userStatusEl) {
                     const welcomeSpan = userStatusEl.querySelector('span[onclick]');
                     if (welcomeSpan) {
-                        welcomeSpan.innerHTML = welcomeSpan.innerHTML.replace(/欢迎，.*/, '欢迎，' + newName + ' <i class="fas fa-chevron-down" style="font-size:0.65rem;color:#64748b;"></i>');
+                        welcomeSpan.innerHTML = welcomeSpan.innerHTML.replace(/欢迎，.*/, getEquippedTitleHTML() + '欢迎，' + newName + ' <i class="fas fa-chevron-down" style="font-size:0.65rem;color:#64748b;"></i>');
                     }
                 }
             }

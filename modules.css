@@ -3198,11 +3198,14 @@
 .title-wall-item {
     background: #1e293b;
     border-radius: 12px;
-    padding: 16px 10px;
+    padding: 14px 10px 12px;
     text-align: center;
     transition: transform 0.2s, box-shadow 0.2s;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 .title-wall-item.earned {
     border: 1px solid rgba(250, 204, 21, 0.2);
@@ -3245,11 +3248,19 @@
     color: #64748b;
     line-height: 1.4;
     margin-bottom: 4px;
+    flex: 1;
+    min-height: 30px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
 .title-wall-date {
     font-size: 10px;
     color: #475569;
+    flex-shrink: 0;
+    min-height: 14px;
 }
 
 
@@ -4096,17 +4107,20 @@
 .title-equip-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 4px;
-    padding: 4px 12px;
-    margin-top: 6px;
+    padding: 5px 14px;
+    margin-top: auto;
     background: rgba(99, 102, 241, 0.15);
     color: #818cf8;
     border: 1px solid rgba(99, 102, 241, 0.3);
     border-radius: 8px;
-    font-size: 0.65rem;
+    font-size: 0.68rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .title-equip-btn:hover {
@@ -4118,6 +4132,7 @@
     background: rgba(250, 204, 21, 0.15);
     color: #fbbf24;
     border-color: rgba(250, 204, 21, 0.4);
+    cursor: pointer;
 }
 
 .title-equip-btn.equipped:hover {

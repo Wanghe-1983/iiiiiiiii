@@ -859,21 +859,25 @@ const ChallengeModule = {
     equipTitle(titleId) {
         if (!this._earnedTitles[titleId]) return;
         this._equippedTitleId = titleId;
-        // 保存到后端
-        if (typeof API !== 'undefined' && API.saveEquippedTitle) {
-            API.saveEquippedTitle(titleId).catch(() => {});
-        } else {
-            // fallback: 使用localStorage
-            try { localStorage.setItem('challenge_equipped_title', titleId); } catch(e) {}
+        // 始终保存到localStorage
+        try { localStorage.setItem('challenge_equipped_title', titleId); } catch(e) {}
+        // 尝试同步到后端
+        if (typeof API !== 'undefined' && API.request) {
+            API.request('user/titles/equip', {
+                method: 'POST',
+                body: JSON.stringify({ titleId }),
+            }).catch(() => {});
         }
         // 显示提示
         const def = this._titleDefs[titleId];
         if (def) {
-            this._showToast(`已佩戴称号：${def.name}`, 'success');
+            // 简单提示
         }
         // 刷新称号墙
         const subContent = document.getElementById('challenge-sub-content');
         if (subContent) this._renderTitlesWall(subContent);
+        // 更新header中称号显示
+        if (typeof updateEquippedTitleInHeader === 'function') updateEquippedTitleInHeader();
     },
     // BOSS图鉴
     renderBossCodex() {
@@ -988,9 +992,15 @@ const ChallengeModule = {
         this._equippedFrameId = (frameId && prevId !== frameId) ? frameId : null;
         // 保存到 localStorage
         try { localStorage.setItem('challenge_equipped_frame', this._equippedFrameId || ''); } catch(e) {}
-        // 刷新关卡网格
+        // 刷新当前视图（称号墙或关卡列表）
         const container = document.getElementById('challenge-sub-content');
-        if (container) this._renderStages(container);
+        if (container) {
+            if (this.currentView === 'titles') {
+                this._renderTitlesWall(container);
+            } else {
+                this.renderStages(container);
+            }
+        }
     },
 
     /** 加载已装备的边框 */
@@ -3000,6 +3010,18 @@ const ChallengeModule = {
                 // 保存到本地
                 this._saveTitlesCache();
                 this._titleLoaded = true;
+                // 如果称号墙已显示，刷新它
+                if (this.currentView === 'titles') {
+                    const subContent = document.getElementById('challenge-sub-content');
+                    if (subContent) this._renderTitlesWall(subContent);
+                }
+                // 加载已装备的边框
+                this._loadEquippedFrame();
+                // 如果关卡列表已显示，刷新以更新称号徽章
+                if (this.currentView === 'stages') {
+                    const subContent2 = document.getElementById('challenge-sub-content');
+                    if (subContent2) this.renderStages(subContent2);
+                }
             }
         } catch(e) {
             console.warn('Failed to load titles:', e);
