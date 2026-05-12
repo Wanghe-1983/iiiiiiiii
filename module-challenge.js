@@ -2266,11 +2266,15 @@ const ChallengeModule = {
      * 渲染 BOSS 战对峙界面（双方形象 + HP条 + 动画）
      */
     _renderBossHpBars(state) {
-        if (!state.isBoss) return '';
+        if (!state || !state.isBoss) return '';
         const bossDef = state.bossDef || {};
         const bossColor = bossDef.color || '#ef4444';
         const bossName = bossDef.name || 'BOSS';
-        const isRage = state.bossHp <= state.bossMaxHp * 0.25 && state.bossHp > 0;
+        const bossHp = typeof state.bossHp === 'number' ? state.bossHp : 0;
+        const bossMaxHp = typeof state.bossMaxHp === 'number' ? state.bossMaxHp : 1;
+        const userHp = typeof state.userHp === 'number' ? state.userHp : 0;
+        const userMaxHp = typeof state.userMaxHp === 'number' ? state.userMaxHp : 1;
+        const isRage = bossHp <= bossMaxHp * 0.25 && bossHp > 0;
         const rageClass = isRage ? ' boss-hp-rage' : '';
         const rageGlow = isRage ? 'animation:boss-hp-rage-pulse 0.8s ease-in-out infinite;' : '';
 
@@ -2310,10 +2314,10 @@ const ChallengeModule = {
                 <div class="boss-hp-section" style="flex:1;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
                         <span class="boss-name" style="color:${bossColor};"><i class="fas fa-skull-crossbones" style="margin-right:3px;font-size:0.7rem;"></i>${bossName}</span>
-                        <span class="boss-hp-text" style="color:${bossColor};">${state.bossHp}/${state.bossMaxHp}</span>
+                        <span class="boss-hp-text" style="color:${bossColor};">${bossHp}/${bossMaxHp}</span>
                     </div>
                     <div class="boss-hp-bar${rageClass}" style="background:#1e293b;border:1px solid ${bossColor}44;border-radius:6px;overflow:hidden;height:14px;position:relative;${rageGlow}">
-                        <div class="boss-hp-fill" id="boss-hp-fill" style="height:100%;background:linear-gradient(90deg,${bossColor}cc,${bossColor});border-radius:5px;transition:width 0.4s ease;width:${state.bossMaxHp > 0 ? (state.bossHp / state.bossMaxHp * 100) : 0}%;"></div>
+                        <div class="boss-hp-fill" id="boss-hp-fill" style="height:100%;background:linear-gradient(90deg,${bossColor}cc,${bossColor});border-radius:5px;transition:width 0.4s ease;width:${bossMaxHp > 0 ? (bossHp / bossMaxHp * 100) : 0}%;"></div>
                     </div>
                 </div>
             </div>
@@ -2323,10 +2327,10 @@ const ChallengeModule = {
                 <div class="user-hp-section" style="flex:1;">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
                         <span style="font-size:0.75rem;color:#94a3b8;"><i class="fas fa-heart" style="color:#f87171;margin-right:3px;"></i>${heroName}</span>
-                        <span class="user-hp-text" style="color:#f87171;">${state.userHp}/${state.userMaxHp}</span>
+                        <span class="user-hp-text" style="color:#f87171;">${userHp}/${userMaxHp}</span>
                     </div>
                     <div style="background:#1e293b;border:1px solid #f8717133;border-radius:6px;overflow:hidden;height:12px;">
-                        <div class="user-hp-fill" id="user-hp-fill" style="height:100%;background:linear-gradient(90deg,#f87171cc,#f87171);border-radius:5px;transition:width 0.4s ease;width:${state.userMaxHp > 0 ? (state.userHp / state.userMaxHp * 100) : 0}%;"></div>
+                        <div class="user-hp-fill" id="user-hp-fill" style="height:100%;background:linear-gradient(90deg,#f87171cc,#f87171);border-radius:5px;transition:width 0.4s ease;width:${userMaxHp > 0 ? (userHp / userMaxHp * 100) : 0}%;"></div>
                     </div>
                 </div>
             </div>
@@ -2595,7 +2599,7 @@ const ChallengeModule = {
                 </div>
                 ` : `
                 <div class="boss-hp-remaining">
-                    <i class="fas fa-heart"></i> 剩余HP: ${state.userHp}/${state.userMaxHp}
+                    <i class="fas fa-heart"></i> 剩余HP: ${userHp}/${userMaxHp}
                 </div>
                 `}
 
