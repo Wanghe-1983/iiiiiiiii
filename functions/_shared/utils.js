@@ -101,6 +101,8 @@ async function getSettings(env) {
     const defaults = defaultSettings();
     const merged = { ...defaults, ...stored };
         // mainChangelog 以代码默认值为准，确保更新日志与代码同步
+        merged.mainVersion = defaults.mainVersion;
+        // mainVersion/mainChangelog 始终以代码默认值为准
     merged.mainChangelog = defaults.mainChangelog;
     // 数组类型字段不覆盖（如 hellLevels、等级配置等）
     if (stored.hellLevels) merged.hellLevels = stored.hellLevels;
@@ -305,8 +307,17 @@ async function handleSystemInfo(context) {
     const { env, request } = context;
     const settings = await getSettings(env) || defaultSettings();
 
-    // 从 Cloudflare Pages 环境变量获取 commit hash
-    const commitHash = (typeof CF_PAGES_COMMIT_SHA !== 'undefined' ? CF_PAGES_COMMIT_SHA : '').substring(0, 7);
+    // 从 GitHub API 获取 commit hash（CF_PAGES_COMMIT_SHA 在 Functions 运行时不可用）
+    let commitHash = '';
+    try {
+        const ghRes = await fetch('https://api.github.com/repos/Wanghe-1983/indonesian-app/commits/main', {
+            headers: { 'User-Agent': 'indonesian-learn', 'Accept': 'application/vnd.github+json' }
+        });
+        if (ghRes.ok) {
+            const ghData = await ghRes.json();
+            commitHash = (ghData.sha || '').substring(0, 7);
+        }
+    } catch(e) {}
 
     // D1: 统计用户数
     const totalUsers = (await dbGet(env, 'SELECT COUNT(*) as c FROM users')).c;

@@ -2274,69 +2274,56 @@ const ChallengeModule = {
         const userHp = typeof state.userHp === 'number' ? state.userHp : 0;
         const userMaxHp = typeof state.userMaxHp === 'number' ? state.userMaxHp : 1;
         const isRage = bossHp <= bossMaxHp * 0.25 && bossHp > 0;
-        const rageClass = isRage ? ' boss-hp-rage' : '';
-        const rageGlow = isRage ? 'animation:boss-hp-rage-pulse 0.8s ease-in-out infinite;' : '';
 
         // 用户角色：根据当前关卡等级取对应形象
         const heroLevel = String(state.bossLevel || 0);
         const heroDef = this._heroDefs[heroLevel] || this._heroDefs['0'];
         const heroColor = heroDef.color || '#60a5fa';
-        const heroName = heroDef.name || '勇者';
+        const heroName = heroDef.name || '\u52c7\u8005';
 
-        // BOSS形象图
+        // BOSS形象图 - 小尺寸
         const bossImg = bossDef.image
-            ? `<img src="${bossDef.image}" id="boss-battle-img" style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid ${bossColor};box-shadow:0 0 20px ${bossColor}66;${isRage ? 'animation:boss-shake 0.3s ease-in-out infinite;' : ''}" alt="${bossName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><div style="display:none;width:64px;height:64px;border-radius:50%;border:3px solid ${bossColor};align-items:center;justify-content:center;box-shadow:0 0 20px ${bossColor}66;${isRage ? 'animation:boss-shake 0.3s ease-in-out infinite;' : ''}"><i class="fas ${bossDef.icon || 'fa-skull'}" style="color:${bossColor};font-size:24px;"></i></div>`
-            : `<div style="width:64px;height:64px;border-radius:50%;border:3px solid ${bossColor};display:flex;align-items:center;justify-content:center;box-shadow:0 0 20px ${bossColor}66;${isRage ? 'animation:boss-shake 0.3s ease-in-out infinite;' : ''}"><i class="fas ${bossDef.icon || 'fa-skull'}" style="color:${bossColor};font-size:24px;"></i></div>`;
+            ? `<img src="${bossDef.image}" id="boss-battle-img" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid ${bossColor};${isRage ? 'animation:boss-shake 0.3s ease-in-out infinite;' : ''}" alt="${bossName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><div style="display:none;width:40px;height:40px;border-radius:50%;border:2px solid ${bossColor};align-items:center;justify-content:center;${isRage ? 'animation:boss-shake 0.3s ease-in-out infinite;' : ''}"><i class="fas ${bossDef.icon || 'fa-skull'}" style="color:${bossColor};font-size:16px;"></i></div>`
+            : `<div style="width:40px;height:40px;border-radius:50%;border:2px solid ${bossColor};display:flex;align-items:center;justify-content:center;${isRage ? 'animation:boss-shake 0.3s ease-in-out infinite;' : ''}"><i class="fas ${bossDef.icon || 'fa-skull'}" style="color:${bossColor};font-size:16px;"></i></div>`;
 
-        // 用户形象图
+        // 用户形象图 - 小尺寸
         const heroImg = heroDef.image
-            ? `<img src="${heroDef.image}" id="hero-battle-img" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid ${heroColor};box-shadow:0 0 15px ${heroColor}44;" alt="${heroName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><div style="display:none;width:52px;height:52px;border-radius:50%;border:2px solid ${heroColor};display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px ${heroColor}44;"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};font-size:18px;"></i></div>`
-            : `<div style="width:52px;height:52px;border-radius:50%;border:2px solid ${heroColor};display:flex;align-items:center;justify-content:center;box-shadow:0 0 15px ${heroColor}44;"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};font-size:18px;"></i></div>`;
+            ? `<img src="${heroDef.image}" id="hero-battle-img" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid ${heroColor};" alt="${heroName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><div style="display:none;width:36px;height:36px;border-radius:50%;border:2px solid ${heroColor};display:flex;align-items:center;justify-content:center;"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};font-size:14px;"></i></div>`
+            : `<div style="width:36px;height:36px;border-radius:50%;border:2px solid ${heroColor};display:flex;align-items:center;justify-content:center;"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};font-size:14px;"></i></div>`;
 
         return `
         <div class="boss-battle-ui" id="boss-battle-ui">
-            <!-- VS 对峙区域 -->
-            <div class="boss-vs-area" style="display:flex;align-items:center;justify-content:center;gap:12px;padding:10px 0 14px;">
-                <div class="boss-vs-hero" id="boss-vs-hero" style="text-align:center;">
+            <!-- 紧凑型 VS 对峙区域：头像+血条一体化 -->
+            <div class="boss-vs-area" style="display:flex;align-items:center;gap:8px;padding:6px 10px;margin-bottom:6px;background:rgba(255,255,255,0.03);border-radius:10px;">
+                <div class="boss-vs-hero" id="boss-vs-hero" style="display:flex;align-items:center;gap:6px;flex:1;min-width:0;">
                     ${heroImg}
-                    <div style="font-size:0.65rem;color:${heroColor};margin-top:4px;font-weight:600;">${heroName}</div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-size:0.6rem;color:#64748b;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${heroName}</div>
+                        <div style="display:flex;align-items:center;gap:4px;">
+                            <div style="flex:1;height:4px;background:rgba(248,113,113,0.15);border-radius:2px;overflow:hidden;">
+                                <div class="user-hp-fill" id="user-hp-fill" style="height:100%;background:${userHp/userMaxHp < 0.3 ? '#f87171' : '#34d399'};border-radius:2px;transition:width 0.4s ease;width:${userMaxHp > 0 ? (userHp / userMaxHp * 100) : 0}%;"></div>
+                            </div>
+                            <span class="user-hp-text" style="font-size:0.55rem;color:#64748b;white-space:nowrap;">${userHp}/${userMaxHp}</span>
+                        </div>
+                    </div>
                 </div>
-                <div style="font-size:1.1rem;font-weight:900;color:#f59e0b;text-shadow:0 0 10px rgba(245,158,11,0.5);letter-spacing:2px;">VS</div>
-                <div class="boss-vs-boss" id="boss-vs-boss" style="text-align:center;">
+                <div style="font-size:0.7rem;font-weight:800;color:#f59e0b;text-shadow:0 0 8px rgba(245,158,11,0.4);letter-spacing:1px;flex-shrink:0;">VS</div>
+                <div class="boss-vs-boss" id="boss-vs-boss" style="display:flex;align-items:center;gap:6px;flex:1;min-width:0;flex-direction:row-reverse;">
                     ${bossImg}
-                    <div style="font-size:0.65rem;color:${bossColor};margin-top:4px;font-weight:600;">${bossName}</div>
-                </div>
-            </div>
-
-            <!-- BOSS HP 条 -->
-            <div class="boss-info-row">
-                <div class="boss-hp-section" style="flex:1;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
-                        <span class="boss-name" style="color:${bossColor};"><i class="fas fa-skull-crossbones" style="margin-right:3px;font-size:0.7rem;"></i>${bossName}</span>
-                        <span class="boss-hp-text" style="color:${bossColor};">${bossHp}/${bossMaxHp}</span>
-                    </div>
-                    <div class="boss-hp-bar${rageClass}" style="background:#1e293b;border:1px solid ${bossColor}44;border-radius:6px;overflow:hidden;height:14px;position:relative;${rageGlow}">
-                        <div class="boss-hp-fill" id="boss-hp-fill" style="height:100%;background:linear-gradient(90deg,${bossColor}cc,${bossColor});border-radius:5px;transition:width 0.4s ease;width:${bossMaxHp > 0 ? (bossHp / bossMaxHp * 100) : 0}%;"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 用户 HP 条 -->
-            <div class="user-hp-row" style="margin-top:6px;">
-                <div class="user-hp-section" style="flex:1;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
-                        <span style="font-size:0.75rem;color:#94a3b8;"><i class="fas fa-heart" style="color:#f87171;margin-right:3px;"></i>${heroName}</span>
-                        <span class="user-hp-text" style="color:#f87171;">${userHp}/${userMaxHp}</span>
-                    </div>
-                    <div style="background:#1e293b;border:1px solid #f8717133;border-radius:6px;overflow:hidden;height:12px;">
-                        <div class="user-hp-fill" id="user-hp-fill" style="height:100%;background:linear-gradient(90deg,#f87171cc,#f87171);border-radius:5px;transition:width 0.4s ease;width:${userMaxHp > 0 ? (userHp / userMaxHp * 100) : 0}%;"></div>
+                    <div style="flex:1;min-width:0;text-align:right;">
+                        <div style="font-size:0.6rem;color:#64748b;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${bossName}${isRage ? ' <span style="color:#f87171;">\u26a1</span>' : ''}</div>
+                        <div style="display:flex;align-items:center;gap:4px;flex-direction:row-reverse;">
+                            <div style="flex:1;height:4px;background:rgba(239,68,68,0.15);border-radius:2px;overflow:hidden;${isRage ? 'animation:boss-hp-rage-pulse 0.8s ease-in-out infinite;' : ''}">
+                                <div class="boss-hp-fill" id="boss-hp-fill" style="height:100%;background:${bossColor};border-radius:2px;transition:width 0.4s ease;width:${bossMaxHp > 0 ? (bossHp / bossMaxHp * 100) : 0}%;"></div>
+                            </div>
+                            <span class="boss-hp-text" style="font-size:0.55rem;color:#64748b;white-space:nowrap;">${bossHp}/${bossMaxHp}</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
             ${isRage ? '<div class="boss-rage-banner"><i class="fas fa-fire"></i> BOSS 暴怒中!</div>' : ''}
-        </div>
-        `;
+        </div>`;
     },
 
     /**
@@ -2387,60 +2374,139 @@ const ChallengeModule = {
      * BOSS 答题后的动画效果
      */
     _bossDamageEffect(damageType) {
-        if (damageType === 'boss') {
-            // 用户攻击 BOSS：用户冲刺 → BOSS受击
-            const heroEl = document.getElementById('boss-vs-hero');
-            const bossEl = document.getElementById('boss-vs-boss');
-            const bossHpFill = document.getElementById('boss-hp-fill');
-            // 用户冲刺动画
-            if (heroEl) {
-                heroEl.style.animation = 'hero-attack 0.4s ease';
-                setTimeout(() => heroEl.style.animation = '', 400);
-            }
-            // BOSS 受伤闪烁
-            setTimeout(() => {
-                if (bossEl) {
-                    bossEl.style.animation = 'boss-hit 0.4s ease';
-                    setTimeout(() => bossEl.style.animation = '', 400);
-                }
-            }, 200);
-            if (bossHpFill) {
-                bossHpFill.style.transition = 'width 0.4s ease, background 0.2s';
-                bossHpFill.style.background = '#fff';
-                setTimeout(() => {
-                    bossHpFill.style.background = '';
-                    bossHpFill.style.transition = 'width 0.4s ease';
-                }, 200);
-            }
-        } else if (damageType === 'user') {
-            // BOSS 攻击用户：BOSS冲刺 → 用户受击
-            const heroEl = document.getElementById('boss-vs-hero');
-            const bossEl = document.getElementById('boss-vs-boss');
-            const userHpFill = document.getElementById('user-hp-fill');
-            const playPage = document.querySelector('.challenge-play-page');
-            // BOSS 冲刺动画
-            if (bossEl) {
-                bossEl.style.animation = 'boss-attack 0.4s ease';
-                setTimeout(() => bossEl.style.animation = '', 400);
-            }
-            // 用户受击闪烁
-            setTimeout(() => {
-                if (heroEl) {
-                    heroEl.style.animation = 'hero-hit 0.4s ease';
-                    setTimeout(() => heroEl.style.animation = '', 400);
-                }
-            }, 200);
-            if (userHpFill) {
-                userHpFill.style.background = '#fff';
-                setTimeout(() => {
-                    userHpFill.style.background = '';
-                }, 200);
-            }
-            if (playPage) {
-                playPage.style.animation = 'screen-shake 0.3s ease';
-                setTimeout(() => playPage.style.animation = '', 300);
-            }
+        if (!damageType) return;
+        const heroEl = document.getElementById('boss-vs-hero');
+        const bossEl = document.getElementById('boss-vs-boss');
+        const playPage = document.querySelector('.challenge-play-page');
+
+        // 创建全屏闪屏元素
+        const flashOverlay = document.createElement('div');
+        flashOverlay.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:50;opacity:0;transition:opacity 0.15s;';
+        if (playPage) {
+            playPage.style.position = 'relative';
+            playPage.appendChild(flashOverlay);
         }
+
+        if (damageType === 'boss') {
+            // ===== 用户攻击 BOSS =====
+            // 用户冲刺 + 缩放
+            if (heroEl) {
+                heroEl.style.transition = 'transform 0.15s ease';
+                heroEl.style.transform = 'translateX(20px) scale(1.3)';
+                setTimeout(() => {
+                    heroEl.style.transition = 'transform 0.3s ease';
+                    heroEl.style.transform = '';
+                }, 150);
+            }
+            // BOSS 受伤延迟
+            setTimeout(() => {
+                // 红色闪屏
+                if (flashOverlay.parentElement) {
+                    flashOverlay.style.background = 'radial-gradient(circle, rgba(255,100,50,0.3) 0%, transparent 70%)';
+                    flashOverlay.style.opacity = '1';
+                    setTimeout(() => { flashOverlay.style.opacity = '0'; }, 150);
+                }
+                // BOSS 击退 + 闪白
+                if (bossEl) {
+                    bossEl.style.transition = 'transform 0.1s ease, filter 0.1s ease';
+                    bossEl.style.transform = 'translateX(-8px) scale(0.85)';
+                    bossEl.style.filter = 'brightness(3) saturate(0.5)';
+                    setTimeout(() => {
+                        bossEl.style.transform = 'translateX(4px) scale(1.05)';
+                        bossEl.style.filter = 'brightness(1.5)';
+                        setTimeout(() => {
+                            bossEl.style.transition = 'transform 0.3s ease, filter 0.3s ease';
+                            bossEl.style.transform = '';
+                            bossEl.style.filter = '';
+                        }, 100);
+                    }, 100);
+                }
+                // BOSS HP条闪白
+                const bossHpFill = document.getElementById('boss-hp-fill');
+                if (bossHpFill) {
+                    bossHpFill.style.filter = 'brightness(2.5)';
+                    setTimeout(() => { bossHpFill.style.filter = ''; }, 200);
+                }
+                // 屏幕微震
+                if (playPage) {
+                    playPage.style.animation = 'screen-shake 0.25s ease';
+                    setTimeout(() => playPage.style.animation = '', 250);
+                }
+                // 伤害飘字
+                this._showDamageText('boss-vs-boss', '-1', '#ef4444');
+            }, 150);
+        } else if (damageType === 'user') {
+            // ===== BOSS 攻击用户 =====
+            // BOSS 冲刺 + 缩放
+            if (bossEl) {
+                bossEl.style.transition = 'transform 0.15s ease';
+                bossEl.style.transform = 'translateX(-20px) scale(1.3)';
+                setTimeout(() => {
+                    bossEl.style.transition = 'transform 0.3s ease';
+                    bossEl.style.transform = '';
+                }, 150);
+            }
+            // 用户受伤延迟
+            setTimeout(() => {
+                // 红色闪屏（更强）
+                if (flashOverlay.parentElement) {
+                    flashOverlay.style.background = 'radial-gradient(circle at 30% 50%, rgba(255,50,50,0.4) 0%, rgba(255,0,0,0.15) 40%, transparent 70%)';
+                    flashOverlay.style.opacity = '1';
+                    setTimeout(() => { flashOverlay.style.opacity = '0'; }, 200);
+                }
+                // 用户击退 + 闪红
+                if (heroEl) {
+                    heroEl.style.transition = 'transform 0.1s ease, filter 0.1s ease';
+                    heroEl.style.transform = 'translateX(10px) scale(0.85)';
+                    heroEl.style.filter = 'brightness(0.5) saturate(2) hue-rotate(-30deg)';
+                    setTimeout(() => {
+                        heroEl.style.transform = 'translateX(-4px) scale(1.05)';
+                        heroEl.style.filter = 'brightness(1.2)';
+                        setTimeout(() => {
+                            heroEl.style.transition = 'transform 0.3s ease, filter 0.3s ease';
+                            heroEl.style.transform = '';
+                            heroEl.style.filter = '';
+                        }, 100);
+                    }, 100);
+                }
+                // 用户 HP条闪红
+                const userHpFill = document.getElementById('user-hp-fill');
+                if (userHpFill) {
+                    userHpFill.style.filter = 'brightness(2.5)';
+                    userHpFill.style.background = '#ff4444';
+                    setTimeout(() => { 
+                        userHpFill.style.filter = ''; 
+                        userHpFill.style.background = ''; 
+                    }, 300);
+                }
+                // 屏幕强震
+                if (playPage) {
+                    playPage.style.animation = 'screen-shake-strong 0.35s ease';
+                    setTimeout(() => playPage.style.animation = '', 350);
+                }
+                // 伤害飘字
+                this._showDamageText('boss-vs-hero', '-1', '#f87171');
+            }, 150);
+        }
+
+        // 清理闪屏
+        setTimeout(() => {
+            if (flashOverlay.parentElement) flashOverlay.remove();
+        }, 600);
+    },
+
+    /**
+     * 伤害飘字特效
+     */
+    _showDamageText(parentId, text, color) {
+        const parent = document.getElementById(parentId);
+        if (!parent) return;
+        const dmgEl = document.createElement('div');
+        dmgEl.textContent = text;
+        dmgEl.style.cssText = `position:absolute;top:-10px;${parentId === 'boss-vs-boss' ? 'right' : 'left'}:50%;transform:translateX(-50%);font-size:1.4rem;font-weight:900;color:${color};text-shadow:0 0 10px ${color},0 2px 4px rgba(0,0,0,0.8);pointer-events:none;z-index:60;animation:dmg-float 0.8s ease-out forwards;`;
+        parent.style.position = 'relative';
+        parent.appendChild(dmgEl);
+        setTimeout(() => dmgEl.remove(), 800);
     },
 
     /**
@@ -2598,7 +2664,7 @@ const ChallengeModule = {
                 </div>
                 ` : `
                 <div class="boss-hp-remaining">
-                    <i class="fas fa-heart"></i> 剩余HP: ${userHp}/${userMaxHp}
+                    <i class="fas fa-heart"></i> 剩余HP: ${state.userHp}/${state.userMaxHp}
                 </div>
                 `}
 
@@ -2738,7 +2804,7 @@ const ChallengeModule = {
         this.challengeState = null;
         const subContent = document.getElementById('challenge-sub-content');
         if (subContent) {
-            this._renderStageMap(subContent);
+            this.renderStages(subContent);
         }
     },
 
