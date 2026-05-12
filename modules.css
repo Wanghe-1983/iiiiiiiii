@@ -4447,3 +4447,556 @@
     0%, 100% { opacity: 0.6; }
     50% { opacity: 0.9; }
 }
+
+/* ========== 边框墙 - 卡片网格布局 ========== */
+.frame-wall-section {
+    margin-top: 20px;
+    padding-bottom: 20px;
+}
+
+.frame-wall-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.frame-wall-header i {
+    color: #818cf8;
+    font-size: 0.9rem;
+}
+
+.frame-wall-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.frame-wall-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 8px 10px;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s;
+    position: relative;
+}
+
+.frame-wall-item:hover:not(.locked) {
+    transform: translateY(-2px);
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.frame-wall-item.equipped {
+    border-color: rgba(250, 204, 21, 0.4);
+    box-shadow: 0 0 12px rgba(250, 204, 21, 0.1);
+}
+
+.frame-wall-item.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.frame-wall-item.locked:hover {
+    transform: none;
+}
+
+.frame-wall-preview {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    transition: all 0.3s;
+}
+
+.frame-wall-name {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2px;
+}
+
+.frame-wall-desc {
+    font-size: 0.6rem;
+    color: #64748b;
+    text-align: center;
+    margin-bottom: 6px;
+    min-height: 14px;
+}
+
+.frame-wall-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    margin-top: auto;
+    background: rgba(99, 102, 241, 0.12);
+    color: #818cf8;
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: 6px;
+    font-size: 0.6rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.frame-wall-action:hover {
+    background: rgba(99, 102, 241, 0.2);
+}
+
+.frame-wall-action.equipped {
+    background: rgba(250, 204, 21, 0.12);
+    color: #fbbf24;
+    border-color: rgba(250, 204, 21, 0.35);
+}
+
+
+/* ========== BOSS 电影级对战布局 ========== */
+.boss-cinematic-page {
+    overflow: hidden;
+}
+
+.boss-cinematic-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    min-height: 280px;
+    position: relative;
+    background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(15,23,42,0.6), rgba(15,23,42,0.95));
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* 对角线分割线 */
+.boss-cinematic-layout::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: 50%;
+    width: 2px;
+    height: 200%;
+    background: linear-gradient(180deg, transparent, rgba(245,158,11,0.3), rgba(245,158,11,0.1), rgba(245,158,11,0.3), transparent);
+    transform: rotate(0deg);
+    z-index: 1;
+}
+
+.boss-cinematic-stage {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 12px;
+    position: relative;
+}
+
+.boss-cinematic-quiz-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px 12px;
+    position: relative;
+    border-left: 1px solid rgba(255,255,255,0.04);
+    overflow-y: auto;
+    max-height: 400px;
+}
+
+.boss-cinematic-progress {
+    margin-bottom: 6px;
+}
+
+.boss-cinematic-scene {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    position: relative;
+}
+
+/* BOSS区域 - 左上 */
+.boss-cinematic-boss-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    justify-content: flex-start;
+    padding-top: 8px;
+    width: 100%;
+}
+
+.boss-cinematic-boss-visual {
+    margin-bottom: 8px;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.boss-cinematic-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 16px;
+    object-fit: cover;
+    border: 3px solid rgba(239,68,68,0.5);
+    box-shadow: 0 0 20px rgba(239,68,68,0.15);
+}
+
+.boss-cinematic-avatar-fallback {
+    width: 100px;
+    height: 100px;
+    border-radius: 16px;
+    border: 3px solid rgba(239,68,68,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(239,68,68,0.08);
+}
+
+/* VS标志 */
+.boss-cinematic-vs {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+.boss-cinematic-vs span {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: rgba(245,158,11,0.7);
+    text-shadow: 0 0 15px rgba(245,158,11,0.3);
+    letter-spacing: 3px;
+    background: rgba(15,23,42,0.8);
+    padding: 4px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(245,158,11,0.2);
+}
+
+/* 用户区域 - 右下 */
+.boss-cinematic-hero-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    justify-content: flex-end;
+    padding-bottom: 8px;
+    width: 100%;
+}
+
+.boss-cinematic-hero-visual {
+    margin-bottom: 8px;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.boss-cinematic-hero-avatar {
+    width: 55px;
+    height: 55px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 2px solid rgba(52,211,153,0.5);
+    box-shadow: 0 0 12px rgba(52,211,153,0.1);
+}
+
+.boss-cinematic-hero-fallback {
+    width: 55px;
+    height: 55px;
+    border-radius: 12px;
+    border: 2px solid rgba(52,211,153,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(52,211,153,0.06);
+}
+
+/* 名牌 */
+.boss-cinematic-nameplate {
+    margin-bottom: 4px;
+}
+
+.boss-cinematic-name {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+
+.boss-nameplate .boss-cinematic-name {
+    font-size: 0.8rem;
+}
+
+.hero-nameplate .boss-cinematic-name {
+    color: #34d399;
+}
+
+/* HP条 - cinematic */
+.boss-cinematic-hp-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    max-width: 130px;
+}
+
+.boss-cinematic-hp-track {
+    flex: 1;
+    height: 8px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.boss-cinematic-hp-track.rage {
+    animation: boss-hp-rage-pulse 0.8s ease-in-out infinite;
+}
+
+.boss-cinematic-hp-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+
+.boss-cinematic-hp-num {
+    font-size: 0.7rem;
+    font-weight: 700;
+    white-space: nowrap;
+    min-width: 36px;
+    text-align: right;
+}
+
+/* 暴怒覆盖层 */
+.boss-cinematic-rage-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 30%, rgba(239,68,68,0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 1;
+    animation: rage-pulse 2s ease-in-out infinite;
+}
+
+@keyframes rage-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* 暴怒横幅 */
+.boss-cinematic-rage-banner {
+    padding: 6px;
+    text-align: center;
+    background: linear-gradient(90deg, transparent, rgba(239,68,68,0.15), transparent);
+    color: #f87171;
+    font-size: 0.75rem;
+    font-weight: 700;
+    animation: rage-banner-pulse 1s ease-in-out infinite;
+    letter-spacing: 1px;
+    border-top: 1px solid rgba(239,68,68,0.15);
+}
+
+/* 全屏闪光 */
+.boss-cinematic-flash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+/* BOSS答题面板中的题目样式调整 */
+.boss-cinematic-quiz-panel .challenge-question {
+    padding: 12px;
+    margin-bottom: 8px;
+}
+
+.boss-cinematic-quiz-panel .quiz-indo {
+    font-size: 1.1rem;
+}
+
+.boss-cinematic-quiz-panel .quiz-option {
+    padding: 10px 12px;
+    font-size: 0.85rem;
+}
+
+.boss-cinematic-quiz-panel .challenge-option-text {
+    font-size: 0.85rem;
+}
+
+/* ========== BOSS 加载界面 ========== */
+.boss-loading-page {
+    position: relative;
+    min-height: 500px;
+}
+
+.boss-loading-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(15,23,42,0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: opacity 0.4s;
+    backdrop-filter: blur(4px);
+}
+
+.boss-loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.boss-loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255,255,255,0.1);
+    border-top-color: #f59e0b;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.boss-loading-text {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.boss-loading-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 12px;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.boss-loading-visual {
+    margin-bottom: 20px;
+}
+
+.boss-loading-avatar {
+    width: 140px;
+    height: 140px;
+    border-radius: 20px;
+    object-fit: cover;
+    border: 3px solid;
+    box-shadow: 0 0 30px rgba(0,0,0,0.3);
+}
+
+.boss-loading-avatar-fallback {
+    width: 140px;
+    height: 140px;
+    border-radius: 20px;
+    border: 3px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15,23,42,0.5);
+}
+
+.boss-loading-info {
+    text-align: center;
+    width: 100%;
+    max-width: 320px;
+}
+
+.boss-loading-name {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+    text-shadow: 0 0 15px currentColor;
+}
+
+.boss-loading-desc {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin-bottom: 16px;
+}
+
+.boss-loading-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.boss-loading-stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: rgba(30,41,59,0.5);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.04);
+}
+
+.boss-loading-stat-icon {
+    font-size: 1rem;
+    width: 24px;
+    text-align: center;
+}
+
+.boss-loading-stat-info {
+    text-align: left;
+}
+
+.boss-loading-stat-label {
+    font-size: 0.6rem;
+    color: #64748b;
+}
+
+.boss-loading-stat-value {
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.boss-loading-tips {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 16px;
+}
+
+.boss-loading-tip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    font-size: 0.65rem;
+    color: #94a3b8;
+    background: rgba(30,41,59,0.3);
+    border-radius: 6px;
+    text-align: left;
+}
+
+.boss-loading-start-btn {
+    margin-top: 8px;
+    padding: 12px 40px !important;
+    font-size: 1rem !important;
+    letter-spacing: 2px;
+    transition: all 0.3s !important;
+}
+
+.boss-loading-start-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
+}

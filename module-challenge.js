@@ -402,35 +402,35 @@ const ChallengeModule = {
         levelBosses: {
             '0': {
                 mini: { enabled: false },
-                big: { enabled: true, bossLevel: '0', bossHp: 6,  userHp: 3, questionCount: 10, questionRange: [0] }
+                big: { enabled: true, bossLevel: '0', bossHp: 6,  userHp: 3, questionCount: 10, questionRange: [0], rageThreshold: 0.35, rageDamage: 2 }
             },
             '1': {
                 mini: { enabled: false },
-                big: { enabled: true, bossLevel: '1', bossHp: 8,  userHp: 3, questionCount: 12, questionRange: [0, 1] }
+                big: { enabled: true, bossLevel: '1', bossHp: 8,  userHp: 3, questionCount: 12, questionRange: [0, 1], rageThreshold: 0.3, rageDamage: 2 }
             },
             '2': {
                 mini: { enabled: false },
-                big: { enabled: true, bossLevel: '2', bossHp: 10, userHp: 3, questionCount: 14, questionRange: [0, 1, 2] }
+                big: { enabled: true, bossLevel: '2', bossHp: 10, userHp: 3, questionCount: 14, questionRange: [0, 1, 2], rageThreshold: 0.3, rageDamage: 2 }
             },
             '3': {
                 mini: { enabled: false },
-                big: { enabled: true, bossLevel: '3', bossHp: 12, userHp: 2, questionCount: 16, questionRange: [0, 1, 2, 3] }
+                big: { enabled: true, bossLevel: '3', bossHp: 12, userHp: 2, questionCount: 16, questionRange: [0, 1, 2, 3], rageThreshold: 0.25, rageDamage: 2 }
             },
             '4': {
-                mini: { enabled: true, count: 3, interval: 20, bossLevel: '0', bossHp: 5,  userHp: 3, questionCount: 8,  questionRange: [0, 1, 2, 3, 4] },
-                big: { enabled: true, bossLevel: '4', bossHp: 12, userHp: 2, questionCount: 16, questionRange: [0, 1, 2, 3, 4] }
+                mini: { enabled: true, count: 3, interval: 20, bossLevel: '0', bossHp: 5,  userHp: 3, questionCount: 8,  questionRange: [0, 1, 2, 3, 4], rageThreshold: 0.35, rageDamage: 2 },
+                big: { enabled: true, bossLevel: '4', bossHp: 12, userHp: 2, questionCount: 16, questionRange: [0, 1, 2, 3, 4], rageThreshold: 0.25, rageDamage: 2 }
             },
             '5': {
-                mini: { enabled: true, count: 2, interval: 21, bossLevel: '1', bossHp: 6,  userHp: 3, questionCount: 10, questionRange: [0, 1, 2, 3, 4, 5] },
-                big: { enabled: true, bossLevel: '5', bossHp: 15, userHp: 2, questionCount: 18, questionRange: [0, 1, 2, 3, 4, 5] }
+                mini: { enabled: true, count: 2, interval: 21, bossLevel: '1', bossHp: 6,  userHp: 3, questionCount: 10, questionRange: [0, 1, 2, 3, 4, 5], rageThreshold: 0.35, rageDamage: 2 },
+                big: { enabled: true, bossLevel: '5', bossHp: 15, userHp: 2, questionCount: 18, questionRange: [0, 1, 2, 3, 4, 5], rageThreshold: 0.25, rageDamage: 3 }
             },
             '6': {
-                mini: { enabled: true, count: 2, interval: 16, bossLevel: '2', bossHp: 8,  userHp: 2, questionCount: 12, questionRange: [0, 1, 2, 3, 4, 5, 6] },
-                big: { enabled: true, bossLevel: '6', bossHp: 18, userHp: 2, questionCount: 20, questionRange: [0, 1, 2, 3, 4, 5, 6] }
+                mini: { enabled: true, count: 2, interval: 16, bossLevel: '2', bossHp: 8,  userHp: 2, questionCount: 12, questionRange: [0, 1, 2, 3, 4, 5, 6], rageThreshold: 0.3, rageDamage: 2 },
+                big: { enabled: true, bossLevel: '6', bossHp: 18, userHp: 2, questionCount: 20, questionRange: [0, 1, 2, 3, 4, 5, 6], rageThreshold: 0.2, rageDamage: 3 }
             },
             '7': {
-                mini: { enabled: true, count: 2, interval: 10, bossLevel: '3', bossHp: 10, userHp: 2, questionCount: 14, questionRange: [0, 1, 2, 3, 4, 5, 6, 7] },
-                big: { enabled: true, bossLevel: '7', bossHp: 22, userHp: 1, questionCount: 25, questionRange: [0, 1, 2, 3, 4, 5, 6, 7] }
+                mini: { enabled: true, count: 2, interval: 10, bossLevel: '3', bossHp: 10, userHp: 2, questionCount: 14, questionRange: [0, 1, 2, 3, 4, 5, 6, 7], rageThreshold: 0.3, rageDamage: 2 },
+                big: { enabled: true, bossLevel: '7', bossHp: 22, userHp: 1, questionCount: 25, questionRange: [0, 1, 2, 3, 4, 5, 6, 7], rageThreshold: 0.2, rageDamage: 3 }
             }
         }
     },
@@ -857,21 +857,20 @@ const ChallengeModule = {
 
     // 称号佩戴
     equipTitle(titleId) {
-        if (!this._earnedTitles[titleId]) return;
-        this._equippedTitleId = titleId;
-        // 始终保存到localStorage
-        try { localStorage.setItem('challenge_equipped_title', titleId); } catch(e) {}
-        // 尝试同步到后端
-        if (typeof API !== 'undefined' && API.request) {
-            API.request('user/titles/equip', {
-                method: 'POST',
-                body: JSON.stringify({ titleId }),
-            }).catch(() => {});
-        }
-        // 显示提示
-        const def = this._titleDefs[titleId];
-        if (def) {
-            // 简单提示
+        // 点击已佩戴的称号 → 取消佩戴
+        if (this._equippedTitleId === titleId) {
+            this._equippedTitleId = null;
+            try { localStorage.removeItem('challenge_equipped_title'); } catch(e) {}
+            if (typeof API !== 'undefined' && API.request) {
+                API.request('user/titles/equip', { method: 'POST', body: JSON.stringify({ titleId: null }) }).catch(() => {});
+            }
+        } else {
+            if (!this._earnedTitles[titleId]) return;
+            this._equippedTitleId = titleId;
+            try { localStorage.setItem('challenge_equipped_title', titleId); } catch(e) {}
+            if (typeof API !== 'undefined' && API.request) {
+                API.request('user/titles/equip', { method: 'POST', body: JSON.stringify({ titleId }) }).catch(() => {});
+            }
         }
         // 刷新称号墙
         const subContent = document.getElementById('challenge-sub-content');
@@ -1020,28 +1019,50 @@ const ChallengeModule = {
 
     /** 在称号墙中显示边框选择区域 */
     _renderFrameSelector(container) {
-        const unlocked = this._getUnlockedFrames();
-        if (unlocked.length === 0) return ''; // 没有解锁任何边框则不显示
+        const allFrames = this._frameDefs;
+        const unlockedIds = this._getUnlockedFrames().map(f => f.id);
 
         let html = `
-            <div style="margin-top:16px;padding:12px;background:rgba(15,23,42,0.6);border-radius:12px;border:1px solid rgba(99,102,241,0.15);">
-                <div style="font-size:0.78rem;color:#94a3b8;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
-                    <i class="fas fa-border-all" style="color:#818cf8;"></i> 关卡边框
+            <div class="frame-wall-section">
+                <div class="frame-wall-header">
+                    <i class="fas fa-border-all"></i>
+                    <span>关卡边框</span>
                 </div>
-                <div style="display:flex;flex-wrap:wrap;gap:8px;">
-                    <div class="frame-option" onclick="ChallengeModule._equipFrame(null)" 
-                         style="padding:6px 12px;border-radius:8px;border:2px solid ${!this._equippedFrameId ? '#6366f1' : 'rgba(99,102,241,0.2)'};background:${!this._equippedFrameId ? 'rgba(99,102,241,0.1)' : 'transparent'};cursor:pointer;font-size:0.72rem;color:#94a3b8;transition:all 0.2s;">
-                        无边框
-                    </div>
-                    ${unlocked.map(f => `
-                        <div class="frame-option" onclick="ChallengeModule._equipFrame('${f.id}')"
-                             style="padding:6px 12px;border-radius:8px;border:2px solid ${f.equipped ? f.color : 'rgba(99,102,241,0.2)'};background:${f.equipped ? f.color + '15' : 'transparent'};cursor:pointer;font-size:0.72rem;color:${f.color};font-weight:${f.equipped ? '700' : '400'};transition:all 0.2s;">
-                            <i class="fas fa-square" style="margin-right:4px;font-size:0.6rem;"></i>${f.name}
+                <div class="frame-wall-grid">
+                    <div class="frame-wall-item ${!this._equippedFrameId ? 'equipped' : ''}" onclick="ChallengeModule._equipFrame(null)">
+                        <div class="frame-wall-preview" style="border:2px dashed rgba(148,163,184,0.3);background:transparent;">
+                            <i class="fas fa-ban" style="font-size:1.2rem;color:#64748b;"></i>
                         </div>
-                    `).join('')}
-                </div>
-            </div>
+                        <div class="frame-wall-name" style="color:#94a3b8;">无边框</div>
+                        <div class="frame-wall-desc">默认样式</div>
+                        <div class="frame-wall-action ${!this._equippedFrameId ? 'equipped' : ''}">
+                            <i class="fas ${!this._equippedFrameId ? 'fa-times-circle' : 'fa-hand-pointer'}"></i> ${!this._equippedFrameId ? '点击卸下' : '使用'}
+                        </div>
+                    </div>
         `;
+
+        for (const [key, frame] of Object.entries(allFrames)) {
+            const isUnlocked = unlockedIds.includes(frame.id);
+            const isEquipped = this._equippedFrameId === frame.id;
+            html += `
+                <div class="frame-wall-item ${isUnlocked ? '' : 'locked'} ${isEquipped ? 'equipped' : ''}" onclick="${isUnlocked ? `ChallengeModule._equipFrame('${frame.id}')` : ''}">
+                    <div class="frame-wall-preview" style="border:2px solid ${isUnlocked ? frame.color : 'rgba(148,163,184,0.2)'};background:${isUnlocked ? frame.gradient : 'rgba(148,163,184,0.05)'};${isEquipped ? 'box-shadow:0 0 12px ' + frame.color + '40;' : ''}">
+                        ${isUnlocked
+                            ? `<i class="fas fa-square" style="font-size:1.2rem;color:${frame.color};filter:drop-shadow(0 0 4px ${frame.color});"></i>`
+                            : `<i class="fas fa-lock" style="font-size:1rem;color:#475569;"></i>`
+                        }
+                    </div>
+                    <div class="frame-wall-name" style="color:${isUnlocked ? frame.color : '#475569'};">${isUnlocked ? frame.name : '???'}</div>
+                    <div class="frame-wall-desc">${isUnlocked ? frame.desc : '击败对应BOSS解锁'}</div>
+                    ${isUnlocked ? `
+                    <div class="frame-wall-action ${isEquipped ? 'equipped' : ''}">
+                        <i class="fas ${isEquipped ? 'fa-times-circle' : 'fa-hand-pointer'}"></i> ${isEquipped ? '点击卸下' : '使用'}
+                    </div>` : ''}
+                </div>
+            `;
+        }
+
+        html += `</div></div>`;
         return html;
     },
 
@@ -1143,6 +1164,9 @@ const ChallengeModule = {
             userHp: isBoss ? bossParams.userHp : 0,
             userMaxHp: isBoss ? bossParams.userHp : 0,
             bossPhase: isBoss ? 'normal' : null, // normal | rage | defeated
+            rageThreshold: isBoss ? (bossParams.rageThreshold || 0.25) : 0,
+            rageDamage: isBoss ? (bossParams.rageDamage || 2) : 0,
+            lastStandUsed: false,
             userTookDamage: false, // 追踪用户是否掉过血（用于完美击杀称号）
             currentStreak: 0, // 当前连胜（连续答对题数）
             maxStreak: 0, // 本关最大连胜
@@ -1382,6 +1406,98 @@ const ChallengeModule = {
         if (state.phase === 'ready') {
             const stage = this.allStages.find(s => s.id === state.stageId);
             const stageName = stage ? stage.name : ('\u7b2c' + stageIndex + '\u5173');
+
+            if (state.isBoss) {
+                // BOSS \u5173\u5361\u7279\u6b8a\u51c6\u5907\u754c\u9762
+                const bossDef = state.bossDef || {};
+                const bossColor = bossDef.color || '#ef4444';
+                const bossName = bossDef.name || 'BOSS';
+                const bossIcon = bossDef.icon || 'fa-skull';
+                const bossDesc = bossDef.desc || '';
+                const bossImage = bossDef.image || '';
+                const ragePct = Math.round((state.rageThreshold || 0.25) * 100);
+                container.innerHTML = `
+                    <div class="challenge-play-page boss-loading-page">
+                        <div class="boss-loading-overlay" id="boss-loading-overlay">
+                            <div class="boss-loading-content">
+                                <div class="boss-loading-spinner"></div>
+                                <div class="boss-loading-text">\u8f7d\u5165\u4e2d...</div>
+                            </div>
+                        </div>
+                        <div class="boss-loading-main">
+                            <div class="boss-loading-visual">
+                                ${bossImage ? `<img src="${bossImage}" class="boss-loading-avatar" style="border-color:${bossColor};" alt="${bossName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                                <div class="boss-loading-avatar-fallback" style="border-color:${bossColor};"><i class="fas ${bossIcon}" style="color:${bossColor};font-size:3rem;"></i></div>` : `<div class="boss-loading-avatar-fallback" style="border-color:${bossColor};"><i class="fas ${bossIcon}" style="color:${bossColor};font-size:3rem;"></i></div>`}
+                            </div>
+                            <div class="boss-loading-info">
+                                <div class="boss-loading-name" style="color:${bossColor};">${bossName}</div>
+                                <div class="boss-loading-desc">${bossDesc}</div>
+                                <div class="boss-loading-stats">
+                                    <div class="boss-loading-stat">
+                                        <div class="boss-loading-stat-icon" style="color:#f87171;"><i class="fas fa-heart"></i></div>
+                                        <div class="boss-loading-stat-info">
+                                            <div class="boss-loading-stat-label">BOSS \u8840\u91cf</div>
+                                            <div class="boss-loading-stat-value" style="color:${bossColor};">${state.bossMaxHp}</div>
+                                        </div>
+                                    </div>
+                                    <div class="boss-loading-stat">
+                                        <div class="boss-loading-stat-icon" style="color:#34d399;"><i class="fas fa-shield-halved"></i></div>
+                                        <div class="boss-loading-stat-info">
+                                            <div class="boss-loading-stat-label">\u4f60\u7684\u751f\u547d</div>
+                                            <div class="boss-loading-stat-value" style="color:#34d399;">${state.userMaxHp}</div>
+                                        </div>
+                                    </div>
+                                    <div class="boss-loading-stat">
+                                        <div class="boss-loading-stat-icon" style="color:#fbbf24;"><i class="fas fa-fire"></i></div>
+                                        <div class="boss-loading-stat-info">
+                                            <div class="boss-loading-stat-label">\u66b4\u6012\u89e6\u53d1</div>
+                                            <div class="boss-loading-stat-value" style="color:#fbbf24;">HP ${ragePct}%</div>
+                                        </div>
+                                    </div>
+                                    <div class="boss-loading-stat">
+                                        <div class="boss-loading-stat-icon" style="color:#f87171;"><i class="fas fa-bolt"></i></div>
+                                        <div class="boss-loading-stat-info">
+                                            <div class="boss-loading-stat-label">\u66b4\u6012\u4f24\u5bb3</div>
+                                            <div class="boss-loading-stat-value" style="color:#f87171;">\u00d7${state.rageDamage || 2}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="boss-loading-tips">
+                                    <div class="boss-loading-tip"><i class="fas fa-lightbulb" style="color:#fbbf24;"></i> \u7b54\u5bf9\u6263\u51cfBOSS\u8840\u91cf\uff0c\u7b54\u9519\u6263\u51cf\u81ea\u5df1\u751f\u547d</div>
+                                    <div class="boss-loading-tip"><i class="fas fa-fire" style="color:#f87171;"></i> BOSS \u66b4\u6012\u540e\u4f24\u5bb3\u7ffb\u500d\uff0c\u8c28\u614e\u7b54\u9898!</div>
+                                    <div class="boss-loading-tip"><i class="fas fa-star" style="color:#fbbf24;"></i> \u6700\u540e\u4e00\u6ef4\u8840\u89e6\u53d1\u6700\u540e\u4e00\u640f\uff0c\u53cd\u51fbBOSS!</div>
+                                </div>
+                                <button class="ch-start-btn boss-loading-start-btn" onclick="ChallengeModule._startBossWithLoading()" style="background:linear-gradient(135deg,${bossColor},${bossColor}cc);border-color:${bossColor};">
+                                    <i class="fas fa-swords"></i> \u6311\u6218 BOSS
+                                </button>
+                            </div>
+                        </div>
+                        <div style="margin-top:16px;display:flex;justify-content:center;">
+                            <button style="background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:0.78rem;display:flex;align-items:center;gap:5px;" onclick="ChallengeModule.confirmExit()">
+                                <i class="fas fa-arrow-left"></i> \u8fd4\u56de\u5173\u5361
+                            </button>
+                        </div>
+                    </div>`;
+
+                // \u9884\u52a0\u8f7dBOSS\u56fe\u7247
+                if (bossImage) {
+                    const img = new Image();
+                    img.onload = () => {
+                        const overlay = document.getElementById('boss-loading-overlay');
+                        if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.remove(), 400); }
+                    };
+                    img.onerror = () => {
+                        const overlay = document.getElementById('boss-loading-overlay');
+                        if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.remove(), 400); }
+                    };
+                    img.src = bossImage;
+                    // \u8d85\u65f6\u81ea\u52a8\u9690\u85cf\u52a0\u8f7d
+                    setTimeout(() => {
+                        const overlay = document.getElementById('boss-loading-overlay');
+                        if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.remove(), 400); }
+                    }, 3000);
+                }
+            } else {
             container.innerHTML = `
                 <div class="challenge-play-page">
                     <div class="challenge-play-header">
@@ -1394,7 +1510,7 @@ const ChallengeModule = {
                         <div class="ch-ready-rules">
                             <div class="ch-ready-rule"><i class="fas fa-check"></i> \u4ea4\u5377\u540e\u624d\u516c\u5e03\u6210\u7ee9</div>
                             <div class="ch-ready-rule"><i class="fas fa-check"></i> \u53ef\u8df3\u8fc7\u4e0d\u4f1a\u7684\u9898</div>
-                            <div class="ch-ready-rule"><i class="fas fa-check"></i> \u53ef\u8fd4\u56de\u68c0\u67e5\u5df2\u7b54\u9898\u76ee</div>
+                            <div class="ch-ready-rule"><i class="fas fa-check"></i> \u53ef\u8fd4\u56de\u68c3\u67e5\u5df2\u7b54\u9898\u76ee</div>
                         </div>
                         <button class="ch-start-btn" onclick="ChallengeModule.startChallenge()">
                             <i class="fas fa-rocket"></i> \u5f00\u59cb\u95ef\u5173
@@ -1409,6 +1525,7 @@ const ChallengeModule = {
             `;
             return;
         }
+            } // end isBoss else
 
         // ===== playing 状态：所有题已浏览完 → 提示交卷 =====
         if (state.currentIndex >= state.totalQuestions) {
@@ -1603,23 +1720,40 @@ const ChallengeModule = {
         }
 
         container.innerHTML = `
-            <div class="challenge-play-page">
+            <div class="challenge-play-page ${state.isBoss ? 'boss-cinematic-page' : ''}">
                 <div class="challenge-play-header">
                     <div class="challenge-play-title">\u7b2c${stageIndex}\u5173</div>
                     <div class="challenge-timer"><i class="fas fa-clock"></i> ${mm}:${ss}</div>
                 </div>
+                ${state.isBoss ? `
+                <div class="boss-cinematic-layout">
+                    <div class="boss-cinematic-stage">
+                        ${this._renderBossHpBars(state)}
+                    </div>
+                    <div class="boss-cinematic-quiz-panel">
+                        <div class="boss-cinematic-progress">
+                            <div class="challenge-progress-bar">
+                                <div class="challenge-progress-fill" style="width:${progressPct}%"></div>
+                            </div>
+                            <div class="challenge-progress-text">${current} / ${total}</div>
+                        </div>
+                        ${navBarHtml}
+                        <div class="challenge-question-area" id="challenge-question" style="margin:0;">
+                            ${questionContent}
+                        </div>
+                    </div>
+                </div>
+                ` : `
                 ${this._renderBossHpBars(state)}
-
                 <div class="challenge-progress-bar">
                     <div class="challenge-progress-fill" style="width:${progressPct}%"></div>
                 </div>
                 <div class="challenge-progress-text">${current} / ${total}</div>
-
                 ${navBarHtml}
-
                 <div class="challenge-question-area" id="challenge-question">
                     ${questionContent}
                 </div>
+                `}
 
                 ${showSliders ? `<div style="margin:16px 0;padding:16px 20px;border-radius:14px;border:1px dashed var(--border-subtle);background:var(--accent-subtle);display:flex;align-items:center;gap:16px;">
                     <div class="sliders-col" style="flex:1;min-width:0;">
@@ -1737,7 +1871,7 @@ const ChallengeModule = {
             const bossResult = this._bossHandleAnswer(state, isCorrect);
             // 播放受击动画
             if (bossResult.damageType) {
-                this._bossDamageEffect(bossResult.damageType);
+                this._bossDamageEffect(bossResult.damageType, bossResult);
             }
             // 更新BOSS HP显示
             this._updateBossHpDisplay(state);
@@ -1839,6 +1973,14 @@ const ChallengeModule = {
         window.addEventListener('beforeunload', this._beforeUnloadHandler);
         const subContent = document.getElementById('challenge-sub-content');
         if (subContent) this._renderPlayArea(subContent);
+    },
+
+    /** BOSS \u52a0\u8f7d\u5b8c\u6210\u540e\u5f00\u59cb\u6218\u6597 */
+    _startBossWithLoading() {
+        // \u786e\u4fdd\u52a0\u8f7d\u754c\u9762\u5df2\u6d88\u5931
+        const overlay = document.getElementById('boss-loading-overlay');
+        if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.remove(), 400); }
+        this.startChallenge();
     },
 
     // 跳过当前题
@@ -2283,56 +2425,79 @@ const ChallengeModule = {
         const bossMaxHp = typeof state.bossMaxHp === 'number' ? state.bossMaxHp : 1;
         const userHp = typeof state.userHp === 'number' ? state.userHp : 0;
         const userMaxHp = typeof state.userMaxHp === 'number' ? state.userMaxHp : 1;
-        const isRage = bossHp <= bossMaxHp * 0.25 && bossHp > 0;
+        const isRage = state.bossPhase === 'rage';
 
-        // 用户角色：根据当前关卡等级取对应形象
+        // 用户角色
         const heroLevel = String(state.bossLevel || 0);
         const heroDef = this._heroDefs[heroLevel] || this._heroDefs['0'];
         const heroColor = heroDef.color || '#60a5fa';
         const heroName = heroDef.name || '\u52c7\u8005';
 
-        // BOSS形象图 - 小尺寸
-        const bossImg = bossDef.image
-            ? `<img src="${bossDef.image}" id="boss-battle-img" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid ${bossColor};${isRage ? 'animation:boss-shake 0.3s ease-in-out infinite;' : ''}" alt="${bossName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><div style="display:none;width:40px;height:40px;border-radius:50%;border:2px solid ${bossColor};align-items:center;justify-content:center;${isRage ? 'animation:boss-shake 0.3s ease-in-out infinite;' : ''}"><i class="fas ${bossDef.icon || 'fa-skull'}" style="color:${bossColor};font-size:16px;"></i></div>`
-            : `<div style="width:40px;height:40px;border-radius:50%;border:2px solid ${bossColor};display:flex;align-items:center;justify-content:center;${isRage ? 'animation:boss-shake 0.3s ease-in-out infinite;' : ''}"><i class="fas ${bossDef.icon || 'fa-skull'}" style="color:${bossColor};font-size:16px;"></i></div>`;
+        // 暴怒状态下的视觉增强
+        const rageGlow = isRage ? `filter:drop-shadow(0 0 20px ${bossColor});` : '';
+        const rageShake = isRage ? 'animation:boss-shake 0.3s ease-in-out infinite;' : '';
+        const rageOverlay = isRage ? `<div class="boss-cinematic-rage-overlay"></div>` : '';
+        const rageBanner = isRage ? `<div class="boss-cinematic-rage-banner"><i class="fas fa-fire"></i> BOSS \u66b4\u6012\u4e2d! \u4f24\u5bb3\u00d7${state.rageDamage || 2}</div>` : '';
 
-        // 用户形象图 - 小尺寸
+        // BOSS形象 - 大尺寸（压倒感）
+        const bossImg = bossDef.image
+            ? `<img src="${bossDef.image}" id="boss-battle-img" class="boss-cinematic-avatar" style="${rageGlow}${rageShake}" alt="${bossName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><div style="display:none;class boss-cinematic-avatar-fallback;${rageShake}"><i class="fas ${bossDef.icon || 'fa-skull'}" style="color:${bossColor};font-size:4rem;"></i></div>`
+            : `<div class="boss-cinematic-avatar-fallback" style="${rageShake}"><i class="fas ${bossDef.icon || 'fa-skull'}" style="color:${bossColor};font-size:4rem;"></i></div>`;
+
+        // 用户形象 - 中等尺寸
         const heroImg = heroDef.image
-            ? `<img src="${heroDef.image}" id="hero-battle-img" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid ${heroColor};" alt="${heroName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><div style="display:none;width:36px;height:36px;border-radius:50%;border:2px solid ${heroColor};display:flex;align-items:center;justify-content:center;"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};font-size:14px;"></i></div>`
-            : `<div style="width:36px;height:36px;border-radius:50%;border:2px solid ${heroColor};display:flex;align-items:center;justify-content:center;"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};font-size:14px;"></i></div>`;
+            ? `<img src="${heroDef.image}" id="hero-battle-img" class="boss-cinematic-hero-avatar" alt="${heroName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><div style="display:none;class boss-cinematic-hero-fallback;"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};font-size:1.5rem;"></i></div>`
+            : `<div class="boss-cinematic-hero-fallback"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};font-size:1.5rem;"></i></div>`;
+
+        // HP 百分比
+        const bossHpPct = bossMaxHp > 0 ? (bossHp / bossMaxHp * 100) : 0;
+        const userHpPct = userMaxHp > 0 ? (userHp / userMaxHp * 100) : 0;
+        const bossHpColor = isRage ? '#ff4444' : bossColor;
+        const userHpColor = userHp / userMaxHp <= 0.3 ? '#f87171' : '#34d399';
 
         return `
-        <div class="boss-battle-ui" id="boss-battle-ui">
-            <!-- 紧凑型 VS 对峙区域：头像+血条一体化 -->
-            <div class="boss-vs-area" style="display:flex;align-items:center;gap:8px;padding:6px 10px;margin-bottom:6px;background:rgba(255,255,255,0.03);border-radius:10px;">
-                <div class="boss-vs-hero" id="boss-vs-hero" style="display:flex;align-items:center;gap:6px;flex:1;min-width:0;">
-                    ${heroImg}
-                    <div style="flex:1;min-width:0;">
-                        <div style="font-size:0.6rem;color:#64748b;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${heroName}</div>
-                        <div style="display:flex;align-items:center;gap:4px;">
-                            <div style="flex:1;height:4px;background:rgba(248,113,113,0.15);border-radius:2px;overflow:hidden;">
-                                <div class="user-hp-fill" id="user-hp-fill" style="height:100%;background:${userHp/userMaxHp < 0.3 ? '#f87171' : '#34d399'};border-radius:2px;transition:width 0.4s ease;width:${userMaxHp > 0 ? (userHp / userMaxHp * 100) : 0}%;"></div>
-                            </div>
-                            <span class="user-hp-text" style="font-size:0.55rem;color:#64748b;white-space:nowrap;">${userHp}/${userMaxHp}</span>
+        <div class="boss-cinematic-container" id="boss-battle-ui">
+            ${rageOverlay}
+            <!-- 对角线分屏：左上BOSS 右下用户 -->
+            <div class="boss-cinematic-scene">
+                <!-- BOSS 区域 - 左上 -->
+                <div class="boss-cinematic-boss-zone">
+                    <div class="boss-cinematic-boss-visual">
+                        ${bossImg}
+                    </div>
+                    <div class="boss-cinematic-nameplate boss-nameplate">
+                        <span class="boss-cinematic-name">${bossName}${isRage ? ' <i class="fas fa-bolt" style="color:#ff4444;"></i>' : ''}</span>
+                    </div>
+                    <div class="boss-cinematic-hp-bar">
+                        <div class="boss-cinematic-hp-track boss-hp-track ${isRage ? 'rage' : ''}">
+                            <div class="boss-cinematic-hp-fill boss-hp-fill" id="boss-hp-fill" style="width:${bossHpPct}%;background:${bossHpColor};"></div>
                         </div>
+                        <span class="boss-hp-text boss-cinematic-hp-num" style="color:${bossColor};">${bossHp}<span style="opacity:0.5;">/${bossMaxHp}</span></span>
                     </div>
                 </div>
-                <div style="font-size:0.7rem;font-weight:800;color:#f59e0b;text-shadow:0 0 8px rgba(245,158,11,0.4);letter-spacing:1px;flex-shrink:0;">VS</div>
-                <div class="boss-vs-boss" id="boss-vs-boss" style="display:flex;align-items:center;gap:6px;flex:1;min-width:0;flex-direction:row-reverse;">
-                    ${bossImg}
-                    <div style="flex:1;min-width:0;text-align:right;">
-                        <div style="font-size:0.6rem;color:#64748b;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${bossName}${isRage ? ' <span style="color:#f87171;">\u26a1</span>' : ''}</div>
-                        <div style="display:flex;align-items:center;gap:4px;flex-direction:row-reverse;">
-                            <div style="flex:1;height:4px;background:rgba(239,68,68,0.15);border-radius:2px;overflow:hidden;${isRage ? 'animation:boss-hp-rage-pulse 0.8s ease-in-out infinite;' : ''}">
-                                <div class="boss-hp-fill" id="boss-hp-fill" style="height:100%;background:${bossColor};border-radius:2px;transition:width 0.4s ease;width:${bossMaxHp > 0 ? (bossHp / bossMaxHp * 100) : 0}%;"></div>
-                            </div>
-                            <span class="boss-hp-text" style="font-size:0.55rem;color:#64748b;white-space:nowrap;">${bossHp}/${bossMaxHp}</span>
+
+                <!-- VS 标志 -->
+                <div class="boss-cinematic-vs">
+                    <span>VS</span>
+                </div>
+
+                <!-- 用户区域 - 右下 -->
+                <div class="boss-cinematic-hero-zone">
+                    <div class="boss-cinematic-hero-visual">
+                        ${heroImg}
+                    </div>
+                    <div class="boss-cinematic-nameplate hero-nameplate">
+                        <span class="boss-cinematic-name">${heroName}</span>
+                    </div>
+                    <div class="boss-cinematic-hp-bar">
+                        <div class="boss-cinematic-hp-track user-hp-track">
+                            <div class="boss-cinematic-hp-fill user-hp-fill" id="user-hp-fill" style="width:${userHpPct}%;background:${userHpColor};"></div>
                         </div>
+                        <span class="user-hp-text boss-cinematic-hp-num" style="color:${userHpColor};">${userHp}<span style="opacity:0.5;">/${userMaxHp}</span></span>
                     </div>
                 </div>
             </div>
-
-            ${isRage ? '<div class="boss-rage-banner"><i class="fas fa-fire"></i> BOSS 暴怒中!</div>' : ''}
+            ${rageBanner}
         </div>`;
     },
 
@@ -2341,10 +2506,13 @@ const ChallengeModule = {
      * @returns {{ gameOver: boolean, result: 'win'|'lose'|null, damageType: 'boss'|'user'|null }}
      */
     _bossHandleAnswer(state, isCorrect) {
-        if (!state.isBoss) return { gameOver: false, result: null, damageType: null };
+        if (!state.isBoss) return { gameOver: false, result: null, damageType: null, damage: 0, isLastStand: false, isRageHit: false };
 
         let damageType = null;
         let result = null;
+        let damage = 0;
+        let isLastStand = false;
+        let isRageHit = false;
 
         if (isCorrect) {
             // 答对：扣BOSS 1 HP
@@ -2353,31 +2521,53 @@ const ChallengeModule = {
             state.currentStreak++;
             state.maxStreak = Math.max(state.maxStreak, state.currentStreak);
             damageType = 'boss';
+            damage = 1;
 
             // 检查BOSS是否被击败
             if (state.bossHp <= 0) {
                 state.bossPhase = 'defeated';
                 result = 'win';
             }
-            // 检查是否进入暴怒
-            else if (state.bossHp <= state.bossMaxHp * 0.25) {
+            // 检查是否进入暴怒（使用后台配置的阈值）
+            else if (state.bossPhase === 'normal' && state.bossHp <= state.bossMaxHp * state.rageThreshold) {
                 state.bossPhase = 'rage';
             }
         } else {
-            // 答错：扣用户 1 HP
-            state.userHp = Math.max(0, state.userHp - 1);
+            // 答错：计算伤害
+            let dmgToUser = 1;
             state.currentStreak = 0;
             state.userTookDamage = true;
-            damageType = 'user';
 
-            // 检查用户是否被击败
-            if (state.userHp <= 0) {
-                result = 'lose';
+            // 暴怒状态下伤害翻倍
+            if (state.bossPhase === 'rage') {
+                dmgToUser = state.rageDamage;
+                isRageHit = true;
+            }
+
+            // 最后一搏：用户剩余1HP时，答错不致死（仅一次）
+            if (state.userHp <= 1 && !state.lastStandUsed) {
+                state.lastStandUsed = true;
+                isLastStand = true;
+                damageType = 'lastStand';
+                damage = 0; // 实际不扣血
+                // 最后一搏：反击！对BOSS造成1点伤害
+                state.bossHp = Math.max(0, state.bossHp - 1);
+                if (state.bossHp <= 0) {
+                    state.bossPhase = 'defeated';
+                    result = 'win';
+                }
+            } else {
+                state.userHp = Math.max(0, state.userHp - dmgToUser);
+                damageType = 'user';
+                damage = dmgToUser;
+                if (state.userHp <= 0) {
+                    result = 'lose';
+                }
             }
         }
 
         const gameOver = result !== null;
-        return { gameOver, result, damageType };
+        return { gameOver, result, damageType, damage, isLastStand, isRageHit };
     },
 
     /**
@@ -2385,135 +2575,129 @@ const ChallengeModule = {
      */
     _bossDamageEffect(damageType) {
         if (!damageType) return;
-        const heroEl = document.getElementById('boss-vs-hero');
-        const bossEl = document.getElementById('boss-vs-boss');
-        const playPage = document.querySelector('.challenge-play-page');
+        const playPage = document.querySelector('.boss-cinematic-page, .challenge-play-page');
+        const bossVisual = document.querySelector('.boss-cinematic-boss-visual');
+        const heroVisual = document.querySelector('.boss-cinematic-hero-visual');
 
-        // 创建全屏闪屏元素
+        // \u521b\u5efa\u5168\u5c4f\u95ea\u5c4f\u5143\u7d20
         const flashOverlay = document.createElement('div');
-        flashOverlay.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:50;opacity:0;transition:opacity 0.15s;';
+        flashOverlay.className = 'boss-cinematic-flash';
         if (playPage) {
             playPage.style.position = 'relative';
             playPage.appendChild(flashOverlay);
         }
 
         if (damageType === 'boss') {
-            // ===== 用户攻击 BOSS =====
-            // 用户冲刺 + 缩放
-            if (heroEl) {
-                heroEl.style.transition = 'transform 0.15s ease';
-                heroEl.style.transform = 'translateX(20px) scale(1.3)';
-                setTimeout(() => {
-                    heroEl.style.transition = 'transform 0.3s ease';
-                    heroEl.style.transform = '';
-                }, 150);
+            // ===== \u7528\u6237\u653b\u51fb BOSS =====
+            if (heroVisual) {
+                heroVisual.style.transition = 'transform 0.15s ease';
+                heroVisual.style.transform = 'translateX(15px) scale(1.2)';
+                setTimeout(() => { heroVisual.style.transform = ''; }, 200);
             }
-            // BOSS 受伤延迟
             setTimeout(() => {
-                // 红色闪屏
                 if (flashOverlay.parentElement) {
-                    flashOverlay.style.background = 'radial-gradient(circle, rgba(255,100,50,0.3) 0%, transparent 70%)';
+                    flashOverlay.style.background = 'radial-gradient(circle at 25% 25%, rgba(255,100,50,0.25) 0%, transparent 60%)';
                     flashOverlay.style.opacity = '1';
                     setTimeout(() => { flashOverlay.style.opacity = '0'; }, 150);
                 }
-                // BOSS 击退 + 闪白
-                if (bossEl) {
-                    bossEl.style.transition = 'transform 0.1s ease, filter 0.1s ease';
-                    bossEl.style.transform = 'translateX(-8px) scale(0.85)';
-                    bossEl.style.filter = 'brightness(3) saturate(0.5)';
+                if (bossVisual) {
+                    bossVisual.style.transition = 'transform 0.1s ease, filter 0.1s ease';
+                    bossVisual.style.transform = 'translateX(-8px) scale(0.85)';
+                    bossVisual.style.filter = 'brightness(3) saturate(0.5)';
                     setTimeout(() => {
-                        bossEl.style.transform = 'translateX(4px) scale(1.05)';
-                        bossEl.style.filter = 'brightness(1.5)';
-                        setTimeout(() => {
-                            bossEl.style.transition = 'transform 0.3s ease, filter 0.3s ease';
-                            bossEl.style.transform = '';
-                            bossEl.style.filter = '';
-                        }, 100);
+                        bossVisual.style.transform = 'translateX(4px) scale(1.05)';
+                        bossVisual.style.filter = 'brightness(1.5)';
+                        setTimeout(() => { bossVisual.style.transition = ''; bossVisual.style.transform = ''; bossVisual.style.filter = ''; }, 100);
                     }, 100);
                 }
-                // BOSS HP条闪白
                 const bossHpFill = document.getElementById('boss-hp-fill');
-                if (bossHpFill) {
-                    bossHpFill.style.filter = 'brightness(2.5)';
-                    setTimeout(() => { bossHpFill.style.filter = ''; }, 200);
-                }
-                // 屏幕微震
-                if (playPage) {
-                    playPage.style.animation = 'screen-shake 0.25s ease';
-                    setTimeout(() => playPage.style.animation = '', 250);
-                }
-                // 伤害飘字
-                this._showDamageText('boss-vs-boss', '-1', '#ef4444');
+                if (bossHpFill) { bossHpFill.style.filter = 'brightness(2.5)'; setTimeout(() => { bossHpFill.style.filter = ''; }, 200); }
+                if (playPage) { playPage.style.animation = 'screen-shake 0.25s ease'; setTimeout(() => playPage.style.animation = '', 250); }
+                this._showDamageText('boss-cinematic-boss-zone', '-1', '#ef4444');
             }, 150);
         } else if (damageType === 'user') {
-            // ===== BOSS 攻击用户 =====
-            // BOSS 冲刺 + 缩放
-            if (bossEl) {
-                bossEl.style.transition = 'transform 0.15s ease';
-                bossEl.style.transform = 'translateX(-20px) scale(1.3)';
-                setTimeout(() => {
-                    bossEl.style.transition = 'transform 0.3s ease';
-                    bossEl.style.transform = '';
-                }, 150);
+            // ===== BOSS \u653b\u51fb\u7528\u6237 =====
+            if (bossVisual) {
+                bossVisual.style.transition = 'transform 0.15s ease';
+                bossVisual.style.transform = 'translateX(-15px) scale(1.15)';
+                setTimeout(() => { bossVisual.style.transform = ''; }, 200);
             }
-            // 用户受伤延迟
             setTimeout(() => {
-                // 红色闪屏（更强）
                 if (flashOverlay.parentElement) {
-                    flashOverlay.style.background = 'radial-gradient(circle at 30% 50%, rgba(255,50,50,0.4) 0%, rgba(255,0,0,0.15) 40%, transparent 70%)';
+                    flashOverlay.style.background = 'radial-gradient(circle at 75% 75%, rgba(255,50,50,0.3) 0%, transparent 60%)';
                     flashOverlay.style.opacity = '1';
                     setTimeout(() => { flashOverlay.style.opacity = '0'; }, 200);
                 }
-                // 用户击退 + 闪红
-                if (heroEl) {
-                    heroEl.style.transition = 'transform 0.1s ease, filter 0.1s ease';
-                    heroEl.style.transform = 'translateX(10px) scale(0.85)';
-                    heroEl.style.filter = 'brightness(0.5) saturate(2) hue-rotate(-30deg)';
+                if (heroVisual) {
+                    heroVisual.style.transition = 'transform 0.1s ease, filter 0.1s ease';
+                    heroVisual.style.transform = 'translateX(8px) scale(0.85)';
+                    heroVisual.style.filter = 'brightness(0.5) saturate(2) hue-rotate(-30deg)';
                     setTimeout(() => {
-                        heroEl.style.transform = 'translateX(-4px) scale(1.05)';
-                        heroEl.style.filter = 'brightness(1.2)';
-                        setTimeout(() => {
-                            heroEl.style.transition = 'transform 0.3s ease, filter 0.3s ease';
-                            heroEl.style.transform = '';
-                            heroEl.style.filter = '';
-                        }, 100);
+                        heroVisual.style.transform = 'translateX(-4px) scale(1.05)';
+                        heroVisual.style.filter = 'brightness(1.2)';
+                        setTimeout(() => { heroVisual.style.transition = ''; heroVisual.style.transform = ''; heroVisual.style.filter = ''; }, 100);
                     }, 100);
                 }
-                // 用户 HP条闪红
                 const userHpFill = document.getElementById('user-hp-fill');
-                if (userHpFill) {
-                    userHpFill.style.filter = 'brightness(2.5)';
-                    userHpFill.style.background = '#ff4444';
-                    setTimeout(() => { 
-                        userHpFill.style.filter = ''; 
-                        userHpFill.style.background = ''; 
+                if (userHpFill) { userHpFill.style.filter = 'brightness(2.5)'; userHpFill.style.background = '#ff4444'; setTimeout(() => { userHpFill.style.filter = ''; userHpFill.style.background = ''; }, 300); }
+                if (playPage) { playPage.style.animation = 'screen-shake-strong 0.35s ease'; setTimeout(() => playPage.style.animation = '', 350); }
+                this._showDamageText('boss-cinematic-hero-zone', '-1', '#f87171');
+            }, 150);
+        } else if (damageType === 'lastStand') {
+            // ===== \u6700\u540e\u4e00\u640f\u7279\u6548 =====
+            if (playPage) {
+                // \u91d1\u8272\u95ea\u5c4f + \u5f3a\u70c8\u9707\u52a8
+                playPage.style.animation = 'screen-shake-strong 0.5s ease';
+                setTimeout(() => playPage.style.animation = '', 500);
+            }
+            setTimeout(() => {
+                if (flashOverlay.parentElement) {
+                    flashOverlay.style.background = 'radial-gradient(circle, rgba(251,191,36,0.4) 0%, rgba(245,158,11,0.15) 40%, transparent 70%)';
+                    flashOverlay.style.opacity = '1';
+                    setTimeout(() => { flashOverlay.style.opacity = '0'; }, 300);
+                }
+                // \u7528\u6237\u53d1\u5149\u53cd\u51fb
+                if (heroVisual) {
+                    heroVisual.style.transition = 'transform 0.2s ease, filter 0.2s ease';
+                    heroVisual.style.transform = 'scale(1.5)';
+                    heroVisual.style.filter = 'brightness(2) drop-shadow(0 0 15px #fbbf24)';
+                    setTimeout(() => {
+                        heroVisual.style.transform = 'translateX(20px) scale(1.3)';
+                        setTimeout(() => { heroVisual.style.transition = ''; heroVisual.style.transform = ''; heroVisual.style.filter = ''; }, 300);
                     }, 300);
                 }
-                // 屏幕强震
-                if (playPage) {
-                    playPage.style.animation = 'screen-shake-strong 0.35s ease';
-                    setTimeout(() => playPage.style.animation = '', 350);
-                }
-                // 伤害飘字
-                this._showDamageText('boss-vs-hero', '-1', '#f87171');
-            }, 150);
+                // \u540c\u65f6\u5bf9BOSS\u9020\u6210\u4f24\u5bb3
+                setTimeout(() => {
+                    if (bossVisual) {
+                        bossVisual.style.transition = 'transform 0.1s ease, filter 0.1s ease';
+                        bossVisual.style.transform = 'scale(0.9)';
+                        bossVisual.style.filter = 'brightness(3) saturate(0.3)';
+                        setTimeout(() => {
+                            bossVisual.style.filter = 'brightness(1.5)';
+                            setTimeout(() => { bossVisual.style.transition = ''; bossVisual.style.transform = ''; bossVisual.style.filter = ''; }, 200);
+                        }, 100);
+                    }
+                    this._showDamageText('boss-cinematic-boss-zone', '-1', '#fbbf24');
+                }, 400);
+                // \u98d8\u5b57\u63d0\u793a
+                this._showDamageText('boss-cinematic-hero-zone', '\u6700\u540e\u4e00\u640f!', '#fbbf24');
+            }, 100);
         }
 
-        // 清理闪屏
-        setTimeout(() => {
-            if (flashOverlay.parentElement) flashOverlay.remove();
-        }, 600);
+        // \u6e05\u7406\u95ea\u5c4f
+        setTimeout(() => { if (flashOverlay.parentElement) flashOverlay.remove(); }, 800);
     },
 
     /**
      * 伤害飘字特效
      */
     _showDamageText(parentId, text, color) {
-        const parent = document.getElementById(parentId);
+        const parent = document.getElementById(parentId) || document.querySelector('.' + parentId);
         if (!parent) return;
+        const isBossZone = parentId.includes('boss-zone') || parentId === 'boss-vs-boss';
         const dmgEl = document.createElement('div');
         dmgEl.textContent = text;
-        dmgEl.style.cssText = `position:absolute;top:-10px;${parentId === 'boss-vs-boss' ? 'right' : 'left'}:50%;transform:translateX(-50%);font-size:1.4rem;font-weight:900;color:${color};text-shadow:0 0 10px ${color},0 2px 4px rgba(0,0,0,0.8);pointer-events:none;z-index:60;animation:dmg-float 0.8s ease-out forwards;`;
+        dmgEl.style.cssText = `position:absolute;top:10%;${isBossZone ? 'left' : 'right'}:50%;transform:translateX(-50%);font-size:1.8rem;font-weight:900;color:${color};text-shadow:0 0 12px ${color},0 2px 6px rgba(0,0,0,0.8);pointer-events:none;z-index:60;animation:dmg-float 0.8s ease-out forwards;`;
         parent.style.position = 'relative';
         parent.appendChild(dmgEl);
         setTimeout(() => dmgEl.remove(), 800);
@@ -2531,28 +2715,37 @@ const ChallengeModule = {
 
         if (bossHpFill) bossHpFill.style.width = (state.bossMaxHp > 0 ? (state.bossHp / state.bossMaxHp * 100) : 0) + '%';
         if (userHpFill) userHpFill.style.width = (state.userMaxHp > 0 ? (state.userHp / state.userMaxHp * 100) : 0) + '%';
-        if (bossHpText) bossHpText.textContent = state.bossHp + '/' + state.bossMaxHp;
-        if (userHpText) userHpText.textContent = state.userHp + '/' + state.userMaxHp;
+        if (bossHpText) bossHpText.innerHTML = state.bossHp + '<span style="opacity:0.5;">/' + state.bossMaxHp + '</span>';
+        if (userHpText) userHpText.innerHTML = state.userHp + '<span style="opacity:0.5;">/' + state.userMaxHp + '</span>';
 
-        // 暴怒状态
-        const rageBanner = document.querySelector('.boss-rage-banner');
-        const bossAvatar = document.querySelector('.boss-avatar');
+        // \u66b4\u6012\u72b6\u6001
         if (state.bossPhase === 'rage') {
-            if (!rageBanner) {
-                const bossUI = document.querySelector('.boss-battle-ui');
-                if (bossUI) {
-                    const banner = document.createElement('div');
-                    banner.className = 'boss-rage-banner';
-                    banner.innerHTML = '<i class="fas fa-fire"></i> BOSS 暴怒中!';
-                    bossUI.appendChild(banner);
-                }
+            const cinematicContainer = document.getElementById('boss-battle-ui');
+            if (cinematicContainer && !cinematicContainer.querySelector('.boss-cinematic-rage-overlay')) {
+                const overlay = document.createElement('div');
+                overlay.className = 'boss-cinematic-rage-overlay';
+                cinematicContainer.insertBefore(overlay, cinematicContainer.firstChild);
             }
-            if (bossAvatar) {
+            if (cinematicContainer && !cinematicContainer.querySelector('.boss-cinematic-rage-banner')) {
+                const banner = document.createElement('div');
+                banner.className = 'boss-cinematic-rage-banner';
+                banner.innerHTML = '<i class="fas fa-fire"></i> BOSS \u66b4\u6012\u4e2d! \u4f24\u5bb3\u00d7' + (state.rageDamage || 2);
+                const scene = cinematicContainer.querySelector('.boss-cinematic-scene');
+                if (scene) scene.after(banner);
+            }
+            const bossVisual = document.querySelector('.boss-cinematic-boss-visual');
+            if (bossVisual) {
                 const bossDef = state.bossDef || {};
-                bossAvatar.style.boxShadow = '0 0 15px ' + (bossDef.color || '#ef4444');
-                const icon = bossAvatar.querySelector('i');
-                if (icon) icon.style.animation = 'boss-shake 0.3s ease-in-out infinite';
+                bossVisual.style.filter = 'drop-shadow(0 0 20px ' + (bossDef.color || '#ef4444') + ')';
+                bossVisual.style.animation = 'boss-shake 0.3s ease-in-out infinite';
             }
+            if (bossHpFill) bossHpFill.style.background = '#ff4444';
+        }
+
+        // \u7528\u6237HP\u4f4e\u8840\u91cf\u8b66\u544a
+        if (userHpFill) {
+            const pct = state.userMaxHp > 0 ? state.userHp / state.userMaxHp : 0;
+            userHpFill.style.background = pct <= 0.3 ? '#f87171' : '#34d399';
         }
     },
 
@@ -3299,7 +3492,7 @@ const ChallengeModule = {
                         <div class="title-wall-desc">${t.desc}</div>
                         ${isEarned ? `<div class="title-wall-date">${this._formatTitleDate(earned[t.id])}</div>` : ''}
                         ${isEarned ? `<button class="title-equip-btn ${isEquipped ? 'equipped' : ''}" onclick="ChallengeModule.equipTitle('${t.id}')">
-                            <i class="fas ${isEquipped ? 'fa-crown' : 'fa-hand-pointer'}"></i> ${isEquipped ? '已佩戴' : '佩戴'}
+                            <i class="fas ${isEquipped ? 'fa-times-circle' : 'fa-hand-pointer'}"></i> ${isEquipped ? '点击卸下' : '佩戴'}
                         </button>` : ''}
                     </div>
                 `;
