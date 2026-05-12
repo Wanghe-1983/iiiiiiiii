@@ -4570,133 +4570,156 @@
 
 .boss-cinematic-layout {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 3fr 2fr;
     gap: 0;
-    min-height: 280px;
+    min-height: 340px;
     position: relative;
-    background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(15,23,42,0.6), rgba(15,23,42,0.95));
+    background: linear-gradient(135deg, rgba(15,23,42,0.97) 0%, rgba(15,23,42,0.85) 50%, rgba(15,23,42,0.92) 100%);
     border-radius: 14px;
     overflow: hidden;
     border: 1px solid rgba(255,255,255,0.06);
 }
 
-/* 对角线分割线 */
+/* 对角线分割线 - 从左上到右下 */
 .boss-cinematic-layout::before {
     content: '';
     position: absolute;
-    top: -50%;
-    left: 50%;
-    width: 2px;
-    height: 200%;
-    background: linear-gradient(180deg, transparent, rgba(245,158,11,0.3), rgba(245,158,11,0.1), rgba(245,158,11,0.3), transparent);
-    transform: rotate(0deg);
-    z-index: 1;
+    top: -10%;
+    left: -10%;
+    width: 120%;
+    height: 120%;
+    background: linear-gradient(135deg, 
+        transparent 48%, 
+        rgba(245,158,11,0.08) 49%, 
+        rgba(245,158,11,0.15) 50%, 
+        rgba(245,158,11,0.08) 51%, 
+        transparent 52%);
+    z-index: 0;
+    pointer-events: none;
 }
 
+/* 左侧对战舞台 */
 .boss-cinematic-stage {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 12px;
+    padding: 10px 8px;
     position: relative;
+    z-index: 1;
+    min-height: 300px;
 }
 
+/* 右侧答题面板 */
 .boss-cinematic-quiz-panel {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     padding: 10px 12px;
     position: relative;
-    border-left: 1px solid rgba(255,255,255,0.04);
+    z-index: 2;
+    border-left: 1px solid rgba(245,158,11,0.1);
     overflow-y: auto;
     max-height: 400px;
+    background: rgba(15,23,42,0.3);
 }
 
 .boss-cinematic-progress {
     margin-bottom: 6px;
 }
 
+/* 对角线分屏场景容器 */
 .boss-cinematic-scene {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: grid;
+    grid-template-rows: 1.3fr 0.4fr 1fr;
+    grid-template-columns: 1fr 1fr;
     height: 100%;
     position: relative;
+    width: 100%;
+    gap: 0;
 }
 
-/* BOSS区域 - 左上 */
+/* BOSS区域 - 左上（占2行1列）*/
 .boss-cinematic-boss-zone {
     display: flex;
     flex-direction: column;
     align-items: center;
-    flex: 1;
-    justify-content: flex-start;
-    padding-top: 8px;
+    justify-content: center;
+    grid-row: 1 / 3;
+    grid-column: 1 / 2;
+    padding: 4px 8px;
     width: 100%;
+    position: relative;
 }
 
 .boss-cinematic-boss-visual {
     margin-bottom: 8px;
     transition: transform 0.3s ease, filter 0.3s ease;
+    position: relative;
 }
 
+/* BOSS大头像 - 压迫感 */
 .boss-cinematic-avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 16px;
+    width: 110px;
+    height: 110px;
+    border-radius: 18px;
     object-fit: cover;
     border: 3px solid rgba(239,68,68,0.5);
-    box-shadow: 0 0 20px rgba(239,68,68,0.15);
+    box-shadow: 0 0 30px rgba(239,68,68,0.2), 0 4px 20px rgba(0,0,0,0.4);
 }
 
 .boss-cinematic-avatar-fallback {
-    width: 100px;
-    height: 100px;
-    border-radius: 16px;
+    width: 110px;
+    height: 110px;
+    border-radius: 18px;
     border: 3px solid rgba(239,68,68,0.5);
     display: flex;
     align-items: center;
     justify-content: center;
     background: rgba(239,68,68,0.08);
+    box-shadow: 0 0 30px rgba(239,68,68,0.2);
 }
 
-/* VS标志 */
+/* VS标志 - 对角线中心 */
 .boss-cinematic-vs {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2;
+    grid-row: 2 / 3;
+    grid-column: 1 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
 }
 
 .boss-cinematic-vs span {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     font-weight: 900;
-    color: rgba(245,158,11,0.7);
-    text-shadow: 0 0 15px rgba(245,158,11,0.3);
-    letter-spacing: 3px;
-    background: rgba(15,23,42,0.8);
-    padding: 4px 12px;
-    border-radius: 8px;
-    border: 1px solid rgba(245,158,11,0.2);
+    color: rgba(245,158,11,0.8);
+    text-shadow: 0 0 20px rgba(245,158,11,0.4);
+    letter-spacing: 4px;
+    background: rgba(15,23,42,0.9);
+    padding: 4px 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(245,158,11,0.25);
 }
 
-/* 用户区域 - 右下 */
+/* 用户区域 - 右下（占1行1列，小尺寸形成对比）*/
 .boss-cinematic-hero-zone {
     display: flex;
     flex-direction: column;
     align-items: center;
-    flex: 1;
-    justify-content: flex-end;
-    padding-bottom: 8px;
+    justify-content: center;
+    grid-row: 3 / 4;
+    grid-column: 2 / 3;
+    padding: 4px 8px;
     width: 100%;
+    position: relative;
 }
 
 .boss-cinematic-hero-visual {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     transition: transform 0.3s ease, filter 0.3s ease;
 }
 
+/* 用户小头像 */
 .boss-cinematic-hero-avatar {
     width: 55px;
     height: 55px;
@@ -4717,7 +4740,6 @@
     background: rgba(52,211,153,0.06);
 }
 
-/* 名牌 */
 .boss-cinematic-nameplate {
     margin-bottom: 4px;
 }
@@ -4729,21 +4751,20 @@
     text-shadow: 0 1px 4px rgba(0,0,0,0.5);
 }
 
-.boss-nameplate .boss-cinematic-name {
-    font-size: 0.8rem;
+.boss-cinematic-nameplate.boss-nameplate .boss-cinematic-name {
+    font-size: 0.85rem;
 }
 
-.hero-nameplate .boss-cinematic-name {
+.boss-cinematic-nameplate.hero-nameplate .boss-cinematic-name {
     color: #34d399;
 }
 
-/* HP条 - cinematic */
 .boss-cinematic-hp-bar {
     display: flex;
     align-items: center;
     gap: 6px;
     width: 100%;
-    max-width: 130px;
+    max-width: 140px;
 }
 
 .boss-cinematic-hp-track {
@@ -4764,6 +4785,18 @@
     transition: width 0.4s ease;
 }
 
+.boss-hp-fill {
+    background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+.user-hp-track {
+    background: rgba(255,255,255,0.06);
+}
+
+.user-hp-fill {
+    background: linear-gradient(90deg, #34d399, #6ee7b7);
+}
+
 .boss-cinematic-hp-num {
     font-size: 0.7rem;
     font-weight: 700;
@@ -4776,18 +4809,12 @@
 .boss-cinematic-rage-overlay {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 30% 30%, rgba(239,68,68,0.08) 0%, transparent 60%);
+    background: radial-gradient(ellipse at 25% 25%, rgba(239,68,68,0.1) 0%, transparent 60%);
     pointer-events: none;
     z-index: 1;
     animation: rage-pulse 2s ease-in-out infinite;
 }
 
-@keyframes rage-pulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
-}
-
-/* 暴怒横幅 */
 .boss-cinematic-rage-banner {
     padding: 6px;
     text-align: center;
@@ -4800,7 +4827,7 @@
     border-top: 1px solid rgba(239,68,68,0.15);
 }
 
-/* 全屏闪光 */
+/* 闪屏效果 */
 .boss-cinematic-flash {
     position: absolute;
     top: 0;
@@ -4813,7 +4840,7 @@
     transition: opacity 0.15s;
 }
 
-/* BOSS答题面板中的题目样式调整 */
+/* 答题面板内的样式适配 */
 .boss-cinematic-quiz-panel .challenge-question {
     padding: 12px;
     margin-bottom: 8px;
