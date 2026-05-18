@@ -2589,14 +2589,19 @@ const ChallengeModule = {
                     </div>
                     <!-- 覆盖层：名字 + 血条 + VS -->
                     <div class="boss-overlay-info">
-                        <div class="boss-cinematic-nameplate boss-nameplate">
-                            <span class="boss-cinematic-name">${bossName}${isRage ? ' <i class="fas fa-bolt" style="color:#ff4444;"></i>' : ''}</span>
-                        </div>
-                        <div class="boss-cinematic-hp-bar">
-                            <div class="boss-cinematic-hp-track boss-hp-track ${isRage ? 'rage' : ''}">
-                                <div class="boss-cinematic-hp-fill boss-hp-fill" id="boss-hp-fill" style="width:${bossHpPct}%;background:${bossHpColor};"></div>
+                        <div class="boss-hp-card">
+                            <div class="boss-hp-card-header">
+                                <div class="boss-hp-card-icon"><i class="fas fa-skull-crossbones" style="color:${bossColor};"></i></div>
+                                <span class="boss-hp-card-name">${bossName}${isRage ? ' <i class="fas fa-bolt" style="color:#ff4444;"></i>' : ''}</span>
+                                <span class="boss-hp-card-badge" style="color:${bossColor};background:${bossColor}18;">HP ${bossHp}/${bossMaxHp}</span>
                             </div>
-                            <span class="boss-hp-text boss-cinematic-hp-num" style="color:${bossColor};">${bossHp}<span style="opacity:0.5;">/${bossMaxHp}</span></span>
+                            <div class="boss-hp-bar-wrap">
+                                <div class="boss-hp-bar-track ${isRage ? 'rage' : ''}">
+                                    <div class="boss-hp-bar-fill" id="boss-hp-fill" style="width:${bossHpPct}%;background:linear-gradient(90deg,${bossColor}cc,${bossColor});"></div>
+                                    <div class="boss-hp-bar-shine"></div>
+                                </div>
+                                <span class="boss-hp-bar-pct" style="color:${bossColor};">${Math.round(bossHpPct)}%</span>
+                            </div>
                         </div>
 
                     </div>
@@ -2628,14 +2633,18 @@ const ChallengeModule = {
             <div class="boss-hero-visual" id="hero-battle-visual">
                 ${heroImg}
             </div>
-            <div class="boss-cinematic-nameplate hero-nameplate">
-                <span class="boss-cinematic-name">${heroName}</span>
-            </div>
-            <div class="boss-cinematic-hp-bar">
-                <div class="boss-cinematic-hp-track user-hp-track">
-                    <div class="boss-cinematic-hp-fill user-hp-fill" id="user-hp-fill" style="width:${userHpPct}%;background:${userHpColor};"></div>
+            <div class="boss-hero-info">
+                <div class="boss-hero-name-row">
+                    <span class="boss-hero-name">${heroName}</span>
+                    <span class="boss-hero-hp-badge" style="color:${userHpColor};background:${userHpColor}18;">HP ${userHp}/${userMaxHp}</span>
                 </div>
-                <span class="user-hp-text boss-cinematic-hp-num" style="color:${userHpColor};">${userHp}<span style="opacity:0.5;">/${userMaxHp}</span></span>
+                <div class="boss-hero-hp-bar-wrap">
+                    <div class="boss-hero-hp-track">
+                        <div class="boss-hero-hp-fill" id="user-hp-fill" style="width:${userHpPct}%;background:linear-gradient(90deg,${userHpColor}cc,${userHpColor});"></div>
+                        <div class="boss-hero-hp-shine"></div>
+                    </div>
+                    <span class="boss-hero-hp-pct" style="color:${userHpColor};">${Math.round(userHpPct)}%</span>
+                </div>
             </div>
         </div>`;
     },
@@ -2852,13 +2861,20 @@ const ChallengeModule = {
         if (!state.isBoss) return;
         const bossHpFill = document.getElementById('boss-hp-fill');
         const userHpFill = document.getElementById('user-hp-fill');
-        const bossHpText = document.querySelector('.boss-hp-text');
-        const userHpText = document.querySelector('.user-hp-text');
+        const bossBadge = document.querySelector('.boss-hp-card-badge');
+        const heroBadge = document.querySelector('.boss-hero-hp-badge');
+        const bossPct = document.querySelector('.boss-hp-bar-pct');
+        const heroPct = document.querySelector('.boss-hero-hp-pct');
 
-        if (bossHpFill) bossHpFill.style.width = (state.bossMaxHp > 0 ? (state.bossHp / state.bossMaxHp * 100) : 0) + '%';
-        if (userHpFill) userHpFill.style.width = (state.userMaxHp > 0 ? (state.userHp / state.userMaxHp * 100) : 0) + '%';
-        if (bossHpText) bossHpText.innerHTML = state.bossHp + '<span style="opacity:0.5;">/' + state.bossMaxHp + '</span>';
-        if (userHpText) userHpText.innerHTML = state.userHp + '<span style="opacity:0.5;">/' + state.userMaxHp + '</span>';
+        const bossPctVal = state.bossMaxHp > 0 ? Math.round(state.bossHp / state.bossMaxHp * 100) : 0;
+        const userPctVal = state.userMaxHp > 0 ? Math.round(state.userHp / state.userMaxHp * 100) : 0;
+
+        if (bossHpFill) bossHpFill.style.width = bossPctVal + '%';
+        if (userHpFill) userHpFill.style.width = userPctVal + '%';
+        if (bossBadge) bossBadge.textContent = 'HP ' + state.bossHp + '/' + state.bossMaxHp;
+        if (heroBadge) heroBadge.textContent = 'HP ' + state.userHp + '/' + state.userMaxHp;
+        if (bossPct) bossPct.textContent = bossPctVal + '%';
+        if (heroPct) heroPct.textContent = userPctVal + '%';
 
         // \u66b4\u6012\u72b6\u6001
         if (state.bossPhase === 'rage') {
@@ -2881,13 +2897,16 @@ const ChallengeModule = {
                 bossVisual.style.filter = 'drop-shadow(0 0 20px ' + (bossDef.color || '#ef4444') + ')';
                 bossVisual.style.animation = 'boss-shake 0.3s ease-in-out infinite';
             }
-            if (bossHpFill) bossHpFill.style.background = '#ff4444';
+            if (bossHpFill) bossHpFill.style.background = 'linear-gradient(90deg, #cc0000, #ff4444)';
         }
 
         // \u7528\u6237HP\u4f4e\u8840\u91cf\u8b66\u544a
         if (userHpFill) {
             const pct = state.userMaxHp > 0 ? state.userHp / state.userMaxHp : 0;
-            userHpFill.style.background = pct <= 0.3 ? '#f87171' : '#34d399';
+            const lowColor = pct <= 0.3 ? '#f87171' : '#34d399';
+            userHpFill.style.background = 'linear-gradient(90deg, ' + lowColor + 'cc, ' + lowColor + ')';
+            if (heroBadge) { heroBadge.style.color = lowColor; heroBadge.style.background = lowColor + '18'; }
+            if (heroPct) heroPct.style.color = lowColor;
         }
     },
 

@@ -3725,13 +3725,7 @@
     position: relative;
 }
 
-.boss-hp-bar-fill.boss-hp-fill {
-    background: linear-gradient(90deg, #ef4444, #dc2626);
-}
 
-.boss-hp-bar-fill.user-hp-fill {
-    background: linear-gradient(90deg, #22c55e, #16a34a);
-}
 
 .boss-hp-bar-fill.low-hp {
     background: linear-gradient(90deg, #f59e0b, #ef4444) !important;
@@ -4790,39 +4784,7 @@
     gap: 10px;
 }
 
-.boss-hero-panel {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    background: linear-gradient(135deg, rgba(30,41,59,0.4) 0%, rgba(15,23,42,0.3) 100%);
-    border-radius: 14px;
-    border: 1px solid rgba(255,255,255,0.06);
-}
 
-.boss-hero-visual {
-    transition: transform 0.3s ease, filter 0.3s ease;
-}
-
-.boss-cinematic-hero-avatar {
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
-    object-fit: cover;
-    border: 2px solid rgba(52,211,153,0.6);
-    box-shadow: 0 0 16px rgba(52,211,153,0.2), 0 2px 8px rgba(0,0,0,0.3);
-}
-
-.boss-cinematic-hero-fallback {
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
-    border: 2px solid rgba(52,211,153,0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(52,211,153,0.08);
-}
 
 /* 暴怒覆盖层 */
 .boss-cinematic-rage-overlay {
@@ -4882,6 +4844,222 @@
 .boss-cinematic-quiz .challenge-option-text {
     font-size: 0.85rem;
 }
+
+/* ========== BOSS HP 血条卡片（覆盖层） ========== */
+.boss-hp-card {
+    width: 100%;
+    max-width: 280px;
+    padding: 14px 18px;
+    background: rgba(0,0,0,0.55);
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.08);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.boss-hp-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.boss-hp-card-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.boss-hp-card-icon i {
+    font-size: 0.8rem;
+}
+
+.boss-hp-card-name {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #f1f5f9;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+    letter-spacing: 0.5px;
+    flex: 1;
+}
+
+.boss-hp-card-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.boss-hp-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.boss-hp-bar-track {
+    flex: 1;
+    height: 16px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.boss-hp-bar-fill {
+    height: 100%;
+    border-radius: 7px;
+    transition: width 0.4s ease;
+    position: relative;
+}
+
+.boss-hp-bar-track.rage {
+    animation: rage-track-pulse 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes rage-track-pulse {
+    0% { box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 0 8px rgba(255,68,68,0.3); }
+    100% { box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 0 16px rgba(255,68,68,0.5); }
+}
+
+.boss-hp-bar-shine {
+    position: absolute;
+    top: 2px;
+    left: 6px;
+    right: 6px;
+    height: 5px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 100%);
+    border-radius: 4px;
+    pointer-events: none;
+}
+
+.boss-hp-bar-pct {
+    font-size: 0.75rem;
+    font-weight: 800;
+    min-width: 38px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ========== 用户面板 ========== */
+.boss-hero-panel {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(30,41,59,0.4) 0%, rgba(15,23,42,0.3) 100%);
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+.boss-hero-visual {
+    transition: transform 0.3s ease, filter 0.3s ease;
+    flex-shrink: 0;
+}
+
+.boss-cinematic-hero-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    object-fit: cover;
+    border: 2px solid rgba(52,211,153,0.5);
+    box-shadow: 0 0 14px rgba(52,211,153,0.15), 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.boss-cinematic-hero-fallback {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    border: 2px solid rgba(52,211,153,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(52,211,153,0.06);
+}
+
+.boss-hero-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.boss-hero-name-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.boss-hero-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.boss-hero-hp-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.boss-hero-hp-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.boss-hero-hp-track {
+    flex: 1;
+    height: 12px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.25);
+}
+
+.boss-hero-hp-fill {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 0.4s ease;
+    position: relative;
+}
+
+.boss-hero-hp-shine {
+    position: absolute;
+    top: 1px;
+    left: 4px;
+    right: 4px;
+    height: 4px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.22) 0%, transparent 100%);
+    border-radius: 3px;
+    pointer-events: none;
+}
+
+.boss-hero-hp-pct {
+    font-size: 0.7rem;
+    font-weight: 800;
+    min-width: 34px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
 /* ========== BOSS 加载界面 ========== */
 .boss-loading-page {
     position: relative;
