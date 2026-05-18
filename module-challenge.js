@@ -2480,28 +2480,30 @@ const ChallengeModule = {
         <div class="boss-cinematic-container" id="boss-battle-ui">
             ${rageOverlay}
             <div class="boss-cinematic-scene">
-                <!-- BOSS 区域 -->
+                <!-- BOSS 背景大头像 -->
                 <div class="boss-cinematic-boss-zone">
-                    <div class="boss-cinematic-boss-visual" id="boss-battle-visual">
+                    <div class="boss-bg-avatar">
                         ${bossImg}
                     </div>
-                    <div class="boss-cinematic-nameplate boss-nameplate">
-                        <span class="boss-cinematic-name">${bossName}${isRage ? ' <i class="fas fa-bolt" style="color:#ff4444;"></i>' : ''}</span>
-                    </div>
-                    <div class="boss-cinematic-hp-bar">
-                        <div class="boss-cinematic-hp-track boss-hp-track ${isRage ? 'rage' : ''}">
-                            <div class="boss-cinematic-hp-fill boss-hp-fill" id="boss-hp-fill" style="width:${bossHpPct}%;background:${bossHpColor};"></div>
+                    <!-- 覆盖层：名字 + 血条 + VS -->
+                    <div class="boss-overlay-info">
+                        <div class="boss-cinematic-nameplate boss-nameplate">
+                            <span class="boss-cinematic-name">${bossName}${isRage ? ' <i class="fas fa-bolt" style="color:#ff4444;"></i>' : ''}</span>
                         </div>
-                        <span class="boss-hp-text boss-cinematic-hp-num" style="color:${bossColor};">${bossHp}<span style="opacity:0.5;">/${bossMaxHp}</span></span>
+                        <div class="boss-cinematic-hp-bar">
+                            <div class="boss-cinematic-hp-track boss-hp-track ${isRage ? 'rage' : ''}">
+                                <div class="boss-cinematic-hp-fill boss-hp-fill" id="boss-hp-fill" style="width:${bossHpPct}%;background:${bossHpColor};"></div>
+                            </div>
+                            <span class="boss-hp-text boss-cinematic-hp-num" style="color:${bossColor};">${bossHp}<span style="opacity:0.5;">/${bossMaxHp}</span></span>
+                        </div>
+                        <div class="boss-cinematic-vs">
+                            <span>VS</span>
+                        </div>
                     </div>
-                </div>
-                <!-- VS 标志 -->
-                <div class="boss-cinematic-vs">
-                    <span>VS</span>
                 </div>
             </div>
             ${rageBanner}
-        </div>`;
+        </div>`;;
     },
 
     /**
@@ -2616,7 +2618,7 @@ const ChallengeModule = {
     _bossDamageEffect(damageType) {
         if (!damageType) return;
         const playPage = document.querySelector('.boss-cinematic-page, .challenge-play-page');
-        const bossVisual = document.querySelector('.boss-cinematic-boss-visual');
+        const bossVisual = document.querySelector('.boss-bg-avatar');
         const heroVisual = document.querySelector('.boss-hero-visual');
 
         // \u521b\u5efa\u5168\u5c4f\u95ea\u5c4f\u5143\u7d20
@@ -2773,7 +2775,7 @@ const ChallengeModule = {
                 const scene = cinematicContainer.querySelector('.boss-cinematic-scene');
                 if (scene) scene.after(banner);
             }
-            const bossVisual = document.querySelector('.boss-cinematic-boss-visual');
+            const bossVisual = document.querySelector('.boss-bg-avatar');
             if (bossVisual) {
                 const bossDef = state.bossDef || {};
                 bossVisual.style.filter = 'drop-shadow(0 0 20px ' + (bossDef.color || '#ef4444') + ')';
