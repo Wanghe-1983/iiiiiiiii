@@ -2,13 +2,19 @@ const CACHE_NAME = 'indonesian-cache';
 const ASSETS = ['./','./index.html','./login.html','./admin.html','./indonesian_learning_data.json','./manifest.json','./Wang_he.jpg'];
 
 self.addEventListener('install', e => {
-    e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS).catch(()=>{})).then(() => self.skipWaiting()));
+    e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(ASSETS).catch(()=>{})).then(() => {}))  // 不跳过等待，避免浏览器原生confirm弹窗;
 });
 
 self.addEventListener('activate', e => {
     e.waitUntil(caches.keys().then(keys =>
         Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
     ).then(() => self.clients.claim()));
+});
+
+self.addEventListener('message', e => {
+    if (e.data && e.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
 });
 
 self.addEventListener('fetch', e => {

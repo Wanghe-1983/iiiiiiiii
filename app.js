@@ -4304,6 +4304,10 @@ window.speak = function(encodedText) {
                 setTimeout(nextStep, 600);
             }
             setTimeout(nextStep, 200);
+            // 通知 Service Worker 跳过等待并激活新版本
+            if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+            }
             // 实际清理工作（并行执行，不阻塞动画）
             if ('caches' in window) {
                 caches.keys().then(function(names) {
