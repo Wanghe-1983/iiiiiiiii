@@ -4572,7 +4572,7 @@
     display: grid;
     grid-template-columns: 3fr 2fr;
     gap: 0;
-    max-height: 520px;
+    max-height: calc(100vh - 200px);
     position: relative;
     background: linear-gradient(135deg, rgba(15,23,42,0.97) 0%, rgba(15,23,42,0.85) 50%, rgba(15,23,42,0.92) 100%);
     border-radius: 14px;
