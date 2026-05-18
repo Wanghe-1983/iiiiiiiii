@@ -2015,7 +2015,7 @@ function createBossLevelRow(levelId, data) {
     `;
     
     // Toggle开关样式联动
-    const toggleSwitches = row.querySelectorAll('input[type="checkbox"]');
+    const toggleSwitches = row.querySelectorAll('.boss-big-enabled, .boss-mini-enabled');
     toggleSwitches.forEach(cb => {
         const updateSwitch = () => {
             const track = cb.nextElementSibling;
