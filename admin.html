@@ -1976,8 +1976,14 @@ function createBossLevelRow(levelId, data) {
                     <span style="position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;"></span>
                 </label>
             </div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                    <label style="font-size:0.7rem;color:#94a3b8;display:flex;align-items:center;gap:6px;cursor:pointer;">
+                        <input type="checkbox" class="boss-big-hp-mode" ${big.hpMode===2?'checked':''} style="accent-color:#ef4444;">
+                        自定义BOSS血量（不勾选则HP=题量）
+                    </label>
+                </div>
             <div class="boss-big-fields" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-                <div><label style="font-size:0.7rem;color:#64748b;">BOSS HP <span style="color:#ef4444;">*</span></label><input type="number" class="boss-big-hp" min="1" max="999" value="${big.bossHp||10}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+                <div class="boss-big-hp-wrap" style="${big.hpMode===2?'':'display:none;'}"><label style="font-size:0.7rem;color:#64748b;">BOSS HP <span style="color:#ef4444;">*</span></label><input type="number" class="boss-big-hp" min="1" max="999" value="${big.bossHp||10}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
                 <div><label style="font-size:0.7rem;color:#64748b;">用户HP <span style="color:#ef4444;">*</span></label><input type="number" class="boss-big-userhp" min="1" max="99" value="${big.userHp||3}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
                 <div><label style="font-size:0.7rem;color:#64748b;">题量 <span style="color:#ef4444;">*</span></label><input type="number" class="boss-big-questions" min="1" max="200" value="${big.questionCount||12}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
             </div>
@@ -1993,9 +1999,15 @@ function createBossLevelRow(levelId, data) {
                     <span style="position:absolute;height:16px;width:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.3s;"></span>
                 </label>
             </div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                    <label style="font-size:0.7rem;color:#94a3b8;display:flex;align-items:center;gap:6px;cursor:pointer;">
+                        <input type="checkbox" class="boss-mini-hp-mode" ${mini.hpMode===2?'checked':''} style="accent-color:#a855f7;">
+                        自定义BOSS血量（不勾选则HP=题量）
+                    </label>
+                </div>
             <div class="boss-mini-fields" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
                 <div><label style="font-size:0.7rem;color:#64748b;">间隔(关) <span style="color:#ef4444;">*</span></label><input type="number" class="boss-mini-interval" min="2" max="50" value="${mini.interval||5}" placeholder="每N关一个小BOSS" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
-                <div><label style="font-size:0.7rem;color:#64748b;">BOSS HP <span style="color:#ef4444;">*</span></label><input type="number" class="boss-mini-hp" min="1" max="99" value="${mini.bossHp||5}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+                <div class="boss-mini-hp-wrap" style="${mini.hpMode===2?'':'display:none;'}"><label style="font-size:0.7rem;color:#64748b;">BOSS HP <span style="color:#ef4444;">*</span></label><input type="number" class="boss-mini-hp" min="1" max="99" value="${mini.bossHp||5}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
                 <div><label style="font-size:0.7rem;color:#64748b;">用户HP <span style="color:#ef4444;">*</span></label><input type="number" class="boss-mini-userhp" min="1" max="99" value="${mini.userHp||3}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
                 <div><label style="font-size:0.7rem;color:#64748b;">题量 <span style="color:#ef4444;">*</span></label><input type="number" class="boss-mini-questions" min="1" max="100" value="${mini.questionCount||8}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
             </div>
@@ -2019,6 +2031,32 @@ function createBossLevelRow(levelId, data) {
         updateSwitch();
         cb.addEventListener('change', updateSwitch);
     });
+    
+    // HP模式勾选联动：控制BOSS HP输入框显示/隐藏
+    const bigHpModeCb = row.querySelector('.boss-big-hp-mode');
+    const bigHpWrap = row.querySelector('.boss-big-hp-wrap');
+    if (bigHpModeCb && bigHpWrap) {
+        bigHpModeCb.addEventListener('change', function() {
+            bigHpWrap.style.display = this.checked ? '' : 'none';
+            if (this.checked) {
+                const qInput = row.querySelector('.boss-big-questions');
+                const hpInput = row.querySelector('.boss-big-hp');
+                if (qInput && hpInput && !hpInput.value) hpInput.value = qInput.value || 10;
+            }
+        });
+    }
+    const miniHpModeCb = row.querySelector('.boss-mini-hp-mode');
+    const miniHpWrap = row.querySelector('.boss-mini-hp-wrap');
+    if (miniHpModeCb && miniHpWrap) {
+        miniHpModeCb.addEventListener('change', function() {
+            miniHpWrap.style.display = this.checked ? '' : 'none';
+            if (this.checked) {
+                const qInput = row.querySelector('.boss-mini-questions');
+                const hpInput = row.querySelector('.boss-mini-hp');
+                if (qInput && hpInput && !hpInput.value) hpInput.value = qInput.value || 5;
+            }
+        });
+    }
     
     return row;
 }
@@ -2050,32 +2088,36 @@ function collectBossConfig() {
         
         if (miniEnabled) {
             const interval = parseInt(row.querySelector('.boss-mini-interval').value);
-            const bossHp = parseInt(row.querySelector('.boss-mini-hp').value);
-            const userHp = parseInt(row.querySelector('.boss-mini-userhp').value);
+            const hpMode = row.querySelector('.boss-mini-hp-mode').checked ? 2 : 1;
             const qCount = parseInt(row.querySelector('.boss-mini-questions').value);
+            const bossHp = hpMode === 2 ? parseInt(row.querySelector('.boss-mini-hp').value) : qCount;
+            const userHp = parseInt(row.querySelector('.boss-mini-userhp').value);
             if (!interval || interval < 2) { alert('等级 ' + lvl + ' 小BOSS间隔不能小于2'); throw new Error('validation'); }
-            if (!bossHp || bossHp < 1) { alert('等级 ' + lvl + ' 小BOSS HP不能为空'); throw new Error('validation'); }
             if (!userHp || userHp < 1) { alert('等级 ' + lvl + ' 用户HP不能为空'); throw new Error('validation'); }
             if (!qCount || qCount < 1) { alert('等级 ' + lvl + ' 题量不能为空'); throw new Error('validation'); }
+            if (hpMode === 2 && (!bossHp || bossHp < 1)) { alert('等级 ' + lvl + ' 小BOSS HP不能为空'); throw new Error('validation'); }
             config.mini = {
                 enabled: true,
                 interval: interval,
                 bossLevel: lvl,
+                hpMode: hpMode,
                 bossHp: bossHp,
                 userHp: userHp,
                 questionCount: qCount
             };
         }
         if (bigEnabled) {
-            const bossHp = parseInt(row.querySelector('.boss-big-hp').value);
-            const userHp = parseInt(row.querySelector('.boss-big-userhp').value);
+            const hpMode = row.querySelector('.boss-big-hp-mode').checked ? 2 : 1;
             const qCount = parseInt(row.querySelector('.boss-big-questions').value);
-            if (!bossHp || bossHp < 1) { alert('等级 ' + lvl + ' 大BOSS HP不能为空'); throw new Error('validation'); }
+            const bossHp = hpMode === 2 ? parseInt(row.querySelector('.boss-big-hp').value) : qCount;
+            const userHp = parseInt(row.querySelector('.boss-big-userhp').value);
             if (!userHp || userHp < 1) { alert('等级 ' + lvl + ' 用户HP不能为空'); throw new Error('validation'); }
             if (!qCount || qCount < 1) { alert('等级 ' + lvl + ' 题量不能为空'); throw new Error('validation'); }
+            if (hpMode === 2 && (!bossHp || bossHp < 1)) { alert('等级 ' + lvl + ' 大BOSS HP不能为空'); throw new Error('validation'); }
             config.big = {
                 enabled: true,
                 bossLevel: lvl,
+                hpMode: hpMode,
                 bossHp: bossHp,
                 userHp: userHp,
                 questionCount: qCount

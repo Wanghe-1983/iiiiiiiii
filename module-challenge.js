@@ -537,10 +537,13 @@ const ChallengeModule = {
                     if (actualIdx < 0 || actualIdx >= group.length) continue;
 
                     const insertAfter = group[actualIdx].globalIndex;
+                    const _miniHpMode = mini.hpMode || 1;
+                    const _miniQCount = mini.questionCount || 8;
                     const params = {
-                        bossHp: mini.bossHp || 5,
+                        hpMode: _miniHpMode,
+                        bossHp: _miniHpMode === 2 ? (mini.bossHp || _miniQCount) : _miniQCount,
                         userHp: mini.userHp || 3,
-                        questionCount: mini.questionCount || 8,
+                        questionCount: _miniQCount,
                         questionSource: config.questionSource || 'random'
                     };
                     bossInserts.push({
@@ -557,10 +560,13 @@ const ChallengeModule = {
             const big = lvConfig.big || {};
             if (big.enabled) {
                 const lastItem = group[group.length - 1];
+                const _bigHpMode = big.hpMode || 1;
+                const _bigQCount = big.questionCount || 15;
                 const params = {
-                    bossHp: big.bossHp || 10,
+                    hpMode: _bigHpMode,
+                    bossHp: _bigHpMode === 2 ? (big.bossHp || _bigQCount) : _bigQCount,
                     userHp: big.userHp || 3,
-                    questionCount: big.questionCount || 15,
+                    questionCount: _bigQCount,
                     questionRange: big.questionRange || [levelId],
                     questionSource: config.questionSource || 'random'
                 };
@@ -663,7 +669,7 @@ const ChallengeModule = {
             bossDef: bossDef,
             bossParams: params,
             name: `${typeLabel}: ${bossDef.name}`,
-            label: `${params.bossHp}HP vs ${params.userHp}HP`,
+            label: params.hpMode === 2 ? `${params.bossHp}HP vs ${params.userHp}HP` : null,
             questions: questions,
             totalQuestions: questions.length,
             _isBoss: true,
@@ -1141,7 +1147,8 @@ const ChallengeModule = {
         if (shouldShuffle) questions = this._shuffle(questions);
 
         const isBoss = stage._isBoss === true;
-        const bossParams = isBoss ? (stage.bossParams || { bossHp: 5, userHp: 3 }) : null;
+        const bossParams = isBoss ? (stage.bossParams || { bossHp: 5, userHp: 3, hpMode: 1 }) : null;
+        const bossHpMode = isBoss ? (bossParams.hpMode || 1) : 0;
         const bossDef = isBoss ? stage.bossDef : null;
 
         this.challengeState = {
@@ -1159,6 +1166,7 @@ const ChallengeModule = {
             bossDef: bossDef,
             bossType: isBoss ? stage.bossType : null,
             bossLevel: isBoss ? stage.bossLevel : null,
+            bossHpMode: bossHpMode,
             bossHp: isBoss ? bossParams.bossHp : 0,
             bossMaxHp: isBoss ? bossParams.bossHp : 0,
             userHp: isBoss ? bossParams.userHp : 0,
@@ -2515,8 +2523,11 @@ const ChallengeModule = {
         let isRageHit = false;
 
         if (isCorrect) {
-            // 答对：扣BOSS 1 HP
-            state.bossHp = Math.max(0, state.bossHp - 1);
+            // 答对：扣BOSS HP
+            const bossDamage = state.bossHpMode === 2
+                ? Math.max(1, state.bossMaxHp / state.totalQuestions)
+                : 1;
+            state.bossHp = Math.max(0, Math.round(state.bossHp - bossDamage));
             state.correct++;
             state.currentStreak++;
             state.maxStreak = Math.max(state.maxStreak, state.currentStreak);
