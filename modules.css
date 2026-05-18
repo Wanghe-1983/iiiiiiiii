@@ -4631,13 +4631,11 @@
 .boss-bg-avatar .boss-cinematic-avatar-fallback {
     width: 100%;
     height: 100%;
-    max-width: 400px;
-    max-height: 500px;
     border-radius: 0;
     border: none;
     object-fit: cover;
-    opacity: 0.25;
-    filter: blur(2px) brightness(0.6);
+    opacity: 0.3;
+    filter: blur(1px) brightness(0.7) saturate(1.2);
     animation: boss-bg-pulse 4s ease-in-out infinite alternate;
 }
 
@@ -4648,13 +4646,13 @@
 
 .boss-bg-avatar .boss-cinematic-avatar-fallback i {
     font-size: 12rem !important;
-    opacity: 0.2;
+    opacity: 0.15;
     filter: blur(1px);
 }
 
 @keyframes boss-bg-pulse {
-    0% { transform: scale(1); opacity: 0.2; }
-    100% { transform: scale(1.05); opacity: 0.3; }
+    0% { transform: scale(1); opacity: 0.25; }
+    100% { transform: scale(1.06); opacity: 0.38; }
 }
 
 /* 覆盖在头像上的信息层 */
