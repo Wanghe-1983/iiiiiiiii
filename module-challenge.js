@@ -2635,6 +2635,7 @@ const ChallengeModule = {
             </div>
             <div class="boss-hero-info">
                 <div class="boss-hero-name-row">
+                    <div class="boss-hero-icon"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};"></i></div>
                     <span class="boss-hero-name">${heroName}</span>
                     <span class="boss-hero-hp-badge" style="color:${userHpColor};background:${userHpColor}18;">HP ${userHp}/${userMaxHp}</span>
                 </div>

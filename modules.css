@@ -5119,6 +5119,21 @@
     gap: 6px;
     margin-bottom: 6px;
 }
+.boss-hero-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+    background: rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.boss-hero-icon i {
+    font-size: 0.7rem;
+}
+
 
 .boss-hero-name {
     font-size: 0.8rem;
