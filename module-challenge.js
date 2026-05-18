@@ -2598,9 +2598,7 @@ const ChallengeModule = {
                             </div>
                             <span class="boss-hp-text boss-cinematic-hp-num" style="color:${bossColor};">${bossHp}<span style="opacity:0.5;">/${bossMaxHp}</span></span>
                         </div>
-                        <div class="boss-cinematic-vs">
-                            <span>VS</span>
-                        </div>
+
                     </div>
                 </div>
             </div>
