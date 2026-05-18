@@ -470,14 +470,14 @@ const ChallengeModule = {
 
     // BOSS 造型定义
     _bossDefs: {
-        '0': { name: '声之魔灵', icon: 'fa-wand-sparkles', theme: 'sound', color: '#a78bfa', desc: '掌控万音的魔灵', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjM8KCfO' },
-        '1': { name: '婆罗多神将', icon: 'fa-shield-halved', theme: 'warrior', color: '#60a5fa', desc: 'Dasar 基础的守关者', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjNDR2UY' },
-        '2': { name: 'Raksasa 巨魔', icon: 'fa-hand-fist', theme: 'brute', color: '#4ade80', desc: '中级篇的野蛮守卫', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMleXYE' },
-        '3': { name: 'Naga 蛇龙', icon: 'fa-dragon', theme: 'dragon', color: '#f87171', desc: '中高级的盘踞之龙', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMqUWzW' },
-        '4': { name: 'Garuda 伽鲁达', icon: 'fa-dove', theme: 'garuda', color: '#fbbf24', desc: '高级篇的神鸟之王', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMz9jlO' },
-        '5': { name: '浮屠守殿者', icon: 'fa-landmark', theme: 'temple', color: '#fb923c', desc: '高级进阶的石像守卫', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMIw4DW' },
-        '6': { name: 'Dewa 天神', icon: 'fa-bolt', theme: 'deity', color: '#38bdf8', desc: '精通篇的半神形态', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMOtEUk' },
-        '7': { name: 'Ratu Iblis 魔王', icon: 'fa-skull', theme: 'demon', color: '#ef4444', desc: '卓越篇的终极魔王', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjMVi1uQ' },
+        '0': { name: '声之魔灵', icon: 'fa-wand-sparkles', theme: 'sound', color: '#a78bfa', desc: '掌控万音的魔灵', image: 'assets/boss/boss-0-sound-spirit.png' },
+        '1': { name: '婆罗多神将', icon: 'fa-shield-halved', theme: 'warrior', color: '#60a5fa', desc: 'Dasar 基础的守关者', image: 'assets/boss/boss-1-bharata-warlord.png' },
+        '2': { name: 'Raksasa 巨魔', icon: 'fa-hand-fist', theme: 'brute', color: '#4ade80', desc: '中级篇的野蛮守卫', image: 'assets/boss/boss-2-raksasa-ogre.png' },
+        '3': { name: 'Naga 蛇龙', icon: 'fa-dragon', theme: 'dragon', color: '#f87171', desc: '中高级的盘踞之龙', image: 'assets/boss/boss-3-naga-dragon.png' },
+        '4': { name: 'Garuda 伽鲁达', icon: 'fa-dove', theme: 'garuda', color: '#fbbf24', desc: '高级篇的神鸟之王', image: 'assets/boss/boss-4-garuda-eagle.png' },
+        '5': { name: '浮屠守殿者', icon: 'fa-landmark', theme: 'temple', color: '#fb923c', desc: '高级进阶的石像守卫', image: 'assets/boss/boss-5-temple-guardian.png' },
+        '6': { name: 'Dewa 天神', icon: 'fa-bolt', theme: 'deity', color: '#38bdf8', desc: '精通篇的半神形态', image: 'assets/boss/boss-6-dewa-deity.png' },
+        '7': { name: 'Ratu Iblis 魔王', icon: 'fa-skull', theme: 'demon', color: '#ef4444', desc: '卓越篇的终极魔王', image: 'assets/boss/boss-7-demon-king.png' },
 
     },
 
@@ -1436,8 +1436,13 @@ const ChallengeModule = {
                     <div class="challenge-play-page boss-loading-page">
                         <div class="boss-loading-overlay" id="boss-loading-overlay">
                             <div class="boss-loading-content">
-                                <div class="boss-loading-spinner"></div>
-                                <div class="boss-loading-text">\u8f7d\u5165\u4e2d...</div>
+                                <div class="boss-loading-icon-wrap">
+                                    <i class="fas ${bossIcon}" style="color:${bossColor};"></i>
+                                </div>
+                                <div class="boss-loading-progress-wrap">
+                                    <div class="boss-loading-progress-bar" id="boss-loading-bar" style="width:0%;background:linear-gradient(90deg,${bossColor},${bossColor}aa);"></div>
+                                </div>
+                                <div class="boss-loading-progress-text" id="boss-loading-pct">0%</div>
                             </div>
                         </div>
                         <div class="boss-loading-main">
@@ -1495,23 +1500,38 @@ const ChallengeModule = {
                         </div>
                     </div>`;
 
-                // \u9884\u52a0\u8f7dBOSS\u56fe\u7247
-                if (bossImage) {
-                    const img = new Image();
-                    img.onload = () => {
-                        const overlay = document.getElementById('boss-loading-overlay');
-                        if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.remove(), 400); }
+                // \u9884\u52a0\u8f7dBOSS\u56fe\u7247 + \u8fdb\u5ea6\u6761\u52a8\u753b
+                {
+                    const bar = document.getElementById('boss-loading-bar');
+                    const pct = document.getElementById('boss-loading-pct');
+                    let progress = 0;
+                    // \u6a21\u62df\u8fdb\u5ea6\u63a8\u8fdb
+                    const tick = setInterval(() => {
+                        progress = Math.min(progress + Math.random() * 15 + 5, 85);
+                        if (bar) bar.style.width = Math.round(progress) + '%';
+                        if (pct) pct.textContent = Math.round(progress) + '%';
+                    }, 300);
+
+                    const finishLoad = () => {
+                        clearInterval(tick);
+                        if (bar) bar.style.width = '100%';
+                        if (pct) pct.textContent = '100%';
+                        setTimeout(() => {
+                            const overlay = document.getElementById('boss-loading-overlay');
+                            if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.remove(), 400); }
+                        }, 500);
                     };
-                    img.onerror = () => {
-                        const overlay = document.getElementById('boss-loading-overlay');
-                        if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.remove(), 400); }
-                    };
-                    img.src = bossImage;
-                    // \u8d85\u65f6\u81ea\u52a8\u9690\u85cf\u52a0\u8f7d
-                    setTimeout(() => {
-                        const overlay = document.getElementById('boss-loading-overlay');
-                        if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.remove(), 400); }
-                    }, 3000);
+
+                    if (bossImage) {
+                        const img = new Image();
+                        img.onload = finishLoad;
+                        img.onerror = finishLoad;
+                        img.src = bossImage;
+                        // \u8d85\u65f6\u4fdd\u62a4
+                        setTimeout(finishLoad, 4000);
+                    } else {
+                        setTimeout(finishLoad, 1500);
+                    }
                 }
             } else {
             container.innerHTML = `
