@@ -4685,31 +4685,34 @@
 }
 
 .boss-cinematic-vs span {
-    font-size: 1.8rem;
+    font-size: 2rem;
     font-weight: 900;
-    color: rgba(245,158,11,0.8);
-    text-shadow: 0 0 25px rgba(245,158,11,0.4);
-    letter-spacing: 4px;
-    background: rgba(15,23,42,0.9);
-    padding: 6px 20px;
-    border-radius: 12px;
-    border: 1px solid rgba(245,158,11,0.25);
+    color: #fbbf24;
+    text-shadow: 0 0 20px rgba(245,158,11,0.6), 0 0 40px rgba(245,158,11,0.2);
+    letter-spacing: 6px;
+    background: linear-gradient(180deg, rgba(15,23,42,0.85) 0%, rgba(15,23,42,0.95) 100%);
+    padding: 8px 28px;
+    border-radius: 14px;
+    border: 1px solid rgba(245,158,11,0.35);
+    box-shadow: 0 0 15px rgba(245,158,11,0.15);
 }
 
 .boss-cinematic-hp-bar {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
-    max-width: 180px;
+    max-width: 220px;
 }
 
 .boss-cinematic-hp-track {
     flex: 1;
-    height: 10px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 5px;
+    height: 14px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 7px;
     overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
 }
 
 .boss-cinematic-hp-track.rage {
@@ -4718,12 +4721,25 @@
 
 .boss-cinematic-hp-fill {
     height: 100%;
-    border-radius: 5px;
+    border-radius: 6px;
     transition: width 0.4s ease;
+    position: relative;
+}
+
+.boss-cinematic-hp-fill::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 4px;
+    right: 4px;
+    height: 4px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, transparent 100%);
+    border-radius: 4px;
 }
 
 .boss-hp-fill {
-    background: linear-gradient(90deg, #ef4444, #f87171);
+    background: linear-gradient(90deg, #dc2626, #ef4444, #f87171);
+    box-shadow: 0 0 8px rgba(239,68,68,0.4);
 }
 
 .user-hp-track {
@@ -4731,15 +4747,17 @@
 }
 
 .user-hp-fill {
-    background: linear-gradient(90deg, #34d399, #6ee7b7);
+    background: linear-gradient(90deg, #059669, #34d399, #6ee7b7);
+    box-shadow: 0 0 8px rgba(52,211,153,0.4);
 }
 
 .boss-cinematic-hp-num {
-    font-size: 0.75rem;
-    font-weight: 700;
+    font-size: 0.8rem;
+    font-weight: 800;
     white-space: nowrap;
-    min-width: 40px;
+    min-width: 44px;
     text-align: right;
+    font-variant-numeric: tabular-nums;
 }
 
 .boss-cinematic-nameplate {
@@ -4747,14 +4765,15 @@
 }
 
 .boss-cinematic-name {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: #e2e8f0;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    font-size: 1rem;
+    font-weight: 800;
+    color: #f1f5f9;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.7);
+    letter-spacing: 1px;
 }
 
 .boss-cinematic-nameplate.hero-nameplate .boss-cinematic-name {
-    color: #34d399;
+    color: #6ee7b7;
 }
 
 /* 右上：答题区 (2/4) */
@@ -4795,7 +4814,11 @@
 .boss-hero-panel {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, rgba(30,41,59,0.4) 0%, rgba(15,23,42,0.3) 100%);
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.06);
 }
 
 .boss-hero-visual {
@@ -4803,23 +4826,23 @@
 }
 
 .boss-cinematic-hero-avatar {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
     object-fit: cover;
-    border: 2px solid rgba(52,211,153,0.5);
-    box-shadow: 0 0 12px rgba(52,211,153,0.1);
+    border: 2px solid rgba(52,211,153,0.6);
+    box-shadow: 0 0 16px rgba(52,211,153,0.2), 0 2px 8px rgba(0,0,0,0.3);
 }
 
 .boss-cinematic-hero-fallback {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    border: 2px solid rgba(52,211,153,0.5);
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    border: 2px solid rgba(52,211,153,0.6);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(52,211,153,0.06);
+    background: rgba(52,211,153,0.08);
 }
 
 /* 暴怒覆盖层 */
@@ -4946,6 +4969,14 @@
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 1px;
+}
+
+.boss-loading-status {
+    color: #475569;
+    font-size: 0.65rem;
+    font-weight: 500;
+    min-height: 1em;
+    transition: opacity 0.3s;
 }
 
 .boss-loading-main {

@@ -483,14 +483,14 @@ const ChallengeModule = {
 
     // 用户角色形象定义（按等级成长）
     _heroDefs: {
-        '0': { name: '初心学徒', icon: 'fa-person-hiking', color: '#34d399', desc: '手持木剑的少年冒险者', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjPeDsrW' },
-        '1': { name: '旅人剑士', icon: 'fa-person-military-rifle', color: '#2dd4bf', desc: '装备铁甲的年轻剑士', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjLb8QWg' },
-        '2': { name: '荒野游侠', icon: 'fa-person-walking', color: '#4ade80', desc: '身披斗篷的弓箭手', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjLjnevG' },
-        '3': { name: '龙骑士学徒', icon: 'fa-hat-wizard', color: '#fb923c', desc: '骑小龙的初级龙骑士', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjLt1A8k' },
-        '4': { name: '圣殿骑士', icon: 'fa-shield-halved', color: '#fbbf24', desc: '身披银甲的圣殿守卫', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjLEnxkU' },
-        '5': { name: '元素法师', icon: 'fa-wand-magic-sparkles', color: '#c084fc', desc: '操控元素的强大法师', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjLMkiYI' },
-        '6': { name: '半神行者', icon: 'fa-bolt', color: '#38bdf8', desc: '身带神光的超凡存在', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjLShSI4' },
-        '7': { name: '传奇勇者', icon: 'fa-crown', color: '#f59e0b', desc: '全身铠甲散发圣光的终极勇者', image: 'https://lingxi.wps.cn/api/aioffice/v1/short_link/3fjM0wftW' },
+        '0': { name: '初心学徒', icon: 'fa-person-hiking', color: '#34d399', desc: '手持木剑的少年冒险者', image: 'assets/hero/hero-0-apprentice.png' },
+        '1': { name: '旅人剑士', icon: 'fa-person-military-rifle', color: '#2dd4bf', desc: '装备铁甲的年轻剑士', image: 'assets/hero/hero-1-swordsman.png' },
+        '2': { name: '荒野游侠', icon: 'fa-person-walking', color: '#4ade80', desc: '身披斗篷的弓箭手', image: 'assets/hero/hero-2-ranger.png' },
+        '3': { name: '龙骑士学徒', icon: 'fa-hat-wizard', color: '#fb923c', desc: '骑小龙的初级龙骑士', image: 'assets/hero/hero-3-dragon-rider.png' },
+        '4': { name: '圣殿骑士', icon: 'fa-shield-halved', color: '#fbbf24', desc: '身披银甲的圣殿守卫', image: 'assets/hero/hero-4-temple-knight.png' },
+        '5': { name: '元素法师', icon: 'fa-wand-magic-sparkles', color: '#c084fc', desc: '操控元素的强大法师', image: 'assets/hero/hero-5-elemental-mage.png' },
+        '6': { name: '半神行者', icon: 'fa-bolt', color: '#38bdf8', desc: '身带神光的超凡存在', image: 'assets/hero/hero-6-demigod.png' },
+        '7': { name: '传奇勇者', icon: 'fa-crown', color: '#f59e0b', desc: '全身铠甲散发圣光的终极勇者', image: 'assets/hero/hero-7-legendary-hero.png' },
     },
 
     _regenerateStages() {
@@ -1468,6 +1468,8 @@ const ChallengeModule = {
                 const bossIcon = bossDef.icon || 'fa-skull';
                 const bossDesc = bossDef.desc || '';
                 const bossImage = bossDef.image || '';
+                const heroDef = this._heroDefs[String(state.bossLevel || 0)] || this._heroDefs['0'];
+                const heroImage = heroDef.image || '';
                 const ragePct = Math.round((state.rageThreshold || 0.25) * 100);
                 container.innerHTML = `
                     <div class="challenge-play-page boss-loading-page">
@@ -1480,6 +1482,7 @@ const ChallengeModule = {
                                     <div class="boss-loading-progress-bar" id="boss-loading-bar" style="width:0%;background:linear-gradient(90deg,${bossColor},${bossColor}aa);"></div>
                                 </div>
                                 <div class="boss-loading-progress-text" id="boss-loading-pct">0%</div>
+                                <div class="boss-loading-status" id="boss-loading-status">\u52a0\u8f7d\u4e2d...</div>
                             </div>
                         </div>
                         <div class="boss-loading-main">
@@ -1537,38 +1540,80 @@ const ChallengeModule = {
                         </div>
                     </div>`;
 
-                // \u9884\u52a0\u8f7dBOSS\u56fe\u7247 + \u8fdb\u5ea6\u6761\u52a8\u753b
+                // \u771f\u5b9e\u8fdb\u5ea6\u9884\u52a0\u8f7dBOSS\u56fe\u7247 + Hero\u56fe\u7247
                 {
                     const bar = document.getElementById('boss-loading-bar');
                     const pct = document.getElementById('boss-loading-pct');
+                    const setStatus = (text) => {
+                        const el = document.getElementById('boss-loading-status');
+                        if (el) el.textContent = text;
+                    };
                     let progress = 0;
-                    // \u6a21\u62df\u8fdb\u5ea6\u63a8\u8fdb
-                    const tick = setInterval(() => {
-                        progress = Math.min(progress + Math.random() * 15 + 5, 85);
+                    const setProgress = (v) => {
+                        progress = Math.max(progress, v);
                         if (bar) bar.style.width = Math.round(progress) + '%';
                         if (pct) pct.textContent = Math.round(progress) + '%';
-                    }, 300);
-
-                    const finishLoad = () => {
-                        clearInterval(tick);
-                        if (bar) bar.style.width = '100%';
-                        if (pct) pct.textContent = '100%';
-                        setTimeout(() => {
-                            const overlay = document.getElementById('boss-loading-overlay');
-                            if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.remove(), 400); }
-                        }, 500);
                     };
 
-                    if (bossImage) {
-                        const img = new Image();
-                        img.onload = finishLoad;
-                        img.onerror = finishLoad;
-                        img.src = bossImage;
-                        // \u8d85\u65f6\u4fdd\u62a4
-                        setTimeout(finishLoad, 4000);
-                    } else {
-                        setTimeout(finishLoad, 1500);
-                    }
+                    // \u7528fetch\u771f\u5b9e\u76d1\u542c\u4e0b\u8f7d\u8fdb\u5ea6
+                    const preloadWithProgress = (url, weight) => {
+                        return new Promise((resolve) => {
+                            if (!url) { resolve(); return; }
+                            setProgress(progress + weight * 0.1);
+                            fetch(url + '?_t=' + Date.now())
+                                .then(r => {
+                                    if (!r.ok) { resolve(); return; }
+                                    const contentLength = r.headers.get('content-length');
+                                    if (!contentLength || !r.body) {
+                                        r.blob().then(() => { setProgress(progress + weight * 0.9); resolve(); });
+                                        return;
+                                    }
+                                    const total = parseInt(contentLength);
+                                    let loaded = 0;
+                                    const reader = r.body.getReader();
+                                    const read = () => {
+                                        reader.read().then(({done, value}) => {
+                                            if (done) { setProgress(progress + weight * 0.9); resolve(); return; }
+                                            loaded += value.length;
+                                            setProgress(progress + weight * 0.9 * (loaded / total));
+                                            read();
+                                        }).catch(() => resolve());
+                                    };
+                                    read();
+                                })
+                                .catch(() => resolve());
+                        });
+                    };
+
+                    // \u540c\u65f6\u9884\u52a0\u8f7d\u4e24\u5f20\u56fe\u7247
+                    const tasks = [];
+                    if (bossImage) { tasks.push(preloadWithProgress(bossImage, 60)); setStatus('\u52a0\u8f7dBOSS...'); }
+                    if (heroImage) { tasks.push(preloadWithProgress(heroImage, 40)); }
+                    // \u6a21\u62df\u57fa\u7840\u8fdb\u5ea6\u63a8\u8fdb
+                    const tick = setInterval(() => {
+                        if (progress < 90) setProgress(progress + 1);
+                        if (heroImage && progress >= 55) setStatus('\u52a0\u8f7d\u89d2\u8272...');
+                    }, 200);
+
+                    Promise.all(tasks).then(() => {
+                        clearInterval(tick);
+                        setProgress(95);
+                        setStatus('\u51c6\u5907\u5b8c\u6210!');
+                        setTimeout(() => {
+                            setProgress(100);
+                            const overlay = document.getElementById('boss-loading-overlay');
+                            if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.remove(), 400); }
+                        }, 400);
+                    });
+
+                    // \u8d85\u65f6\u4fdd\u62a415\u79d2
+                    setTimeout(() => {
+                        clearInterval(tick);
+                        setProgress(100);
+                        setStatus('');
+                        const overlay = document.getElementById('boss-loading-overlay');
+                        if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.remove(), 400); }
+                    }, 15000);
                 }
             } else {
             container.innerHTML = `
