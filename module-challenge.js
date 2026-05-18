@@ -2865,6 +2865,8 @@ const ChallengeModule = {
         const heroBadge = document.querySelector('.boss-hero-hp-badge');
         const bossPct = document.querySelector('.boss-hp-bar-pct');
         const heroPct = document.querySelector('.boss-hero-hp-pct');
+        const bossTrack = document.querySelector('.boss-hp-bar-track');
+        const heroTrack = document.querySelector('.boss-hero-hp-track');
 
         const bossPctVal = state.bossMaxHp > 0 ? Math.round(state.bossHp / state.bossMaxHp * 100) : 0;
         const userPctVal = state.userMaxHp > 0 ? Math.round(state.userHp / state.userMaxHp * 100) : 0;
@@ -2876,7 +2878,35 @@ const ChallengeModule = {
         if (bossPct) bossPct.textContent = bossPctVal + '%';
         if (heroPct) heroPct.textContent = userPctVal + '%';
 
-        // \u66b4\u6012\u72b6\u6001
+        // ===== BOSS血条分级效果 =====
+        const bossColor = (state.bossDef || {}).color || '#ef4444';
+        if (bossPctVal <= 30) {
+            // \u66b4\u6012\u533a\u57df - \u706b\u7130\u6548\u679c
+            if (bossHpFill) { bossHpFill.style.background = 'linear-gradient(90deg, #7f1d1d, #dc2626, #ff4444)'; bossHpFill.className = 'boss-hp-bar-fill boss-hp-rage'; }
+            if (bossTrack) bossTrack.classList.add('rage');
+            if (bossBadge) { bossBadge.style.color = '#ff4444'; bossBadge.style.background = '#ff444420'; }
+            if (bossPct) bossPct.style.color = '#ff4444';
+        } else if (bossPctVal <= 50) {
+            // \u5371\u9669\u533a\u57df - \u6a59\u8272\u95ea\u70c1
+            if (bossHpFill) { bossHpFill.style.background = 'linear-gradient(90deg, #c2410c, #f97316, #fb923c)'; bossHpFill.className = 'boss-hp-bar-fill boss-hp-warning'; }
+            if (bossTrack) { bossTrack.classList.remove('rage'); bossTrack.classList.add('warning'); }
+            if (bossBadge) { bossBadge.style.color = '#f97316'; bossBadge.style.background = '#f9731620'; }
+            if (bossPct) bossPct.style.color = '#f97316';
+        } else if (bossPctVal <= 70) {
+            // \u8b66\u544a\u533a\u57df - \u9ec4\u8272\u8109\u52a8
+            if (bossHpFill) { bossHpFill.style.background = 'linear-gradient(90deg, #a16207, #eab308, #facc15)'; bossHpFill.className = 'boss-hp-bar-fill boss-hp-caution'; }
+            if (bossTrack) { bossTrack.classList.remove('rage'); bossTrack.classList.add('caution'); }
+            if (bossBadge) { bossBadge.style.color = '#eab308'; bossBadge.style.background = '#eab30820'; }
+            if (bossPct) bossPct.style.color = '#eab308';
+        } else {
+            // \u6b63\u5e38\u72b6\u6001
+            if (bossHpFill) { bossHpFill.style.background = 'linear-gradient(90deg,' + bossColor + 'cc,' + bossColor + ')'; bossHpFill.className = 'boss-hp-bar-fill'; }
+            if (bossTrack) { bossTrack.classList.remove('rage', 'warning', 'caution'); }
+            if (bossBadge) { bossBadge.style.color = bossColor; bossBadge.style.background = bossColor + '18'; }
+            if (bossPct) bossPct.style.color = bossColor;
+        }
+
+        // \u66b4\u6012\u72b6\u6001\u989d\u5916\u6548\u679c
         if (state.bossPhase === 'rage') {
             const cinematicContainer = document.getElementById('boss-battle-ui');
             if (cinematicContainer && !cinematicContainer.querySelector('.boss-cinematic-rage-overlay')) {
@@ -2893,20 +2923,28 @@ const ChallengeModule = {
             }
             const bossVisual = document.querySelector('.boss-bg-avatar');
             if (bossVisual) {
-                const bossDef = state.bossDef || {};
-                bossVisual.style.filter = 'drop-shadow(0 0 20px ' + (bossDef.color || '#ef4444') + ')';
+                bossVisual.style.filter = 'drop-shadow(0 0 20px #ff4444)';
                 bossVisual.style.animation = 'boss-shake 0.3s ease-in-out infinite';
             }
-            if (bossHpFill) bossHpFill.style.background = 'linear-gradient(90deg, #cc0000, #ff4444)';
         }
 
-        // \u7528\u6237HP\u4f4e\u8840\u91cf\u8b66\u544a
-        if (userHpFill) {
-            const pct = state.userMaxHp > 0 ? state.userHp / state.userMaxHp : 0;
-            const lowColor = pct <= 0.3 ? '#f87171' : '#34d399';
-            userHpFill.style.background = 'linear-gradient(90deg, ' + lowColor + 'cc, ' + lowColor + ')';
-            if (heroBadge) { heroBadge.style.color = lowColor; heroBadge.style.background = lowColor + '18'; }
-            if (heroPct) heroPct.style.color = lowColor;
+        // ===== 玩家血条分级效果 =====
+        if (userPctVal <= 30) {
+            if (userHpFill) { userHpFill.style.background = 'linear-gradient(90deg, #7f1d1d, #dc2626, #f87171)'; userHpFill.className = 'boss-hero-hp-fill hero-hp-critical'; }
+            if (heroBadge) { heroBadge.style.color = '#f87171'; heroBadge.style.background = '#f8717120'; }
+            if (heroPct) heroPct.style.color = '#f87171';
+        } else if (userPctVal <= 50) {
+            if (userHpFill) { userHpFill.style.background = 'linear-gradient(90deg, #c2410c, #f97316, #fbbf24)'; userHpFill.className = 'boss-hero-hp-fill hero-hp-warning'; }
+            if (heroBadge) { heroBadge.style.color = '#f97316'; heroBadge.style.background = '#f9731620'; }
+            if (heroPct) heroPct.style.color = '#f97316';
+        } else if (userPctVal <= 70) {
+            if (userHpFill) { userHpFill.style.background = 'linear-gradient(90deg, #065f46, #10b981, #6ee7b7)'; userHpFill.className = 'boss-hero-hp-fill hero-hp-caution'; }
+            if (heroBadge) { heroBadge.style.color = '#6ee7b7'; heroBadge.style.background = '#6ee7b720'; }
+            if (heroPct) heroPct.style.color = '#6ee7b7';
+        } else {
+            if (userHpFill) { userHpFill.style.background = 'linear-gradient(90deg, #059669cc, #34d399)'; userHpFill.className = 'boss-hero-hp-fill'; }
+            if (heroBadge) { heroBadge.style.color = '#34d399'; heroBadge.style.background = '#34d39918'; }
+            if (heroPct) heroPct.style.color = '#34d399';
         }
     },
 

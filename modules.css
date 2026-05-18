@@ -4952,6 +4952,125 @@
     font-variant-numeric: tabular-nums;
 }
 
+/* BOSS血条 - 暴怒火焰 */
+.boss-hp-rage {
+    animation: hp-rage-flame 0.4s ease-in-out infinite alternate;
+    box-shadow: 0 0 12px rgba(255,68,68,0.6), 0 0 24px rgba(255,68,68,0.3);
+}
+
+.boss-hp-rage::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: linear-gradient(90deg, transparent, rgba(255,100,0,0.4), rgba(255,200,0,0.2), rgba(255,100,0,0.4), transparent);
+    animation: rage-fire-sweep 1.2s linear infinite;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.boss-hp-rage::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 40%);
+    animation: rage-flicker 0.15s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes hp-rage-flame {
+    0% { filter: brightness(1) saturate(1.2); }
+    100% { filter: brightness(1.3) saturate(1.5); }
+}
+
+@keyframes rage-fire-sweep {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes rage-flicker {
+    0% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* BOSS血条 - 危险橙色脉冲 */
+.boss-hp-warning {
+    animation: hp-warning-pulse 0.6s ease-in-out infinite alternate;
+    box-shadow: 0 0 8px rgba(249,115,22,0.4);
+}
+
+@keyframes hp-warning-pulse {
+    0% { filter: brightness(1); }
+    100% { filter: brightness(1.2) saturate(1.3); }
+}
+
+/* BOSS血条 - 警告黄色微动 */
+.boss-hp-caution {
+    animation: hp-caution-breathe 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes hp-caution-breathe {
+    0% { filter: brightness(0.95); }
+    100% { filter: brightness(1.1); }
+}
+
+/* 轨道状态效果 */
+.boss-hp-bar-track.warning {
+    border-color: rgba(249,115,22,0.3);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 0 8px rgba(249,115,22,0.15);
+}
+
+.boss-hp-bar-track.caution {
+    border-color: rgba(234,179,8,0.2);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 0 0 6px rgba(234,179,8,0.1);
+}
+
+/* ===== 玩家血条分级效果 ===== */
+.hero-hp-critical {
+    animation: hero-critical-flash 0.5s ease-in-out infinite alternate;
+    box-shadow: 0 0 10px rgba(248,113,113,0.5);
+}
+
+.hero-hp-critical::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, transparent 30%, rgba(255,255,255,0.25) 50%, transparent 70%);
+    animation: critical-sweep 1s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes hero-critical-flash {
+    0% { filter: brightness(0.9) saturate(1.2); }
+    100% { filter: brightness(1.2) saturate(1.5); }
+}
+
+@keyframes critical-sweep {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.hero-hp-warning {
+    animation: hero-warning-pulse 0.8s ease-in-out infinite alternate;
+    box-shadow: 0 0 6px rgba(249,115,22,0.3);
+}
+
+@keyframes hero-warning-pulse {
+    0% { filter: brightness(1); }
+    100% { filter: brightness(1.15) saturate(1.2); }
+}
+
+.hero-hp-caution {
+    animation: hero-caution-breathe 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes hero-caution-breathe {
+    0% { filter: brightness(0.95); }
+    100% { filter: brightness(1.08); }
+}
+
 /* ========== 用户面板 ========== */
 .boss-hero-panel {
     display: flex;
