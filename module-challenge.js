@@ -1333,6 +1333,30 @@ const ChallengeModule = {
                 container.appendChild(feedback);
             }
 
+            // ===== BOSS战处理 =====
+            if (state.isBoss) {
+                const bossResult = this._bossHandleAnswer(state, isCorrect);
+                if (bossResult.damageType) {
+                    this._bossDamageEffect(bossResult.damageType, bossResult);
+                }
+                this._updateBossHpDisplay(state);
+                if (bossResult.gameOver) {
+                    clearInterval(this._timerInterval);
+                    setTimeout(() => {
+                        const subContent = document.getElementById('challenge-sub-content');
+                        if (subContent) this._renderBossResult(subContent, bossResult.result);
+                    }, 1200);
+                    return;
+                }
+                setTimeout(() => {
+                    state.currentIndex++;
+                    const subContent = document.getElementById('challenge-sub-content');
+                    if (subContent) this._renderPlayArea(subContent);
+                }, 1200);
+                return;
+            }
+            // ===== BOSS战处理结束 =====
+
             // 准确率淘汰检测
             const knockout = this._checkAccuracyKnockout();
             if (knockout) {
@@ -1354,7 +1378,20 @@ const ChallengeModule = {
                 if (subContent) this._renderPlayArea(subContent);
             }, 1200);
         } else {
-            // 交卷阅卷模式：不显示反馈，直接跳下一题
+            // 交卷阅卷模式
+            if (state.isBoss) {
+                const bossResult = this._bossHandleAnswer(state, isCorrect);
+                if (bossResult.damageType) {
+                    this._bossDamageEffect(bossResult.damageType, bossResult);
+                }
+                this._updateBossHpDisplay(state);
+                if (bossResult.gameOver) {
+                    clearInterval(this._timerInterval);
+                    const subContent = document.getElementById('challenge-sub-content');
+                    if (subContent) this._renderBossResult(subContent, bossResult.result);
+                    return;
+                }
+            }
             state.currentIndex++;
             const subContent = document.getElementById('challenge-sub-content');
             if (subContent) this._renderPlayArea(subContent);
