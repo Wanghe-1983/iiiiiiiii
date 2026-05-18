@@ -4078,10 +4078,18 @@
     margin-left: 8px;
 }
 
-/* 隐藏页脚版权在闯天关模块中 */
-.challenge-module ~ #copyright,
-.challenge-module + .copyright {
-    display: none;
+/* 版权区在闯天关战斗页面固定底部 */
+#copyright {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(8px);
+    padding: 6px 0;
+    margin: 0;
+    font-size: 0.75rem;
 }
 
 
@@ -4566,13 +4574,15 @@
 /* ========== BOSS 电影级对战布局 ========== */
 .boss-cinematic-page {
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .boss-cinematic-layout {
     display: grid;
     grid-template-columns: 3fr 2fr;
     gap: 0;
-    max-height: calc(100vh - 200px);
+    height: calc(100vh - 140px);
     position: relative;
     background: linear-gradient(135deg, rgba(15,23,42,0.97) 0%, rgba(15,23,42,0.85) 50%, rgba(15,23,42,0.92) 100%);
     border-radius: 14px;

@@ -1985,7 +1985,7 @@ function createBossLevelRow(levelId, data) {
             <div class="boss-big-fields" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
                 <div class="boss-big-hp-wrap" style="${big.hpMode===2?'':'display:none;'}"><label style="font-size:0.7rem;color:#64748b;">BOSS HP <span style="color:#ef4444;">*</span></label><input type="number" class="boss-big-hp" min="1" max="999" value="${big.bossHp||10}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
                 <div><label style="font-size:0.7rem;color:#64748b;">用户HP <span style="color:#ef4444;">*</span></label><input type="number" class="boss-big-userhp" min="1" max="99" value="${big.userHp||3}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
-                <div><label style="font-size:0.7rem;color:#64748b;">题量 <span style="color:#ef4444;">*</span></label><input type="number" class="boss-big-questions" min="1" max="200" value="${big.questionCount||12}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+                <div><label style="font-size:0.7rem;color:#64748b;">题量(弹药) <span style="color:#ef4444;">*</span><span style="color:#64748b;font-size:0.6rem;">≥BOSS HP·2倍关卡</span></label><input type="number" class="boss-big-questions" min="3" max="300" value="${big.questionCount||16}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
             </div>
         </div>
         <!-- 小BOSS -->
@@ -2009,7 +2009,7 @@ function createBossLevelRow(levelId, data) {
                 <div><label style="font-size:0.7rem;color:#64748b;">间隔(关) <span style="color:#ef4444;">*</span></label><input type="number" class="boss-mini-interval" min="2" max="50" value="${mini.interval||5}" placeholder="每N关一个小BOSS" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
                 <div class="boss-mini-hp-wrap" style="${mini.hpMode===2?'':'display:none;'}"><label style="font-size:0.7rem;color:#64748b;">BOSS HP <span style="color:#ef4444;">*</span></label><input type="number" class="boss-mini-hp" min="1" max="99" value="${mini.bossHp||5}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
                 <div><label style="font-size:0.7rem;color:#64748b;">用户HP <span style="color:#ef4444;">*</span></label><input type="number" class="boss-mini-userhp" min="1" max="99" value="${mini.userHp||3}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
-                <div><label style="font-size:0.7rem;color:#64748b;">题量 <span style="color:#ef4444;">*</span></label><input type="number" class="boss-mini-questions" min="1" max="100" value="${mini.questionCount||8}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
+                <div><label style="font-size:0.7rem;color:#64748b;">题量(弹药) <span style="color:#ef4444;">*</span><span style="color:#64748b;font-size:0.6rem;">≥BOSS HP·1.5倍关卡</span></label><input type="number" class="boss-mini-questions" min="3" max="200" value="${mini.questionCount||12}" style="width:100%;padding:6px 8px;background:rgba(15,23,42,0.8);color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:6px;font-size:0.8rem;"></div>
             </div>
         </div>
     `;
@@ -2093,6 +2093,7 @@ function collectBossConfig() {
             const bossHp = hpMode === 2 ? parseInt(row.querySelector('.boss-mini-hp').value) : qCount;
             const userHp = parseInt(row.querySelector('.boss-mini-userhp').value);
             if (!interval || interval < 2) { alert('等级 ' + lvl + ' 小BOSS间隔不能小于2'); throw new Error('validation'); }
+            if (qCount < bossHp) { alert('等级 ' + lvl + ' 小BOSS弹药(' + qCount + ')不能小于BOSS血量(' + bossHp + ')'); throw new Error('validation'); }
             if (!userHp || userHp < 1) { alert('等级 ' + lvl + ' 用户HP不能为空'); throw new Error('validation'); }
             if (!qCount || qCount < 1) { alert('等级 ' + lvl + ' 题量不能为空'); throw new Error('validation'); }
             if (hpMode === 2 && (!bossHp || bossHp < 1)) { alert('等级 ' + lvl + ' 小BOSS HP不能为空'); throw new Error('validation'); }
@@ -2114,6 +2115,7 @@ function collectBossConfig() {
             if (!userHp || userHp < 1) { alert('等级 ' + lvl + ' 用户HP不能为空'); throw new Error('validation'); }
             if (!qCount || qCount < 1) { alert('等级 ' + lvl + ' 题量不能为空'); throw new Error('validation'); }
             if (hpMode === 2 && (!bossHp || bossHp < 1)) { alert('等级 ' + lvl + ' 大BOSS HP不能为空'); throw new Error('validation'); }
+            if (qCount < bossHp) { alert('等级 ' + lvl + ' 大BOSS弹药(' + qCount + ')不能小于BOSS血量(' + bossHp + ')'); throw new Error('validation'); }
             config.big = {
                 enabled: true,
                 bossLevel: lvl,

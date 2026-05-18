@@ -396,41 +396,42 @@ const ChallengeModule = {
         // 题目来源模式: 'random' = 从当前等级及之前随机抽题, 'specific' = 按等级指定范围
         questionSource: 'random',
         // 各等级BOSS配置（后台可通过 hellSettings.bossConfig 覆盖）
-        // levelBosses: {
-        //   levelId: { mini: { enabled, count, interval, bossLevel, ...hp配置 }, big: { enabled, bossLevel, ...hp配置 } }
-        // }
+        // 弹药(题量)机制：小BOSS默认=普通关卡平均题量×1.5，大BOSS默认=×2
+        // HP模式1: BOSS HP = 弹药数（一题一血，最直观）
+        // HP模式2: 自定义HP（弹药 >= HP，按比例扣血）
+        // 题量(questionCount)为0时自动按倍数计算，管理员不需要手动填
         levelBosses: {
             '0': {
-                mini: { enabled: false },
-                big: { enabled: true, bossLevel: '0', bossHp: 6,  userHp: 3, questionCount: 10, questionRange: [0], rageThreshold: 0.35, rageDamage: 2 }
+                mini: { enabled: true, interval: 5, bossLevel: '0', userHp: 3, questionCount: 0 },
+                big: { enabled: true, bossLevel: '0', userHp: 3, questionCount: 0, questionRange: [0] }
             },
             '1': {
-                mini: { enabled: false },
-                big: { enabled: true, bossLevel: '1', bossHp: 8,  userHp: 3, questionCount: 12, questionRange: [0, 1], rageThreshold: 0.3, rageDamage: 2 }
+                mini: { enabled: true, interval: 5, bossLevel: '1', userHp: 3, questionCount: 0 },
+                big: { enabled: true, bossLevel: '1', userHp: 3, questionCount: 0, questionRange: [0, 1] }
             },
             '2': {
-                mini: { enabled: false },
-                big: { enabled: true, bossLevel: '2', bossHp: 10, userHp: 3, questionCount: 14, questionRange: [0, 1, 2], rageThreshold: 0.3, rageDamage: 2 }
+                mini: { enabled: true, interval: 5, bossLevel: '2', userHp: 3, questionCount: 0 },
+                big: { enabled: true, bossLevel: '2', userHp: 3, questionCount: 0, questionRange: [0, 1, 2] }
             },
             '3': {
-                mini: { enabled: false },
-                big: { enabled: true, bossLevel: '3', bossHp: 12, userHp: 2, questionCount: 16, questionRange: [0, 1, 2, 3], rageThreshold: 0.25, rageDamage: 2 }
+                mini: { enabled: true, interval: 5, bossLevel: '3', userHp: 2, questionCount: 0 },
+                big: { enabled: true, bossLevel: '3', userHp: 2, questionCount: 0, questionRange: [0, 1, 2, 3] }
             },
             '4': {
-                mini: { enabled: true, count: 3, interval: 20, bossLevel: '0', bossHp: 5,  userHp: 3, questionCount: 8,  questionRange: [0, 1, 2, 3, 4], rageThreshold: 0.35, rageDamage: 2 },
-                big: { enabled: true, bossLevel: '4', bossHp: 12, userHp: 2, questionCount: 16, questionRange: [0, 1, 2, 3, 4], rageThreshold: 0.25, rageDamage: 2 }
+                mini: { enabled: true, interval: 5, bossLevel: '4', userHp: 2, questionCount: 0 },
+                big: { enabled: true, bossLevel: '4', userHp: 2, questionCount: 0, questionRange: [0, 1, 2, 3, 4] }
             },
             '5': {
-                mini: { enabled: true, count: 2, interval: 21, bossLevel: '1', bossHp: 6,  userHp: 3, questionCount: 10, questionRange: [0, 1, 2, 3, 4, 5], rageThreshold: 0.35, rageDamage: 2 },
-                big: { enabled: true, bossLevel: '5', bossHp: 15, userHp: 2, questionCount: 18, questionRange: [0, 1, 2, 3, 4, 5], rageThreshold: 0.25, rageDamage: 3 }
+                mini: { enabled: true, interval: 5, bossLevel: '5', userHp: 2, questionCount: 0 },
+                big: { enabled: true, bossLevel: '5', userHp: 2, questionCount: 0, questionRange: [0, 1, 2, 3, 4, 5] }
             },
             '6': {
-                mini: { enabled: true, count: 2, interval: 16, bossLevel: '2', bossHp: 8,  userHp: 2, questionCount: 12, questionRange: [0, 1, 2, 3, 4, 5, 6], rageThreshold: 0.3, rageDamage: 2 },
-                big: { enabled: true, bossLevel: '6', bossHp: 18, userHp: 2, questionCount: 20, questionRange: [0, 1, 2, 3, 4, 5, 6], rageThreshold: 0.2, rageDamage: 3 }
+                mini: { enabled: true, interval: 5, bossLevel: '6', userHp: 2, questionCount: 0 },
+                big: { enabled: true, bossLevel: '6', userHp: 2, questionCount: 0, questionRange: [0, 1, 2, 3, 4, 5, 6] }
             },
             '7': {
-                mini: { enabled: true, count: 2, interval: 10, bossLevel: '3', bossHp: 10, userHp: 2, questionCount: 14, questionRange: [0, 1, 2, 3, 4, 5, 6, 7], rageThreshold: 0.3, rageDamage: 2 },
-                big: { enabled: true, bossLevel: '7', bossHp: 22, userHp: 1, questionCount: 25, questionRange: [0, 1, 2, 3, 4, 5, 6, 7], rageThreshold: 0.2, rageDamage: 3 }
+                mini: { enabled: true, interval: 5, bossLevel: '7', userHp: 2, questionCount: 0 },
+                big: { enabled: true, bossLevel: '7', userHp: 2, questionCount: 0, questionRange: [0, 1, 2, 3, 4, 5, 6, 7] }
             }
         }
     },
@@ -525,6 +526,9 @@ const ChallengeModule = {
             if (!lvConfig) continue;
             const normalCount = group.length; // 当前等级的普通关卡数
 
+            // 计算本等级普通关卡的平均题量（作为倍数基准）
+            const avgQ = group.reduce((sum, g) => sum + (g.stage.totalQuestions || 0), 0) / normalCount;
+
             // === 小BOSS（间隔模式：每隔N关一个，不限总数）===
             const mini = lvConfig.mini || {};
             if (mini.enabled && mini.interval > 0) {
@@ -536,10 +540,13 @@ const ChallengeModule = {
 
                     const insertAfter = group[actualIdx].globalIndex;
                     const _miniHpMode = mini.hpMode || 1;
-                    const _miniQCount = mini.questionCount || 8;
+                    // 弹药（题量）默认为普通关卡的1.5倍，向上取整，最少3题
+                    const _miniQCount = mini.questionCount || Math.max(3, Math.ceil(avgQ * 1.5));
+                    // HP模式1时BOSS HP = 弹药数，确保弹药 >= HP
+                    const _miniBossHp = _miniHpMode === 2 ? Math.min(mini.bossHp || Math.ceil(avgQ * 1.5), _miniQCount) : _miniQCount;
                     const params = {
                         hpMode: _miniHpMode,
-                        bossHp: _miniHpMode === 2 ? (mini.bossHp || _miniQCount) : _miniQCount,
+                        bossHp: _miniBossHp,
                         userHp: mini.userHp || 3,
                         questionCount: _miniQCount,
                         questionSource: config.questionSource || 'random'
@@ -559,10 +566,13 @@ const ChallengeModule = {
             if (big.enabled) {
                 const lastItem = group[group.length - 1];
                 const _bigHpMode = big.hpMode || 1;
-                const _bigQCount = big.questionCount || 15;
+                // 弹药（题量）默认为普通关卡的2倍，向上取整，最少3题
+                const _bigQCount = big.questionCount || Math.max(3, Math.ceil(avgQ * 2));
+                // HP模式1时BOSS HP = 弹药数，确保弹药 >= HP
+                const _bigBossHp = _bigHpMode === 2 ? Math.min(big.bossHp || Math.ceil(avgQ * 2), _bigQCount) : _bigQCount;
                 const params = {
                     hpMode: _bigHpMode,
-                    bossHp: _bigHpMode === 2 ? (big.bossHp || _bigQCount) : _bigQCount,
+                    bossHp: _bigBossHp,
                     userHp: big.userHp || 3,
                     questionCount: _bigQCount,
                     questionRange: big.questionRange || [levelId],
