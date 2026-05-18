@@ -4847,14 +4847,17 @@
 
 /* ========== BOSS HP 血条卡片（覆盖层） ========== */
 .boss-hp-card {
-    width: 100%;
-    max-width: 280px;
-    padding: 14px 18px;
-    background: rgba(0,0,0,0.55);
-    border-radius: 16px;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 240px;
+    padding: 14px 16px;
+    background: rgba(0,0,0,0.6);
+    border-radius: 14px;
     border: 1px solid rgba(255,255,255,0.08);
     backdrop-filter: blur(8px);
     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    z-index: 3;
 }
 
 .boss-hp-card-header {
