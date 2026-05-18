@@ -1,4 +1,4 @@
-const CACHE_NAME = 'indonesian-cache';
+const CACHE_NAME = 'indonesian-cache-v2';
 const ASSETS = ['./','./index.html','./login.html','./admin.html','./indonesian_learning_data.json','./manifest.json','./Wang_he.jpg'];
 
 self.addEventListener('install', e => {
