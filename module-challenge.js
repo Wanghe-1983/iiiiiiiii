@@ -496,10 +496,8 @@ const ChallengeModule = {
         // 根据当前模式重新生成关卡列表（使用对应的切分配置）
         this.allStages = CourseContent.getAllStages(this.challengeMode);
         
-        // 地狱模式下注入 BOSS 关卡
-        if (this.challengeMode === 'hell') {
-            this._injectBossStages();
-        }
+        // 注入 BOSS 关卡（普通模式和地狱模式均支持）
+        this._injectBossStages();
     },
 
     /**
