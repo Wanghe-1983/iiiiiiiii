@@ -4572,7 +4572,7 @@
     display: grid;
     grid-template-columns: 3fr 2fr;
     gap: 0;
-    min-height: 340px;
+    max-height: 520px;
     position: relative;
     background: linear-gradient(135deg, rgba(15,23,42,0.97) 0%, rgba(15,23,42,0.85) 50%, rgba(15,23,42,0.92) 100%);
     border-radius: 14px;
@@ -4580,23 +4580,7 @@
     border: 1px solid rgba(255,255,255,0.06);
 }
 
-/* 对角线分割线 - 从左上到右下 */
-.boss-cinematic-layout::before {
-    content: '';
-    position: absolute;
-    top: -10%;
-    left: -10%;
-    width: 120%;
-    height: 120%;
-    background: linear-gradient(135deg, 
-        transparent 48%, 
-        rgba(245,158,11,0.08) 49%, 
-        rgba(245,158,11,0.15) 50%, 
-        rgba(245,158,11,0.08) 51%, 
-        transparent 52%);
-    z-index: 0;
-    pointer-events: none;
-}
+
 
 /* 左侧对战舞台 */
 .boss-cinematic-stage {

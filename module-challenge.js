@@ -2458,7 +2458,7 @@ const ChallengeModule = {
         return `
         <div class="boss-cinematic-container" id="boss-battle-ui">
             ${rageOverlay}
-            <!-- 对角线分屏：左上BOSS 右下用户 -->
+            <!-- 左上BOSS 右下用户 -->
             <div class="boss-cinematic-scene">
                 <!-- BOSS 区域 - 左上 -->
                 <div class="boss-cinematic-boss-zone">
