@@ -1743,19 +1743,24 @@ const ChallengeModule = {
                 </div>
                 ${state.isBoss ? `
                 <div class="boss-cinematic-layout">
-                    <div class="boss-cinematic-stage">
+                    <div class="boss-cinematic-left">
                         ${this._renderBossHpBars(state)}
                     </div>
-                    <div class="boss-cinematic-quiz-panel">
-                        <div class="boss-cinematic-progress">
-                            <div class="challenge-progress-bar">
-                                <div class="challenge-progress-fill" style="width:${progressPct}%"></div>
+                    <div class="boss-cinematic-right">
+                        <div class="boss-cinematic-quiz">
+                            <div class="boss-cinematic-progress">
+                                <div class="challenge-progress-bar">
+                                    <div class="challenge-progress-fill" style="width:${progressPct}%"></div>
+                                </div>
+                                <div class="challenge-progress-text">${current} / ${total}</div>
                             </div>
-                            <div class="challenge-progress-text">${current} / ${total}</div>
+                            ${navBarHtml}
+                            <div class="challenge-question-area" id="challenge-question">
+                                ${questionContent}
+                            </div>
                         </div>
-                        ${navBarHtml}
-                        <div class="challenge-question-area" id="challenge-question" style="margin:0;">
-                            ${questionContent}
+                        <div class="boss-cinematic-hero">
+                            ${this._renderBossHeroPanel(state)}
                         </div>
                     </div>
                 </div>
@@ -2474,11 +2479,10 @@ const ChallengeModule = {
         return `
         <div class="boss-cinematic-container" id="boss-battle-ui">
             ${rageOverlay}
-            <!-- 左上BOSS 右下用户 -->
             <div class="boss-cinematic-scene">
-                <!-- BOSS 区域 - 左上 -->
+                <!-- BOSS 区域 -->
                 <div class="boss-cinematic-boss-zone">
-                    <div class="boss-cinematic-boss-visual">
+                    <div class="boss-cinematic-boss-visual" id="boss-battle-visual">
                         ${bossImg}
                     </div>
                     <div class="boss-cinematic-nameplate boss-nameplate">
@@ -2491,29 +2495,46 @@ const ChallengeModule = {
                         <span class="boss-hp-text boss-cinematic-hp-num" style="color:${bossColor};">${bossHp}<span style="opacity:0.5;">/${bossMaxHp}</span></span>
                     </div>
                 </div>
-
                 <!-- VS 标志 -->
                 <div class="boss-cinematic-vs">
                     <span>VS</span>
                 </div>
-
-                <!-- 用户区域 - 右下 -->
-                <div class="boss-cinematic-hero-zone">
-                    <div class="boss-cinematic-hero-visual">
-                        ${heroImg}
-                    </div>
-                    <div class="boss-cinematic-nameplate hero-nameplate">
-                        <span class="boss-cinematic-name">${heroName}</span>
-                    </div>
-                    <div class="boss-cinematic-hp-bar">
-                        <div class="boss-cinematic-hp-track user-hp-track">
-                            <div class="boss-cinematic-hp-fill user-hp-fill" id="user-hp-fill" style="width:${userHpPct}%;background:${userHpColor};"></div>
-                        </div>
-                        <span class="user-hp-text boss-cinematic-hp-num" style="color:${userHpColor};">${userHp}<span style="opacity:0.5;">/${userMaxHp}</span></span>
-                    </div>
-                </div>
             </div>
             ${rageBanner}
+        </div>`;
+    },
+
+    /**
+     * 渲染用户信息面板（4/4区域：C + e）
+     */
+    _renderBossHeroPanel(state) {
+        if (!state || !state.isBoss) return '';
+        const userHp = typeof state.userHp === 'number' ? state.userHp : 0;
+        const userMaxHp = typeof state.userMaxHp === 'number' ? state.userMaxHp : 1;
+        const heroLevel = String(state.bossLevel || 0);
+        const heroDef = this._heroDefs[heroLevel] || this._heroDefs['0'];
+        const heroColor = heroDef.color || '#60a5fa';
+        const heroName = heroDef.name || '\u52c7\u8005';
+        const userHpPct = userMaxHp > 0 ? (userHp / userMaxHp * 100) : 0;
+        const userHpColor = userHp / userMaxHp <= 0.3 ? '#f87171' : '#34d399';
+        const heroImg = heroDef.image
+            ? `<img src="${heroDef.image}" id="hero-battle-img" class="boss-cinematic-hero-avatar" alt="${heroName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><div style="display:none;" class="boss-cinematic-hero-fallback"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};font-size:1.5rem;"></i></div>`
+            : `<div class="boss-cinematic-hero-fallback"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};font-size:1.5rem;"></i></div>`;
+
+        return `
+        <div class="boss-hero-panel" id="boss-hero-panel">
+            <div class="boss-hero-visual" id="hero-battle-visual">
+                ${heroImg}
+            </div>
+            <div class="boss-cinematic-nameplate hero-nameplate">
+                <span class="boss-cinematic-name">${heroName}</span>
+            </div>
+            <div class="boss-cinematic-hp-bar">
+                <div class="boss-cinematic-hp-track user-hp-track">
+                    <div class="boss-cinematic-hp-fill user-hp-fill" id="user-hp-fill" style="width:${userHpPct}%;background:${userHpColor};"></div>
+                </div>
+                <span class="user-hp-text boss-cinematic-hp-num" style="color:${userHpColor};">${userHp}<span style="opacity:0.5;">/${userMaxHp}</span></span>
+            </div>
         </div>`;
     },
 
@@ -2596,7 +2617,7 @@ const ChallengeModule = {
         if (!damageType) return;
         const playPage = document.querySelector('.boss-cinematic-page, .challenge-play-page');
         const bossVisual = document.querySelector('.boss-cinematic-boss-visual');
-        const heroVisual = document.querySelector('.boss-cinematic-hero-visual');
+        const heroVisual = document.querySelector('.boss-hero-visual');
 
         // \u521b\u5efa\u5168\u5c4f\u95ea\u5c4f\u5143\u7d20
         const flashOverlay = document.createElement('div');
@@ -2660,7 +2681,7 @@ const ChallengeModule = {
                 const userHpFill = document.getElementById('user-hp-fill');
                 if (userHpFill) { userHpFill.style.filter = 'brightness(2.5)'; userHpFill.style.background = '#ff4444'; setTimeout(() => { userHpFill.style.filter = ''; userHpFill.style.background = ''; }, 300); }
                 if (playPage) { playPage.style.animation = 'screen-shake-strong 0.35s ease'; setTimeout(() => playPage.style.animation = '', 350); }
-                this._showDamageText('boss-cinematic-hero-zone', '-1', '#f87171');
+                this._showDamageText('boss-hero-panel', '-1', '#f87171');
             }, 150);
         } else if (damageType === 'lastStand') {
             // ===== \u6700\u540e\u4e00\u640f\u7279\u6548 =====
@@ -2699,7 +2720,7 @@ const ChallengeModule = {
                     this._showDamageText('boss-cinematic-boss-zone', '-1', '#fbbf24');
                 }, 400);
                 // \u98d8\u5b57\u63d0\u793a
-                this._showDamageText('boss-cinematic-hero-zone', '\u6700\u540e\u4e00\u640f!', '#fbbf24');
+                this._showDamageText('boss-hero-panel', '\u6700\u540e\u4e00\u640f!', '#fbbf24');
             }, 100);
         }
 
