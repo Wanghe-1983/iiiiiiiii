@@ -912,8 +912,9 @@
 
 .stage-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    padding: 4px 0;
 }
 
 .stage-card {
@@ -922,8 +923,9 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 10px 4px;
-    border-radius: 12px;
+    padding: 14px 8px;
+    border-radius: 14px;
+    min-height: 150px;
     cursor: pointer;
     transition: all 0.2s;
     border: 2px solid transparent;
@@ -996,8 +998,8 @@
 }
 
 .stage-icon {
-    margin-bottom: 4px;
-    font-size: 0.9rem;
+    margin-bottom: 2px;
+    font-size: 1.1rem;
     color: #94a3b8;
 }
 
@@ -1465,9 +1467,9 @@
         grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
         gap: 6px;
     }
-    .stage-card { padding: 10px 4px; height: 85px; }
+    .stage-card { padding: 14px 6px; height: 145px; }
     .stage-card.stage-hell { border-color: rgba(239, 68, 68, 0.2); }
-    .stage-number { font-size: 0.9rem; }
+    .stage-number { font-size: 1.2rem; }
     .stage-name { font-size: 0.6rem; max-width: 60px; }
     .card-indo { font-size: 1.4rem; }
     .quiz-indo { font-size: 1.2rem; }
@@ -3910,6 +3912,75 @@
     opacity: 1;
 }
 
+/* BOSS关卡卡片中的迷你BOSS图 */
+.stage-boss-img-wrap {
+    width: 80px;
+    height: 80px;
+    margin: 4px 0 6px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid rgba(192,132,252,0.3);
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+.stage-card.boss-big .stage-boss-img-wrap {
+    width: 120px;
+    height: 120px;
+    border-color: rgba(251,191,36,0.5);
+    box-shadow: 0 0 16px rgba(251,191,36,0.15);
+}
+.stage-boss-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+}
+.stage-card.available:hover .stage-boss-img-wrap {
+    border-color: rgba(192,132,252,0.7);
+    box-shadow: 0 0 12px rgba(192,132,252,0.2);
+}
+.stage-card.current .stage-boss-img-wrap {
+    border-color: rgba(192,132,252,0.6);
+    box-shadow: 0 0 16px rgba(192,132,252,0.3);
+}
+.stage-boss-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+/* BOSS卡片整体更高 */
+.stage-card.boss-card {
+    min-height: 220px;
+    padding: 14px 8px;
+}
+
+/* 大BOSS卡片 */
+.stage-card.boss-big {
+    min-height: 260px;
+    border-color: rgba(251,191,36,0.4) !important;
+    background: linear-gradient(135deg, rgba(251,191,36,0.06), rgba(239,68,68,0.03)) !important;
+}
+.stage-card.boss-big.current {
+    border-color: rgba(251,191,36,0.7) !important;
+    box-shadow: 0 0 24px rgba(251,191,36,0.25);
+}
+
+/* 小BOSS卡片 */
+.stage-card.boss-mini {
+    min-height: 200px;
+    border-color: rgba(192,132,252,0.35) !important;
+    background: linear-gradient(135deg, rgba(139,92,246,0.05), rgba(167,139,250,0.03)) !important;
+}
+.stage-card.boss-mini.current {
+    border-color: rgba(192,132,252,0.7) !important;
+    box-shadow: 0 0 20px rgba(192,132,252,0.25);
+}
+
+
 .stage-card.available:hover {
     transform: translateY(-3px) scale(1.04);
     box-shadow: 0 8px 25px rgba(99,102,241,0.15);
@@ -3946,7 +4017,7 @@
 /* 关卡网格升级 */
 .stage-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(82px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
     gap: 10px;
     padding: 4px 0;
 }
@@ -3988,15 +4059,267 @@
 
 /* BOSS关卡标签升级 */
 .stage-boss-label {
-    font-size: 0.6rem;
+    font-size: 0.72rem;
     font-weight: 700;
     color: #c084fc;
     text-shadow: 0 0 8px rgba(192,132,252,0.3);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 72px;
+    max-width: 130px;
 }
+.stage-card.boss-big .stage-boss-label {
+    color: #fbbf24;
+    font-size: 0.8rem;
+    text-shadow: 0 0 12px rgba(251,191,36,0.4);
+    max-width: 160px;
+}
+.stage-boss-type {
+    font-size: 0.6rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+.stage-boss-type.big {
+    background: rgba(251,191,36,0.2);
+    color: #fbbf24;
+    border: 1px solid rgba(251,191,36,0.4);
+}
+.stage-boss-type.mini {
+    background: rgba(192,132,252,0.2);
+    color: #c084fc;
+    border: 1px solid rgba(192,132,252,0.4);
+}
+
+/* ==========================================
+   关卡图标新设计 — 大小BOSS分离布局
+   ========================================== */
+
+/* -- 8层层级色 -- */
+:root {
+    --boss-l0: #22c55e; --boss-l1: #a78bfa; --boss-l2: #fbbf24; --boss-l3: #f97316;
+    --boss-l4: #8b5cf6; --boss-l5: #ef4444; --boss-l6: #dc2626; --boss-l7: #7c3aed;
+}
+
+/* === 大BOSS通栏横幅（方案B）=== */
+.stage-card.boss-banner {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 200px 1fr 170px;
+    gap: 20px;
+    align-items: center;
+    min-height: 260px;
+    padding: 20px 22px;
+    border-radius: 18px;
+    cursor: pointer;
+    transition: all 0.3s;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(135deg, rgba(22,22,35,0.9), rgba(12,12,20,0.95));
+    border: 2px solid color-mix(in srgb, var(--boss-theme) 35%, transparent);
+}
+.stage-card.boss-banner:hover {
+    transform: translateY(-3px);
+    border-color: var(--boss-theme);
+    box-shadow: 0 6px 30px color-mix(in srgb, var(--boss-theme) 20%, transparent);
+}
+
+/* 紫雾装饰动画 */
+.boss-mist {
+    position: absolute; right: 0; top: 0; bottom: 0; width: 40%;
+    background: radial-gradient(ellipse at 80% 40%, rgba(139,92,246,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 65%, rgba(139,92,246,0.04) 0%, transparent 40%);
+    pointer-events: none; z-index: 0;
+    animation: boss-mist-drift 8s ease-in-out infinite;
+}
+@keyframes boss-mist-drift {
+    0%, 100% { opacity: 0.7; transform: translateX(0); }
+    50% { opacity: 1; transform: translateX(-6px); }
+}
+
+/* 左：BOSS大图 */
+.boss-banner-img {
+    width: 180px; height: 240px; flex-shrink: 0;
+    border-radius: 14px; overflow: hidden;
+    border: 2px solid color-mix(in srgb, var(--boss-theme) 40%, transparent);
+    background: rgba(0,0,0,0.5);
+    box-shadow: 0 4px 20px color-mix(in srgb, var(--boss-theme) 15%, transparent);
+    z-index: 1; position: relative;
+    display: flex; align-items: center; justify-content: center;
+}
+.boss-banner-img img {
+    width: 100%; height: 100%; object-fit: cover;
+}
+.boss-badge-icon {
+    position: absolute; top: 8px; right: 8px; width: 30px; height: 30px;
+    border-radius: 10px; background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px); border: 2px solid var(--boss-theme);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; color: var(--boss-theme); z-index: 2;
+}
+.boss-badge-icon.big-crown {
+    box-shadow: 0 0 12px color-mix(in srgb, var(--boss-theme) 30%, transparent);
+}
+
+/* 中：信息区 */
+.boss-banner-info {
+    display: flex; flex-direction: column; gap: 8px; z-index: 1; min-width: 0;
+}
+.boss-banner-header {
+    display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+}
+.boss-banner-name {
+    font-size: 1.25rem; font-weight: 800; color: #f1f5f9;
+}
+.boss-banner-local {
+    font-size: 0.78rem; color: #94a3b8;
+}
+.boss-banner-tagline {
+    font-size: 0.7rem; color: var(--boss-theme); font-weight: 600;
+}
+.boss-banner-source {
+    font-size: 0.65rem; color: #64748b; font-style: italic;
+}
+.boss-banner-quote {
+    font-size: 0.78rem; color: #64748b; font-style: italic;
+    padding: 8px 14px; border-left: 3px solid color-mix(in srgb, var(--boss-theme) 35%, transparent);
+    background: rgba(255,255,255,0.015); border-radius: 0 6px 6px 0; line-height: 1.5;
+}
+.boss-banner-story {
+    font-size: 0.74rem; color: #94a3b8; line-height: 1.55;
+    display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* 右：属性面板 */
+.boss-banner-stats {
+    display: flex; flex-direction: column; gap: 10px; z-index: 1;
+    padding: 14px; background: rgba(0,0,0,0.35); border-radius: 14px;
+    border: 1px solid color-mix(in srgb, var(--boss-theme) 15%, transparent);
+    backdrop-filter: blur(4px);
+}
+.boss-stat-section { }
+.boss-stat-title {
+    font-size: 0.58rem; color: #64748b; text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 5px;
+}
+.boss-stat-difficulty {
+    font-size: 0.7rem; color: var(--boss-theme); letter-spacing: 1px;
+}
+.boss-stat-hp-row {
+    display: flex; align-items: center; gap: 6px; margin-bottom: 3px;
+}
+.boss-stat-hp-bar {
+    flex: 1; height: 5px; background: rgba(255,255,255,0.06);
+    border-radius: 3px; overflow: hidden;
+}
+.boss-stat-hp-fill {
+    height: 100%; background: var(--boss-theme); border-radius: 3px;
+    transition: width 0.6s;
+}
+.boss-stat-hp-text {
+    font-size: 0.58rem; color: #64748b; min-width: 34px; text-align: right;
+}
+.boss-stat-moves {
+    display: flex; gap: 4px; flex-wrap: wrap;
+}
+.boss-stat-move {
+    font-size: 0.68rem; padding: 2px 7px; border-radius: 5px;
+    background: color-mix(in srgb, var(--boss-theme) 10%, transparent);
+    color: var(--boss-theme);
+    border: 1px solid color-mix(in srgb, var(--boss-theme) 20%, transparent);
+}
+.boss-stat-reward {
+    font-size: 0.66rem; color: var(--boss-theme);
+    display: flex; align-items: center; gap: 4px;
+}
+.boss-banner-status {
+    margin-top: auto;
+}
+.boss-banner-status-badge {
+    font-size: 0.7rem; padding: 3px 12px; border-radius: 10px; display: inline-block;
+}
+.boss-status-available {
+    background: color-mix(in srgb, var(--boss-theme) 18%, transparent);
+    color: var(--boss-theme);
+}
+.boss-status-locked {
+    background: rgba(100,116,139,0.08); color: #64748b;
+}
+.boss-status-cleared {
+    background: rgba(16,185,129,0.12); color: #34d399;
+}
+
+/* === 小BOSS大卡片（方案A）=== */
+.stage-card.boss-mini-card {
+    min-height: 280px;
+    padding: 16px 12px 12px;
+    border-radius: 16px;
+    display: flex; flex-direction: column; align-items: center;
+    background: linear-gradient(180deg, rgba(30,41,59,0.5), rgba(12,12,20,0.7));
+    border: 2px solid color-mix(in srgb, var(--boss-theme) 30%, transparent);
+    transition: all 0.3s; overflow: hidden; position: relative;
+}
+.stage-card.boss-mini-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--boss-theme);
+    box-shadow: 0 8px 28px color-mix(in srgb, var(--boss-theme) 18%, transparent);
+}
+.boss-mini-badge {
+    position: absolute; top: 10px; right: 10px; width: 26px; height: 26px;
+    border-radius: 8px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+    border: 1.5px solid var(--boss-theme);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; color: var(--boss-theme); z-index: 2;
+}
+.boss-mini-img {
+    width: 120px; height: 160px; border-radius: 12px; overflow: hidden;
+    border: 2px solid color-mix(in srgb, var(--boss-theme) 40%, transparent);
+    background: rgba(0,0,0,0.4); margin-bottom: 10px;
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--boss-theme) 12%, transparent);
+    display: flex; align-items: center; justify-content: center;
+}
+.boss-mini-img img {
+    width: 100%; height: 100%; object-fit: cover;
+}
+.boss-mini-info { text-align: center; z-index: 1; }
+.boss-mini-name {
+    font-size: 0.85rem; font-weight: 700; color: #e2e8f0; margin-bottom: 1px;
+}
+.boss-mini-local {
+    font-size: 0.68rem; color: #94a3b8;
+}
+.boss-mini-difficulty {
+    margin-top: 5px; font-size: 0.62rem; letter-spacing: 2px; color: var(--boss-theme);
+}
+.boss-mini-status {
+    margin-top: 6px; font-size: 0.65rem; padding: 2px 10px; border-radius: 8px; display: inline-block;
+}
+.boss-mini-available {
+    background: color-mix(in srgb, var(--boss-theme) 15%, transparent); color: var(--boss-theme);
+}
+.boss-mini-locked {
+    background: rgba(100,116,139,0.08); color: #64748b;
+}
+.boss-mini-cleared {
+    background: rgba(16,185,129,0.12); color: #34d399;
+}
+
+/* 响应式：大BOSS横幅在小屏幕折叠 */
+@media (max-width: 768px) {
+    .stage-card.boss-banner {
+        grid-template-columns: 110px 1fr;
+        gap: 12px; padding: 14px; min-height: auto;
+    }
+    .boss-banner-img { width: 100px; height: 133px; }
+    .boss-banner-stats { display: none; }
+    .boss-banner-name { font-size: 1rem; }
+    .boss-banner-story { -webkit-line-clamp: 2; }
+}
+
+
 
 /* 关卡最佳成绩 */
 .stage-best {
@@ -4231,7 +4554,7 @@
     transition: all 0.3s;
 }
 
-/* 边框01: 翡翠流光 - 击败声之魔灵获得 */
+/* 边框01: 翡翠流光 - 击败布塔·查基尔获得 */
 .stage-card.frame-01 .frame-border {
     border: 2px solid rgba(52, 211, 153, 0.6);
     box-shadow: 0 0 12px rgba(52, 211, 153, 0.2), inset 0 0 12px rgba(52, 211, 153, 0.05);
@@ -4242,7 +4565,7 @@
     box-shadow: 0 0 20px rgba(52, 211, 153, 0.35), inset 0 0 20px rgba(52, 211, 153, 0.08);
 }
 
-/* 边框02: 赤焰之环 - 击败婆罗多神将获得 */
+/* 边框02: 赤焰之环 - 击败罗刹·特龙获得 */
 .stage-card.frame-02 .frame-border {
     border: 2px solid rgba(248, 113, 113, 0.6);
     box-shadow: 0 0 12px rgba(248, 113, 113, 0.2), inset 0 0 12px rgba(248, 113, 113, 0.05);
@@ -4264,7 +4587,7 @@
     box-shadow: 0 0 20px rgba(251, 191, 36, 0.35);
 }
 
-/* 边框04: 深海之盾 - 击败Naga蛇龙获得 */
+/* 边框04: 深海之盾 - 击败库巴卡那获得 */
 .stage-card.frame-04 .frame-border {
     border: 2px solid rgba(56, 189, 248, 0.6);
     box-shadow: 0 0 12px rgba(56, 189, 248, 0.2), inset 0 0 12px rgba(56, 189, 248, 0.05);
@@ -4275,7 +4598,7 @@
     box-shadow: 0 0 20px rgba(56, 189, 248, 0.35);
 }
 
-/* 边框05: 紫晶幻境 - 击败Garuda伽鲁达获得 */
+/* 边框05: 紫晶幻境 - 击败森古尼获得 */
 .stage-card.frame-05 .frame-border {
     border: 2px solid rgba(167, 139, 250, 0.6);
     box-shadow: 0 0 12px rgba(167, 139, 250, 0.25), inset 0 0 12px rgba(167, 139, 250, 0.06);
@@ -5197,35 +5520,37 @@
     font-variant-numeric: tabular-nums;
 }
 
-/* ========== BOSS 加载界面 ========== */
+/* ========== BOSS 加载界面（独立介绍页） ========== */
 .boss-loading-page {
     position: relative;
-    min-height: 500px;
+    min-height: 100%;
+    overflow: hidden;
 }
 
+/* 顶部遮罩进度条 */
 .boss-loading-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(15,23,42,0.92);
+    background: rgba(2,6,23,0.96);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10;
-    transition: opacity 0.4s;
-    backdrop-filter: blur(4px);
+    z-index: 20;
+    transition: opacity 0.5s ease;
+    backdrop-filter: blur(6px);
 }
 
 .boss-loading-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 14px;
-    width: 200px;
+    gap: 12px;
+    width: 220px;
 }
 
 .boss-loading-icon-wrap {
-    width: 56px;
-    height: 56px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
     background: rgba(30,41,59,0.6);
     border: 2px solid rgba(255,255,255,0.08);
@@ -5236,17 +5561,17 @@
 }
 
 .boss-loading-icon-wrap i {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
 }
 
 @keyframes boss-load-pulse {
-    0%, 100% { transform: scale(1); opacity: 0.8; }
-    50% { transform: scale(1.1); opacity: 1; }
+    0%, 100% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.08); opacity: 1; }
 }
 
 .boss-loading-progress-wrap {
     width: 100%;
-    height: 6px;
+    height: 5px;
     background: rgba(255,255,255,0.06);
     border-radius: 3px;
     overflow: hidden;
@@ -5256,121 +5581,270 @@
     height: 100%;
     border-radius: 3px;
     transition: width 0.3s ease;
+    position: relative;
+}
+
+.boss-loading-progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4));
+    border-radius: 3px;
 }
 
 .boss-loading-progress-text {
     color: #64748b;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 1px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    font-variant-numeric: tabular-nums;
 }
 
 .boss-loading-status {
     color: #475569;
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-weight: 500;
     min-height: 1em;
-    transition: opacity 0.3s;
 }
 
+/* ===== 主体内容区 ===== */
 .boss-loading-main {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px 12px;
-    animation: fadeIn 0.5s ease;
+    padding: 24px 16px 20px;
+    animation: bossPageIn 0.6s ease;
+    position: relative;
+    z-index: 1;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
+@keyframes bossPageIn {
+    from { opacity: 0; transform: translateY(15px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* BOSS类型标签 */
+.boss-loading-type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    border: 1px solid;
+}
+
+.boss-loading-type-badge.is-big {
+    color: #f87171;
+    background: rgba(248,113,113,0.08);
+    border-color: rgba(248,113,113,0.2);
+}
+
+.boss-loading-type-badge.is-mini {
+    color: #fbbf24;
+    background: rgba(251,191,36,0.08);
+    border-color: rgba(251,191,36,0.2);
+}
+
+/* BOSS剪影视觉区 */
 .boss-loading-visual {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+    position: relative;
 }
 
-.boss-loading-avatar {
-    width: 140px;
-    height: 140px;
-    border-radius: 20px;
-    object-fit: cover;
-    border: 3px solid;
-    box-shadow: 0 0 30px rgba(0,0,0,0.3);
-}
-
-.boss-loading-avatar-fallback {
-    width: 140px;
-    height: 140px;
-    border-radius: 20px;
-    border: 3px solid;
+.boss-loading-silhouette {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(15,23,42,0.5);
+    position: relative;
+    overflow: hidden;
 }
 
+.boss-loading-silhouette::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid;
+    opacity: 0.15;
+}
+
+.boss-loading-silhouette-icon {
+    font-size: 4rem;
+    opacity: 0.12;
+    filter: blur(1px);
+}
+
+.boss-loading-silhouette-glow {
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    filter: blur(30px);
+    opacity: 0.15;
+    animation: silhouetteGlow 3s ease-in-out infinite;
+}
+
+@keyframes silhouetteGlow {
+    0%, 100% { opacity: 0.1; transform: scale(1); }
+    50% { opacity: 0.2; transform: scale(1.05); }
+}
+
+/* BOSS信息区 */
 .boss-loading-info {
     text-align: center;
     width: 100%;
-    max-width: 320px;
+    max-width: 360px;
+}
+
+.boss-loading-name-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 4px;
 }
 
 .boss-loading-name {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: 800;
-    margin-bottom: 4px;
-    text-shadow: 0 0 15px currentColor;
+    letter-spacing: 1px;
 }
 
-.boss-loading-desc {
-    font-size: 0.8rem;
+.boss-loading-name-local {
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* 危险度星级 */
+.boss-loading-danger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.boss-loading-danger-star {
+    font-size: 0.7rem;
+}
+
+.boss-loading-danger-star.filled {
+    color: #f87171;
+}
+
+.boss-loading-danger-star.empty {
+    color: #1e293b;
+}
+
+.boss-loading-danger-label {
+    font-size: 0.6rem;
+    color: #475569;
+    margin-left: 6px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* 背景故事卡片 */
+.boss-loading-lore {
+    background: rgba(15,23,42,0.6);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin: 12px 0;
+    text-align: left;
+    width: 100%;
+    max-width: 360px;
+}
+
+.boss-loading-lore-quote {
+    font-size: 0.72rem;
+    color: #cbd5e1;
+    line-height: 1.7;
+    font-style: italic;
+    padding-left: 12px;
+    border-left: 2px solid rgba(255,255,255,0.1);
+    margin-bottom: 8px;
+}
+
+.boss-loading-lore-quote-original {
+    font-size: 0.62rem;
+    color: #64748b;
+    line-height: 1.6;
+    font-style: italic;
+    padding-left: 12px;
+    border-left: 2px solid rgba(255,255,255,0.06);
+    margin-bottom: 8px;
+}
+
+.boss-loading-lore-text {
+    font-size: 0.7rem;
     color: #94a3b8;
-    margin-bottom: 16px;
+    line-height: 1.7;
 }
 
+/* 战斗数据面板 */
 .boss-loading-stats {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 16px;
+    gap: 6px;
+    margin: 10px 0;
+    width: 100%;
+    max-width: 360px;
 }
 
 .boss-loading-stat {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
     padding: 8px 10px;
-    background: rgba(30,41,59,0.5);
+    background: rgba(30,41,59,0.4);
     border-radius: 10px;
     border: 1px solid rgba(255,255,255,0.04);
 }
 
 .boss-loading-stat-icon {
-    font-size: 1rem;
-    width: 24px;
+    font-size: 0.9rem;
+    width: 22px;
     text-align: center;
+    flex-shrink: 0;
 }
 
 .boss-loading-stat-info {
     text-align: left;
+    min-width: 0;
 }
 
 .boss-loading-stat-label {
-    font-size: 0.6rem;
-    color: #64748b;
+    font-size: 0.55rem;
+    color: #475569;
+    font-weight: 500;
 }
 
 .boss-loading-stat-value {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 700;
 }
 
+/* 提示 */
 .boss-loading-tips {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    margin-bottom: 16px;
+    gap: 3px;
+    margin-bottom: 12px;
+    width: 100%;
+    max-width: 360px;
 }
 
 .boss-loading-tip {
@@ -5378,22 +5852,60 @@
     align-items: center;
     gap: 6px;
     padding: 4px 8px;
-    font-size: 0.65rem;
-    color: #94a3b8;
-    background: rgba(30,41,59,0.3);
+    font-size: 0.6rem;
+    color: #64748b;
+    background: rgba(30,41,59,0.25);
     border-radius: 6px;
     text-align: left;
 }
 
+/* 开始按钮 */
 .boss-loading-start-btn {
-    margin-top: 8px;
-    padding: 12px 40px !important;
-    font-size: 1rem !important;
+    margin-top: 4px;
+    padding: 11px 36px !important;
+    font-size: 0.9rem !important;
     letter-spacing: 2px;
     transition: all 0.3s !important;
 }
 
 .boss-loading-start-btn:hover {
     transform: translateY(-2px) !important;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.4) !important;
+}
+
+/* 文化出处 */
+.boss-loading-source {
+    margin-top: 8px;
+    font-size: 0.55rem;
+    color: #334155;
+    text-align: center;
+    line-height: 1.5;
+    max-width: 360px;
+}
+
+.boss-loading-source i {
+    margin-right: 3px;
+}
+
+/* 头像（有图片时用） */
+.boss-loading-avatar {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid;
+    box-shadow: 0 0 40px rgba(0,0,0,0.4);
+    position: relative;
+    z-index: 2;
+}
+
+.boss-loading-avatar-fallback {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 3px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15,23,42,0.5);
 }

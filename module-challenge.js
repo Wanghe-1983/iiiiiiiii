@@ -7,6 +7,7 @@
 const ChallengeModule = {
     currentView: 'home', // home | modes | stages | rank-modes | rank | titles
     challengeMode: 'normal', // normal | hell
+    heroGender: 'male', // male | female - 地狱模式角色性别
     allStages: [],
     serverProgress: {}, // 从D1加载
     currentStageId: null,
@@ -341,12 +342,70 @@ const ChallengeModule = {
 
     selectMode(mode) {
         this.challengeMode = mode;
+        // 地狱模式需要先选择性别
+        if (mode === 'hell' && !this.heroGender) {
+            this._showGenderSelect();
+            return;
+        }
         this.currentStageId = null;
         this.challengeState = null;
         this._regenerateStages();
         this._applyChallengeLevelFilter();
         this.currentView = 'stages';
         this.render();
+    },
+
+    /** 显示性别选择弹窗（地狱模式专用） */
+    _showGenderSelect() {
+        const self = this;
+        const modal = document.createElement('div');
+        modal.className = 'ch-gender-modal';
+        modal.innerHTML = `
+            <div style="position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;">
+                <div style="background:linear-gradient(135deg,#1e1b2e,#0f0f1a);border:3px solid rgba(239,68,68,0.4);border-radius:20px;padding:32px 28px;max-width:420px;width:90%;text-align:center;box-shadow:0 0 60px rgba(239,68,68,0.2);">
+                    <div style="font-size:3rem;margin-bottom:8px;"><i class="fas fa-skull-crossbones" style="color:#f87171;"></i></div>
+                    <div style="font-size:1.3rem;font-weight:700;color:#f87171;margin-bottom:8px;">地狱模式 - 选择角色</div>
+                    <div style="font-size:0.85rem;color:#94a3b8;margin-bottom:24px;">选择你的英雄踏上地狱征程</div>
+                    <div style="display:flex;gap:16px;justify-content:center;">
+                        <div onclick="ChallengeModule._confirmGender('male')" style="cursor:pointer;flex:1;background:linear-gradient(135deg,rgba(59,130,246,0.15),rgba(37,99,235,0.08));border:2px solid rgba(59,130,246,0.4);border-radius:16px;padding:20px 12px;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(59,130,246,0.8)';this.style.background='linear-gradient(135deg,rgba(59,130,246,0.25),rgba(37,99,235,0.12))';" onmouseout="this.style.borderColor='rgba(59,130,246,0.4)';this.style.background='linear-gradient(135deg,rgba(59,130,246,0.15),rgba(37,99,235,0.08))';">
+                            <div style="font-size:3rem;margin-bottom:8px;"><i class="fas fa-shield-halved" style="color:#60a5fa;"></i></div>
+                            <div style="font-weight:700;color:#60a5fa;font-size:1rem;">男性护法</div>
+                            <div style="font-size:0.72rem;color:#94a3b8;margin-top:4px;">竹甲勇士 → 佛教护法</div>
+                        </div>
+                        <div onclick="ChallengeModule._confirmGender('female')" style="cursor:pointer;flex:1;background:linear-gradient(135deg,rgba(236,72,153,0.15),rgba(219,39,119,0.08));border:2px solid rgba(236,72,153,0.4);border-radius:16px;padding:20px 12px;transition:all 0.2s;" onmouseover="this.style.borderColor='rgba(236,72,153,0.8)';this.style.background='linear-gradient(135deg,rgba(236,72,153,0.25),rgba(219,39,119,0.12))';" onmouseout="this.style.borderColor='rgba(236,72,153,0.4)';this.style.background='linear-gradient(135deg,rgba(236,72,153,0.15),rgba(219,39,119,0.08))';">
+                            <div style="font-size:3rem;margin-bottom:8px;"><i class="fas fa-leaf" style="color:#f472b6;"></i></div>
+                            <div style="font-weight:700;color:#f472b6;font-size:1rem;">女祭司</div>
+                            <div style="font-size:0.72rem;color:#94a3b8;margin-top:4px;">白袍祭司 → 神袍圣女</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    },
+
+    /** 确认性别选择 */
+    _confirmGender(gender) {
+        this.heroGender = gender;
+        // 移除弹窗
+        const modal = document.querySelector('.ch-gender-modal');
+        if (modal) modal.remove();
+        // 继续进入地狱模式
+        this.currentStageId = null;
+        this.challengeState = null;
+        this._regenerateStages();
+        this._applyChallengeLevelFilter();
+        this.currentView = 'stages';
+        this.render();
+    },
+
+    /** 根据性别获取对应的英雄定义 */
+    _getHeroDef(level) {
+        const lvl = String(level || 0);
+        if (this.heroGender === 'female' && this._heroineDefs) {
+            return this._heroineDefs[lvl] || this._heroineDefs['0'];
+        }
+        return this._heroDefs[lvl] || this._heroDefs['0'];
     },
 
     enterRank() {
@@ -470,27 +529,39 @@ const ChallengeModule = {
 
     // BOSS 造型定义
     _bossDefs: {
-        '0': { name: '声之魔灵', icon: 'fa-wand-sparkles', theme: 'sound', color: '#a78bfa', desc: '掌控万音的魔灵', image: 'assets/boss/boss-0-sound-spirit.png' },
-        '1': { name: '婆罗多神将', icon: 'fa-shield-halved', theme: 'warrior', color: '#60a5fa', desc: 'Dasar 基础的守关者', image: 'assets/boss/boss-1-bharata-warlord.png' },
-        '2': { name: 'Raksasa 巨魔', icon: 'fa-hand-fist', theme: 'brute', color: '#4ade80', desc: '中级篇的野蛮守卫', image: 'assets/boss/boss-2-raksasa-ogre.png' },
-        '3': { name: 'Naga 蛇龙', icon: 'fa-dragon', theme: 'dragon', color: '#f87171', desc: '中高级的盘踞之龙', image: 'assets/boss/boss-3-naga-dragon.png' },
-        '4': { name: 'Garuda 伽鲁达', icon: 'fa-dove', theme: 'garuda', color: '#fbbf24', desc: '高级篇的神鸟之王', image: 'assets/boss/boss-4-garuda-eagle.png' },
-        '5': { name: '浮屠守殿者', icon: 'fa-landmark', theme: 'temple', color: '#fb923c', desc: '高级进阶的石像守卫', image: 'assets/boss/boss-5-temple-guardian.png' },
-        '6': { name: 'Dewa 天神', icon: 'fa-bolt', theme: 'deity', color: '#38bdf8', desc: '精通篇的半神形态', image: 'assets/boss/boss-6-dewa-deity.png' },
-        '7': { name: 'Ratu Iblis 魔王', icon: 'fa-skull', theme: 'demon', color: '#ef4444', desc: '卓越篇的终极魔王', image: 'assets/boss/boss-7-demon-king.png' },
+        '0': { name: 'Buta Cakil 查基尔', icon: 'fa-face-grin-tongue', theme: 'ogre', color: '#22c55e', desc: '矮胖坚韧的绿皮巨魔', image: 'assets/boss/boss-big-q0.png', miniImage: 'assets/boss/boss-mini-q0.png', nameLocal: 'Buta Cakil', quote: 'Aku Buta Cakil, raksasa kecil yang tangguh!', source: 'Wayang Kulit 经典小怪', tagline: '矮胖坚韧的绿皮巨魔', story: '哇扬皮影戏中最受欢迎的喜剧角色之一。虽然体型矮小笨拙，但拥有惊人的力量和不屈的斗志，在《摩诃婆罗多》中多次与英雄比玛交手，虽然总是被打败，但每次都会爬起来继续战斗。', attacks: ['木棒重击','盾牌格挡','野猪冲撞'], reward: '翡翠流光边框', difficulty: 2 },
+        '1': { name: 'Raksasa Terong 特龙', icon: 'fa-skull', theme: 'ogre', color: '#a78bfa', desc: '丛林深处的紫色食人魔', image: 'assets/boss/boss-big-q1.png', miniImage: 'assets/boss/boss-mini-q1.png', nameLocal: 'Raksasa Terong', quote: 'Tulang-tulangmu akan menjadi ranting pohon!', source: '爪哇民间传说', tagline: '丛林深处的紫色食人魔', story: '源自爪哇乡间"茄子巨人"民间故事，传说每当夜幕降临，丛林深处的巨魔会爬出洞穴寻找不听话的孩子。他的皮肤如熟透的紫茄般暗紫发光，三叉戟是他最标志性的狩猎武器。', attacks: ['三叉戟突刺','暗影藤蔓','咆哮震慑'], reward: '紫晶藤蔓边框', difficulty: 3 },
+        '2': { name: 'Duryodhana 杜尤达纳', icon: 'fa-crown', theme: 'king', color: '#fbbf24', desc: '傲慢固执的俱卢之王', image: 'assets/boss/boss-big-q2.png', miniImage: 'assets/boss/boss-mini-q2.png', nameLocal: 'Duryodhana', quote: 'Tak ada yang berani menantang hakku atas takhta!', source: '《摩诃婆罗多》', tagline: '傲慢固执的俱卢之王', story: '印度史诗《摩诃婆罗多》中的核心反派，百子之首，因对王位的执着和对般度族的仇恨走向毁灭。在爪哇皮影戏中，杜尤达纳的形象被赋予了更多人性化色彩——他不是纯粹的恶，而是被骄傲与固执蒙蔽的悲情王者。', attacks: ['金权杖制裁','王盾反击','王权威压'], reward: '琥珀金纹边框', difficulty: 4 },
+        '3': { name: 'Kumbhakarna 库巴卡那', icon: 'fa-dumbbell', theme: 'giant', color: '#f97316', desc: '吞噬一切的沉睡巨人', image: 'assets/boss/boss-big-q3.png', miniImage: 'assets/boss/boss-mini-q3.png', nameLocal: 'Kumbhakarna', quote: 'Lapar... sangat lapar...!', source: '《罗摩衍那》', tagline: '吞噬一切的沉睡巨人', story: '《罗摩衍那》中最令人敬畏的巨人战士，罗波那之弟。传说他因诅咒而沉睡六个月才醒来一天，但一旦醒来便拥有毁灭一切的力量。他憨厚忠诚，明知哥哥走的是一条不归路，却依然为他战斗到最后一刻。', attacks: ['巨锤粉碎','泰山压顶','吞噬咆哮'], reward: '橙焰巨锤边框', difficulty: 5 },
+        '4': { name: 'Sengkuni 森古尼', icon: 'fa-feather', theme: 'schemer', color: '#8b5cf6', desc: '阴谋诡计的黑暗军师', image: 'assets/boss/boss-big-q4.png', miniImage: 'assets/boss/boss-mini-q4.png', nameLocal: 'Sengkuni', quote: 'Permainanku dimulai... catur tanpa akhir.', source: '《摩诃婆罗多》', tagline: '阴谋诡计的黑暗军师', story: '《摩诃婆罗多》中的首席阴谋家，杜尤达纳的舅舅兼军师。标志性的鹰钩鼻和羽毛扇是他的招牌，每一次摇扇都意味着一个精妙的陷阱正在展开。他不用蛮力，只用智谋和诡计——这才是最可怕的敌人。', attacks: ['毒匕突袭','诡计陷阱','连环扇击'], reward: '暗紫密谋边框', difficulty: 5 },
+        '5': { name: 'Indrajit 因陀罗吉', icon: 'fa-wand-magic-sparkles', theme: 'sorcerer', color: '#ef4444', desc: '掌控黑暗幻术的魔王之子', image: 'assets/boss/boss-big-q5.png', miniImage: 'assets/boss/boss-mini-q5.png', nameLocal: 'Indrajit', quote: 'Mata manusia tak bisa menembus ilusiku!', source: '《罗摩衍那》', tagline: '掌控黑暗幻术的魔王之子', story: '罗波那最强大的儿子，其名意为"征服因陀罗者"。擅长黑暗幻术，能让敌人迷失在无尽的虚空中。在皮影戏中他的出场总是伴随着暗紫魔雾缭绕，双Kris弯刀出鞘的瞬间便意味着死亡的降临。', attacks: ['幻术迷境','双刀乱舞','暗翼冲击','魔雾吞噬'], reward: '赤红幻术边框', difficulty: 6 },
+        '6': { name: 'Batara Kala 堕神', icon: 'fa-bolt-lightning', theme: 'destruction', color: '#dc2626', desc: '毁灭与时间的堕天神', image: 'assets/boss/boss-big-q6.png', miniImage: 'assets/boss/boss-mini-q6.png', nameLocal: 'Batara Kala', quote: 'Akulah penghancur takdir, sang pemakan waktu!', source: '爪哇神话', tagline: '毁灭与时间的堕天神', story: '爪哇神话中的毁灭之神，据传是湿婆的愤怒化身。他独面怒目、锯齿王冠、暗金铁甲覆身，右手锯齿大剑斩断命运，左手链锤粉碎希望。背后暗红日轮燃烧，象征时间的无情流逝。是所有BOSS中最具纯粹力量压迫感的存在。', attacks: ['锯齿劈斩','链锤横扫','日轮陨落','毁灭咆哮'], reward: '烈焰荆棘边框', difficulty: 7 },
+        '7': { name: 'Kalabendu 混沌王', icon: 'fa-skull-crossbones', theme: 'chaos', color: '#7c3aed', desc: '万魔融合的终极混沌', image: 'assets/boss/boss-big-q7.png', miniImage: 'assets/boss/boss-mini-q7.png', nameLocal: 'Kalabendu', quote: 'Akulah akhir dari segala perjuanganmu, manusia.', source: '哇扬皮影戏原创', tagline: '万魔融合的终极混沌', story: '哇扬皮影戏独有的原创终极反派——由所有被击败的邪恶之灵凝聚而成的混沌融合体。中央巨大面孔诡异微笑，周围漂浮面具碎片各自拥有不同表情，不对称手臂从奇怪位置伸出。三层破碎同心圆背光象征秩序的崩塌。', attacks: ['万魔斩','混沌诅咒','灵魂吞噬','业火焚天','虚空裂隙'], reward: '极光幻彩边框', difficulty: 8 },
 
     },
 
     // 用户角色形象定义（按等级成长）
     _heroDefs: {
-        '0': { name: '初心学徒', icon: 'fa-person-hiking', color: '#34d399', desc: '手持木剑的少年冒险者', image: 'assets/hero/hero-0-apprentice.png' },
-        '1': { name: '旅人剑士', icon: 'fa-person-military-rifle', color: '#2dd4bf', desc: '装备铁甲的年轻剑士', image: 'assets/hero/hero-1-swordsman.png' },
-        '2': { name: '荒野游侠', icon: 'fa-person-walking', color: '#4ade80', desc: '身披斗篷的弓箭手', image: 'assets/hero/hero-2-ranger.png' },
-        '3': { name: '龙骑士学徒', icon: 'fa-hat-wizard', color: '#fb923c', desc: '骑小龙的初级龙骑士', image: 'assets/hero/hero-3-dragon-rider.png' },
-        '4': { name: '圣殿骑士', icon: 'fa-shield-halved', color: '#fbbf24', desc: '身披银甲的圣殿守卫', image: 'assets/hero/hero-4-temple-knight.png' },
-        '5': { name: '元素法师', icon: 'fa-wand-magic-sparkles', color: '#c084fc', desc: '操控元素的强大法师', image: 'assets/hero/hero-5-elemental-mage.png' },
-        '6': { name: '半神行者', icon: 'fa-bolt', color: '#38bdf8', desc: '身带神光的超凡存在', image: 'assets/hero/hero-6-demigod.png' },
-        '7': { name: '传奇勇者', icon: 'fa-crown', color: '#f59e0b', desc: '全身铠甲散发圣光的终极勇者', image: 'assets/hero/hero-7-legendary-hero.png' },
+        '0': { name: '竹甲勇士', icon: 'fa-person-hiking', color: '#84cc16', desc: '竹甲木矛的初心勇者', image: 'assets/hero/hero-q0.png' },
+        '1': { name: '铜甲战士', icon: 'fa-shield', color: '#d97706', desc: '铜甲铜矛的坚毅战士', image: 'assets/hero/hero-q1.png' },
+        '2': { name: '铁甲武士', icon: 'fa-shield-halved', color: '#9ca3af', desc: '铁甲铁矛的钢铁武士', image: 'assets/hero/hero-q2.png' },
+        '3': { name: '银甲猎人', icon: 'fa-bow-arrow', color: '#94a3b8', desc: '银甲银弓的迅捷猎人', image: 'assets/hero/hero-q3.png' },
+        '4': { name: '银金飞刃', icon: 'fa-star', color: '#fbbf24', desc: '银金甲飞刀的灵巧刺客', image: 'assets/hero/hero-q4.png' },
+        '5': { name: '宝石护法', icon: 'fa-gem', color: '#a78bfa', desc: '宝石铠甲的神圣护法', image: 'assets/hero/hero-q5.png' },
+        '6': { name: '钻石翼甲', icon: 'fa-feather', color: '#38bdf8', desc: '白金钻石翼甲的天空骑士', image: 'assets/hero/hero-q6.png' },
+        '7': { name: '佛教护法', icon: 'fa-crown', color: '#f59e0b', desc: '佛陀浮雕盾的神圣护法', image: 'assets/hero/hero-q7.png' },
+    }
+
+    // 女性角色形象定义（女祭司/神官路线）
+    _heroineDefs: {
+        '0': { name: '白袍祭司', icon: 'fa-leaf', color: '#e2e8f0', desc: '白袍茉莉花的初心祭司', image: 'assets/hero/heroine-q0.png' },
+        '1': { name: '铜饰祭司', icon: 'fa-ring', color: '#d97706', desc: '铜饰法袍的虔诚祭司', image: 'assets/hero/heroine-q1.png' },
+        '2': { name: '铁饰法袍', icon: 'fa-ankh', color: '#9ca3af', desc: '铁饰法袍的坚毅祭司', image: 'assets/hero/heroine-q2.png' },
+        '3': { name: '银袍祭司', icon: 'fa-moon', color: '#94a3b8', desc: '银白丝绸袍的圣洁祭司', image: 'assets/hero/heroine-q3.png' },
+        '4': { name: '白金袍祭司', icon: 'fa-sun', color: '#fbbf24', desc: '白金丝织袍的光明祭司', image: 'assets/hero/heroine-q4.png' },
+        '5': { name: '金袍圣女', icon: 'fa-fire', color: '#f59e0b', desc: '金色法袍赤足金莲的圣女', image: 'assets/hero/heroine-q5.png' },
+        '6': { name: '宝石圣女', icon: 'fa-gem', color: '#a78bfa', desc: '宝石法袍佛像隐现的圣女', image: 'assets/hero/heroine-q6.png' },
+        '7': { name: '神袍圣女', icon: 'fa-dove', color: '#fbbf24', desc: '神器圣袍完整佛像法相', image: 'assets/hero/heroine-q7.png' },
     },
 
     _regenerateStages() {
@@ -606,8 +677,12 @@ const ChallengeModule = {
      * @param {object} refStage - 参考关卡（用于取题目素材）
      */
     _createBossStage(bossLevel, contextLevel, bossType, params, refStage) {
-        const bossDef = this._bossDefs[bossLevel] || this._bossDefs['0'];
-        const typeLabel = bossType === 'mini' ? '小BOSS' : '大BOSS';
+        const bossDef = Object.assign({}, this._bossDefs[bossLevel] || this._bossDefs['0']);
+        // 小BOSS使用独立的mini图片
+        if (bossType === 'mini') {
+            bossDef.image = 'assets/boss/boss-mini-q' + bossLevel + '.png';
+        }
+        const typeLabel = bossType === 'mini' ? '精英BOSS' : '守关BOSS';
         const id = `boss-${contextLevel}-${bossLevel}-${bossType}`;
         const questionSource = params.questionSource || 'random';
         const questionRange = params.questionRange || [contextLevel];
@@ -781,13 +856,68 @@ const ChallengeModule = {
                     _gateExtraClass = ' stage-gate';
                 }
 
-                stageGrid += `<div class="stage-card ${statusClass} ${group.isHell ? 'stage-hell' : ''}${_gateExtraClass}" onclick="${isLocked ? '' : `ChallengeModule.enterStage('${stage.id}')`}" ${isReadonly ? 'title="该课程暂未开放"' : ''}>
-                    ${_gateHtml}
-                    ${isBoss ? `<div class="stage-boss-label"><i class="fas ${stage.bossDef.icon}"></i> ${stage.bossDef.name}</div>` : `<div class="stage-number">${i + 1}</div>`}
-                    <div class="stage-icon">${isBoss ? (isLocked ? '<i class="fas fa-lock"></i>' : isCleared ? '<i class="fas fa-skull"></i>' : '<i class="fas fa-skull-crossbones"></i>') : statusIcon}</div>
-                    ${isCleared ? `<div class="stage-best">${isBoss ? '已击败' : '最佳 ' + p.bestScore.toFixed(0) + '分'}</div>` : ''}
-                    ${isCurrent && !isLocked ? `<div class="stage-hint">${isBoss ? 'BOSS战!' : '可挑战'}</div>` : ''}
-                </div>`;
+                                if (isBoss && stage.bossType === 'big') {
+                    // 大BOSS通栏横幅（方案B）- 三栏：图+信息+属性
+                    const bc = stage.bossDef.color || '#7c3aed';
+                    const bd = stage.bossDef;
+                    const bossImg = bd.image || 'assets/boss/boss-big-q' + (stage.bossLevel || '0') + '.png';
+                    const diffStars = '★'.repeat(bd.difficulty || 5) + '☆'.repeat(Math.max(0, 8 - (bd.difficulty || 5)));
+                    const bossHp = (stage.bossParams && stage.bossParams.bossHp) ? stage.bossParams.bossHp : 999;
+                    const hpPct = 100;
+                    const attacksHtml = (bd.attacks || []).map(function(a) { return '<span class="boss-stat-move">' + a + '</span>'; }).join('');
+                    const statusBadge = isLocked ? '<span class="boss-banner-status-badge boss-status-locked">🔒 ' + (isReadonly ? '未开放' : '击败前置关卡后解锁') + '</span>'
+                        : isCleared ? '<span class="boss-banner-status-badge boss-status-cleared">✓ 已击败</span>'
+                        : '<span class="boss-banner-status-badge boss-status-available">⚔ 可挑战</span>';
+                    stageGrid += '<div class="stage-card boss-banner ' + statusClass + '" style="--boss-theme:' + bc + ';grid-column:1/-1;" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
+                        + '<div class="boss-mist"></div>'
+                        + '<div class="boss-banner-img">'
+                        + '<div class="boss-badge-icon big-crown"><i class="fas fa-crown"></i></div>'
+                        + '<img src="' + bossImg + '" alt="' + (bd.name || '') + '" onerror="this.style.display=\'none\';this.parentElement.innerHTML+=\'<i class=\\'fas fa-skull-crossbones\\' style=\\'font-size:4rem;color:' + bc + ';\\'></i>\';">'
+                        + '</div>'
+                        + '<div class="boss-banner-info">'
+                        + '<div class="boss-banner-header"><span class="boss-banner-name">' + (bd.nameLocal || bd.name || '') + '</span><span class="boss-banner-local">' + (bd.name || '') + '</span></div>'
+                        + '<div class="boss-banner-tagline">◇ ' + (bd.tagline || bd.desc || '') + '</div>'
+                        + (bd.source ? '<div class="boss-banner-source">出处：' + bd.source + '</div>' : '')
+                        + '<div class="boss-banner-quote">"' + (bd.quote || '') + '"</div>'
+                        + '<div class="boss-banner-story">' + (bd.story || bd.desc || '') + '</div>'
+                        + '</div>'
+                        + '<div class="boss-banner-stats">'
+                        + '<div class="boss-stat-section"><div class="boss-stat-title">难度</div><div class="boss-stat-difficulty">' + diffStars + '</div></div>'
+                        + '<div class="boss-stat-section"><div class="boss-stat-title">生命</div><div class="boss-stat-hp-row"><div class="boss-stat-hp-bar"><div class="boss-stat-hp-fill" style="width:' + hpPct + '%"></div></div><span class="boss-stat-hp-text">' + bossHp + '</span></div></div>'
+                        + '<div class="boss-stat-section"><div class="boss-stat-title">招式</div><div class="boss-stat-moves">' + attacksHtml + '</div></div>'
+                        + (bd.reward ? '<div class="boss-stat-section"><span class="boss-stat-reward">🏆 ' + bd.reward + '</span></div>' : '')
+                        + '<div class="boss-banner-status">' + statusBadge + '</div>'
+                        + '</div>'
+                        + '</div>';
+                } else if (isBoss && stage.bossType === 'mini') {
+                    // 小BOSS大卡片（方案A）- BOSS图作为视觉主体
+                    const bc = stage.bossDef.color || '#c084fc';
+                    const bd = stage.bossDef;
+                    const bossImg = bd.miniImage || 'assets/boss/boss-mini-q' + (stage.bossLevel || '0') + '.png';
+                    const miniDiff = Math.max(1, (bd.difficulty || 3) - 1);
+                    const diffStars = '★'.repeat(miniDiff) + '☆'.repeat(Math.max(0, 6 - miniDiff));
+                    stageGrid += '<div class="stage-card boss-mini-card ' + statusClass + '" style="--boss-theme:' + bc + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
+                        + '<div class="boss-mini-badge">⚔️</div>'
+                        + '<div class="boss-mini-img">'
+                        + '<img src="' + bossImg + '" alt="' + (bd.name || '') + '" onerror="this.style.display=\'none\';this.parentElement.innerHTML+=\'<i class=\\'fas fa-ghost\\' style=\\'font-size:2.5rem;color:' + bc + ';\\'></i>\';">'
+                        + '</div>'
+                        + '<div class="boss-mini-info">'
+                        + '<div class="boss-mini-name">' + (bd.nameLocal || bd.name || '') + '</div>'
+                        + '<div class="boss-mini-local">' + (bd.name || '') + '</div>'
+                        + '<div class="boss-mini-difficulty">' + diffStars + '</div>'
+                        + '<div class="boss-mini-status ' + (isLocked ? 'boss-mini-locked' : isCleared ? 'boss-mini-cleared' : 'boss-mini-available') + '">' + (isLocked ? '🔒 ' + (isReadonly ? '未开放' : '未解锁') : isCleared ? '✓ 已击败' : '⚔ 可挑战') + '</div>'
+                        + '</div>'
+                        + '</div>';
+                } else {
+                    // 普通关卡
+                    stageGrid += `<div class="stage-card ${statusClass} ${group.isHell ? 'stage-hell' : ''}${_gateExtraClass}" onclick="${isLocked ? '' : `ChallengeModule.enterStage('${stage.id}')`}" ${isReadonly ? 'title="该课程暂未开放"' : ''}>
+                        ${_gateHtml}
+                        <div class="stage-number">${i + 1}</div>
+                        <div class="stage-icon">${statusIcon}</div>
+                        ${isCleared ? `<div class="stage-best">最佳 ${p.bestScore.toFixed(0)} 分</div>` : ''}
+                        ${isCurrent && !isLocked ? '<div class="stage-hint">可挑战</div>' : ''}
+                    </div>`;
+                }
             });
         });
 
@@ -908,7 +1038,7 @@ const ChallengeModule = {
             </div>
             <div style="padding:8px 4px 4px;">
                 <p style="font-size:0.75rem;color:#64748b;margin-bottom:12px;text-align:center;">
-                    闯天关地狱模式中，每个等级末尾将出现大BOSS，4级起还有小BOSS出没。<br>击败它们可获得专属称号！
+                    闯天关地狱模式中，每个等级末尾将出现守关BOSS，4级起还有精英BOSS出没。<br>击败它们可获得专属称号！
                 </p>
                 <div class="boss-codex-grid">
         `;
@@ -1461,16 +1591,63 @@ const ChallengeModule = {
             const stageName = stage ? stage.name : ('\u7b2c' + stageIndex + '\u5173');
 
             if (state.isBoss) {
-                // BOSS \u5173\u5361\u7279\u6b8a\u51c6\u5907\u754c\u9762
+                // BOSS 关卡特殊准备界面（独立介绍+加载页）
                 const bossDef = state.bossDef || {};
                 const bossColor = bossDef.color || '#ef4444';
                 const bossName = bossDef.name || 'BOSS';
                 const bossIcon = bossDef.icon || 'fa-skull';
                 const bossDesc = bossDef.desc || '';
                 const bossImage = bossDef.image || '';
-                const heroDef = this._heroDefs[String(state.bossLevel || 0)] || this._heroDefs['0'];
+                const bossNameLocal = bossDef.nameLocal || '';
+                const bossQuote = bossDef.quote || '';
+                const bossQuoteOriginal = bossDef.quoteOriginal || '';
+                const bossLore = bossDef.lore || '';
+                const bossSource = bossDef.source || '';
+                const heroDef = this._getHeroDef(state.bossLevel || 0);
                 const heroImage = heroDef.image || '';
                 const ragePct = Math.round((state.rageThreshold || 0.25) * 100);
+                const bossType = state.bossType || 'big';
+                const isBig = bossType === 'big';
+                const typeLabel = isBig ? '\u5927BOSS' : '\u5c0fBOSS';
+                const typeClass = isBig ? 'is-big' : 'is-mini';
+                const dangerLevel = state.bossLevel !== undefined ? Number(state.bossLevel) + 1 : 5;
+
+                // 危险度星级HTML
+                let dangerStars = '';
+                for (let s = 1; s <= 8; s++) {
+                    dangerStars += `<i class="fas fa-star boss-loading-danger-star ${s <= dangerLevel ? 'filled' : 'empty'}"></i>`;
+                }
+
+                // 背景故事HTML
+                let loreHtml = '';
+                if (bossQuote || bossQuoteOriginal || bossLore) {
+                    loreHtml = `<div class="boss-loading-lore">`;
+                    if (bossQuote) {
+                        loreHtml += `<div class="boss-loading-lore-quote">\u201c${bossQuote}\u201d</div>`;
+                    }
+                    if (bossQuoteOriginal) {
+                        loreHtml += `<div class="boss-loading-lore-quote-original">\u201c${bossQuoteOriginal}\u201d</div>`;
+                    }
+                    if (bossLore) {
+                        loreHtml += `<div class="boss-loading-lore-text">${bossLore}</div>`;
+                    }
+                    loreHtml += `</div>`;
+                }
+
+                // 出处HTML
+                let sourceHtml = bossSource
+                    ? `<div class="boss-loading-source"><i class="fas fa-book"></i> ${bossSource}</div>`
+                    : '';
+
+                // 剪影或头像视觉
+                const visualHtml = bossImage
+                    ? `<img src="${bossImage}" class="boss-loading-avatar" style="border-color:${bossColor};" alt="${bossName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                       <div class="boss-loading-avatar-fallback" style="border-color:${bossColor};display:none;"><i class="fas ${bossIcon}" style="color:${bossColor};font-size:3.5rem;"></i></div>`
+                    : `<div class="boss-loading-silhouette" style="border-color:${bossColor};">
+                           <div class="boss-loading-silhouette-glow" style="background:${bossColor};"></div>
+                           <i class="fas ${bossIcon} boss-loading-silhouette-icon" style="color:${bossColor};"></i>
+                       </div>`;
+
                 container.innerHTML = `
                     <div class="challenge-play-page boss-loading-page">
                         <div class="boss-loading-overlay" id="boss-loading-overlay">
@@ -1486,13 +1663,26 @@ const ChallengeModule = {
                             </div>
                         </div>
                         <div class="boss-loading-main">
-                            <div class="boss-loading-visual">
-                                ${bossImage ? `<img src="${bossImage}" class="boss-loading-avatar" style="border-color:${bossColor};" alt="${bossName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
-                                <div class="boss-loading-avatar-fallback" style="border-color:${bossColor};"><i class="fas ${bossIcon}" style="color:${bossColor};font-size:3rem;"></i></div>` : `<div class="boss-loading-avatar-fallback" style="border-color:${bossColor};"><i class="fas ${bossIcon}" style="color:${bossColor};font-size:3rem;"></i></div>`}
+                            <!-- BOSS类型标签 -->
+                            <div class="boss-loading-type-badge ${typeClass}">
+                                <i class="fas ${isBig ? 'fa-crown' : 'fa-skull'}"></i> ${typeLabel}
                             </div>
+                            <!-- BOSS视觉 -->
+                            <div class="boss-loading-visual">
+                                ${visualHtml}
+                            </div>
+                            <!-- BOSS信息 -->
                             <div class="boss-loading-info">
-                                <div class="boss-loading-name" style="color:${bossColor};">${bossName}</div>
-                                <div class="boss-loading-desc">${bossDesc}</div>
+                                <div class="boss-loading-name" style="color:${bossColor};text-shadow:0 0 18px ${bossColor}44;">${bossName}</div>
+                                ${bossNameLocal ? `<div class="boss-loading-name-local">${bossNameLocal}</div>` : ''}
+                                <!-- 危险度 -->
+                                <div class="boss-loading-danger">
+                                    ${dangerStars}
+                                    <span class="boss-loading-danger-label">\u5371\u9669\u5ea6 ${dangerLevel}/8</span>
+                                </div>
+                                <!-- 背景故事 -->
+                                ${loreHtml}
+                                <!-- 战斗数据 -->
                                 <div class="boss-loading-stats">
                                     <div class="boss-loading-stat">
                                         <div class="boss-loading-stat-icon" style="color:#f87171;"><i class="fas fa-heart"></i></div>
@@ -1523,18 +1713,22 @@ const ChallengeModule = {
                                         </div>
                                     </div>
                                 </div>
+                                <!-- 提示 -->
                                 <div class="boss-loading-tips">
                                     <div class="boss-loading-tip"><i class="fas fa-lightbulb" style="color:#fbbf24;"></i> \u7b54\u5bf9\u6263\u51cfBOSS\u8840\u91cf\uff0c\u7b54\u9519\u6263\u51cf\u81ea\u5df1\u751f\u547d</div>
                                     <div class="boss-loading-tip"><i class="fas fa-fire" style="color:#f87171;"></i> BOSS \u66b4\u6012\u540e\u4f24\u5bb3\u7ffb\u500d\uff0c\u8c28\u614e\u7b54\u9898!</div>
                                     <div class="boss-loading-tip"><i class="fas fa-star" style="color:#fbbf24;"></i> \u6700\u540e\u4e00\u6ef4\u8840\u89e6\u53d1\u6700\u540e\u4e00\u640f\uff0c\u53cd\u51fbBOSS!</div>
                                 </div>
+                                <!-- 开始按钮 -->
                                 <button class="ch-start-btn boss-loading-start-btn" onclick="ChallengeModule._startBossWithLoading()" style="background:linear-gradient(135deg,${bossColor},${bossColor}cc);border-color:${bossColor};">
-                                    <i class="fas fa-swords"></i> \u6311\u6218 BOSS
+                                    <i class="fas fa-crosshairs"></i> \u6311\u6218 ${typeLabel}
                                 </button>
+                                <!-- 文化出处 -->
+                                ${sourceHtml}
                             </div>
                         </div>
-                        <div style="margin-top:16px;display:flex;justify-content:center;">
-                            <button style="background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:0.78rem;display:flex;align-items:center;gap:5px;" onclick="ChallengeModule.confirmExit()">
+                        <div style="margin-top:14px;display:flex;justify-content:center;">
+                            <button style="background:rgba(148,163,184,0.08);color:#64748b;border:1px solid rgba(148,163,184,0.15);padding:7px 14px;border-radius:10px;cursor:pointer;font-size:0.72rem;display:flex;align-items:center;gap:5px;" onclick="ChallengeModule.confirmExit()">
                                 <i class="fas fa-arrow-left"></i> \u8fd4\u56de\u5173\u5361
                             </button>
                         </div>
@@ -2552,7 +2746,7 @@ const ChallengeModule = {
 
         // 用户角色
         const heroLevel = String(state.bossLevel || 0);
-        const heroDef = this._heroDefs[heroLevel] || this._heroDefs['0'];
+        const heroDef = this._getHeroDef(heroLevel);
         const heroColor = heroDef.color || '#60a5fa';
         const heroName = heroDef.name || '\u52c7\u8005';
 
@@ -2619,7 +2813,7 @@ const ChallengeModule = {
         const userHp = typeof state.userHp === 'number' ? state.userHp : 0;
         const userMaxHp = typeof state.userMaxHp === 'number' ? state.userMaxHp : 1;
         const heroLevel = String(state.bossLevel || 0);
-        const heroDef = this._heroDefs[heroLevel] || this._heroDefs['0'];
+        const heroDef = this._getHeroDef(heroLevel);
         const heroColor = heroDef.color || '#60a5fa';
         const heroName = heroDef.name || '\u52c7\u8005';
         const userHpPct = userMaxHp > 0 ? (userHp / userMaxHp * 100) : 0;
