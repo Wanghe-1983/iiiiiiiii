@@ -923,14 +923,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 14px 8px;
-    border-radius: 14px;
-    min-height: 150px;
+    padding: 16px 10px;
+    border-radius: 16px;
+    min-height: 180px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.25s;
     border: 2px solid transparent;
     text-align: center;
-    height: 85px;
     overflow: hidden;
 }
 
@@ -4110,8 +4109,8 @@
     grid-template-columns: 200px 1fr 170px;
     gap: 20px;
     align-items: center;
-    min-height: 260px;
-    padding: 20px 22px;
+    min-height: 220px;
+    padding: 16px 20px;
     border-radius: 18px;
     cursor: pointer;
     transition: all 0.3s;
@@ -4141,7 +4140,7 @@
 
 /* 左：BOSS大图 */
 .boss-banner-img {
-    width: 180px; height: 240px; flex-shrink: 0;
+    width: 140px; height: 186px; flex-shrink: 0;
     border-radius: 14px; overflow: hidden;
     border: 2px solid color-mix(in srgb, var(--boss-theme) 40%, transparent);
     background: rgba(0,0,0,0.5);
@@ -4150,7 +4149,7 @@
     display: flex; align-items: center; justify-content: center;
 }
 .boss-banner-img img {
-    width: 100%; height: 100%; object-fit: cover;
+    width: 100%; height: 100%; object-fit: contain;
 }
 .boss-badge-icon {
     position: absolute; top: 8px; right: 8px; width: 30px; height: 30px;
@@ -4254,7 +4253,7 @@
 
 /* === 小BOSS大卡片（方案A）=== */
 .stage-card.boss-mini-card {
-    min-height: 280px;
+    min-height: 220px;
     padding: 16px 12px 12px;
     border-radius: 16px;
     display: flex; flex-direction: column; align-items: center;
@@ -4275,14 +4274,14 @@
     font-size: 0.75rem; color: var(--boss-theme); z-index: 2;
 }
 .boss-mini-img {
-    width: 120px; height: 160px; border-radius: 12px; overflow: hidden;
+    width: 100px; height: 133px; border-radius: 12px; overflow: hidden;
     border: 2px solid color-mix(in srgb, var(--boss-theme) 40%, transparent);
-    background: rgba(0,0,0,0.4); margin-bottom: 10px;
+    background: rgba(0,0,0,0.4); margin-bottom: 8px;
     box-shadow: 0 4px 16px color-mix(in srgb, var(--boss-theme) 12%, transparent);
     display: flex; align-items: center; justify-content: center;
 }
 .boss-mini-img img {
-    width: 100%; height: 100%; object-fit: cover;
+    width: 100%; height: 100%; object-fit: contain;
 }
 .boss-mini-info { text-align: center; z-index: 1; }
 .boss-mini-name {
@@ -4318,6 +4317,78 @@
     .boss-banner-name { font-size: 1rem; }
     .boss-banner-story { -webkit-line-clamp: 2; }
 }
+
+/* === 普通关卡大卡片升级 === */
+.stage-card .stage-card-number {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--stage-color, #60a5fa);
+    line-height: 1;
+    margin-bottom: 4px;
+    text-shadow: 0 0 10px color-mix(in srgb, var(--stage-color, #60a5fa) 30%, transparent);
+}
+.stage-card .stage-card-icon {
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+    color: var(--stage-color, #94a3b8);
+}
+.stage-card .stage-card-name {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+.stage-card .stage-card-progress {
+    width: 70%;
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+.stage-card .stage-card-progress-fill {
+    height: 100%;
+    background: var(--stage-color, #60a5fa);
+    border-radius: 2px;
+    transition: width 0.4s;
+}
+.stage-card .stage-card-status {
+    font-size: 0.62rem;
+    padding: 1px 8px;
+    border-radius: 6px;
+}
+.stage-card .status-available {
+    background: color-mix(in srgb, var(--stage-color, #60a5fa) 15%, transparent);
+    color: var(--stage-color, #60a5fa);
+}
+.stage-card .status-current {
+    background: color-mix(in srgb, var(--stage-color, #60a5fa) 20%, transparent);
+    color: var(--stage-color, #60a5fa);
+    font-weight: 700;
+    animation: stage-pulse 2s ease-in-out infinite;
+}
+.stage-card .status-locked {
+    background: rgba(100,116,139,0.08);
+    color: #64748b;
+}
+.stage-card .status-cleared {
+    background: rgba(16,185,129,0.12);
+    color: #34d399;
+}
+.stage-card .stage-card-stars {
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    color: #fbbf24;
+}
+@keyframes stage-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--stage-color, #60a5fa) 30%, transparent); }
+    50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--stage-color, #60a5fa) 0%, transparent); }
+}
+
+
 
 
 

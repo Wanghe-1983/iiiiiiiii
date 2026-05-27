@@ -909,15 +909,22 @@ const ChallengeModule = {
                         + '</div>'
                         + '</div>';
                 } else {
-                    // 普通关卡
-                    stageGrid += `<div class="stage-card ${statusClass} ${group.isHell ? 'stage-hell' : ''}${_gateExtraClass}" onclick="${isLocked ? '' : `ChallengeModule.enterStage('${stage.id}')`}" ${isReadonly ? 'title="该课程暂未开放"' : ''}>
-                        ${_gateHtml}
-                        <div class="stage-number">${i + 1}</div>
-                        <div class="stage-icon">${statusIcon}</div>
-                        ${isCleared ? `<div class="stage-best">最佳 ${p.bestScore.toFixed(0)} 分</div>` : ''}
-                        ${isCurrent && !isLocked ? '<div class="stage-hint">可挑战</div>' : ''}
-                    </div>`;
-                }
+                    // 普通关卡 — 统一大卡片设计
+                    const stageColors = ['#22c55e','#a78bfa','#fbbf24','#f97316','#8b5cf6','#ef4444','#dc2626','#7c3aed'];
+                    const lvColor = stageColors[parseInt(stage.levelId) % 8] || '#60a5fa';
+                    const stageIconHtml = isLocked
+                        ? '<i class="fas fa-lock"></i>'
+                        : isCleared ? this._renderStars(stars)
+                        : '<i class="fas fa-play-circle"></i>';
+                    const statusCls = isLocked ? 'locked' : isCleared ? 'cleared' : 'available';
+                    const statusLabel = isLocked ? (isReadonly ? '未开放' : '🔒') : isCleared ? '✓' : isCurrent ? '⚔' : '⚔';
+                    stageGrid += '<div class="stage-card ' + statusClass + '" style="--stage-color:' + lvColor + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
+                        + '<div class="stage-card-number">' + (i + 1) + '</div>'
+                        + '<div class="stage-card-icon">' + stageIconHtml + '</div>'
+                        + (isCleared ? '<div class="stage-card-stars">' + this._renderStars(stars) + '</div>' : '')
+                        + '<div class="stage-card-progress"><div class="stage-card-progress-fill" style="width:' + (isCleared ? '100%' : isCurrent ? '25%' : '0%') + '"></div></div>'
+                        + '<div class="stage-card-status status-' + statusCls + '">' + statusLabel + '</div>'
+                        + '</div>';                }
             });
         });
 
