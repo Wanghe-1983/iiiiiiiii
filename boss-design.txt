@@ -165,3 +165,45 @@ CSS（modules.css）：
   - 紫雾装饰动画
 - 2026-05-27 v3: 全部按哇扬皮影戏风格重新生成，16张完成
 - 早期v1/v2: BOSS设计方案（已废弃）
+
+================================================================================
+v3.2 - 2026-05-27 14:27 — BOSS遭遇动画实施 + 视觉修复
+================================================================================
+
+【已完成】
+1. BOSS降临碎片炸裂过渡动画（方案D）JS实施：
+   - _showBossEncounter(stageId)：创建全屏遮罩，展示BOSS卡片+英雄卡片+VS+进度条
+   - _startEncounterProgress(overlay, bossImg, stageId)：requestAnimationFrame驱动3.2秒进度
+     * 0-30%：BOSS正在降临...
+     * 30%：触发光晕(boss-encounter-glowing) + 卡片抖动(boss-encounter-shaking) + 英雄抖动
+     * 70%：触发火焰特效(boss-encounter-flame-layer conic-gradient旋转) + 抖动加剧
+     * 90%+：预爆抖动(0.04s周期)
+     * 100%：触发碎片炸裂
+   - _triggerShatterExplosion(overlay, bossCard, bossImg, stageId)：5×5网格碎片炸裂
+     * 每个碎片background-position精确定位 + random飞行方向/旋转/缩放
+     * 0.95s后清理碎片容器 + overlay fade out + 调用_doEnterBattle进入战斗
+   - enterStage重构：BOSS关卡拦截 → _showBossEncounter → _doEnterBattle(原逻辑)
+
+2. BOSS图片视觉修复：
+   - .boss-banner背景改为不透明白：linear-gradient(135deg, #161623, #0c0c14)
+   - .boss-mini-card背景改为不透明白：linear-gradient(180deg, #161e2e, #0c0c14)
+   - .boss-mist改为theme-aware超低透明度颜色混合（8%/5%），opacity降至0.5~0.8
+   - 容器比例验证：BOSS图片1728×2304(0.75) vs 容器160×213(0.751)精准匹配
+
+3. 英雄形象展示：
+   - 遭遇动画中加载英雄卡片：从_heroDefs/_heroineDefs获取对应等级英雄
+   - 英雄卡片调整为16:9横版比例(220×124)匹配hero图片2848×1600(1.78)
+   - 英雄图片使用object-fit:contain，带名称标签
+
+4. 部署：
+   - index.html v=20260527142705
+   - sw.js indonesian-cache-v10
+   - Git commit 01a65b9 已推送
+
+【技术要点】
+- enterStage拦截点：在设置currentStageId之后、_doEnterBattle之前
+- _doEnterBattle：原enterStage的完整后续逻辑（动态抽样→设置challengeState→render）
+- 碎片炸裂：纯CSS grid + CSS变量驱动，无需Canvas
+- 英雄图片预加载：new Image()后台加载确保战斗画面即时显示
+- 所有新方法使用var声明变量（兼容旧版浏览器）
+
