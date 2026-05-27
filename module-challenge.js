@@ -550,7 +550,7 @@ const ChallengeModule = {
         '5': { name: '宝石护法', icon: 'fa-gem', color: '#a78bfa', desc: '宝石铠甲的神圣护法', image: 'assets/hero/hero-q5.png' },
         '6': { name: '钻石翼甲', icon: 'fa-feather', color: '#38bdf8', desc: '白金钻石翼甲的天空骑士', image: 'assets/hero/hero-q6.png' },
         '7': { name: '佛教护法', icon: 'fa-crown', color: '#f59e0b', desc: '佛陀浮雕盾的神圣护法', image: 'assets/hero/hero-q7.png' },
-    }
+    },
 
     // 女性角色形象定义（女祭司/神官路线）
     _heroineDefs: {
@@ -872,7 +872,7 @@ const ChallengeModule = {
                         + '<div class="boss-mist"></div>'
                         + '<div class="boss-banner-img">'
                         + '<div class="boss-badge-icon big-crown"><i class="fas fa-crown"></i></div>'
-                        + '<img src="' + bossImg + '" alt="' + (bd.name || '') + '" onerror="this.style.display=\'none\';this.parentElement.innerHTML+=\'<i class=\\'fas fa-skull-crossbones\\' style=\\'font-size:4rem;color:' + bc + ';\\'></i>\';">'
+                        + '<img src="' + bossImg + '" alt="' + (bd.name || '') + '" onerror="this.remove()">'
                         + '</div>'
                         + '<div class="boss-banner-info">'
                         + '<div class="boss-banner-header"><span class="boss-banner-name">' + (bd.nameLocal || bd.name || '') + '</span><span class="boss-banner-local">' + (bd.name || '') + '</span></div>'
@@ -899,7 +899,7 @@ const ChallengeModule = {
                     stageGrid += '<div class="stage-card boss-mini-card ' + statusClass + '" style="--boss-theme:' + bc + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
                         + '<div class="boss-mini-badge">⚔️</div>'
                         + '<div class="boss-mini-img">'
-                        + '<img src="' + bossImg + '" alt="' + (bd.name || '') + '" onerror="this.style.display=\'none\';this.parentElement.innerHTML+=\'<i class=\\'fas fa-ghost\\' style=\\'font-size:2.5rem;color:' + bc + ';\\'></i>\';">'
+                        + '<img src="' + bossImg + '" alt="' + (bd.name || '') + '" onerror="this.remove()">'
                         + '</div>'
                         + '<div class="boss-mini-info">'
                         + '<div class="boss-mini-name">' + (bd.nameLocal || bd.name || '') + '</div>'
