@@ -4116,7 +4116,7 @@
     transition: all 0.3s;
     overflow: hidden;
     position: relative;
-    background: linear-gradient(135deg, rgba(22,22,35,0.9), rgba(12,12,20,0.95));
+    background: linear-gradient(135deg, #161623, #0c0c14);
     border: 2px solid color-mix(in srgb, var(--boss-theme) 35%, transparent);
 }
 .stage-card.boss-banner:hover {
@@ -4128,22 +4128,22 @@
 /* 紫雾装饰动画 */
 .boss-mist {
     position: absolute; right: 0; top: 0; bottom: 0; width: 40%;
-    background: radial-gradient(ellipse at 80% 40%, rgba(139,92,246,0.06) 0%, transparent 50%),
-                radial-gradient(ellipse at 90% 65%, rgba(139,92,246,0.04) 0%, transparent 40%);
+    background: radial-gradient(ellipse at 80% 40%, color-mix(in srgb, var(--boss-theme) 8%, transparent) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 65%, color-mix(in srgb, var(--boss-theme) 5%, transparent) 0%, transparent 40%);
     pointer-events: none; z-index: 0;
-    animation: boss-mist-drift 8s ease-in-out infinite;
+    animation: boss-mist-drift 10s ease-in-out infinite;
 }
 @keyframes boss-mist-drift {
-    0%, 100% { opacity: 0.7; transform: translateX(0); }
-    50% { opacity: 1; transform: translateX(-6px); }
+    0%, 100% { opacity: 0.5; transform: translateX(0); }
+    50% { opacity: 0.8; transform: translateX(-8px); }
 }
 
 /* 左：BOSS大图 */
 .boss-banner-img {
-    width: 140px; height: 186px; flex-shrink: 0;
+    width: 160px; height: 213px; flex-shrink: 0;
     border-radius: 14px; overflow: hidden;
     border: 2px solid color-mix(in srgb, var(--boss-theme) 40%, transparent);
-    background: rgba(0,0,0,0.5);
+    background: #000;
     box-shadow: 0 4px 20px color-mix(in srgb, var(--boss-theme) 15%, transparent);
     z-index: 1; position: relative;
     display: flex; align-items: center; justify-content: center;
@@ -4257,7 +4257,7 @@
     padding: 16px 12px 12px;
     border-radius: 16px;
     display: flex; flex-direction: column; align-items: center;
-    background: linear-gradient(180deg, rgba(30,41,59,0.5), rgba(12,12,20,0.7));
+    background: linear-gradient(180deg, #161e2e, #0c0c14);
     border: 2px solid color-mix(in srgb, var(--boss-theme) 30%, transparent);
     transition: all 0.3s; overflow: hidden; position: relative;
 }
@@ -4274,9 +4274,9 @@
     font-size: 0.75rem; color: var(--boss-theme); z-index: 2;
 }
 .boss-mini-img {
-    width: 100px; height: 133px; border-radius: 12px; overflow: hidden;
+    width: 110px; height: 147px; border-radius: 12px; overflow: hidden;
     border: 2px solid color-mix(in srgb, var(--boss-theme) 40%, transparent);
-    background: rgba(0,0,0,0.4); margin-bottom: 8px;
+    background: #000; margin-bottom: 8px;
     box-shadow: 0 4px 16px color-mix(in srgb, var(--boss-theme) 12%, transparent);
     display: flex; align-items: center; justify-content: center;
 }
@@ -4312,7 +4312,7 @@
         grid-template-columns: 110px 1fr;
         gap: 12px; padding: 14px; min-height: auto;
     }
-    .boss-banner-img { width: 100px; height: 133px; }
+    .boss-banner-img { width: 110px; height: 147px; }
     .boss-banner-stats { display: none; }
     .boss-banner-name { font-size: 1rem; }
     .boss-banner-story { -webkit-line-clamp: 2; }
@@ -5979,4 +5979,199 @@
     align-items: center;
     justify-content: center;
     background: rgba(15,23,42,0.5);
+}
+
+/* ========== BOSS降临遭遇动画 ========== */
+
+/* 全屏暗化遮罩 */
+.boss-encounter-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.85);
+    display: flex; align-items: center; justify-content: center;
+    animation: encounter-fade-in 0.4s ease;
+}
+@keyframes encounter-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* 遭遇主卡片 */
+.boss-encounter-stage {
+    position: relative;
+    width: min(700px, 92vw);
+    display: flex; flex-direction: column; align-items: center;
+    gap: 20px;
+}
+
+/* BOSS+英雄对峙区 */
+.boss-encounter-showdown {
+    display: flex; align-items: center; justify-content: center;
+    gap: 40px;
+    width: 100%;
+}
+
+/* BOSS卡片（用于碎片炸裂的源） */
+.boss-encounter-card {
+    position: relative;
+    width: 200px; height: 267px;
+    border-radius: 20px; overflow: hidden;
+    border: 3px solid var(--boss-theme, #7c3aed);
+    box-shadow: 0 0 30px color-mix(in srgb, var(--boss-theme, #7c3aed) 40%, transparent);
+    background: #000;
+    transition: transform 0.1s;
+    z-index: 2;
+}
+.boss-encounter-card img {
+    width: 100%; height: 100%; object-fit: contain;
+}
+
+/* 英雄卡片 */
+.boss-encounter-hero {
+    position: relative;
+    width: 220px; height: 124px;
+    border-radius: 16px; overflow: hidden;
+    border: 2px solid rgba(96,165,250,0.5);
+    box-shadow: 0 0 20px rgba(96,165,250,0.3);
+    background: #000;
+    z-index: 2;
+    align-self: center;
+}
+.boss-encounter-hero img {
+    width: 100%; height: 100%; object-fit: contain;
+}
+.boss-encounter-hero .hero-label {
+    position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+    font-size: 0.65rem; color: #60a5fa; font-weight: 700;
+    background: rgba(0,0,0,0.7); padding: 2px 8px; border-radius: 6px;
+}
+
+/* VS标志 */
+.boss-encounter-vs {
+    font-size: 3rem; font-weight: 900; color: #ef4444;
+    text-shadow: 0 0 20px rgba(239,68,68,0.6);
+    z-index: 2; animation: vs-pulse 0.8s ease-in-out infinite;
+}
+@keyframes vs-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+/* 进度条区 */
+.boss-encounter-progress-wrap {
+    width: 80%; max-width: 500px;
+    height: 6px; background: rgba(255,255,255,0.08);
+    border-radius: 3px; overflow: hidden;
+    position: relative; z-index: 2;
+}
+.boss-encounter-progress-bar {
+    height: 100%; border-radius: 3px;
+    background: linear-gradient(90deg, var(--boss-theme, #7c3aed), #fbbf24);
+    width: 0%;
+    transition: width 0.08s linear;
+    box-shadow: 0 0 10px var(--boss-theme, #7c3aed);
+}
+.boss-encounter-progress-text {
+    font-size: 0.75rem; color: #94a3b8; text-align: center;
+    margin-top: 6px; z-index: 2;
+}
+
+/* BOSS名称区 */
+.boss-encounter-name {
+    font-size: 1.4rem; font-weight: 800; color: #f1f5f9;
+    text-shadow: 0 0 12px var(--boss-theme, #7c3aed);
+    z-index: 2;
+}
+
+/* 卡片抖动 */
+.boss-encounter-shaking {
+    animation: encounter-shake 0.15s ease-in-out infinite;
+}
+@keyframes encounter-shake {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(-4px, 2px) rotate(-1deg); }
+    50% { transform: translate(3px, -3px) rotate(1deg); }
+    75% { transform: translate(-2px, -1px) rotate(-0.5deg); }
+}
+
+/* 边框光晕（30%+） */
+.boss-encounter-glowing {
+    box-shadow: 0 0 40px color-mix(in srgb, var(--boss-theme, #7c3aed) 60%, transparent),
+                0 0 80px color-mix(in srgb, var(--boss-theme, #7c3aed) 30%, transparent) !important;
+}
+
+/* 火焰特效（70%+） */
+.boss-encounter-flame-layer {
+    position: absolute; inset: -10px; border-radius: 26px;
+    pointer-events: none; z-index: 1;
+    background: conic-gradient(
+        from 0deg,
+        var(--boss-theme, #7c3aed), transparent 25%,
+        var(--boss-theme, #7c3aed) 30%, transparent 55%,
+        #fbbf24 60%, transparent 85%
+    );
+    filter: blur(8px);
+    animation: flame-spin 0.6s linear infinite;
+    opacity: 0.85;
+}
+@keyframes flame-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* 碎片炸裂容器 */
+.boss-shatter-container {
+    position: absolute;
+    width: 200px; height: 267px;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    pointer-events: none;
+}
+
+/* 碎片 */
+.boss-shatter-piece {
+    background-size: 200px 267px;
+    background-repeat: no-repeat;
+    transition: none;
+    opacity: 1;
+    will-change: transform, opacity;
+}
+
+/* 碎片炸裂动画 */
+.boss-shatter-piece.exploding {
+    animation: shatter-fly 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+@keyframes shatter-fly {
+    0% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+        opacity: 1;
+    }
+    30% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--sx), var(--sy)) rotate(var(--sr)) scale(var(--ss));
+        opacity: 0;
+    }
+}
+
+/* 英雄卡片也抖动 */
+.boss-encounter-hero-shaking {
+    animation: hero-shake 0.12s ease-in-out infinite;
+}
+@keyframes hero-shake {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(2px, -1px); }
+    50% { transform: translate(-3px, 2px); }
+    75% { transform: translate(1px, -2px); }
+}
+
+/* 炸裂后的暗化淡出 */
+.boss-encounter-overlay.fading {
+    animation: overlay-fade-out 0.5s ease forwards;
+}
+@keyframes overlay-fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
 }

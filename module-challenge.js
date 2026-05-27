@@ -1250,6 +1250,18 @@ const ChallengeModule = {
             return;
         }
         this.currentStageId = stageId;
+        // BOSS关卡：先触发降临遭遇动画
+        if (stage._isBoss === true) {
+            this._showBossEncounter(stageId);
+            return;
+        }
+        this._doEnterBattle(stageId);
+    },
+
+    /** 实际进入战斗（原 enterStage 后续逻辑） */
+    _doEnterBattle(stageId) {
+        const stage = this.allStages.find(s => s.id === stageId);
+        if (!stage) return;
         // 检查地狱模式关卡是否开放
         const _hs = window._systemInfo && (window._systemInfo.hellSettings || window._systemInfo);
         const isHellMode = this.challengeMode === 'hell';
@@ -1345,6 +1357,7 @@ const ChallengeModule = {
 
         this.render();
     },
+
 
     /**
      * 动态抽样：从关卡所属unit的题库中按类型和数量随机抽取题目
@@ -3977,6 +3990,174 @@ const ChallengeModule = {
         this.currentView = 'titles';
         this.render();
     },
+
+    /** BOSS降临：碎片炸裂过渡动画入口 */
+    _showBossEncounter(stageId) {
+        var stage = this.allStages.find(function(s) { return s.id === stageId; });
+        if (!stage) { this._doEnterBattle(stageId); return; }
+
+        var bossDef = stage.bossDef || (this._bossDefs[stage.bossLevel || '0'] || this._bossDefs['0']);
+        var bossLevel = String(stage.bossLevel || '0');
+        var heroDef = this._getHeroDef(bossLevel);
+        var bossTheme = bossDef.color || '#7c3aed';
+        var bossImg = bossDef.image || ('assets/boss/boss-big-q' + bossLevel + '.png');
+        var heroImg = heroDef.image || ('assets/hero/hero-q' + bossLevel + '.png');
+        var heroName = heroDef.name || '勇士';
+        var bossName = bossDef.name || 'BOSS';
+
+        // 创建遮罩层
+        var overlay = document.createElement('div');
+        overlay.className = 'boss-encounter-overlay';
+        overlay.style.setProperty('--boss-theme', bossTheme);
+        overlay.setAttribute('data-stage-id', stageId);
+
+        overlay.innerHTML = '<div class="boss-encounter-stage">'
+            + '<div class="boss-encounter-name">' + bossName + '</div>'
+            + '<div class="boss-encounter-showdown">'
+            + '<div class="boss-encounter-hero" id="encounter-hero-card">'
+            + '<img src="' + heroImg + '" alt="' + heroName + '" onerror="this.remove()">'
+            + '<div class="hero-label">' + heroName + '</div>'
+            + '</div>'
+            + '<div class="boss-encounter-vs">VS</div>'
+            + '<div class="boss-encounter-card" id="encounter-boss-card">'
+            + '<img src="' + bossImg + '" alt="' + bossName + '" onerror="this.remove()">'
+            + '</div>'
+            + '</div>'
+            + '<div class="boss-encounter-progress-wrap">'
+            + '<div class="boss-encounter-progress-bar" id="encounter-progress-bar"></div>'
+            + '</div>'
+            + '<div class="boss-encounter-progress-text" id="encounter-progress-text">BOSS正在降临...</div>'
+            + '</div>';
+
+        document.body.appendChild(overlay);
+
+        // 后台预加载战斗图片
+        var preload1 = new Image(); preload1.src = bossImg;
+        var preload2 = new Image(); preload2.src = heroImg;
+
+        // 启动进度动画
+        this._startEncounterProgress(overlay, bossImg, stageId);
+    },
+
+    /** 驱动进度条 0%→100% 带四阶段动画 */
+    _startEncounterProgress(overlay, bossImg, stageId) {
+        var self = this;
+        var progressBar = overlay.querySelector('#encounter-progress-bar');
+        var progressText = overlay.querySelector('#encounter-progress-text');
+        var bossCard = overlay.querySelector('#encounter-boss-card');
+        var heroCard = overlay.querySelector('#encounter-hero-card');
+
+        var startTime = performance.now();
+        var duration = 3200;
+        var glowTriggered = false;
+        var flameTriggered = false;
+        var flameLayer = null;
+
+        function animate(now) {
+            var elapsed = now - startTime;
+            var progress = Math.min(100, (elapsed / duration) * 100);
+            progressBar.style.width = progress + '%';
+
+            if (progress < 30) {
+                progressText.textContent = 'BOSS正在降临...';
+            } else if (progress < 70) {
+                progressText.textContent = '空间开始扭曲...';
+            } else if (progress < 100) {
+                progressText.textContent = '即将破碎虚空！';
+            }
+
+            // 30%: 光晕 + 轻微抖动
+            if (progress >= 30 && !glowTriggered) {
+                glowTriggered = true;
+                bossCard.classList.add('boss-encounter-glowing');
+                bossCard.classList.add('boss-encounter-shaking');
+                heroCard.classList.add('boss-encounter-hero-shaking');
+            }
+
+            // 70%: 火焰特效 + 抖动加剧
+            if (progress >= 70 && !flameTriggered) {
+                flameTriggered = true;
+                flameLayer = document.createElement('div');
+                flameLayer.className = 'boss-encounter-flame-layer';
+                bossCard.appendChild(flameLayer);
+                bossCard.style.animationDuration = '0.08s';
+            }
+
+            // 90%+: 预爆抖动
+            if (progress >= 90 && flameTriggered) {
+                bossCard.style.animationDuration = '0.04s';
+                heroCard.style.animationDuration = '0.05s';
+            }
+
+            if (progress < 100) {
+                requestAnimationFrame(animate);
+            } else {
+                progressText.textContent = '破碎！';
+                self._triggerShatterExplosion(overlay, bossCard, bossImg, stageId);
+            }
+        }
+
+        requestAnimationFrame(animate);
+    },
+
+    /** 5×5网格碎片炸裂 */
+    _triggerShatterExplosion(overlay, bossCard, bossImg, stageId) {
+        var self = this;
+        var rect = bossCard.getBoundingClientRect();
+        var cols = 5;
+        var rows = 5;
+        var pieceW = 100 / cols;
+        var pieceH = 100 / rows;
+
+        var container = document.createElement('div');
+        container.className = 'boss-shatter-container';
+        container.style.position = 'fixed';
+        container.style.left = rect.left + 'px';
+        container.style.top = rect.top + 'px';
+        container.style.width = rect.width + 'px';
+        container.style.height = rect.height + 'px';
+
+        for (var row = 0; row < rows; row++) {
+            for (var col = 0; col < cols; col++) {
+                var piece = document.createElement('div');
+                piece.className = 'boss-shatter-piece';
+                piece.style.backgroundImage = 'url(' + bossImg + ')';
+                piece.style.backgroundSize = (cols * 100) + '% ' + (rows * 100) + '%';
+                piece.style.backgroundPosition = (col * pieceW) + '% ' + (row * pieceH) + '%';
+                piece.style.width = pieceW + '%';
+                piece.style.height = pieceH + '%';
+
+                var angle = Math.random() * Math.PI * 2;
+                var distance = 180 + Math.random() * 450;
+                piece.style.setProperty('--sx', Math.cos(angle) * distance + 'px');
+                piece.style.setProperty('--sy', Math.sin(angle) * distance + 'px');
+                piece.style.setProperty('--sr', (Math.random() - 0.5) * 1080 + 'deg');
+                piece.style.setProperty('--ss', 0.2 + Math.random() * 0.8);
+
+                container.appendChild(piece);
+            }
+        }
+
+        document.body.appendChild(container);
+        bossCard.style.opacity = '0';
+
+        requestAnimationFrame(function() {
+            var pieces = container.querySelectorAll('.boss-shatter-piece');
+            for (var i = 0; i < pieces.length; i++) {
+                pieces[i].classList.add('exploding');
+            }
+        });
+
+        setTimeout(function() {
+            if (container.parentNode) container.remove();
+            overlay.classList.add('fading');
+            setTimeout(function() {
+                if (overlay.parentNode) overlay.remove();
+                self._doEnterBattle(stageId);
+            }, 500);
+        }, 950);
+    },
+
 
         _shuffle(arr) {
         const a = [...arr];
