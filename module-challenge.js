@@ -1227,6 +1227,15 @@ const ChallengeModule = {
     },
 
     // ========== 答题界面 ==========
+    _renderStars(count) {
+        if (count <= 0) return '';
+        let html = '';
+        for (let s = 0; s < 3; s++) {
+            html += '<i class="fas fa-star" style="color:' + (s < count ? '#fbbf24' : '#334155') + ';font-size:0.7rem;margin:0 1px;"></i>';
+        }
+        return html;
+    },
+
     enterStage(stageId) {
         // 检查闯天关是否启用（管理员不受限）
         if (window._systemInfo && window._systemInfo.challengeEnabled === false && !this._isAdmin()) {
