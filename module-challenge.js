@@ -544,7 +544,7 @@ const ChallengeModule = {
     _heroDefs: {
         '0': { name: '竹甲勇士', icon: 'fa-person-hiking', color: '#84cc16', desc: '竹甲木矛的初心勇者', image: 'assets/hero/hero-q0.png' },
         '1': { name: '铜甲战士', icon: 'fa-shield', color: '#d97706', desc: '铜甲铜矛的坚毅战士', image: 'assets/hero/hero-q1.png' },
-        '2': { name: '铁甲武士', icon: 'fa-shield-halved', color: '#9ca3af', desc: '铁甲铁矛的钢铁武士', image: 'assets/hero/hero-q2.png' },
+        '2': { name: '铁甲武士', icon: 'fa-shield-halved', color: '#9ca3af', desc: '铁甲铁矛的钢铁武士', image: 'assets/hero/hero-q2.jpg' },
         '3': { name: '银甲猎人', icon: 'fa-bow-arrow', color: '#94a3b8', desc: '银甲银弓的迅捷猎人', image: 'assets/hero/hero-q3.png' },
         '4': { name: '银金飞刃', icon: 'fa-star', color: '#fbbf24', desc: '银金甲飞刀的灵巧刺客', image: 'assets/hero/hero-q4.png' },
         '5': { name: '宝石护法', icon: 'fa-gem', color: '#a78bfa', desc: '宝石铠甲的神圣护法', image: 'assets/hero/hero-q5.png' },
@@ -1055,7 +1055,7 @@ const ChallengeModule = {
             const d = defs[lv];
             const isFinalBoss = lv === '7';
             const avatarContent = d.image
-                ? `<img src="${d.image}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;filter:drop-shadow(0 0 10px ${d.color});" alt="${d.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><div style="display:none;width:80px;height:80px;border-radius:50%;align-items:center;justify-content:center;"><i class="fas ${d.icon}" style="font-size:2rem;color:${d.color};filter:drop-shadow(0 0 8px ${d.color});"></i></div>`
+                ? `<img src="${d.image}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;filter:drop-shadow(0 0 10px ${d.color});" alt="${d.name}" onerror="this.remove()" /><div style="display:none;width:80px;height:80px;border-radius:50%;align-items:center;justify-content:center;"><i class="fas ${d.icon}" style="font-size:2rem;color:${d.color};filter:drop-shadow(0 0 8px ${d.color});"></i></div>`
                 : `<i class="fas ${d.icon}" style="font-size:2rem;color:${d.color};filter:drop-shadow(0 0 8px ${d.color});"></i>`;
             html += `
                 <div class="boss-codex-card ${isFinalBoss ? 'final-boss' : ''}" style="border-color:${d.color}33;">
@@ -1670,7 +1670,7 @@ const ChallengeModule = {
 
                 // 剪影或头像视觉
                 const visualHtml = bossImage
-                    ? `<img src="${bossImage}" class="boss-loading-avatar" style="border-color:${bossColor};" alt="${bossName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+                    ? `<img src="${bossImage}" class="boss-loading-avatar" style="border-color:${bossColor};" alt="${bossName}" onerror="this.remove()" />
                        <div class="boss-loading-avatar-fallback" style="border-color:${bossColor};display:none;"><i class="fas ${bossIcon}" style="color:${bossColor};font-size:3.5rem;"></i></div>`
                     : `<div class="boss-loading-silhouette" style="border-color:${bossColor};">
                            <div class="boss-loading-silhouette-glow" style="background:${bossColor};"></div>
@@ -2762,6 +2762,39 @@ const ChallengeModule = {
     /**
      * 渲染 BOSS 战对峙界面（双方形象 + HP条 + 动画）
      */
+
+    /** 渲染 BOSS 战中玩家英雄面板 */
+    _renderBossHeroPanel(state) {
+        if (!state || !state.isBoss) return '';
+        const heroLevel = String(state.bossLevel || 0);
+        const heroDef = this._getHeroDef(heroLevel);
+        const heroColor = heroDef.color || '#60a5fa';
+        const heroName = heroDef.name || '勇士';
+        const heroImg = heroDef.image || '';
+
+        const userHp = typeof state.userHp === 'number' ? state.userHp : 0;
+        const userMaxHp = typeof state.userMaxHp === 'number' ? state.userMaxHp : 1;
+        const userHpPct = userMaxHp > 0 ? (userHp / userMaxHp * 100) : 0;
+        const userHpColor = userHpPct <= 30 ? '#f87171' : '#34d399';
+
+        return '<div class="boss-hero-panel">'
+            + '<div class="boss-hero-img-wrap">'
+            + (heroImg
+                ? '<img src="' + heroImg + '" alt="' + heroName + '" class="boss-hero-panel-img" onerror="this.remove()">'
+                : '<div class="boss-hero-panel-fallback"><i class="fas fa-user" style="color:' + heroColor + ';font-size:2rem;"></i></div>')
+            + '</div>'
+            + '<div class="boss-hero-panel-info">'
+            + '<div class="boss-hero-panel-name" style="color:' + heroColor + ';">' + heroName + '</div>'
+            + '<div class="boss-hero-panel-hp-wrap">'
+            + '<div class="boss-hero-panel-hp-track">'
+            + '<div class="boss-hero-panel-hp-fill" style="width:' + userHpPct + '%;background:' + userHpColor + ';"></div>'
+            + '</div>'
+            + '<span class="boss-hero-panel-hp-text" style="color:' + userHpColor + ';">HP ' + userHp + '/' + userMaxHp + '</span>'
+            + '</div>'
+            + '</div>'
+            + '</div>';
+    },
+
     _renderBossHpBars(state) {
         if (!state || !state.isBoss) return '';
         const bossDef = state.bossDef || {};
@@ -2787,12 +2820,12 @@ const ChallengeModule = {
 
         // BOSS形象 - 大尺寸（压倒感）
         const bossImg = bossDef.image
-            ? `<img src="${bossDef.image}" id="boss-battle-img" class="boss-cinematic-avatar" style="${rageGlow}${rageShake}" alt="${bossName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><div style="display:none;class boss-cinematic-avatar-fallback;${rageShake}"><i class="fas ${bossDef.icon || 'fa-skull'}" style="color:${bossColor};font-size:4rem;"></i></div>`
+            ? `<img src="${bossDef.image}" id="boss-battle-img" class="boss-cinematic-avatar" style="${rageGlow}${rageShake}" alt="${bossName}" onerror="this.remove()" /><div style="display:none;class boss-cinematic-avatar-fallback;${rageShake}"><i class="fas ${bossDef.icon || 'fa-skull'}" style="color:${bossColor};font-size:4rem;"></i></div>`
             : `<div class="boss-cinematic-avatar-fallback" style="${rageShake}"><i class="fas ${bossDef.icon || 'fa-skull'}" style="color:${bossColor};font-size:4rem;"></i></div>`;
 
         // 用户形象 - 中等尺寸
         const heroImg = heroDef.image
-            ? `<img src="${heroDef.image}" id="hero-battle-img" class="boss-cinematic-hero-avatar" alt="${heroName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><div style="display:none;class boss-cinematic-hero-fallback;"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};font-size:1.5rem;"></i></div>`
+            ? `<img src="${heroDef.image}" id="hero-battle-img" class="boss-cinematic-hero-avatar" alt="${heroName}" onerror="this.remove()" /><div style="display:none;class boss-cinematic-hero-fallback;"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};font-size:1.5rem;"></i></div>`
             : `<div class="boss-cinematic-hero-fallback"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};font-size:1.5rem;"></i></div>`;
 
         // HP 百分比
@@ -2848,7 +2881,7 @@ const ChallengeModule = {
         const userHpPct = userMaxHp > 0 ? (userHp / userMaxHp * 100) : 0;
         const userHpColor = userHp / userMaxHp <= 0.3 ? '#f87171' : '#34d399';
         const heroImg = heroDef.image
-            ? `<img src="${heroDef.image}" id="hero-battle-img" class="boss-cinematic-hero-avatar" alt="${heroName}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><div style="display:none;" class="boss-cinematic-hero-fallback"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};font-size:1.5rem;"></i></div>`
+            ? `<img src="${heroDef.image}" id="hero-battle-img" class="boss-cinematic-hero-avatar" alt="${heroName}" onerror="this.remove()" /><div style="display:none;" class="boss-cinematic-hero-fallback"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};font-size:1.5rem;"></i></div>`
             : `<div class="boss-cinematic-hero-fallback"><i class="fas ${heroDef.icon || 'fa-user'}" style="color:${heroColor};font-size:1.5rem;"></i></div>`;
 
         return `
@@ -3991,8 +4024,9 @@ const ChallengeModule = {
         this.render();
     },
 
-    /** BOSS降临：碎片炸裂过渡动画入口 */
+    /** BOSS降临：碎片炸裂过渡动画入口（先预加载图片再开始） */
     _showBossEncounter(stageId) {
+        var self = this;
         var stage = this.allStages.find(function(s) { return s.id === stageId; });
         if (!stage) { this._doEnterBattle(stageId); return; }
 
@@ -4005,41 +4039,63 @@ const ChallengeModule = {
         var heroName = heroDef.name || '勇士';
         var bossName = bossDef.name || 'BOSS';
 
-        // 创建遮罩层
+        // 先创建遮罩层（显示加载中）
         var overlay = document.createElement('div');
         overlay.className = 'boss-encounter-overlay';
         overlay.style.setProperty('--boss-theme', bossTheme);
         overlay.setAttribute('data-stage-id', stageId);
-
-        overlay.innerHTML = '<div class="boss-encounter-stage">'
-            + '<div class="boss-encounter-name">' + bossName + '</div>'
-            + '<div class="boss-encounter-showdown">'
-            + '<div class="boss-encounter-hero" id="encounter-hero-card">'
-            + '<img src="' + heroImg + '" alt="' + heroName + '" onerror="this.remove()">'
-            + '<div class="hero-label">' + heroName + '</div>'
-            + '</div>'
-            + '<div class="boss-encounter-vs">VS</div>'
-            + '<div class="boss-encounter-card" id="encounter-boss-card">'
-            + '<img src="' + bossImg + '" alt="' + bossName + '" onerror="this.remove()">'
-            + '</div>'
-            + '</div>'
-            + '<div class="boss-encounter-progress-wrap">'
-            + '<div class="boss-encounter-progress-bar" id="encounter-progress-bar"></div>'
-            + '</div>'
-            + '<div class="boss-encounter-progress-text" id="encounter-progress-text">BOSS正在降临...</div>'
-            + '</div>';
-
+        overlay.innerHTML = '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#94a3b8;font-size:1.2rem;text-align:center;">'
+            + '<div style="font-size:3rem;margin-bottom:16px;animation:encounter-fade-in 0.5s ease infinite alternate;">⚔</div>'
+            + '<div>正在召唤BOSS...</div></div>';
         document.body.appendChild(overlay);
 
-        // 后台预加载战斗图片
-        var preload1 = new Image(); preload1.src = bossImg;
-        var preload2 = new Image(); preload2.src = heroImg;
+        // 预加载两张图片，都加载完再开始动画
+        var loadedCount = 0;
+        var totalImages = 2;
+        var bossPreload = new Image();
+        var heroPreload = new Image();
 
-        // 启动进度动画
-        this._startEncounterProgress(overlay, bossImg, stageId);
+        function onReady() {
+            loadedCount++;
+            if (loadedCount >= totalImages) {
+                overlay.innerHTML = '<div class="boss-encounter-stage">'
+                    + '<div class="boss-encounter-name">' + bossName + '</div>'
+                    + '<div class="boss-encounter-showdown">'
+                    + '<div class="boss-encounter-hero" id="encounter-hero-card">'
+                    + '<img src="' + heroImg + '" alt="' + heroName + '" onerror="this.remove()">'
+                    + '<div class="hero-label">' + heroName + '</div>'
+                    + '</div>'
+                    + '<div class="boss-encounter-vs">VS</div>'
+                    + '<div class="boss-encounter-card" id="encounter-boss-card">'
+                    + '<img src="' + bossImg + '" alt="' + bossName + '" onerror="this.remove()">'
+                    + '</div>'
+                    + '</div>'
+                    + '<div class="boss-encounter-progress-wrap">'
+                    + '<div class="boss-encounter-progress-bar" id="encounter-progress-bar"></div>'
+                    + '</div>'
+                    + '<div class="boss-encounter-progress-text" id="encounter-progress-text">BOSS正在降临...</div>'
+                    + '</div>';
+                self._startEncounterProgress(overlay, bossImg, stageId);
+            }
+        }
+
+        bossPreload.onload = onReady;
+        bossPreload.onerror = onReady;
+        heroPreload.onload = onReady;
+        heroPreload.onerror = onReady;
+        bossPreload.src = bossImg;
+        heroPreload.src = heroImg;
+
+        // 超时保护：最多等8秒
+        setTimeout(function() {
+            if (loadedCount < totalImages) {
+                loadedCount = totalImages;
+                onReady();
+            }
+        }, 8000);
     },
 
-    /** 驱动进度条 0%→100% 带四阶段动画 */
+    /** 驱动进度条 0%→100% 带四阶段动画（5秒） */
     _startEncounterProgress(overlay, bossImg, stageId) {
         var self = this;
         var progressBar = overlay.querySelector('#encounter-progress-bar');
@@ -4048,7 +4104,7 @@ const ChallengeModule = {
         var heroCard = overlay.querySelector('#encounter-hero-card');
 
         var startTime = performance.now();
-        var duration = 3200;
+        var duration = 5000;
         var glowTriggered = false;
         var flameTriggered = false;
         var flameLayer = null;
@@ -4060,8 +4116,10 @@ const ChallengeModule = {
 
             if (progress < 30) {
                 progressText.textContent = 'BOSS正在降临...';
-            } else if (progress < 70) {
+            } else if (progress < 60) {
                 progressText.textContent = '空间开始扭曲...';
+            } else if (progress < 85) {
+                progressText.textContent = '火焰在燃烧...';
             } else if (progress < 100) {
                 progressText.textContent = '即将破碎虚空！';
             }
@@ -4074,8 +4132,8 @@ const ChallengeModule = {
                 heroCard.classList.add('boss-encounter-hero-shaking');
             }
 
-            // 70%: 火焰特效 + 抖动加剧
-            if (progress >= 70 && !flameTriggered) {
+            // 60%: 火焰特效 + 抖动加剧
+            if (progress >= 60 && !flameTriggered) {
                 flameTriggered = true;
                 flameLayer = document.createElement('div');
                 flameLayer.className = 'boss-encounter-flame-layer';
@@ -4083,8 +4141,8 @@ const ChallengeModule = {
                 bossCard.style.animationDuration = '0.08s';
             }
 
-            // 90%+: 预爆抖动
-            if (progress >= 90 && flameTriggered) {
+            // 85%+: 预爆抖动
+            if (progress >= 85 && flameTriggered) {
                 bossCard.style.animationDuration = '0.04s';
                 heroCard.style.animationDuration = '0.05s';
             }
@@ -4099,7 +4157,6 @@ const ChallengeModule = {
 
         requestAnimationFrame(animate);
     },
-
     /** 5×5网格碎片炸裂 */
     _triggerShatterExplosion(overlay, bossCard, bossImg, stageId) {
         var self = this;

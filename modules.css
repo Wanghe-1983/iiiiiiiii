@@ -4109,7 +4109,7 @@
     grid-template-columns: 200px 1fr 170px;
     gap: 20px;
     align-items: center;
-    min-height: 220px;
+    min-height: 250px;
     padding: 16px 20px;
     border-radius: 18px;
     cursor: pointer;
@@ -4128,14 +4128,14 @@
 /* 紫雾装饰动画 */
 .boss-mist {
     position: absolute; right: 0; top: 0; bottom: 0; width: 40%;
-    background: radial-gradient(ellipse at 80% 40%, color-mix(in srgb, var(--boss-theme) 8%, transparent) 0%, transparent 50%),
-                radial-gradient(ellipse at 90% 65%, color-mix(in srgb, var(--boss-theme) 5%, transparent) 0%, transparent 40%);
+    background: radial-gradient(ellipse at 80% 40%, color-mix(in srgb, var(--boss-theme) 3%, transparent) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 65%, color-mix(in srgb, var(--boss-theme) 2%, transparent) 0%, transparent 40%);
     pointer-events: none; z-index: 0;
-    animation: boss-mist-drift 10s ease-in-out infinite;
+    animation: boss-mist-drift 12s ease-in-out infinite;
 }
 @keyframes boss-mist-drift {
-    0%, 100% { opacity: 0.5; transform: translateX(0); }
-    50% { opacity: 0.8; transform: translateX(-8px); }
+    0%, 100% { opacity: 0.3; transform: translateX(0); }
+    50% { opacity: 0.5; transform: translateX(-10px); }
 }
 
 /* 左：BOSS大图 */
@@ -4147,6 +4147,7 @@
     box-shadow: 0 4px 20px color-mix(in srgb, var(--boss-theme) 15%, transparent);
     z-index: 1; position: relative;
     display: flex; align-items: center; justify-content: center;
+    margin: 0 auto;
 }
 .boss-banner-img img {
     width: 100%; height: 100%; object-fit: contain;
@@ -4253,7 +4254,7 @@
 
 /* === 小BOSS大卡片（方案A）=== */
 .stage-card.boss-mini-card {
-    min-height: 220px;
+    min-height: 230px;
     padding: 16px 12px 12px;
     border-radius: 16px;
     display: flex; flex-direction: column; align-items: center;
@@ -4274,7 +4275,7 @@
     font-size: 0.75rem; color: var(--boss-theme); z-index: 2;
 }
 .boss-mini-img {
-    width: 110px; height: 147px; border-radius: 12px; overflow: hidden;
+    width: 120px; height: 160px; border-radius: 12px; overflow: hidden;
     border: 2px solid color-mix(in srgb, var(--boss-theme) 40%, transparent);
     background: #000; margin-bottom: 8px;
     box-shadow: 0 4px 16px color-mix(in srgb, var(--boss-theme) 12%, transparent);
@@ -5027,9 +5028,9 @@
     height: 100%;
     border-radius: 0;
     border: none;
-    object-fit: cover;
-    opacity: 0.3;
-    filter: blur(1px) brightness(0.7) saturate(1.2);
+    object-fit: contain;
+    opacity: 0.55;
+    filter: brightness(0.6) saturate(1.1);
     animation: boss-bg-pulse 4s ease-in-out infinite alternate;
 }
 
@@ -5045,8 +5046,8 @@
 }
 
 @keyframes boss-bg-pulse {
-    0% { transform: scale(1); opacity: 0.25; }
-    100% { transform: scale(1.06); opacity: 0.38; }
+    0% { transform: scale(1); opacity: 0.5; }
+    100% { transform: scale(1.04); opacity: 0.6; }
 }
 
 /* 覆盖在头像上的信息层 */
@@ -5181,6 +5182,44 @@
 
 
 /* 暴怒覆盖层 */
+
+/* 英雄面板（BOSS战右下） */
+.boss-hero-panel {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%; padding: 4px 0;
+}
+.boss-hero-panel-img-wrap {
+    width: 56px; height: 56px; border-radius: 12px; overflow: hidden;
+    border: 2px solid rgba(96,165,250,0.4);
+    background: #000; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+}
+.boss-hero-panel-img {
+    width: 100%; height: 100%; object-fit: cover;
+}
+.boss-hero-panel-fallback {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 100%;
+}
+.boss-hero-panel-info {
+    flex: 1; min-width: 0;
+}
+.boss-hero-panel-name {
+    font-size: 0.8rem; font-weight: 700; margin-bottom: 4px;
+}
+.boss-hero-panel-hp-wrap {
+    display: flex; align-items: center; gap: 6px;
+}
+.boss-hero-panel-hp-track {
+    flex: 1; height: 5px; background: rgba(255,255,255,0.08);
+    border-radius: 3px; overflow: hidden;
+}
+.boss-hero-panel-hp-fill {
+    height: 100%; border-radius: 3px; transition: width 0.4s ease;
+}
+.boss-hero-panel-hp-text {
+    font-size: 0.7rem; font-weight: 600; white-space: nowrap;
+}
 .boss-cinematic-rage-overlay {
     position: absolute;
     inset: 0;
