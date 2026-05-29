@@ -207,3 +207,33 @@ v3.2 - 2026-05-27 14:27 — BOSS遭遇动画实施 + 视觉修复
 - 英雄图片预加载：new Image()后台加载确保战斗画面即时显示
 - 所有新方法使用var声明变量（兼容旧版浏览器）
 
+
+================================================================================
+v3.3 - 2026-05-29 17:25 — 图片加载修复 + 英雄面板 + BOSS图片清晰度
+================================================================================
+
+【问题修复】
+1. BOSS头部裁切 → .boss-banner min-height: 220→250px（内容区218px > 图片213px）
+   .boss-banner-img 添加 margin:0 auto 居中
+   .boss-mini-img 尺寸 110×147→120×160 放大
+
+2. 英雄显示为图标 → 根因：hero-q2.jpg 是JPG但代码硬编码.png
+   _heroDefs['2'].image 改为 assets/hero/hero-q2.jpg
+   遭遇动画：先预加载(bossPreload+heroPreload)再显示overlay，8秒超时保护
+
+3. 遭遇动画3.2秒图片未加载 → 改为预加载机制：
+   overlay先显示"正在召唤BOSS..."加载提示
+   new Image()预加载boss+hero两张图，都onload/onerror后才重建overlay并开始动画
+   动画时长3.2s→5s，火焰触发点70%→60%，新增"火焰在燃烧..."阶段
+
+4. BOSS薄雾感+不清晰 → 
+   boss-mist: opacity 0.5~0.8→0.3~0.5, 颜色混合 8%/5%→3%/2%
+   boss-banner背景: 半透明rgba→纯色#161623/#0c0c14
+   boss-mini-card背景: 半透明rgba→纯色#161e2e/#0c0c14
+   战斗背景BOSS图: opacity 0.3→0.55, blur(1px)移除, cover→contain
+
+5. 答题区英雄形象 → 新增 _renderBossHeroPanel(state) 方法
+   boss-cinematic-hero面板显示: 英雄头像(56×56)+名称+HP条
+   新增CSS: .boss-hero-panel系列样式
+
+【部署】index.html v=20260529172558, sw.js v11, commit 67f4259
