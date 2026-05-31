@@ -814,6 +814,12 @@ const ChallengeModule = {
             currentGroup.stages.push({ stage, index: i });
         });
 
+                // 边框装备系统：获取当前装备的边框，应用到所有关卡卡片
+        const equippedFrameId = this._equippedFrameId;
+        const equippedFrame = equippedFrameId ? this._frameDefs['frame_' + equippedFrameId] : null;
+        const frameClass = equippedFrame ? (' frame-q' + equippedFrameId) : '';
+        const frameBorderHtml = equippedFrame ? '<div class="frame-border"></div>' : '';
+
         let stageGrid = '';
         groups.forEach(group => {
             const hellTag = group.isHell ? `<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);border-radius:6px;font-size:0.7rem;font-weight:600;"><i class="fas fa-skull-crossbones"></i> 地狱模式</span>` : '';
@@ -868,8 +874,8 @@ const ChallengeModule = {
                     const statusBadge = isLocked ? '<span class="boss-banner-status-badge boss-status-locked">🔒 ' + (isReadonly ? '未开放' : '击败前置关卡后解锁') + '</span>'
                         : isCleared ? '<span class="boss-banner-status-badge boss-status-cleared">✓ 已击败</span>'
                         : '<span class="boss-banner-status-badge boss-status-available">⚔ 可挑战</span>';
-                    stageGrid += '<div class="stage-card boss-banner ' + statusClass + '" style="--boss-theme:' + bc + ';grid-column:1/-1;" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
-                        + '<div class="boss-mist"></div>'
+                    stageGrid += '<div class="stage-card boss-banner ' + statusClass + frameClass + '" style="--boss-theme:' + bc + ';grid-column:1/-1;" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
+                        + '<div class="boss-mist"></div>' + frameBorderHtml
                         + '<div class="boss-banner-img">'
                         + '<div class="boss-badge-icon big-crown"><i class="fas fa-crown"></i></div>'
                         + '<img src="' + bossImg + '" alt="' + (bd.name || '') + '" onerror="this.remove()">'
@@ -896,8 +902,8 @@ const ChallengeModule = {
                     const bossImg = bd.miniImage || 'assets/boss/boss-mini-q' + (stage.bossLevel || '0') + '.png';
                     const miniDiff = Math.max(1, (bd.difficulty || 3) - 1);
                     const diffStars = '★'.repeat(miniDiff) + '☆'.repeat(Math.max(0, 6 - miniDiff));
-                    stageGrid += '<div class="stage-card boss-mini-card ' + statusClass + '" style="--boss-theme:' + bc + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
-                        + '<div class="boss-mini-badge">⚔️</div>'
+                    stageGrid += '<div class="stage-card boss-mini-card ' + statusClass + frameClass + '" style="--boss-theme:' + bc + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
+                        + '<div class="boss-mini-badge">⚔️</div>' + frameBorderHtml
                         + '<div class="boss-mini-img">'
                         + '<img src="' + bossImg + '" alt="' + (bd.name || '') + '" onerror="this.remove()">'
                         + '</div>'
@@ -918,8 +924,8 @@ const ChallengeModule = {
                         : '<i class="fas fa-play-circle"></i>';
                     const statusCls = isLocked ? 'locked' : isCleared ? 'cleared' : 'available';
                     const statusLabel = isLocked ? (isReadonly ? '未开放' : '🔒') : isCleared ? '✓' : isCurrent ? '⚔' : '⚔';
-                    stageGrid += '<div class="stage-card ' + statusClass + '" style="--stage-color:' + lvColor + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
-                        + '<div class="stage-card-number">' + (i + 1) + '</div>'
+                    stageGrid += '<div class="stage-card ' + statusClass + frameClass + '" style="--stage-color:' + lvColor + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
+                        + '<div class="stage-card-number">' + (i + 1) + '</div>' + frameBorderHtml
                         + '<div class="stage-card-icon">' + stageIconHtml + '</div>'
                         + (isCleared ? '<div class="stage-card-stars">' + this._renderStars(stars) + '</div>' : '')
                         + '<div class="stage-card-progress"><div class="stage-card-progress-fill" style="width:' + (isCleared ? '100%' : isCurrent ? '25%' : '0%') + '"></div></div>'
@@ -3505,6 +3511,12 @@ const ChallengeModule = {
         if (!stats[bossKey]) stats[bossKey] = {};
         stats[bossKey].lastDefeat = Date.now();
         localStorage.setItem(key, JSON.stringify(stats));
+        // 自动装备该BOSS等级对应的边框
+        const frameId = String(bossLevel);
+        if (this._frameDefs['frame_' + frameId] && this._equippedFrameId !== frameId) {
+            this._equippedFrameId = frameId;
+            try { localStorage.setItem('challenge_equipped_frame', frameId); } catch(e) {}
+        }
     },
 
     /**
@@ -4108,24 +4120,68 @@ const ChallengeModule = {
         function onReady() {
             loadedCount++;
             if (loadedCount >= totalImages) {
-                overlay.innerHTML = '<div class="boss-encounter-stage">'
-                    + '<div class="boss-encounter-name">' + bossName + '</div>'
-                    + '<div class="boss-encounter-showdown">'
-                    + '<div class="boss-encounter-hero" id="encounter-hero-card">'
-                    + '<img src="' + heroImg + '" alt="' + heroName + '" onerror="this.remove()">'
-                    + '<div class="hero-label">' + heroName + '</div>'
+                // 虚空撕裂主题 - 四幕遭遇动画
+                // 第一幕：漩涡凝聚 | 第二幕：裂隙撕裂 | 第三幕：BOSS降临 | 第四幕：破碎终结
+                overlay.innerHTML = '<div class="void-encounter-stage" style="--void-theme:' + bossTheme + ';">'
+                    // 星空背景层
+                    + '<div class="void-stars" id="void-stars"></div>'
+                    // 第一幕：漩涡
+                    + '<div class="void-act void-act-1" id="void-act1">'
+                    + '<div class="void-vortex" id="void-vortex">'
+                    + '<div class="void-vortex-ring vring-1"></div>'
+                    + '<div class="void-vortex-ring vring-2"></div>'
+                    + '<div class="void-vortex-ring vring-3"></div>'
+                    + '<div class="void-vortex-core"></div>'
                     + '</div>'
-                    + '<div class="boss-encounter-vs">VS</div>'
-                    + '<div class="boss-encounter-card" id="encounter-boss-card">'
+                    + '<div class="void-hint" id="void-hint1">虚空漩涡正在凝聚...</div>'
+                    + '</div>'
+                    // 第二幕：裂隙
+                    + '<div class="void-act void-act-2" id="void-act2" style="display:none;">'
+                    + '<div class="void-rift" id="void-rift">'
+                    + '<div class="void-rift-crack void-crack-1"></div>'
+                    + '<div class="void-rift-crack void-crack-2"></div>'
+                    + '<div class="void-rift-crack void-crack-3"></div>'
+                    + '<div class="void-rift-crack void-crack-4"></div>'
+                    + '<div class="void-rift-crack void-crack-5"></div>'
+                    + '<div class="void-rift-light"></div>'
+                    + '</div>'
+                    + '<div class="void-hint" id="void-hint2">空间裂隙正在撕裂...</div>'
+                    + '</div>'
+                    // 第三幕：降临
+                    + '<div class="void-act void-act-3" id="void-act3" style="display:none;">'
+                    + '<div class="void-emerge-scene">'
+                    // 英雄在左侧
+                    + '<div class="void-hero-panel" id="encounter-hero-card">'
+                    + '<img src="' + heroImg + '" alt="' + heroName + '" onerror="this.remove()">'
+                    + '<div class="void-hero-name">' + heroName + '</div>'
+                    + '</div>'
+                    // BOSS从中心降临
+                    + '<div class="void-boss-panel" id="encounter-boss-card">'
                     + '<img src="' + bossImg + '" alt="' + bossName + '" onerror="this.remove()">'
                     + '</div>'
                     + '</div>'
-                    + '<div class="boss-encounter-progress-wrap">'
-                    + '<div class="boss-encounter-progress-bar" id="encounter-progress-bar"></div>'
+                    + '<div class="void-particles-layer" id="void-particles"></div>'
+                    + '<div class="void-hint void-hint-boss" id="void-hint3">' + bossName + ' 降临！</div>'
                     + '</div>'
-                    + '<div class="boss-encounter-progress-text" id="encounter-progress-text">BOSS正在降临...</div>'
+                    // 第四幕：破碎
+                    + '<div class="void-act void-act-4" id="void-act4" style="display:none;">'
+                    + '<div class="void-shatter-bg"></div>'
+                    + '<div class="void-title-reveal">'
+                    + '<div class="void-title-line"></div>'
+                    + '<div class="void-title-text">' + bossName + '</div>'
+                    + '<div class="void-title-line"></div>'
+                    + '</div>'
+                    + '<div class="void-subtitle">' + (bossDef.tagline || '最终之战') + '</div>'
+                    + '</div>'
+                    // 进度指示器
+                    + '<div class="void-progress-track" id="void-progress-track">'
+                    + '<div class="void-progress-dot" data-act="1"></div>'
+                    + '<div class="void-progress-dot" data-act="2"></div>'
+                    + '<div class="void-progress-dot" data-act="3"></div>'
+                    + '<div class="void-progress-dot" data-act="4"></div>'
+                    + '</div>'
                     + '</div>';
-                self._startEncounterProgress(overlay, bossImg, stageId);
+                self._startVoidEncounter(overlay, bossImg, stageId);
             }
         }
 
@@ -4146,67 +4202,214 @@ const ChallengeModule = {
     },
 
     /** 驱动进度条 0%→100% 带四阶段动画（5秒） */
-    _startEncounterProgress(overlay, bossImg, stageId) {
+    _startVoidEncounter(overlay, bossImg, stageId) {
         var self = this;
-        var progressBar = overlay.querySelector('#encounter-progress-bar');
-        var progressText = overlay.querySelector('#encounter-progress-text');
-        var bossCard = overlay.querySelector('#encounter-boss-card');
-        var heroCard = overlay.querySelector('#encounter-hero-card');
+        var act1 = overlay.querySelector('#void-act1');
+        var act2 = overlay.querySelector('#void-act2');
+        var act3 = overlay.querySelector('#void-act3');
+        var act4 = overlay.querySelector('#void-act4');
+        var vortex = overlay.querySelector('#void-vortex');
+        var stars = overlay.querySelector('#void-stars');
+        var dots = overlay.querySelectorAll('#void-progress-track .void-progress-dot');
+        var particlesLayer = overlay.querySelector('#void-particles');
+
+        // 生成星空背景粒子
+        if (stars) {
+            var starHtml = '';
+            for (var i = 0; i < 80; i++) {
+                var sx = Math.random() * 100;
+                var sy = Math.random() * 100;
+                var ss = 1 + Math.random() * 2.5;
+                var sd = 2 + Math.random() * 4;
+                var sa = 0.3 + Math.random() * 0.7;
+                starHtml += '<div class="void-star" style="left:' + sx + '%;top:' + sy + '%;width:' + ss + 'px;height:' + ss + 'px;animation-delay:' + sd + 's;opacity:' + sa + ';"></div>';
+            }
+            stars.innerHTML = starHtml;
+        }
 
         var startTime = performance.now();
-        var duration = 5000;
-        var glowTriggered = false;
-        var flameTriggered = false;
-        var flameLayer = null;
+        var totalDuration = 5200; // 5.2秒总时长
+        // 各幕时间节点
+        var tAct1End = 1400;  // 第一幕：漩涡凝聚
+        var tAct2End = 2600;  // 第二幕：裂隙撕裂
+        var tAct3End = 4200;  // 第三幕：BOSS降临
+        var tAct4End = 5200;  // 第四幕：破碎终结
+
+        var act2Shown = false, act3Shown = false, act4Shown = false;
+        var particlesSpawned = false;
+
+        function spawnVoidParticles() {
+            if (!particlesLayer) return;
+            var html = '';
+            for (var i = 0; i < 60; i++) {
+                var angle = Math.random() * Math.PI * 2;
+                var dist = 80 + Math.random() * 250;
+                var size = 2 + Math.random() * 6;
+                var color = Math.random() > 0.5 ? 'rgba(255,255,255,0.8)' : 'var(--void-theme, #7c3aed)';
+                var delay = Math.random() * 0.4;
+                var dur = 0.8 + Math.random() * 1.2;
+                html += '<div class="void-particle" style="'
+                    + '--px:' + (Math.cos(angle) * dist) + 'px;'
+                    + '--py:' + (Math.sin(angle) * dist) + 'px;'
+                    + 'width:' + size + 'px;height:' + size + 'px;'
+                    + 'background:' + color + ';'
+                    + 'animation-delay:' + delay + 's;'
+                    + 'animation-duration:' + dur + 's;'
+                    + '"></div>';
+            }
+            particlesLayer.innerHTML = html;
+        }
 
         function animate(now) {
             var elapsed = now - startTime;
-            var progress = Math.min(100, (elapsed / duration) * 100);
-            progressBar.style.width = progress + '%';
+            var progress = Math.min(100, (elapsed / totalDuration) * 100);
 
-            if (progress < 30) {
-                progressText.textContent = 'BOSS正在降临...';
-            } else if (progress < 60) {
-                progressText.textContent = '空间开始扭曲...';
-            } else if (progress < 85) {
-                progressText.textContent = '火焰在燃烧...';
-            } else if (progress < 100) {
-                progressText.textContent = '即将破碎虚空！';
+            // 更新进度点
+            var activeDot = elapsed < tAct1End ? 0 : elapsed < tAct2End ? 1 : elapsed < tAct3End ? 2 : 3;
+            dots.forEach(function(d, i) {
+                d.classList.toggle('active', i <= activeDot);
+                d.classList.toggle('current', i === activeDot);
+            });
+
+            // === 第一幕：漩涡 (0-1400ms) ===
+            if (elapsed < tAct1End) {
+                var t1 = elapsed / tAct1End; // 0→1
+                if (vortex) {
+                    vortex.style.transform = 'scale(' + (0.3 + t1 * 1.2) + ') rotate(' + (t1 * 720) + 'deg)';
+                    vortex.style.opacity = Math.min(1, t1 * 2);
+                }
+                if (stars) {
+                    stars.style.opacity = 0.2 + t1 * 0.8;
+                }
             }
 
-            // 30%: 光晕 + 轻微抖动
-            if (progress >= 30 && !glowTriggered) {
-                glowTriggered = true;
-                bossCard.classList.add('boss-encounter-glowing');
-                bossCard.classList.add('boss-encounter-shaking');
-                heroCard.classList.add('boss-encounter-hero-shaking');
+            // === 切换到第二幕 ===
+            if (elapsed >= tAct1End && !act2Shown) {
+                act2Shown = true;
+                if (act1) act1.style.display = 'none';
+                if (act2) { act2.style.display = 'flex'; act2.classList.add('void-act-enter'); }
+                if (vortex) vortex.classList.add('void-vortex-peak');
             }
 
-            // 60%: 火焰特效 + 抖动加剧
-            if (progress >= 60 && !flameTriggered) {
-                flameTriggered = true;
-                flameLayer = document.createElement('div');
-                flameLayer.className = 'boss-encounter-flame-layer';
-                bossCard.appendChild(flameLayer);
-                bossCard.style.animationDuration = '0.08s';
+            // === 第二幕：裂隙 (1400-2600ms) ===
+            if (elapsed >= tAct1End && elapsed < tAct2End) {
+                var t2 = (elapsed - tAct1End) / (tAct2End - tAct1End);
+                var rift = overlay.querySelector('#void-rift');
+                if (rift) {
+                    rift.style.transform = 'scale(' + (0.5 + t2 * 1.0) + ')';
+                    rift.style.opacity = Math.min(1, t2 * 1.5);
+                }
+                var light = overlay.querySelector('.void-rift-light');
+                if (light) {
+                    light.style.opacity = t2 * 0.9;
+                    light.style.boxShadow = '0 0 ' + (20 + t2 * 80) + 'px ' + (10 + t2 * 60) + 'px var(--void-theme, #7c3aed)';
+                }
             }
 
-            // 85%+: 预爆抖动
-            if (progress >= 85 && flameTriggered) {
-                bossCard.style.animationDuration = '0.04s';
-                heroCard.style.animationDuration = '0.05s';
+            // === 切换到第三幕 ===
+            if (elapsed >= tAct2End && !act3Shown) {
+                act3Shown = true;
+                if (act2) act2.style.display = 'none';
+                if (act3) { act3.style.display = 'flex'; act3.classList.add('void-act-enter'); }
+                // BOSS卡片出现动画
+                var bossCard = overlay.querySelector('#encounter-boss-card');
+                if (bossCard) bossCard.classList.add('void-boss-emerge');
+                var heroCard = overlay.querySelector('#encounter-hero-card');
+                if (heroCard) heroCard.classList.add('void-hero-emerge');
             }
 
-            if (progress < 100) {
+            // === 第三幕：BOSS降临 (2600-4200ms) ===
+            if (elapsed >= tAct2End && elapsed < tAct3End) {
+                var t3 = (elapsed - tAct2End) / (tAct3End - tAct2End);
+                // 粒子爆发在第三幕中期
+                if (t3 > 0.15 && !particlesSpawned) {
+                    particlesSpawned = true;
+                    spawnVoidParticles();
+                }
+                // BOSS抖动
+                var bossCard = overlay.querySelector('#encounter-boss-card');
+                if (bossCard && t3 > 0.4) {
+                    var shakeIntensity = (t3 - 0.4) * 8;
+                    bossCard.style.transform = 'translate(' + (Math.sin(elapsed * 0.03) * shakeIntensity) + 'px, ' + (Math.cos(elapsed * 0.025) * shakeIntensity * 0.6) + 'px)';
+                    bossCard.style.filter = 'brightness(' + (0.6 + t3 * 0.4) + ')';
+                }
+                // 提示文字闪烁
+                var hint3 = overlay.querySelector('#void-hint3');
+                if (hint3) {
+                    hint3.style.opacity = 0.3 + Math.abs(Math.sin(elapsed * 0.008)) * 0.7;
+                }
+            }
+
+            // === 切换到第四幕 ===
+            if (elapsed >= tAct3End && !act4Shown) {
+                act4Shown = true;
+                if (act3) act3.style.display = 'none';
+                if (act4) { act4.style.display = 'flex'; act4.classList.add('void-act-enter'); }
+                // 触发破碎效果
+                self._triggerVoidShatter(overlay, bossImg, stageId);
+            }
+
+            // === 第四幕：破碎展示 (4200-5200ms) ===
+            if (elapsed >= tAct3End && elapsed < tAct4End) {
+                var t4 = (elapsed - tAct3End) / (tAct4End - tAct3End);
+                var title = overlay.querySelector('.void-title-text');
+                if (title) {
+                    title.style.transform = 'scale(' + (0.5 + t4 * 0.5) + ')';
+                    title.style.opacity = Math.min(1, t4 * 2);
+                }
+                var subtitle = overlay.querySelector('.void-subtitle');
+                if (subtitle) {
+                    subtitle.style.opacity = Math.max(0, (t4 - 0.3) * 2.5);
+                }
+            }
+
+            if (elapsed < tAct4End) {
                 requestAnimationFrame(animate);
             } else {
-                progressText.textContent = '破碎！';
-                self._triggerShatterExplosion(overlay, bossCard, bossImg, stageId);
+                // 动画结束，进入战斗
+                overlay.classList.add('void-overlay-fade');
+                setTimeout(function() {
+                    if (overlay.parentNode) overlay.remove();
+                    self._doEnterBattle(stageId);
+                }, 400);
             }
         }
 
         requestAnimationFrame(animate);
     },
+
+    /** 虚空破碎特效 */
+    _triggerVoidShatter(overlay, bossImg, stageId) {
+        var self = this;
+        // 创建玻璃碎片层
+        var shatterLayer = document.createElement('div');
+        shatterLayer.className = 'void-glass-shatter';
+
+        var cols = 8;
+        var rows = 8;
+        var total = cols * rows;
+
+        for (var i = 0; i < total; i++) {
+            var shard = document.createElement('div');
+            shard.className = 'void-glass-shard';
+            var angle = Math.random() * Math.PI * 2;
+            var dist = 120 + Math.random() * 400;
+            shard.style.setProperty('--sx', Math.cos(angle) * dist + 'px');
+            shard.style.setProperty('--sy', Math.sin(angle) * dist + 'px');
+            shard.style.setProperty('--sr', (Math.random() - 0.5) * 720 + 'deg');
+            shard.style.setProperty('--sd', (0.3 + Math.random() * 0.7) + 's');
+            shard.style.animationDelay = Math.random() * 0.3 + 's';
+            shatterLayer.appendChild(shard);
+        }
+
+        overlay.appendChild(shatterLayer);
+
+        // 清理碎片层（动画结束后）
+        setTimeout(function() {
+            if (shatterLayer.parentNode) shatterLayer.remove();
+        }, 1500);
+    },
+
     /** 5×5网格碎片炸裂 */
     _triggerShatterExplosion(overlay, bossCard, bossImg, stageId) {
         var self = this;

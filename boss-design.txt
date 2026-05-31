@@ -237,3 +237,33 @@ v3.3 - 2026-05-29 17:25 — 图片加载修复 + 英雄面板 + BOSS图片清晰
    新增CSS: .boss-hero-panel系列样式
 
 【部署】index.html v=20260529172558, sw.js v11, commit 67f4259
+
+
+## v3.4 - 2026-05-31 虚空撕裂遭遇动画 + 8级BOSS边框系统
+
+### 虚空撕裂四幕遭遇动画
+- 替换旧的静态卡片+进度条为四幕主题动画（5.2秒）
+  - 第一幕 (0-1.4s)：虚空漩涡凝聚，三环旋转+核心脉冲，星空背景渐亮
+  - 第二幕 (1.4-2.6s)：裂隙撕裂，5道裂纹从中心扩散，光芒溢出
+  - 第三幕 (2.6-4.2s)：BOSS从裂隙中降临（burst-in），英雄从左侧滑入，60粒粒子爆发
+  - 第四幕 (4.2-5.2s)：8×8玻璃碎片炸裂，BOSS名称大标题+副标题浮现
+- 新方法：_startVoidEncounter（替换_startEncounterProgress）
+- 新方法：_triggerVoidShatter（替换_triggerShatterExplosion）
+- 底部四点进度指示器，跟随幕切换高亮
+- CSS类名前缀：void-（void-vortex, void-rift, void-emerge-scene, void-glass-shatter 等）
+
+### 8级BOSS边框掉落系统
+- _frameDefs 重构：从9个旧边框（titleReq匹配）改为8个BOSS对齐边框（bossLevel匹配）
+  - frame_q0: 翡翠流光 shine | frame_q1: 紫晶藤蔓 pulse | frame_q2: 琥珀金纹 shine
+  - frame_q3: 橙焰巨锤 flame | frame_q4: 暗紫密谋 flow | frame_q5: 赤红幻术 phantom
+  - frame_q6: 烈焰荆棘 flame | frame_q7: 极光幻彩 aurora
+- 每种边框有独立CSS @keyframes动画
+- BOSS击败后自动装备对应等级边框（_updateTitlesAfterBoss）
+- renderStages中所有关卡卡片（boss-banner/boss-mini-card/stage-card）叠加当前装备边框
+- 管理员自动拥有全部边框（_getUnlockedFrames）
+- 边框墙（frame-wall）预览已适配新系统
+
+### 文件修改
+- module-challenge.js: _frameDefs替换, _getUnlockedFrames重写, _startVoidEncounter新增, _triggerVoidShatter新增, renderStages边框装备逻辑, _updateTitlesAfterBoss自动装备
+- modules.css: 旧frame-01~09替换为frame-q0~q7 + @keyframes, 虚空撕裂主题CSS（~100行新CSS）
+- boss-design.txt: 更新至v3.4
