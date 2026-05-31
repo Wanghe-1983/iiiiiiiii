@@ -1128,7 +1128,17 @@ const ChallengeModule = {
     _getUnlockedFrames() {
         const frames = [];
         for (const [key, def] of Object.entries(this._frameDefs)) {
-            if (this._earnedTitles[def.titleReq]) {
+            // 管理员自动拥有所有边框
+            if (this._isAdmin()) {
+                frames.push({ ...def, key, equipped: this._equippedFrameId === def.id });
+                continue;
+            }
+            // 检查是否击败了对应的 BOSS（大BOSS或小BOSS）
+            const bossStageId = 'boss-' + def.bossLevel + '-big';
+            const bossMiniId = 'boss-' + def.bossLevel + '-mini';
+            const hasCleared = (this.serverProgress[bossStageId] && this.serverProgress[bossStageId].cleared)
+                || (this.serverProgress[bossMiniId] && this.serverProgress[bossMiniId].cleared);
+            if (hasCleared) {
                 frames.push({ ...def, key, equipped: this._equippedFrameId === def.id });
             }
         }
@@ -1356,6 +1366,11 @@ const ChallengeModule = {
         window.addEventListener('beforeunload', this._beforeUnloadHandler);
 
         this.render();
+        if (stage._isBoss) {
+            var _self = this;
+            var _bc = (stage.bossDef && stage.bossDef.color) || '#7c3aed';
+            setTimeout(function() { _self._spawnBossParticles(stageId, _bc); }, 300);
+        }
     },
 
 
@@ -2795,6 +2810,26 @@ const ChallengeModule = {
             + '</div>';
     },
 
+    /** 在 BOSS 面板中生成飘散粒子 */
+    _spawnBossParticles(stageId, bossColor) {
+        var container = document.getElementById('boss-particles-' + stageId);
+        if (!container) return;
+        var color = bossColor || '#7c3aed';
+        container.innerHTML = '';
+        for (var i = 0; i < 20; i++) {
+            var particle = document.createElement('div');
+            particle.className = 'boss-particle';
+            particle.style.left = (Math.random() * 90) + '%';
+            particle.style.background = color;
+            particle.style.setProperty('--px', (Math.random() - 0.5) * 60 + 'px');
+            particle.style.animationDuration = (4 + Math.random() * 6) + 's';
+            particle.style.animationDelay = (Math.random() * 5) + 's';
+            particle.style.width = (2 + Math.random() * 4) + 'px';
+            particle.style.height = particle.style.width;
+            container.appendChild(particle);
+        }
+    },
+
     _renderBossHpBars(state) {
         if (!state || !state.isBoss) return '';
         const bossDef = state.bossDef || {};
@@ -2834,12 +2869,29 @@ const ChallengeModule = {
         const bossHpColor = isRage ? '#ff4444' : bossColor;
         const userHpColor = userHp / userMaxHp <= 0.3 ? '#f87171' : '#34d399';
 
+        // 构建招式列表HTML
+        const attacksList = (bossDef.attacks || []).map(function(a, i) {
+            return '<div class="boss-attack-item"><span class="boss-attack-icon">' + (i+1) + '</span>' + a + '</div>';
+        }).join('');
+        const bossLevelLabel = String(state.bossLevel || 0);
+
         return `
         <div class="boss-cinematic-container" id="boss-battle-ui">
             ${rageOverlay}
             <div class="boss-cinematic-scene">
                 <!-- BOSS 背景大头像 -->
                 <div class="boss-cinematic-boss-zone">
+                    <!-- 层级符文 -->
+                    <div class="boss-rune-badge">
+                        <span class="boss-rune-level">Lv.${bossLevelLabel}</span>
+                        <span class="boss-rune-label">BOSS</span>
+                    </div>
+                    <!-- 招式列表 -->
+                    <div class="boss-attacks-list">
+                        ${attacksList}
+                    </div>
+                    <!-- 背景粒子 -->
+                    <div class="boss-particle-layer" id="boss-particles-${state.stageId}"></div>
                     <div class="boss-bg-avatar">
                         ${bossImg}
                     </div>
@@ -3579,17 +3631,15 @@ const ChallengeModule = {
     },
     // ========== 边框装饰定义 ==========
     _frameDefs: {
-        'frame_01': { id: '01', name: '翡翠流光', desc: '击败声之魔灵后解锁', titleReq: 'boss_voice_slayer', color: '#34d399', gradient: 'linear-gradient(135deg,#34d399,#10b981)' },
-        'frame_02': { id: '02', name: '赤焰之环', desc: '击败婆罗多神将后解锁', titleReq: 'boss_bharata_slayer', color: '#f87171', gradient: 'linear-gradient(135deg,#f87171,#ef4444)' },
-        'frame_03': { id: '03', name: '金砂纹章', desc: '击败Raksasa巨魔后解锁', titleReq: 'boss_raksasa_slayer', color: '#fbbf24', gradient: 'linear-gradient(135deg,#fbbf24,#f59e0b)' },
-        'frame_04': { id: '04', name: '深海之盾', desc: '击败Naga蛇龙后解锁', titleReq: 'boss_naga_slayer', color: '#38bdf8', gradient: 'linear-gradient(135deg,#38bdf8,#0ea5e9)' },
-        'frame_05': { id: '05', name: '紫晶幻境', desc: '击败Garuda伽鲁达后解锁', titleReq: 'boss_garuda_slayer', color: '#a78bfa', gradient: 'linear-gradient(135deg,#a78bfa,#8b5cf6)' },
-        'frame_06': { id: '06', name: '烈焰荆棘', desc: '击败最终BOSS后解锁', titleReq: 'boss_final_slayer', color: '#ef4444', gradient: 'linear-gradient(135deg,#ef4444,#fbbf24)' },
-        'frame_07': { id: '07', name: '星辉环冕', desc: '通关全部普通模式后解锁', titleReq: 'normal_all_clear', color: '#fbbf24', gradient: 'linear-gradient(135deg,#fbbf24,#f59e0b)' },
-        'frame_08': { id: '08', name: '极光幻彩', desc: '通关全部地狱模式后解锁', titleReq: 'hell_all_clear', color: '#a78bfa', gradient: 'linear-gradient(135deg,#34d399,#a78bfa,#38bdf8)' },
-        'frame_09': { id: '09', name: '彩虹碎片', desc: '完成特殊挑战后解锁', titleReq: 'challenge_master', color: '#f59e0b', gradient: 'linear-gradient(135deg,#f59e0b,#ef4444,#8b5cf6,#3b82f6,#10b981)' },
+        'frame_q0': { id: 'q0', bossLevel: 0, name: '翡翠流光', desc: '击败查基尔后解锁', color: '#22c55e', glow: '#22c55e66', gradient: 'linear-gradient(135deg, #22c55e, #10b981, #22c55e)', effect: 'shine' },
+        'frame_q1': { id: 'q1', bossLevel: 1, name: '紫晶藤蔓', desc: '击败特龙后解锁', color: '#a78bfa', glow: '#a78bfa66', gradient: 'linear-gradient(135deg, #a78bfa, #7c3aed, #a78bfa)', effect: 'pulse' },
+        'frame_q2': { id: 'q2', bossLevel: 2, name: '琥珀金纹', desc: '击败杜尤达纳后解锁', color: '#fbbf24', glow: '#fbbf2466', gradient: 'linear-gradient(135deg, #fbbf24, #f59e0b, #fbbf24)', effect: 'shine' },
+        'frame_q3': { id: 'q3', bossLevel: 3, name: '橙焰巨锤', desc: '击败库巴卡那后解锁', color: '#f97316', glow: '#f9731666', gradient: 'linear-gradient(135deg, #f97316, #ea580c, #f97316)', effect: 'flame' },
+        'frame_q4': { id: 'q4', bossLevel: 4, name: '暗紫密谋', desc: '击败森古尼后解锁', color: '#8b5cf6', glow: '#8b5cf666', gradient: 'linear-gradient(135deg, #8b5cf6, #6d28d9, #8b5cf6)', effect: 'flow' },
+        'frame_q5': { id: 'q5', bossLevel: 5, name: '赤红幻术', desc: '击败因陀罗吉后解锁', color: '#ef4444', glow: '#ef444466', gradient: 'linear-gradient(135deg, #ef4444, #dc2626, #ef4444)', effect: 'phantom' },
+        'frame_q6': { id: 'q6', bossLevel: 6, name: '烈焰荆棘', desc: '击败堕神后解锁', color: '#dc2626', glow: '#dc262666', gradient: 'linear-gradient(135deg, #dc2626, #991b1b, #dc2626)', effect: 'flame' },
+        'frame_q7': { id: 'q7', bossLevel: 7, name: '极光幻彩', desc: '击败混沌王后解锁', color: '#7c3aed', glow: '#7c3aed66', gradient: 'linear-gradient(135deg, #22c55e, #a78bfa, #fbbf24, #f97316, #8b5cf6, #ef4444, #dc2626, #7c3aed)', effect: 'aurora' },
     },
-
     _equippedFrameId: null, // 当前装备的边框
 
     _earnedTitles: {}, // { titleId: earnedAt }
