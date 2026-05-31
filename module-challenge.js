@@ -2131,14 +2131,22 @@ const ChallengeModule = {
                     </div>
                 </div>
                 ` : `
-                ${this._renderBossHpBars(state)}
-                <div class="challenge-progress-bar">
-                    <div class="challenge-progress-fill" style="width:${progressPct}%"></div>
-                </div>
-                <div class="challenge-progress-text">${current} / ${total}</div>
-                ${navBarHtml}
-                <div class="challenge-question-area" id="challenge-question">
-                    ${questionContent}
+                <div class="ch-normal-battle-area">
+                    <div class="ch-normal-battle-header">
+                        <div class="ch-normal-stage-badge">
+                            <i class="fas fa-flag-checkered"></i> 第${stageIndex}关
+                        </div>
+                        <div class="ch-normal-stage-label">${stageName}</div>
+                    </div>
+                    ${this._renderBossHpBars(state)}
+                    <div class="challenge-progress-bar">
+                        <div class="challenge-progress-fill" style="width:${progressPct}%"></div>
+                    </div>
+                    <div class="challenge-progress-text">${current} / ${total}</div>
+                    ${navBarHtml}
+                    <div class="challenge-question-area" id="challenge-question">
+                        ${questionContent}
+                    </div>
                 </div>
                 `}
 
@@ -3414,7 +3422,7 @@ const ChallengeModule = {
 
                 <div class="boss-result-actions">
                     <button class="boss-btn boss-btn-return" onclick="ChallengeModule._returnToMap()">
-                        <i class="fas fa-map"></i> 返回关卡地图
+                        <i class="fas fa-map"></i> 返回关卡列表
                     </button>
                 </div>
             </div>
@@ -3486,7 +3494,7 @@ const ChallengeModule = {
                         <i class="fas fa-redo"></i> 再战一次
                     </button>
                     <button class="boss-btn boss-btn-return" onclick="ChallengeModule._returnToMap()">
-                        <i class="fas fa-map"></i> 返回关卡地图
+                        <i class="fas fa-map"></i> 返回关卡列表
                     </button>
                 </div>
             </div>
@@ -3540,7 +3548,7 @@ const ChallengeModule = {
     },
 
     /**
-     * 返回关卡地图
+     * 返回关卡列表
      */
     _returnToMap() {
         clearInterval(this._timerInterval);

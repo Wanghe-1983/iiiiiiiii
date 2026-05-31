@@ -1159,6 +1159,28 @@
     margin-bottom: 4px;
 }
 
+/* 非BOSS战斗区装饰 */
+.ch-normal-battle-area {
+    display: flex; flex-direction: column; gap: 10px;
+}
+.ch-normal-battle-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; margin-bottom: 4px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+.ch-normal-stage-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 6px;
+    background: rgba(96, 165, 250, 0.15);
+    color: #60a5fa; font-size: 0.72rem; font-weight: 700;
+    white-space: nowrap;
+}
+.ch-normal-stage-label {
+    font-size: 0.78rem; color: #94a3b8; font-weight: 600;
+}
+
 .challenge-progress-fill {
     height: 100%;
     background: linear-gradient(90deg, #f59e0b, #fbbf24);
