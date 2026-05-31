@@ -114,11 +114,11 @@ const ChallengeModule = {
                 <span style="color:#e2e8f0;font-size:0.8rem;font-weight:600;">闯天关</span>
                 ${view === 'stages' ? `<i class="fas fa-chevron-right" style="color:#475569;font-size:0.6rem;"></i><span style="color:${this.challengeMode === 'hell' ? '#f87171' : '#60a5fa'};font-size:0.8rem;font-weight:600;">${this.challengeMode === 'hell' ? '地狱模式' : '普通模式'}</span>` : ''}
             </div>`;
-        } else if (view === 'rank-modes' || view === 'rank' || view === 'titles') {
+        } else if (view === 'rank-modes' || view === 'rank' || view === 'titles' || view === 'frames') {
             breadcrumb = `<div style="padding:8px 12px;display:flex;align-items:center;gap:6px;">
                 <span style="cursor:pointer;color:#64748b;font-size:0.8rem;" onclick="ChallengeModule.goHome()"><i class="fas fa-home"></i> 首页</span>
                 <i class="fas fa-chevron-right" style="color:#475569;font-size:0.6rem;"></i>
-                <span style="color:#e2e8f0;font-size:0.8rem;font-weight:600;">${view === 'titles' ? '称号墙' : '排行榜'}</span>
+                <span style="color:#e2e8f0;font-size:0.8rem;font-weight:600;">${view === 'titles' ? '称号墙' : view === 'frames' ? '关卡边框' : '排行榜'}</span>
                 ${view === 'rank' ? '' : ''}
             </div>`;
         }
@@ -136,6 +136,8 @@ const ChallengeModule = {
             bodyHtml = '<div id="challenge-sub-content"></div>';
         } else if (view === 'titles') {
             bodyHtml = '<div id="challenge-sub-content"></div>';
+        } else if (view === 'frames') {
+            bodyHtml = '<div id="challenge-sub-content"></div>';
         }
 
         this.container.innerHTML = `<div class="challenge-module">${breadcrumb}${bodyHtml}</div>`;
@@ -149,6 +151,9 @@ const ChallengeModule = {
         } else if (view === 'titles') {
             const subContent = document.getElementById('challenge-sub-content');
             if (subContent) this._renderTitlesWall(subContent);
+        } else if (view === 'frames') {
+            const subContent = document.getElementById('challenge-sub-content');
+            if (subContent) { this._loadEquippedFrame(); this._renderFrameWall(subContent); }
         }
     },
 
@@ -252,6 +257,11 @@ const ChallengeModule = {
                 <div class="ch-footer-entry" onclick="ChallengeModule.enterTitles()">
                     <i class="fas fa-medal ch-footer-icon"></i>
                     <span>称号墙</span>
+                    <i class="fas fa-chevron-right ch-footer-arrow"></i>
+                </div>
+                <div class="ch-footer-entry" onclick="ChallengeModule.enterFrames()">
+                    <i class="fas fa-border-all ch-footer-icon"></i>
+                    <span>关卡边框</span>
                     <i class="fas fa-chevron-right ch-footer-arrow"></i>
                 </div>
                 <div class="ch-footer-entry" onclick="ChallengeModule.enterRank()">
@@ -814,8 +824,8 @@ const ChallengeModule = {
             currentGroup.stages.push({ stage, index: i });
         });
 
-                // 边框自动匹配：每个关卡根据其等级显示对应BOSS边框（如果该等级BOSS已被击败）
-        const _unlockedBossLevels = this._getUnlockedBossLevels();
+                // 边框：使用用户装备的边框ID列表
+        const _equippedFrameSet = new Set(this._equippedFrameIds || []);
 
         let stageGrid = '';
         groups.forEach(group => {
@@ -871,8 +881,8 @@ const ChallengeModule = {
                     const statusBadge = isLocked ? '<span class="boss-banner-status-badge boss-status-locked">🔒 ' + (isReadonly ? '未开放' : '击败前置关卡后解锁') + '</span>'
                         : isCleared ? '<span class="boss-banner-status-badge boss-status-cleared">✓ 已击败</span>'
                         : '<span class="boss-banner-status-badge boss-status-available">⚔ 可挑战</span>';
-                    stageGrid += '<div class="stage-card boss-banner ' + statusClass + (_unlockedBossLevels.has(String(stage.bossLevel || '0')) ? ' frame-q' + String(stage.bossLevel || '0') : '') + '" style="--boss-theme:' + bc + ';grid-column:1/-1;" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
-                        + '<div class="boss-mist"></div>' + (_unlockedBossLevels.has(String(stage.bossLevel || '0')) ? '<div class="frame-border"></div>' : '')
+                    stageGrid += '<div class="stage-card boss-banner ' + statusClass + (_equippedFrameSet.has('q' + String(stage.bossLevel || '0')) ? ' frame-q' + String(stage.bossLevel || '0') : '') + '" style="--boss-theme:' + bc + ';grid-column:1/-1;" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
+                        + '<div class="boss-mist"></div>' + (_equippedFrameSet.has('q' + String(stage.bossLevel || '0')) ? '<div class="frame-border"></div>' : '')
                         + '<div class="boss-banner-img">'
                         + '<div class="boss-badge-icon big-crown"><i class="fas fa-crown"></i></div>'
                         + '<img src="' + bossImg + '" alt="' + (bd.name || '') + '" onerror="this.remove()">'
@@ -899,8 +909,8 @@ const ChallengeModule = {
                     const bossImg = bd.miniImage || 'assets/boss/boss-mini-q' + (stage.bossLevel || '0') + '.png';
                     const miniDiff = Math.max(1, (bd.difficulty || 3) - 1);
                     const diffStars = '★'.repeat(miniDiff) + '☆'.repeat(Math.max(0, 6 - miniDiff));
-                    stageGrid += '<div class="stage-card boss-mini-card ' + statusClass + (_unlockedBossLevels.has(String(stage.bossLevel || '0')) ? ' frame-q' + String(stage.bossLevel || '0') : '') + '" style="--boss-theme:' + bc + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
-                        + '<div class="boss-mini-badge">⚔️</div>' + (_unlockedBossLevels.has(String(stage.bossLevel || '0')) ? '<div class="frame-border"></div>' : '')
+                    stageGrid += '<div class="stage-card boss-mini-card ' + statusClass + (_equippedFrameSet.has('q' + String(stage.bossLevel || '0')) ? ' frame-q' + String(stage.bossLevel || '0') : '') + '" style="--boss-theme:' + bc + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
+                        + '<div class="boss-mini-badge">⚔️</div>' + (_equippedFrameSet.has('q' + String(stage.bossLevel || '0')) ? '<div class="frame-border"></div>' : '')
                         + '<div class="boss-mini-img">'
                         + '<img src="' + bossImg + '" alt="' + (bd.name || '') + '" onerror="this.remove()">'
                         + '</div>'
@@ -921,9 +931,9 @@ const ChallengeModule = {
                         : '<i class="fas fa-play-circle"></i>';
                     const statusCls = isLocked ? 'locked' : isCleared ? 'cleared' : 'available';
                     const statusLabel = isLocked ? (isReadonly ? '未开放' : '🔒') : isCleared ? '✓' : isCurrent ? '⚔' : '⚔';
-                    stageGrid += '<div class="stage-card ' + statusClass + (_unlockedBossLevels.has(String(stage.levelId)) ? ' frame-q' + String(stage.levelId) : '') + '" style="--stage-color:' + lvColor + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
+                    stageGrid += '<div class="stage-card ' + statusClass + (_equippedFrameSet.has('q' + String(stage.levelId)) ? ' frame-q' + String(stage.levelId) : '') + '" style="--stage-color:' + lvColor + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
                         + '<div class="stage-card-color-bar"></div>'
-                        + (_unlockedBossLevels.has(String(stage.levelId)) ? '<div class="frame-border"></div>' : '')
+                        + (_equippedFrameSet.has('q' + String(stage.levelId)) ? '<div class="frame-border"></div>' : '')
                         + '<div class="stage-card-number">' + (i + 1) + '</div>'
                         + '<div class="stage-card-icon">' + stageIconHtml + '</div>'
                         + (isCleared ? '<div class="stage-card-stars">' + this._renderStars(stars) + '</div>' : '')
@@ -1156,7 +1166,7 @@ const ChallengeModule = {
         for (const [key, def] of Object.entries(this._frameDefs)) {
             // 管理员自动拥有所有边框
             if (this._isAdmin()) {
-                frames.push({ ...def, key, equipped: this._equippedFrameId === def.id });
+                frames.push({ ...def, key, equipped: (this._equippedFrameIds || []).includes(def.id) });
                 continue;
             }
             // 检查是否击败了对应的 BOSS（大BOSS或小BOSS）
@@ -1165,7 +1175,7 @@ const ChallengeModule = {
             const hasCleared = (this.serverProgress[bossStageId] && this.serverProgress[bossStageId].cleared)
                 || (this.serverProgress[bossMiniId] && this.serverProgress[bossMiniId].cleared);
             if (hasCleared) {
-                frames.push({ ...def, key, equipped: this._equippedFrameId === def.id });
+                frames.push({ ...def, key, equipped: (this._equippedFrameIds || []).includes(def.id) });
             }
         }
         return frames;
@@ -1173,15 +1183,27 @@ const ChallengeModule = {
 
     /** 装备/卸下边框 */
     _equipFrame(frameId) {
+        if (!this._equippedFrameIds) this._equippedFrameIds = [];
         if (frameId && !this._frameDefs['frame_' + frameId]) return;
-        const prevId = this._equippedFrameId;
-        this._equippedFrameId = (frameId && prevId !== frameId) ? frameId : null;
+        if (!frameId) {
+            // 卸下所有
+            this._equippedFrameIds = [];
+        } else {
+            const idx = this._equippedFrameIds.indexOf(frameId);
+            if (idx >= 0) {
+                // 已装备 → 卸下
+                this._equippedFrameIds.splice(idx, 1);
+            } else {
+                // 未装备 → 装备
+                this._equippedFrameIds.push(frameId);
+            }
+        }
         // 保存到 localStorage
-        try { localStorage.setItem('challenge_equipped_frame', this._equippedFrameId || ''); } catch(e) {}
-        // 刷新当前视图（称号墙或关卡列表）
+        try { localStorage.setItem('challenge_equipped_frames', JSON.stringify(this._equippedFrameIds)); } catch(e) {}
+        // 刷新当前视图
         const container = document.getElementById('challenge-sub-content');
         if (container) {
-            if (this.currentView === 'titles') {
+            if (this.currentView === 'titles' || this.currentView === 'frames') {
                 this._renderTitlesWall(container);
             } else {
                 this.renderStages(container);
@@ -1192,45 +1214,51 @@ const ChallengeModule = {
     /** 加载已装备的边框 */
     _loadEquippedFrame() {
         try {
-            const saved = localStorage.getItem('challenge_equipped_frame');
-            if (saved) this._equippedFrameId = saved;
-        } catch(e) {}
-        // 校验：确保装备的边框已解锁
-        if (this._equippedFrameId) {
-            const def = this._frameDefs['frame_' + this._equippedFrameId];
-            if (!def || !this._earnedTitles[def.titleReq]) {
-                this._equippedFrameId = null;
+            const saved = localStorage.getItem('challenge_equipped_frames');
+            if (saved) {
+                this._equippedFrameIds = JSON.parse(saved);
+            } else {
+                // 兼容旧版单值格式
+                const oldSaved = localStorage.getItem('challenge_equipped_frame');
+                if (oldSaved) {
+                    this._equippedFrameIds = [oldSaved];
+                    localStorage.removeItem('challenge_equipped_frame');
+                } else {
+                    this._equippedFrameIds = [];
+                }
             }
+        } catch(e) {
+            this._equippedFrameIds = [];
         }
+        // 校验：过滤掉未解锁的边框
+        if (this._equippedFrameIds && this._equippedFrameIds.length > 0) {
+            const unlockedIds = this._getUnlockedFrames().map(f => f.id);
+            this._equippedFrameIds = this._equippedFrameIds.filter(fid => unlockedIds.includes(fid));
+        }
+        if (!this._equippedFrameIds) this._equippedFrameIds = [];
     },
 
     /** 在称号墙中显示边框选择区域 */
     _renderFrameSelector(container) {
         const allFrames = this._frameDefs;
         const unlockedIds = this._getUnlockedFrames().map(f => f.id);
+        const equippedIds = this._equippedFrameIds || [];
+        const hasAny = equippedIds.length > 0;
 
         let html = `
             <div class="frame-wall-section">
                 <div class="frame-wall-header">
                     <i class="fas fa-border-all"></i>
                     <span>关卡边框</span>
+                    <span style="margin-left:auto;font-size:0.7rem;color:#64748b;">已装备 ${equippedIds.length} 个</span>
+                    ${hasAny ? `<button class="frame-clear-all" onclick="ChallengeModule._equipFrame(null)" style="margin-left:8px;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);border-radius:6px;padding:2px 10px;font-size:0.65rem;cursor:pointer;"><i class="fas fa-times"></i> 清除全部</button>` : ''}
                 </div>
                 <div class="frame-wall-grid">
-                    <div class="frame-wall-item ${!this._equippedFrameId ? 'equipped' : ''}" onclick="ChallengeModule._equipFrame(null)">
-                        <div class="frame-wall-preview" style="border:2px dashed rgba(148,163,184,0.3);background:transparent;">
-                            <i class="fas fa-ban" style="font-size:1.2rem;color:#64748b;"></i>
-                        </div>
-                        <div class="frame-wall-name" style="color:#94a3b8;">无边框</div>
-                        <div class="frame-wall-desc">默认样式</div>
-                        <div class="frame-wall-action ${!this._equippedFrameId ? 'equipped' : ''}">
-                            <i class="fas ${!this._equippedFrameId ? 'fa-times-circle' : 'fa-hand-pointer'}"></i> ${!this._equippedFrameId ? '点击卸下' : '使用'}
-                        </div>
-                    </div>
         `;
 
         for (const [key, frame] of Object.entries(allFrames)) {
             const isUnlocked = unlockedIds.includes(frame.id);
-            const isEquipped = this._equippedFrameId === frame.id;
+            const isEquipped = equippedIds.includes(frame.id);
             html += `
                 <div class="frame-wall-item ${isUnlocked ? '' : 'locked'} ${isEquipped ? 'equipped' : ''}" onclick="${isUnlocked ? `ChallengeModule._equipFrame('${frame.id}')` : ''}">
                     <div class="frame-wall-preview" style="border:2px solid ${isUnlocked ? frame.color : 'rgba(148,163,184,0.2)'};background:${isUnlocked ? frame.gradient : 'rgba(148,163,184,0.05)'};${isEquipped ? 'box-shadow:0 0 12px ' + frame.color + '40;' : ''}">
@@ -1238,12 +1266,13 @@ const ChallengeModule = {
                             ? `<i class="fas fa-square" style="font-size:1.2rem;color:${frame.color};filter:drop-shadow(0 0 4px ${frame.color});"></i>`
                             : `<i class="fas fa-lock" style="font-size:1rem;color:#475569;"></i>`
                         }
+                        ${isEquipped ? '<div class="frame-check-badge"><i class="fas fa-check-circle"></i></div>' : ''}
                     </div>
                     <div class="frame-wall-name" style="color:${isUnlocked ? frame.color : '#475569'};">${isUnlocked ? frame.name : '???'}</div>
                     <div class="frame-wall-desc">${isUnlocked ? frame.desc : '击败对应BOSS解锁'}</div>
                     ${isUnlocked ? `
                     <div class="frame-wall-action ${isEquipped ? 'equipped' : ''}">
-                        <i class="fas ${isEquipped ? 'fa-times-circle' : 'fa-hand-pointer'}"></i> ${isEquipped ? '点击卸下' : '使用'}
+                        <i class="fas ${isEquipped ? 'fa-times-circle' : 'fa-plus-circle'}"></i> ${isEquipped ? '卸下' : '装备'}
                     </div>` : ''}
                 </div>
             `;
@@ -1251,6 +1280,25 @@ const ChallengeModule = {
 
         html += `</div></div>`;
         return html;
+    }
+
+    /** 独立的关卡边框墙页面 */
+    _renderFrameWall(container) {
+        const html = `
+            <div class="ch-header">
+                <button class="ch-back-btn" onclick="ChallengeModule.goHome()">
+                    <i class="fas fa-arrow-left"></i> 返回首页
+                </button>
+                <h2 class="ch-title">关卡边框</h2>
+                <button class="ch-back-btn" onclick="ChallengeModule.enterTitles()" style="background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.3);" title="称号墙">
+                    <i class="fas fa-medal"></i> 称号墙
+                </button>
+            </div>
+            <div style="padding:4px 8px;color:#94a3b8;font-size:0.72rem;">
+                <i class="fas fa-info-circle"></i> 击败BOSS解锁边框，可同时装备多个
+            </div>
+        ` + this._renderFrameSelector(container);
+        container.innerHTML = html;
     },
 
     _renderStars(count) {
@@ -3067,13 +3115,13 @@ const ChallengeModule = {
     /**
      * BOSS 答题后的动画效果
      */
-    _bossDamageEffect(damageType) {
+    _bossDamageEffect(damageType, bossResult) {
         if (!damageType) return;
         const playPage = document.querySelector('.boss-cinematic-page, .challenge-play-page');
         const bossVisual = document.querySelector('.boss-bg-avatar');
         const heroVisual = document.querySelector('.boss-hero-visual');
 
-        // \u521b\u5efa\u5168\u5c4f\u95ea\u5c4f\u5143\u7d20
+        // 创建全屏闪屏元素
         const flashOverlay = document.createElement('div');
         flashOverlay.className = 'boss-cinematic-flash';
         if (playPage) {
@@ -3082,7 +3130,7 @@ const ChallengeModule = {
         }
 
         if (damageType === 'boss') {
-            // ===== \u7528\u6237\u653b\u51fb BOSS =====
+            // ===== 用户攻击 BOSS =====
             if (heroVisual) {
                 heroVisual.style.transition = 'transform 0.15s ease';
                 heroVisual.style.transform = 'translateX(15px) scale(1.2)';
@@ -3108,9 +3156,16 @@ const ChallengeModule = {
                 if (bossHpFill) { bossHpFill.style.filter = 'brightness(2.5)'; setTimeout(() => { bossHpFill.style.filter = ''; }, 200); }
                 if (playPage) { playPage.style.animation = 'screen-shake 0.25s ease'; setTimeout(() => playPage.style.animation = '', 250); }
                 this._showDamageText('boss-cinematic-boss-zone', '-1', '#ef4444');
+                // 粒子爆发
+                this._spawnParticles(playPage, 8, '#ef4444');
             }, 150);
         } else if (damageType === 'user') {
-            // ===== BOSS \u653b\u51fb\u7528\u6237 =====
+            // ===== BOSS 攻击用户 =====
+            // 显示技能名称
+            const skillName = (bossResult && bossResult.skillName) ? bossResult.skillName : '';
+            if (skillName && playPage) {
+                this._showSkillName(playPage, skillName);
+            }
             if (bossVisual) {
                 bossVisual.style.transition = 'transform 0.15s ease';
                 bossVisual.style.transform = 'translateX(-15px) scale(1.15)';
@@ -3136,11 +3191,12 @@ const ChallengeModule = {
                 if (userHpFill) { userHpFill.style.filter = 'brightness(2.5)'; userHpFill.style.background = '#ff4444'; setTimeout(() => { userHpFill.style.filter = ''; userHpFill.style.background = ''; }, 300); }
                 if (playPage) { playPage.style.animation = 'screen-shake-strong 0.35s ease'; setTimeout(() => playPage.style.animation = '', 350); }
                 this._showDamageText('boss-hero-panel', '-1', '#f87171');
+                // 粒子爆发
+                this._spawnParticles(playPage, 10, '#f87171');
             }, 150);
         } else if (damageType === 'lastStand') {
-            // ===== \u6700\u540e\u4e00\u640f\u7279\u6548 =====
+            // ===== 最后一搏特效 =====
             if (playPage) {
-                // \u91d1\u8272\u95ea\u5c4f + \u5f3a\u70c8\u9707\u52a8
                 playPage.style.animation = 'screen-shake-strong 0.5s ease';
                 setTimeout(() => playPage.style.animation = '', 500);
             }
@@ -3150,7 +3206,6 @@ const ChallengeModule = {
                     flashOverlay.style.opacity = '1';
                     setTimeout(() => { flashOverlay.style.opacity = '0'; }, 300);
                 }
-                // \u7528\u6237\u53d1\u5149\u53cd\u51fb
                 if (heroVisual) {
                     heroVisual.style.transition = 'transform 0.2s ease, filter 0.2s ease';
                     heroVisual.style.transform = 'scale(1.5)';
@@ -3160,7 +3215,6 @@ const ChallengeModule = {
                         setTimeout(() => { heroVisual.style.transition = ''; heroVisual.style.transform = ''; heroVisual.style.filter = ''; }, 300);
                     }, 300);
                 }
-                // \u540c\u65f6\u5bf9BOSS\u9020\u6210\u4f24\u5bb3
                 setTimeout(() => {
                     if (bossVisual) {
                         bossVisual.style.transition = 'transform 0.1s ease, filter 0.1s ease';
@@ -3173,13 +3227,40 @@ const ChallengeModule = {
                     }
                     this._showDamageText('boss-cinematic-boss-zone', '-1', '#fbbf24');
                 }, 400);
-                // \u98d8\u5b57\u63d0\u793a
-                this._showDamageText('boss-hero-panel', '\u6700\u540e\u4e00\u640f!', '#fbbf24');
+                this._showDamageText('boss-hero-panel', '最后一搏!', '#fbbf24');
+                this._spawnParticles(playPage, 15, '#fbbf24');
             }, 100);
         }
 
-        // \u6e05\u7406\u95ea\u5c4f
+        // 清理闪屏
         setTimeout(() => { if (flashOverlay.parentElement) flashOverlay.remove(); }, 800);
+    },
+
+    /** 显示技能名称浮动标签 */
+    _showSkillName(container, skillName) {
+        const el = document.createElement('div');
+        el.className = 'boss-skill-name-tag';
+        el.textContent = skillName;
+        el.style.cssText = 'position:absolute;top:20%;left:50%;transform:translateX(-50%);z-index:100;font-size:1.2rem;font-weight:900;color:#ff4444;text-shadow:0 0 10px rgba(255,68,68,0.8),0 2px 4px rgba(0,0,0,0.8);letter-spacing:0.15em;pointer-events:none;animation:skill-name-pop 1.2s ease-out forwards;';
+        container.appendChild(el);
+        setTimeout(() => { if (el.parentElement) el.remove(); }, 1300);
+    },
+
+    /** 粒子爆发效果 */
+    _spawnParticles(container, count, color) {
+        if (!container) return;
+        for (let i = 0; i < count; i++) {
+            const p = document.createElement('div');
+            p.className = 'boss-damage-particle';
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 40 + Math.random() * 80;
+            const dx = Math.cos(angle) * dist;
+            const dy = Math.sin(angle) * dist;
+            const size = 3 + Math.random() * 6;
+            p.style.cssText = `position:absolute;top:50%;left:50%;width:${size}px;height:${size}px;background:${color};border-radius:50%;pointer-events:none;z-index:90;animation:particle-burst 0.6s ease-out forwards;--dx:${dx}px;--dy:${dy}px;opacity:0.9;`;
+            container.appendChild(p);
+            setTimeout(() => { if (p.parentElement) p.remove(); }, 700);
+        }
     },
 
     /**
@@ -3539,11 +3620,14 @@ const ChallengeModule = {
         if (!stats[bossKey]) stats[bossKey] = {};
         stats[bossKey].lastDefeat = Date.now();
         localStorage.setItem(key, JSON.stringify(stats));
-        // 自动装备该BOSS等级对应的边框
+        // 自动装备该BOSS等级对应的边框（追加到已装备列表）
         const frameId = String(bossLevel);
-        if (this._frameDefs['frame_' + frameId] && this._equippedFrameId !== frameId) {
-            this._equippedFrameId = frameId;
-            try { localStorage.setItem('challenge_equipped_frame', frameId); } catch(e) {}
+        if (this._frameDefs['frame_' + frameId]) {
+            if (!this._equippedFrameIds) this._equippedFrameIds = [];
+            if (!this._equippedFrameIds.includes(frameId)) {
+                this._equippedFrameIds.push(frameId);
+                try { localStorage.setItem('challenge_equipped_frames', JSON.stringify(this._equippedFrameIds)); } catch(e) {}
+            }
         }
     },
 
@@ -3680,7 +3764,7 @@ const ChallengeModule = {
         'frame_q6': { id: 'q6', bossLevel: 6, name: '烈焰荆棘', desc: '击败堕神后解锁', color: '#dc2626', glow: '#dc262666', gradient: 'linear-gradient(135deg, #dc2626, #991b1b, #dc2626)', effect: 'flame' },
         'frame_q7': { id: 'q7', bossLevel: 7, name: '极光幻彩', desc: '击败混沌王后解锁', color: '#7c3aed', glow: '#7c3aed66', gradient: 'linear-gradient(135deg, #22c55e, #a78bfa, #fbbf24, #f97316, #8b5cf6, #ef4444, #dc2626, #7c3aed)', effect: 'aurora' },
     },
-    _equippedFrameId: null, // 当前装备的边框
+    _equippedFrameIds: [], // 当前装备的边框（可多选）
 
     _earnedTitles: {}, // { titleId: earnedAt }
     _titleLoaded: false,
@@ -4047,9 +4131,6 @@ const ChallengeModule = {
             html += `</div></div>`;
         }
 
-        // 追加边框选择区域
-        html += this._renderFrameSelector(container);
-
         container.innerHTML = html;
     },
 
@@ -4111,6 +4192,12 @@ const ChallengeModule = {
     /** 进入称号墙 */
     enterTitles() {
         this.currentView = 'titles';
+        this.render();
+    },
+
+    /** 进入关卡边框选择 */
+    enterFrames() {
+        this.currentView = 'frames';
         this.render();
     },
 
