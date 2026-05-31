@@ -814,11 +814,8 @@ const ChallengeModule = {
             currentGroup.stages.push({ stage, index: i });
         });
 
-                // 边框装备系统：获取当前装备的边框，应用到所有关卡卡片
-        const equippedFrameId = this._equippedFrameId;
-        const equippedFrame = equippedFrameId ? this._frameDefs['frame_' + equippedFrameId] : null;
-        const frameClass = equippedFrame ? (' frame-q' + equippedFrameId) : '';
-        const frameBorderHtml = equippedFrame ? '<div class="frame-border"></div>' : '';
+                // 边框自动匹配：每个关卡根据其等级显示对应BOSS边框（如果该等级BOSS已被击败）
+        const _unlockedBossLevels = this._getUnlockedBossLevels();
 
         let stageGrid = '';
         groups.forEach(group => {
@@ -874,8 +871,8 @@ const ChallengeModule = {
                     const statusBadge = isLocked ? '<span class="boss-banner-status-badge boss-status-locked">🔒 ' + (isReadonly ? '未开放' : '击败前置关卡后解锁') + '</span>'
                         : isCleared ? '<span class="boss-banner-status-badge boss-status-cleared">✓ 已击败</span>'
                         : '<span class="boss-banner-status-badge boss-status-available">⚔ 可挑战</span>';
-                    stageGrid += '<div class="stage-card boss-banner ' + statusClass + frameClass + '" style="--boss-theme:' + bc + ';grid-column:1/-1;" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
-                        + '<div class="boss-mist"></div>' + frameBorderHtml
+                    stageGrid += '<div class="stage-card boss-banner ' + statusClass + (_unlockedBossLevels.has(String(stage.bossLevel || '0')) ? ' frame-q' + String(stage.bossLevel || '0') : '') + '" style="--boss-theme:' + bc + ';grid-column:1/-1;" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
+                        + '<div class="boss-mist"></div>' + (_unlockedBossLevels.has(String(stage.bossLevel || '0')) ? '<div class="frame-border"></div>' : '')
                         + '<div class="boss-banner-img">'
                         + '<div class="boss-badge-icon big-crown"><i class="fas fa-crown"></i></div>'
                         + '<img src="' + bossImg + '" alt="' + (bd.name || '') + '" onerror="this.remove()">'
@@ -902,8 +899,8 @@ const ChallengeModule = {
                     const bossImg = bd.miniImage || 'assets/boss/boss-mini-q' + (stage.bossLevel || '0') + '.png';
                     const miniDiff = Math.max(1, (bd.difficulty || 3) - 1);
                     const diffStars = '★'.repeat(miniDiff) + '☆'.repeat(Math.max(0, 6 - miniDiff));
-                    stageGrid += '<div class="stage-card boss-mini-card ' + statusClass + frameClass + '" style="--boss-theme:' + bc + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
-                        + '<div class="boss-mini-badge">⚔️</div>' + frameBorderHtml
+                    stageGrid += '<div class="stage-card boss-mini-card ' + statusClass + (_unlockedBossLevels.has(String(stage.bossLevel || '0')) ? ' frame-q' + String(stage.bossLevel || '0') : '') + '" style="--boss-theme:' + bc + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
+                        + '<div class="boss-mini-badge">⚔️</div>' + (_unlockedBossLevels.has(String(stage.bossLevel || '0')) ? '<div class="frame-border"></div>' : '')
                         + '<div class="boss-mini-img">'
                         + '<img src="' + bossImg + '" alt="' + (bd.name || '') + '" onerror="this.remove()">'
                         + '</div>'
@@ -924,11 +921,14 @@ const ChallengeModule = {
                         : '<i class="fas fa-play-circle"></i>';
                     const statusCls = isLocked ? 'locked' : isCleared ? 'cleared' : 'available';
                     const statusLabel = isLocked ? (isReadonly ? '未开放' : '🔒') : isCleared ? '✓' : isCurrent ? '⚔' : '⚔';
-                    stageGrid += '<div class="stage-card ' + statusClass + frameClass + '" style="--stage-color:' + lvColor + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
-                        + '<div class="stage-card-number">' + (i + 1) + '</div>' + frameBorderHtml
+                    stageGrid += '<div class="stage-card ' + statusClass + (_unlockedBossLevels.has(String(stage.levelId)) ? ' frame-q' + String(stage.levelId) : '') + '" style="--stage-color:' + lvColor + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
+                        + '<div class="stage-card-color-bar"></div>'
+                        + (_unlockedBossLevels.has(String(stage.levelId)) ? '<div class="frame-border"></div>' : '')
+                        + '<div class="stage-card-number">' + (i + 1) + '</div>'
                         + '<div class="stage-card-icon">' + stageIconHtml + '</div>'
                         + (isCleared ? '<div class="stage-card-stars">' + this._renderStars(stars) + '</div>' : '')
                         + '<div class="stage-card-progress"><div class="stage-card-progress-fill" style="width:' + (isCleared ? '100%' : isCurrent ? '25%' : '0%') + '"></div></div>'
+                        + '<div class="stage-card-label">第' + (i + 1) + '关</div>'
                         + '<div class="stage-card-status status-' + statusCls + '">' + statusLabel + '</div>'
                         + '</div>';                }
             });
@@ -1131,6 +1131,26 @@ const ChallengeModule = {
 
     // ========== 边框装备逻辑 ==========
     /** 获取用户已解锁的边框列表 */
+    /** 获取已解锁的BOSS等级集合（用于边框自动匹配） */
+    _getUnlockedBossLevels() {
+        const levels = new Set();
+        if (this._isAdmin()) {
+            // 管理员自动拥有所有等级
+            for (let i = 0; i <= 7; i++) levels.add(String(i));
+            return levels;
+        }
+        for (const key of Object.keys(this._frameDefs)) {
+            const def = this._frameDefs[key];
+            const bossStageId = 'boss-' + def.bossLevel + '-big';
+            const bossMiniId = 'boss-' + def.bossLevel + '-mini';
+            if ((this.serverProgress[bossStageId] && this.serverProgress[bossStageId].cleared)
+                || (this.serverProgress[bossMiniId] && this.serverProgress[bossMiniId].cleared)) {
+                levels.add(String(def.bossLevel));
+            }
+        }
+        return levels;
+    },
+
     _getUnlockedFrames() {
         const frames = [];
         for (const [key, def] of Object.entries(this._frameDefs)) {
@@ -4216,7 +4236,7 @@ const ChallengeModule = {
         // 生成星空背景粒子
         if (stars) {
             var starHtml = '';
-            for (var i = 0; i < 80; i++) {
+            for (var i = 0; i < 100; i++) {
                 var sx = Math.random() * 100;
                 var sy = Math.random() * 100;
                 var ss = 1 + Math.random() * 2.5;
@@ -4228,12 +4248,12 @@ const ChallengeModule = {
         }
 
         var startTime = performance.now();
-        var totalDuration = 5200; // 5.2秒总时长
+        var totalDuration = 4800; // 5.2秒总时长
         // 各幕时间节点
-        var tAct1End = 1400;  // 第一幕：漩涡凝聚
-        var tAct2End = 2600;  // 第二幕：裂隙撕裂
-        var tAct3End = 4200;  // 第三幕：BOSS降临
-        var tAct4End = 5200;  // 第四幕：破碎终结
+        var tAct1End = 1200;  // 第一幕：漩涡凝聚
+        var tAct2End = 2200;  // 第二幕：裂隙撕裂
+        var tAct3End = 3600;  // 第三幕：BOSS降临
+        var tAct4End = 4800;  // 第四幕：破碎终结
 
         var act2Shown = false, act3Shown = false, act4Shown = false;
         var particlesSpawned = false;
@@ -4241,7 +4261,7 @@ const ChallengeModule = {
         function spawnVoidParticles() {
             if (!particlesLayer) return;
             var html = '';
-            for (var i = 0; i < 60; i++) {
+            for (var i = 0; i < 45; i++) {
                 var angle = Math.random() * Math.PI * 2;
                 var dist = 80 + Math.random() * 250;
                 var size = 2 + Math.random() * 6;
@@ -4385,8 +4405,8 @@ const ChallengeModule = {
         var shatterLayer = document.createElement('div');
         shatterLayer.className = 'void-glass-shatter';
 
-        var cols = 8;
-        var rows = 8;
+        var cols = 6;
+        var rows = 6;
         var total = cols * rows;
 
         for (var i = 0; i < total; i++) {

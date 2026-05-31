@@ -252,6 +252,22 @@
     gap: 10px;
 }
 
+/* 统一返回按钮 */
+.ch-nav-back {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border: none;
+    background: rgba(255, 255, 255, 0.06);
+    color: #94a3b8; font-size: 0.78rem; font-weight: 600;
+    border-radius: 8px; cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.ch-nav-back:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #e2e8f0;
+}
+.ch-nav-back i { font-size: 0.85rem; }
+
 .back-btn {
     width: 36px;
     height: 36px;
@@ -4356,6 +4372,33 @@
     border-radius: 2px;
     transition: width 0.4s;
 }
+
+/* 关卡颜色装饰条（顶部） */
+.stage-card-color-bar {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--stage-color, #60a5fa);
+    border-radius: 16px 16px 0 0;
+    opacity: 0.6;
+    transition: opacity 0.3s;
+}
+.stage-card:hover .stage-card-color-bar { opacity: 1; }
+.stage-card.cleared .stage-card-color-bar { opacity: 0.85; }
+
+/* 关卡名称标签 */
+.stage-card-label {
+    font-size: 0.62rem; color: #64748b;
+    margin-top: 4px; letter-spacing: 0.05em;
+    font-weight: 600;
+}
+.stage-card.cleared .stage-card-label { color: #94a3b8; }
+.stage-card.current .stage-card-label { color: var(--stage-color, #60a5fa); }
+
+/* 关卡星级 */
+.stage-card-mini-stars {
+    font-size: 0.55rem; letter-spacing: 2px;
+    margin-top: 2px;
+}
 .stage-card .stage-card-status {
     font-size: 0.62rem;
     padding: 1px 8px;
@@ -5059,8 +5102,8 @@
 }
 
 .frame-wall-preview {
-    width: 52px;
-    height: 52px;
+    width: 80px;
+    height: 80px;
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -5340,14 +5383,14 @@
     width: 100%; padding: 4px 0;
 }
 .boss-hero-panel-img-wrap {
-    width: 72px; height: 72px; border-radius: 14px; overflow: hidden;
+    width: 160px; height: 213px; border-radius: 16px; overflow: hidden;
     border: 2px solid rgba(96,165,250,0.5);
     background: #000; flex-shrink: 0;
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 0 16px rgba(96,165,250,0.2);
+    box-shadow: 0 0 20px rgba(96,165,250,0.25);
 }
 .boss-hero-panel-img {
-    width: 100%; height: 100%; object-fit: cover;
+    width: 100%; height: 100%; object-fit: contain;
 }
 .boss-hero-panel-fallback {
     display: flex; align-items: center; justify-content: center;
@@ -5747,10 +5790,10 @@
 }
 
 .boss-cinematic-hero-avatar {
-    width: 52px;
-    height: 52px;
+    width: 80px;
+    height: 80px;
     border-radius: 14px;
-    object-fit: cover;
+    object-fit: contain;
     border: 2px solid rgba(52,211,153,0.5);
     box-shadow: 0 0 14px rgba(52,211,153,0.15), 0 2px 8px rgba(0,0,0,0.3);
 }
@@ -6573,7 +6616,7 @@
 
 /* 英雄面板 */
 .void-hero-panel {
-    width: 180px; height: 240px;
+    width: 200px; height: 267px;
     border-radius: 16px; overflow: hidden;
     border: 2px solid rgba(96, 165, 250, 0.5);
     box-shadow: 0 0 30px rgba(96, 165, 250, 0.35);

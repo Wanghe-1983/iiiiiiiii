@@ -267,3 +267,47 @@ v3.3 - 2026-05-29 17:25 — 图片加载修复 + 英雄面板 + BOSS图片清晰
 - module-challenge.js: _frameDefs替换, _getUnlockedFrames重写, _startVoidEncounter新增, _triggerVoidShatter新增, renderStages边框装备逻辑, _updateTitlesAfterBoss自动装备
 - modules.css: 旧frame-01~09替换为frame-q0~q7 + @keyframes, 虚空撕裂主题CSS（~100行新CSS）
 - boss-design.txt: 更新至v3.4
+
+
+## v3.5 - 2026-05-31 英雄形象裁切 + 边框自动匹配 + 卡片装饰 + 动画优化
+
+### 英雄形象裁切与增大
+- 8张英雄图（hero-q0~q7）从2848×1600横版裁切为1424×1600竖版正面照
+- 战斗界面英雄面板：boss-hero-panel-img-wrap 72×72 → 160×213（约BOSS 1/3）
+- 遭遇动画英雄面板：void-hero-panel 180×240 → 200×267
+- 英雄头像：boss-cinematic-hero-avatar 52×52 → 80×80
+- object-fit: cover → contain（避免裁切失真）
+
+### 边框系统重构
+- 从全局装备模式改为自动匹配模式
+- 每个关卡根据其levelId自动匹配对应BOSS等级边框
+- 如果该等级BOSS已被击败，自动叠加对应颜色边框
+- 8级8色：绿→紫→金→橙→深紫→红→深红→极光，与关卡主题配色一致
+- 新增 _getUnlockedBossLevels() 方法返回Set
+- 边框墙保留预览功能
+
+### 普通关卡卡片装饰
+- 新增颜色装饰条（stage-card-color-bar）：顶部3px渐变条
+- 新增关卡名称标签（stage-card-label）：第X关
+- 新增迷你星级（stage-card-mini-stars）
+- 已通关/当前关卡有差异化样式
+
+### 动画优化
+- 总时长 5.2s → 4.8s
+- 第一幕漩涡 1.4s → 1.2s
+- 第二幕裂隙 1.2s → 1.0s
+- 第三幕降临 1.6s → 1.4s
+- 第四幕破碎 1.0s → 1.2s
+- 星空粒子 80 → 100
+- 爆发粒子 60 → 45
+- 玻璃碎片 8×8 → 6×6
+
+### 返回按钮统一
+- 新增 .ch-nav-back 统一样式
+- 保留现有 back-btn 兼容
+
+### 文件修改
+- module-challenge.js: _getUnlockedBossLevels新增, renderStages边框自动匹配, 普通关卡卡片装饰, 动画参数
+- modules.css: 英雄面板增大, stage-card装饰CSS, 返回按钮统一样式
+- 8张英雄图片裁切
+- boss-design.txt: 更新至v3.5
