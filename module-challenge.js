@@ -1280,7 +1280,7 @@ const ChallengeModule = {
 
         html += `</div></div>`;
         return html;
-    }
+    },
 
     /** 独立的关卡边框墙页面 */
     _renderFrameWall(container) {
