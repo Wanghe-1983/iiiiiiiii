@@ -1203,8 +1203,10 @@ const ChallengeModule = {
         // 刷新当前视图
         const container = document.getElementById('challenge-sub-content');
         if (container) {
-            if (this.currentView === 'titles' || this.currentView === 'frames') {
+            if (this.currentView === 'titles') {
                 this._renderTitlesWall(container);
+            } else if (this.currentView === 'frames') {
+                this._renderFrameWall(container);
             } else {
                 this.renderStages(container);
             }
