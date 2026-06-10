@@ -946,7 +946,7 @@
     transition: all 0.25s;
     border: 2px solid transparent;
     text-align: center;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .stage-card.available {
@@ -3931,7 +3931,7 @@
 .stage-card {
     backdrop-filter: blur(4px);
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .stage-card::before {

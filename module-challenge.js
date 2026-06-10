@@ -826,10 +826,10 @@ const ChallengeModule = {
 
                 // 边框：使用用户装备的边框ID列表
         const _equippedFrameSet = new Set(this._equippedFrameIds || []);
-        console.log('[DEBUG] _equippedFrameIds:', JSON.stringify(this._equippedFrameIds), '_equippedFrameSet size:', _equippedFrameSet.size);
+        // [DEBUG removed]', JSON.stringify(this._equippedFrameIds), '_equippedFrameSet size:', _equippedFrameSet.size);
 
         let stageGrid = '';
-        console.log('[DEBUG renderStages] _equippedFrameIds:', JSON.stringify(this._equippedFrameIds), 'first stage levelId:', this.allStages[0]?.levelId);
+        // [DEBUG removed] _equippedFrameIds:', JSON.stringify(this._equippedFrameIds), 'first stage levelId:', this.allStages[0]?.levelId);
         groups.forEach(group => {
             const hellTag = group.isHell ? `<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);border-radius:6px;font-size:0.7rem;font-weight:600;"><i class="fas fa-skull-crossbones"></i> 地狱模式</span>` : '';
             stageGrid += `<div style="grid-column:1/-1;padding:8px 4px 2px;display:flex;align-items:center;gap:8px;"><span style="font-size:0.75rem;color:#64748b;font-weight:600;">${group.levelName}</span>${hellTag}</div>`;
