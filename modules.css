@@ -4711,10 +4711,7 @@
 }
 .stage-card:hover .frame-border::before,
 .boss-banner:hover .frame-border::before,
-.boss-mini-card:hover .frame-border::before {
-    opacity: 1;
-}
-/* 边框角标装饰 */
+.boss-mini-card:hover .frame-border::before { opacity: 1; }
 .stage-card .frame-border::after,
 .boss-banner .frame-border::after,
 .boss-mini-card .frame-border::after {
@@ -4725,359 +4722,128 @@
     background: linear-gradient(135deg, var(--frame-color, #22c55e) 0%, transparent 30%, transparent 70%, var(--frame-color, #22c55e) 100%);
     opacity: 0.12;
 }
-@keyframes frame-rotate {
-    to { --frame-angle: 360deg; }
-}
-/* 兼容不支持 @property 的浏览器 */
-@property --frame-angle {
-    syntax: '<angle>';
-    initial-value: 0deg;
-    inherits: false;
-}
+@property --frame-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+@keyframes frame-rotate { to { --frame-angle: 360deg; } }
 
-/* ====== frame-q0: 翡翠流光 (shine) ====== */
-.stage-card.frame-q0,
-.boss-banner.frame-q0,
-.boss-mini-card.frame-q0 {
-    --frame-color: #22c55e;
-    --frame-speed: 4s;
-}
-.stage-card.frame-q0 .frame-border,
-.boss-banner.frame-q0 .frame-border,
-.boss-mini-card.frame-q0 .frame-border {
+/* ====== frame-q0: 翡翠流光 ====== */
+.stage-card.frame-q0, .boss-banner.frame-q0, .boss-mini-card.frame-q0 { --frame-color: #22c55e; --frame-speed: 4s; }
+.stage-card.frame-q0 .frame-border, .boss-banner.frame-q0 .frame-border, .boss-mini-card.frame-q0 .frame-border {
     border: 2.5px solid rgba(34, 197, 94, 0.7);
-    box-shadow:
-        0 0 8px rgba(34, 197, 94, 0.4),
-        0 0 20px rgba(34, 197, 94, 0.2),
-        0 0 40px rgba(34, 197, 94, 0.1),
-        inset 0 0 15px rgba(34, 197, 94, 0.08);
-    background: linear-gradient(105deg,
-        transparent 30%,
-        rgba(34, 197, 94, 0.15) 42%,
-        rgba(255, 255, 255, 0.25) 50%,
-        rgba(34, 197, 94, 0.15) 58%,
-        transparent 70%);
+    box-shadow: 0 0 8px rgba(34,197,94,0.4), 0 0 20px rgba(34,197,94,0.2), 0 0 40px rgba(34,197,94,0.1), inset 0 0 15px rgba(34,197,94,0.08);
+    background: linear-gradient(105deg, transparent 30%, rgba(34,197,94,0.15) 42%, rgba(255,255,255,0.25) 50%, rgba(34,197,94,0.15) 58%, transparent 70%);
     background-size: 250% 100%;
     animation: frame-shine-q0 2.5s ease-in-out infinite;
 }
-.stage-card.frame-q0:hover .frame-border,
-.boss-banner.frame-q0:hover .frame-border,
-.boss-mini-card.frame-q0:hover .frame-border {
-    border-color: rgba(34, 197, 94, 0.95);
-    box-shadow:
-        0 0 12px rgba(34, 197, 94, 0.6),
-        0 0 30px rgba(34, 197, 94, 0.35),
-        0 0 60px rgba(34, 197, 94, 0.15),
-        inset 0 0 25px rgba(34, 197, 94, 0.12);
+.stage-card.frame-q0:hover .frame-border, .boss-banner.frame-q0:hover .frame-border, .boss-mini-card.frame-q0:hover .frame-border {
+    border-color: rgba(34,197,94,0.95);
+    box-shadow: 0 0 12px rgba(34,197,94,0.6), 0 0 30px rgba(34,197,94,0.35), 0 0 60px rgba(34,197,94,0.15), inset 0 0 25px rgba(34,197,94,0.12);
 }
-@keyframes frame-shine-q0 {
-    0% { background-position: 250% 0; }
-    100% { background-position: -250% 0; }
-}
+@keyframes frame-shine-q0 { 0% { background-position: 250% 0; } 100% { background-position: -250% 0; } }
 
-/* ====== frame-q1: 紫晶藤蔓 (pulse) ====== */
-.stage-card.frame-q1,
-.boss-banner.frame-q1,
-.boss-mini-card.frame-q1 {
-    --frame-color: #a78bfa;
-    --frame-speed: 3s;
+/* ====== frame-q1: 紫晶藤蔓 ====== */
+.stage-card.frame-q1, .boss-banner.frame-q1, .boss-mini-card.frame-q1 { --frame-color: #a78bfa; --frame-speed: 3s; }
+.stage-card.frame-q1 .frame-border, .boss-banner.frame-q1 .frame-border, .boss-mini-card.frame-q1 .frame-border {
+    border: 2.5px solid rgba(167,139,250,0.7);
+    box-shadow: 0 0 8px rgba(167,139,250,0.4), 0 0 20px rgba(167,139,250,0.2), 0 0 40px rgba(167,139,250,0.1), inset 0 0 15px rgba(167,139,250,0.08);
+    background: linear-gradient(105deg, transparent 30%, rgba(167,139,250,0.18) 42%, rgba(255,255,255,0.25) 50%, rgba(167,139,250,0.18) 58%, transparent 70%);
+    background-size: 250% 100%;
+    animation: frame-shine-q1 2.8s ease-in-out infinite;
 }
-.stage-card.frame-q1 .frame-border,
-.boss-banner.frame-q1 .frame-border,
-.boss-mini-card.frame-q1 .frame-border {
-    border: 2.5px solid rgba(167, 139, 250, 0.7);
-    box-shadow:
-        0 0 8px rgba(167, 139, 250, 0.4),
-        0 0 20px rgba(167, 139, 250, 0.2),
-        0 0 40px rgba(167, 139, 250, 0.1),
-        inset 0 0 15px rgba(167, 139, 250, 0.08);
-    animation: frame-pulse-q1 2s ease-in-out infinite;
+.stage-card.frame-q1:hover .frame-border, .boss-banner.frame-q1:hover .frame-border, .boss-mini-card.frame-q1:hover .frame-border {
+    border-color: rgba(167,139,250,0.95);
+    box-shadow: 0 0 16px rgba(167,139,250,0.6), 0 0 35px rgba(167,139,250,0.3), 0 0 60px rgba(167,139,250,0.15), inset 0 0 25px rgba(167,139,250,0.12);
 }
-.stage-card.frame-q1:hover .frame-border,
-.boss-banner.frame-q1:hover .frame-border,
-.boss-mini-card.frame-q1:hover .frame-border {
-    border-color: rgba(167, 139, 250, 0.95);
-    box-shadow:
-        0 0 16px rgba(167, 139, 250, 0.6),
-        0 0 35px rgba(167, 139, 250, 0.3),
-        0 0 60px rgba(167, 139, 250, 0.15),
-        inset 0 0 25px rgba(167, 139, 250, 0.12);
-}
-@keyframes frame-pulse-q1 {
-    0%, 100% {
-        box-shadow: 0 0 8px rgba(167, 139, 250, 0.4), 0 0 20px rgba(167, 139, 250, 0.2), 0 0 40px rgba(167, 139, 250, 0.1), inset 0 0 15px rgba(167, 139, 250, 0.08);
-        border-color: rgba(167, 139, 250, 0.7);
-    }
-    50% {
-        box-shadow: 0 0 16px rgba(167, 139, 250, 0.6), 0 0 40px rgba(167, 139, 250, 0.35), 0 0 70px rgba(167, 139, 250, 0.15), inset 0 0 30px rgba(167, 139, 250, 0.15);
-        border-color: rgba(167, 139, 250, 0.95);
-    }
-}
+@keyframes frame-shine-q1 { 0% { background-position: 250% 0; } 100% { background-position: -250% 0; } }
 
-/* ====== frame-q2: 琥珀金纹 (shine) ====== */
-.stage-card.frame-q2,
-.boss-banner.frame-q2,
-.boss-mini-card.frame-q2 {
-    --frame-color: #fbbf24;
-    --frame-speed: 5s;
-}
-.stage-card.frame-q2 .frame-border,
-.boss-banner.frame-q2 .frame-border,
-.boss-mini-card.frame-q2 .frame-border {
-    border: 2.5px solid rgba(251, 191, 36, 0.7);
-    box-shadow:
-        0 0 8px rgba(251, 191, 36, 0.4),
-        0 0 20px rgba(251, 191, 36, 0.2),
-        0 0 40px rgba(251, 191, 36, 0.1),
-        inset 0 0 15px rgba(251, 191, 36, 0.08);
-    background: linear-gradient(105deg,
-        transparent 25%,
-        rgba(251, 191, 36, 0.2) 40%,
-        rgba(255, 255, 255, 0.35) 50%,
-        rgba(251, 191, 36, 0.2) 60%,
-        transparent 75%);
+/* ====== frame-q2: 琥珀金纹 ====== */
+.stage-card.frame-q2, .boss-banner.frame-q2, .boss-mini-card.frame-q2 { --frame-color: #fbbf24; --frame-speed: 5s; }
+.stage-card.frame-q2 .frame-border, .boss-banner.frame-q2 .frame-border, .boss-mini-card.frame-q2 .frame-border {
+    border: 2.5px solid rgba(251,191,36,0.7);
+    box-shadow: 0 0 8px rgba(251,191,36,0.4), 0 0 20px rgba(251,191,36,0.2), 0 0 40px rgba(251,191,36,0.1), inset 0 0 15px rgba(251,191,36,0.08);
+    background: linear-gradient(105deg, transparent 25%, rgba(251,191,36,0.2) 40%, rgba(255,255,255,0.35) 50%, rgba(251,191,36,0.2) 60%, transparent 75%);
     background-size: 300% 100%;
     animation: frame-shine-q2 3s ease-in-out infinite;
 }
-.stage-card.frame-q2:hover .frame-border,
-.boss-banner.frame-q2:hover .frame-border,
-.boss-mini-card.frame-q2:hover .frame-border {
-    border-color: rgba(251, 191, 36, 0.95);
-    box-shadow:
-        0 0 14px rgba(251, 191, 36, 0.6),
-        0 0 35px rgba(251, 191, 36, 0.35),
-        0 0 60px rgba(251, 191, 36, 0.15),
-        inset 0 0 25px rgba(251, 191, 36, 0.12);
+.stage-card.frame-q2:hover .frame-border, .boss-banner.frame-q2:hover .frame-border, .boss-mini-card.frame-q2:hover .frame-border {
+    border-color: rgba(251,191,36,0.95);
+    box-shadow: 0 0 14px rgba(251,191,36,0.6), 0 0 35px rgba(251,191,36,0.35), 0 0 60px rgba(251,191,36,0.15), inset 0 0 25px rgba(251,191,36,0.12);
 }
-@keyframes frame-shine-q2 {
-    0% { background-position: 300% 0; }
-    100% { background-position: -300% 0; }
-}
+@keyframes frame-shine-q2 { 0% { background-position: 300% 0; } 100% { background-position: -300% 0; } }
 
-/* ====== frame-q3: 橙焰巨锤 (flame) ====== */
-.stage-card.frame-q3,
-.boss-banner.frame-q3,
-.boss-mini-card.frame-q3 {
-    --frame-color: #f97316;
-    --frame-speed: 1.8s;
+/* ====== frame-q3: 橙焰巨锤 ====== */
+.stage-card.frame-q3, .boss-banner.frame-q3, .boss-mini-card.frame-q3 { --frame-color: #f97316; --frame-speed: 1.8s; }
+.stage-card.frame-q3 .frame-border, .boss-banner.frame-q3 .frame-border, .boss-mini-card.frame-q3 .frame-border {
+    border: 3px solid rgba(249,115,22,0.75);
+    box-shadow: 0 0 10px rgba(249,115,22,0.5), 0 0 25px rgba(234,88,12,0.3), 0 0 50px rgba(234,88,12,0.12), inset 0 0 18px rgba(249,115,22,0.1);
+    background: linear-gradient(105deg, transparent 25%, rgba(249,115,22,0.22) 40%, rgba(255,255,255,0.3) 50%, rgba(249,115,22,0.22) 60%, transparent 75%);
+    background-size: 300% 100%;
+    animation: frame-shine-q3 2s ease-in-out infinite;
 }
-.stage-card.frame-q3 .frame-border,
-.boss-banner.frame-q3 .frame-border,
-.boss-mini-card.frame-q3 .frame-border {
-    border: 3px solid rgba(249, 115, 22, 0.75);
-    box-shadow:
-        0 0 10px rgba(249, 115, 22, 0.5),
-        0 0 25px rgba(234, 88, 12, 0.3),
-        0 0 50px rgba(234, 88, 12, 0.12),
-        inset 0 0 18px rgba(249, 115, 22, 0.1);
-    animation: frame-flame-q3 1.5s ease-in-out infinite;
+.stage-card.frame-q3:hover .frame-border, .boss-banner.frame-q3:hover .frame-border, .boss-mini-card.frame-q3:hover .frame-border {
+    border-color: rgba(249,115,22,0.95);
+    box-shadow: 0 0 18px rgba(249,115,22,0.7), 0 0 45px rgba(234,88,12,0.4), 0 0 80px rgba(234,88,12,0.18), inset 0 0 28px rgba(249,115,22,0.15);
 }
-.stage-card.frame-q3:hover .frame-border,
-.boss-banner.frame-q3:hover .frame-border,
-.boss-mini-card.frame-q3:hover .frame-border {
-    border-color: rgba(249, 115, 22, 0.95);
-    animation-duration: 0.8s;
-}
-@keyframes frame-flame-q3 {
-    0%, 100% {
-        box-shadow: 0 0 10px rgba(249, 115, 22, 0.5), 0 0 25px rgba(234, 88, 12, 0.3), 0 0 50px rgba(234, 88, 12, 0.12), inset 0 0 18px rgba(249, 115, 22, 0.1);
-        border-color: rgba(249, 115, 22, 0.75);
-        transform: scaleY(1);
-    }
-    25% {
-        box-shadow: 0 0 18px rgba(249, 115, 22, 0.65), 0 0 40px rgba(234, 88, 12, 0.4), 0 0 65px rgba(234, 88, 12, 0.18), inset 0 0 25px rgba(249, 115, 22, 0.15);
-        border-color: rgba(249, 115, 22, 0.9);
-        transform: scaleY(1.005);
-    }
-    50% {
-        box-shadow: 0 0 12px rgba(249, 115, 22, 0.55), 0 0 30px rgba(234, 88, 12, 0.35), 0 0 55px rgba(234, 88, 12, 0.14), inset 0 0 20px rgba(249, 115, 22, 0.12);
-        border-color: rgba(249, 115, 22, 0.8);
-    }
-    75% {
-        box-shadow: 0 0 22px rgba(249, 115, 22, 0.7), 0 0 50px rgba(234, 88, 12, 0.45), 0 0 75px rgba(234, 88, 12, 0.2), inset 0 0 28px rgba(249, 115, 22, 0.18);
-        border-color: rgba(249, 115, 22, 0.92);
-        transform: scaleY(1.003);
-    }
-}
+@keyframes frame-shine-q3 { 0% { background-position: 300% 0; } 100% { background-position: -300% 0; } }
 
-/* ====== frame-q4: 暗紫密谋 (flow) ====== */
-.stage-card.frame-q4,
-.boss-banner.frame-q4,
-.boss-mini-card.frame-q4 {
-    --frame-color: #8b5cf6;
-    --frame-speed: 6s;
+/* ====== frame-q4: 暗紫密谋 ====== */
+.stage-card.frame-q4, .boss-banner.frame-q4, .boss-mini-card.frame-q4 { --frame-color: #8b5cf6; --frame-speed: 6s; }
+.stage-card.frame-q4 .frame-border, .boss-banner.frame-q4 .frame-border, .boss-mini-card.frame-q4 .frame-border {
+    border: 2.5px solid rgba(139,92,246,0.7);
+    box-shadow: 0 0 10px rgba(139,92,246,0.4), 0 0 25px rgba(139,92,246,0.2), 0 0 45px rgba(139,92,246,0.1), inset 0 0 15px rgba(139,92,246,0.08);
+    background: linear-gradient(105deg, transparent 30%, rgba(139,92,246,0.18) 42%, rgba(255,255,255,0.25) 50%, rgba(139,92,246,0.18) 58%, transparent 70%);
+    background-size: 250% 100%;
+    animation: frame-shine-q4 3.5s ease-in-out infinite;
 }
-.stage-card.frame-q4 .frame-border,
-.boss-banner.frame-q4 .frame-border,
-.boss-mini-card.frame-q4 .frame-border {
-    border: 2.5px solid rgba(139, 92, 246, 0.7);
-    box-shadow:
-        0 0 10px rgba(139, 92, 246, 0.4),
-        0 0 25px rgba(139, 92, 246, 0.2),
-        0 0 45px rgba(139, 92, 246, 0.1),
-        inset 0 0 15px rgba(139, 92, 246, 0.08);
-    animation: frame-flow-q4 4s linear infinite;
+.stage-card.frame-q4:hover .frame-border, .boss-banner.frame-q4:hover .frame-border, .boss-mini-card.frame-q4:hover .frame-border {
+    border-color: rgba(139,92,246,0.95);
+    box-shadow: 0 0 18px rgba(139,92,246,0.65), 0 0 40px rgba(139,92,246,0.35), 0 0 70px rgba(139,92,246,0.15), inset 0 0 25px rgba(139,92,246,0.12);
 }
-.stage-card.frame-q4:hover .frame-border,
-.boss-banner.frame-q4:hover .frame-border,
-.boss-mini-card.frame-q4:hover .frame-border {
-    animation-duration: 2s;
-}
-@keyframes frame-flow-q4 {
-    0%, 100% {
-        border-color: rgba(139, 92, 246, 0.7);
-        box-shadow: 0 0 10px rgba(139, 92, 246, 0.4), 0 0 25px rgba(139, 92, 246, 0.2), 0 0 45px rgba(139, 92, 246, 0.1), inset 0 0 15px rgba(139, 92, 246, 0.08);
-        filter: hue-rotate(0deg);
-    }
-    33% {
-        border-color: rgba(109, 40, 217, 0.85);
-        box-shadow: 0 0 18px rgba(109, 40, 217, 0.55), 0 0 40px rgba(109, 40, 217, 0.3), 0 0 65px rgba(109, 40, 217, 0.12), inset 0 0 22px rgba(109, 40, 217, 0.12);
-        filter: hue-rotate(-15deg);
-    }
-    66% {
-        border-color: rgba(167, 139, 250, 0.85);
-        box-shadow: 0 0 18px rgba(167, 139, 250, 0.55), 0 0 40px rgba(167, 139, 250, 0.3), 0 0 65px rgba(167, 139, 250, 0.12), inset 0 0 22px rgba(167, 139, 250, 0.12);
-        filter: hue-rotate(15deg);
-    }
-}
+@keyframes frame-shine-q4 { 0% { background-position: 250% 0; } 100% { background-position: -250% 0; } }
 
-/* ====== frame-q5: 赤红幻术 (phantom) ====== */
-.stage-card.frame-q5,
-.boss-banner.frame-q5,
-.boss-mini-card.frame-q5 {
-    --frame-color: #ef4444;
-    --frame-speed: 2.2s;
+/* ====== frame-q5: 赤红幻术 ====== */
+.stage-card.frame-q5, .boss-banner.frame-q5, .boss-mini-card.frame-q5 { --frame-color: #ef4444; --frame-speed: 2.2s; }
+.stage-card.frame-q5 .frame-border, .boss-banner.frame-q5 .frame-border, .boss-mini-card.frame-q5 .frame-border {
+    border: 2.5px solid rgba(239,68,68,0.7);
+    box-shadow: 0 0 10px rgba(239,68,68,0.45), 0 0 25px rgba(239,68,68,0.25), 0 0 50px rgba(239,68,68,0.1), inset 0 0 15px rgba(239,68,68,0.08);
+    background: linear-gradient(105deg, transparent 30%, rgba(239,68,68,0.18) 42%, rgba(255,255,255,0.25) 50%, rgba(239,68,68,0.18) 58%, transparent 70%);
+    background-size: 250% 100%;
+    animation: frame-shine-q5 2.2s ease-in-out infinite;
 }
-.stage-card.frame-q5 .frame-border,
-.boss-banner.frame-q5 .frame-border,
-.boss-mini-card.frame-q5 .frame-border {
-    border: 2.5px solid rgba(239, 68, 68, 0.7);
-    box-shadow:
-        0 0 10px rgba(239, 68, 68, 0.45),
-        0 0 25px rgba(239, 68, 68, 0.25),
-        0 0 50px rgba(239, 68, 68, 0.1),
-        inset 0 0 15px rgba(239, 68, 68, 0.08);
-    animation: frame-phantom-q5 2s ease-in-out infinite;
+.stage-card.frame-q5:hover .frame-border, .boss-banner.frame-q5:hover .frame-border, .boss-mini-card.frame-q5:hover .frame-border {
+    border-color: rgba(239,68,68,0.95);
+    box-shadow: 0 0 20px rgba(239,68,68,0.7), 0 0 45px rgba(239,68,68,0.4), 0 0 80px rgba(239,68,68,0.18), inset 0 0 30px rgba(239,68,68,0.15);
 }
-.stage-card.frame-q5:hover .frame-border,
-.boss-banner.frame-q5:hover .frame-border,
-.boss-mini-card.frame-q5:hover .frame-border {
-    border-color: rgba(239, 68, 68, 0.95);
-    animation-duration: 1s;
-}
-@keyframes frame-phantom-q5 {
-    0%, 100% {
-        box-shadow: 0 0 10px rgba(239, 68, 68, 0.45), 0 0 25px rgba(239, 68, 68, 0.25), 0 0 50px rgba(239, 68, 68, 0.1), inset 0 0 15px rgba(239, 68, 68, 0.08);
-        border-color: rgba(239, 68, 68, 0.7);
-        opacity: 1;
-    }
-    50% {
-        box-shadow: 0 0 20px rgba(239, 68, 68, 0.7), 0 0 45px rgba(239, 68, 68, 0.4), 0 0 80px rgba(239, 68, 68, 0.18), 0 0 0px rgba(239, 68, 68, 0), inset 0 0 30px rgba(239, 68, 68, 0.15);
-        border-color: rgba(239, 68, 68, 0.95);
-        opacity: 0.85;
-    }
-}
+@keyframes frame-shine-q5 { 0% { background-position: 250% 0; } 100% { background-position: -250% 0; } }
 
-/* ====== frame-q6: 烈焰荆棘 (flame) ====== */
-.stage-card.frame-q6,
-.boss-banner.frame-q6,
-.boss-mini-card.frame-q6 {
-    --frame-color: #dc2626;
-    --frame-speed: 1.2s;
+/* ====== frame-q6: 烈焰荆棘 ====== */
+.stage-card.frame-q6, .boss-banner.frame-q6, .boss-mini-card.frame-q6 { --frame-color: #dc2626; --frame-speed: 1.2s; }
+.stage-card.frame-q6 .frame-border, .boss-banner.frame-q6 .frame-border, .boss-mini-card.frame-q6 .frame-border {
+    border: 3px solid rgba(220,38,38,0.8);
+    box-shadow: 0 0 12px rgba(220,38,38,0.55), 0 0 28px rgba(153,27,27,0.3), 0 0 55px rgba(153,27,27,0.15), inset 0 0 18px rgba(220,38,38,0.1);
+    background: linear-gradient(105deg, transparent 25%, rgba(220,38,38,0.22) 40%, rgba(255,200,150,0.3) 50%, rgba(220,38,38,0.22) 60%, transparent 75%);
+    background-size: 300% 100%;
+    animation: frame-shine-q6 1.8s ease-in-out infinite;
 }
-.stage-card.frame-q6 .frame-border,
-.boss-banner.frame-q6 .frame-border,
-.boss-mini-card.frame-q6 .frame-border {
-    border: 3px solid rgba(220, 38, 38, 0.8);
-    box-shadow:
-        0 0 12px rgba(220, 38, 38, 0.55),
-        0 0 28px rgba(153, 27, 27, 0.3),
-        0 0 55px rgba(153, 27, 27, 0.15),
-        inset 0 0 18px rgba(220, 38, 38, 0.1);
-    animation: frame-flame-q6 1.3s ease-in-out infinite;
+.stage-card.frame-q6:hover .frame-border, .boss-banner.frame-q6:hover .frame-border, .boss-mini-card.frame-q6:hover .frame-border {
+    border-color: rgba(220,38,38,0.95);
+    box-shadow: 0 0 24px rgba(220,38,38,0.8), 0 0 55px rgba(153,27,27,0.5), 0 0 90px rgba(153,27,27,0.25), inset 0 0 32px rgba(220,38,38,0.2);
 }
-.stage-card.frame-q6:hover .frame-border,
-.boss-banner.frame-q6:hover .frame-border,
-.boss-mini-card.frame-q6:hover .frame-border {
-    border-color: rgba(220, 38, 38, 0.95);
-    animation-duration: 0.7s;
-}
-@keyframes frame-flame-q6 {
-    0%, 100% {
-        box-shadow: 0 0 12px rgba(220, 38, 38, 0.55), 0 0 28px rgba(153, 27, 27, 0.3), 0 0 55px rgba(153, 27, 27, 0.15), inset 0 0 18px rgba(220, 38, 38, 0.1);
-        border-color: rgba(220, 38, 38, 0.8);
-    }
-    20% {
-        box-shadow: 0 0 22px rgba(220, 38, 38, 0.75), 0 0 50px rgba(153, 27, 27, 0.45), 0 0 80px rgba(153, 27, 27, 0.2), inset 0 0 28px rgba(220, 38, 38, 0.18);
-        border-color: rgba(220, 38, 38, 0.92);
-    }
-    40% {
-        box-shadow: 0 0 14px rgba(220, 38, 38, 0.6), 0 0 35px rgba(153, 27, 27, 0.35), 0 0 65px rgba(153, 27, 27, 0.18), inset 0 0 20px rgba(220, 38, 38, 0.12);
-        border-color: rgba(220, 38, 38, 0.85);
-    }
-    60% {
-        box-shadow: 0 0 28px rgba(220, 38, 38, 0.8), 0 0 55px rgba(153, 27, 27, 0.5), 0 0 90px rgba(153, 27, 27, 0.25), inset 0 0 32px rgba(220, 38, 38, 0.2);
-        border-color: rgba(220, 38, 38, 0.95);
-    }
-    80% {
-        box-shadow: 0 0 16px rgba(220, 38, 38, 0.65), 0 0 38px rgba(153, 27, 27, 0.38), 0 0 70px rgba(153, 27, 27, 0.2), inset 0 0 22px rgba(220, 38, 38, 0.14);
-        border-color: rgba(220, 38, 38, 0.88);
-    }
-}
+@keyframes frame-shine-q6 { 0% { background-position: 300% 0; } 100% { background-position: -300% 0; } }
 
-/* ====== frame-q7: 极光幻彩 (aurora) ====== */
-.stage-card.frame-q7,
-.boss-banner.frame-q7,
-.boss-mini-card.frame-q7 {
-    --frame-color: #7c3aed;
-    --frame-speed: 2s;
+/* ====== frame-q7: 极光幻彩 ====== */
+.stage-card.frame-q7, .boss-banner.frame-q7, .boss-mini-card.frame-q7 { --frame-color: #7c3aed; --frame-speed: 2s; }
+.stage-card.frame-q7 .frame-border, .boss-banner.frame-q7 .frame-border, .boss-mini-card.frame-q7 .frame-border {
+    border: 3px solid rgba(124,58,237,0.75);
+    box-shadow: 0 0 12px rgba(124,58,237,0.5), 0 0 30px rgba(124,58,237,0.25), 0 0 55px rgba(124,58,237,0.12), inset 0 0 18px rgba(124,58,237,0.1);
+    background: linear-gradient(105deg, transparent 20%, rgba(34,197,94,0.15) 30%, rgba(167,139,250,0.2) 42%, rgba(255,255,255,0.35) 50%, rgba(251,191,36,0.2) 58%, rgba(249,115,22,0.15) 70%, transparent 80%);
+    background-size: 350% 100%;
+    animation: frame-shine-q7 3s ease-in-out infinite;
 }
-.stage-card.frame-q7 .frame-border,
-.boss-banner.frame-q7 .frame-border,
-.boss-mini-card.frame-q7 .frame-border {
-    border: 3px solid rgba(124, 58, 237, 0.75);
-    box-shadow:
-        0 0 12px rgba(124, 58, 237, 0.5),
-        0 0 30px rgba(124, 58, 237, 0.25),
-        0 0 55px rgba(124, 58, 237, 0.12),
-        inset 0 0 18px rgba(124, 58, 237, 0.1);
-    animation: frame-aurora-q7 5s ease-in-out infinite;
+.stage-card.frame-q7:hover .frame-border, .boss-banner.frame-q7:hover .frame-border, .boss-mini-card.frame-q7:hover .frame-border {
+    border-color: rgba(124,58,237,0.95);
+    box-shadow: 0 0 20px rgba(124,58,237,0.7), 0 0 50px rgba(124,58,237,0.35), 0 0 80px rgba(124,58,237,0.15), inset 0 0 28px rgba(124,58,237,0.15);
 }
-.stage-card.frame-q7:hover .frame-border,
-.boss-banner.frame-q7:hover .frame-border,
-.boss-mini-card.frame-q7:hover .frame-border {
-    animation-duration: 2.5s;
-}
-@keyframes frame-aurora-q7 {
-    0%, 100% {
-        border-color: rgba(34, 197, 94, 0.8);
-        box-shadow: 0 0 12px rgba(34, 197, 94, 0.5), 0 0 30px rgba(34, 197, 94, 0.25), 0 0 55px rgba(34, 197, 94, 0.12), inset 0 0 18px rgba(34, 197, 94, 0.1);
-    }
-    14% {
-        border-color: rgba(167, 139, 250, 0.8);
-        box-shadow: 0 0 14px rgba(167, 139, 250, 0.5), 0 0 35px rgba(167, 139, 250, 0.25), 0 0 60px rgba(167, 139, 250, 0.12), inset 0 0 18px rgba(167, 139, 250, 0.1);
-    }
-    28% {
-        border-color: rgba(251, 191, 36, 0.8);
-        box-shadow: 0 0 14px rgba(251, 191, 36, 0.5), 0 0 35px rgba(251, 191, 36, 0.25), 0 0 60px rgba(251, 191, 36, 0.12), inset 0 0 18px rgba(251, 191, 36, 0.1);
-    }
-    42% {
-        border-color: rgba(249, 115, 22, 0.8);
-        box-shadow: 0 0 14px rgba(249, 115, 22, 0.5), 0 0 35px rgba(249, 115, 22, 0.25), 0 0 60px rgba(249, 115, 22, 0.12), inset 0 0 18px rgba(249, 115, 22, 0.1);
-    }
-    57% {
-        border-color: rgba(139, 92, 246, 0.8);
-        box-shadow: 0 0 14px rgba(139, 92, 246, 0.5), 0 0 35px rgba(139, 92, 246, 0.25), 0 0 60px rgba(139, 92, 246, 0.12), inset 0 0 18px rgba(139, 92, 246, 0.1);
-    }
-    71% {
-        border-color: rgba(239, 68, 68, 0.8);
-        box-shadow: 0 0 14px rgba(239, 68, 68, 0.5), 0 0 35px rgba(239, 68, 68, 0.25), 0 0 60px rgba(239, 68, 68, 0.12), inset 0 0 18px rgba(239, 68, 68, 0.1);
-    }
-    85% {
-        border-color: rgba(220, 38, 38, 0.8);
-        box-shadow: 0 0 14px rgba(220, 38, 38, 0.5), 0 0 35px rgba(220, 38, 38, 0.25), 0 0 60px rgba(220, 38, 38, 0.12), inset 0 0 18px rgba(220, 38, 38, 0.1);
-    }
-}
+@keyframes frame-shine-q7 { 0% { background-position: 350% 0; } 100% { background-position: -350% 0; } }
 
 /* 已通关普通关卡可叠加低透明度边框（降低视觉干扰） */
 .stage-card.cleared.frame-q0 .frame-border { opacity: 0.85; }
