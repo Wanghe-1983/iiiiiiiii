@@ -826,6 +826,7 @@ const ChallengeModule = {
 
                 // 边框：使用用户装备的边框ID列表
         const _equippedFrameSet = new Set(this._equippedFrameIds || []);
+        console.log('[DEBUG] _equippedFrameIds:', JSON.stringify(this._equippedFrameIds), '_equippedFrameSet size:', _equippedFrameSet.size);
 
         let stageGrid = '';
         groups.forEach(group => {
@@ -1232,10 +1233,10 @@ const ChallengeModule = {
         } catch(e) {
             this._equippedFrameIds = [];
         }
-        // 校验：过滤掉未解锁的边框
+        // 校验：只保留有效的边框ID（存在于 _frameDefs 中的）
         if (this._equippedFrameIds && this._equippedFrameIds.length > 0) {
-            const unlockedIds = this._getUnlockedFrames().map(f => f.id);
-            this._equippedFrameIds = this._equippedFrameIds.filter(fid => unlockedIds.includes(fid));
+            const validIds = Object.values(this._frameDefs).map(f => f.id);
+            this._equippedFrameIds = this._equippedFrameIds.filter(fid => validIds.includes(fid));
         }
         if (!this._equippedFrameIds) this._equippedFrameIds = [];
     },
