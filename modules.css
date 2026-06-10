@@ -4682,275 +4682,412 @@
 /* 每个 BOSS 关卡掉落对应边框，击败后自动装备到该等级所有关卡卡片上 */
 /* 基于 _frameDefs 定义，8级BOSS对应8种边框 (frame-q0 ~ frame-q7) */
 
-/* 通用边框层 */
+/* 通用边框层 - 增强版 */
 .stage-card .frame-border,
 .boss-banner .frame-border,
 .boss-mini-card .frame-border {
     position: absolute;
-    inset: -2px;
-    border-radius: 16px;
+    inset: -3px;
+    border-radius: 18px;
     pointer-events: none;
     z-index: 1;
-    transition: all 0.4s ease;
+    transition: all 0.3s ease;
+}
+/* 边框内的旋转光束装饰（伪元素） */
+.stage-card .frame-border::before,
+.boss-banner .frame-border::before,
+.boss-mini-card .frame-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 18px;
+    padding: 3px;
+    background: conic-gradient(from var(--frame-angle, 0deg), transparent 0%, transparent 60%, var(--frame-color, #22c55e) 80%, transparent 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: frame-rotate var(--frame-speed, 3s) linear infinite;
+    opacity: 0.7;
+}
+.stage-card:hover .frame-border::before,
+.boss-banner:hover .frame-border::before,
+.boss-mini-card:hover .frame-border::before {
+    opacity: 1;
+}
+/* 边框角标装饰 */
+.stage-card .frame-border::after,
+.boss-banner .frame-border::after,
+.boss-mini-card .frame-border::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--frame-color, #22c55e) 0%, transparent 30%, transparent 70%, var(--frame-color, #22c55e) 100%);
+    opacity: 0.12;
+}
+@keyframes frame-rotate {
+    to { --frame-angle: 360deg; }
+}
+/* 兼容不支持 @property 的浏览器 */
+@property --frame-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
 }
 
-/* ====== frame-q0: 翡翠流光 (shine) - 击败查基尔 ====== */
+/* ====== frame-q0: 翡翠流光 (shine) ====== */
+.stage-card.frame-q0,
+.boss-banner.frame-q0,
+.boss-mini-card.frame-q0 {
+    --frame-color: #22c55e;
+    --frame-speed: 4s;
+}
 .stage-card.frame-q0 .frame-border,
 .boss-banner.frame-q0 .frame-border,
 .boss-mini-card.frame-q0 .frame-border {
-    border: 2px solid rgba(34, 197, 94, 0.55);
-    box-shadow: 0 0 14px rgba(34, 197, 94, 0.25), inset 0 0 14px rgba(34, 197, 94, 0.06);
-    background: linear-gradient(105deg, 
-        transparent 40%, 
-        rgba(34, 197, 94, 0.12) 45%, 
-        rgba(255, 255, 255, 0.15) 50%, 
-        rgba(34, 197, 94, 0.12) 55%, 
-        transparent 60%);
-    background-size: 200% 100%;
-    animation: frame-shine-q0 3s ease-in-out infinite;
+    border: 2.5px solid rgba(34, 197, 94, 0.7);
+    box-shadow:
+        0 0 8px rgba(34, 197, 94, 0.4),
+        0 0 20px rgba(34, 197, 94, 0.2),
+        0 0 40px rgba(34, 197, 94, 0.1),
+        inset 0 0 15px rgba(34, 197, 94, 0.08);
+    background: linear-gradient(105deg,
+        transparent 30%,
+        rgba(34, 197, 94, 0.15) 42%,
+        rgba(255, 255, 255, 0.25) 50%,
+        rgba(34, 197, 94, 0.15) 58%,
+        transparent 70%);
+    background-size: 250% 100%;
+    animation: frame-shine-q0 2.5s ease-in-out infinite;
 }
 .stage-card.frame-q0:hover .frame-border,
 .boss-banner.frame-q0:hover .frame-border,
 .boss-mini-card.frame-q0:hover .frame-border {
-    border-color: rgba(34, 197, 94, 0.9);
-    box-shadow: 0 0 24px rgba(34, 197, 94, 0.45), inset 0 0 20px rgba(34, 197, 94, 0.1);
+    border-color: rgba(34, 197, 94, 0.95);
+    box-shadow:
+        0 0 12px rgba(34, 197, 94, 0.6),
+        0 0 30px rgba(34, 197, 94, 0.35),
+        0 0 60px rgba(34, 197, 94, 0.15),
+        inset 0 0 25px rgba(34, 197, 94, 0.12);
 }
 @keyframes frame-shine-q0 {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% { background-position: 250% 0; }
+    100% { background-position: -250% 0; }
 }
 
-/* ====== frame-q1: 紫晶藤蔓 (pulse) - 击败特龙 ====== */
+/* ====== frame-q1: 紫晶藤蔓 (pulse) ====== */
+.stage-card.frame-q1,
+.boss-banner.frame-q1,
+.boss-mini-card.frame-q1 {
+    --frame-color: #a78bfa;
+    --frame-speed: 3s;
+}
 .stage-card.frame-q1 .frame-border,
 .boss-banner.frame-q1 .frame-border,
 .boss-mini-card.frame-q1 .frame-border {
-    border: 2px solid rgba(167, 139, 250, 0.55);
-    box-shadow: 0 0 14px rgba(167, 139, 250, 0.25), inset 0 0 14px rgba(167, 139, 250, 0.06);
-    animation: frame-pulse-q1 2.5s ease-in-out infinite;
+    border: 2.5px solid rgba(167, 139, 250, 0.7);
+    box-shadow:
+        0 0 8px rgba(167, 139, 250, 0.4),
+        0 0 20px rgba(167, 139, 250, 0.2),
+        0 0 40px rgba(167, 139, 250, 0.1),
+        inset 0 0 15px rgba(167, 139, 250, 0.08);
+    animation: frame-pulse-q1 2s ease-in-out infinite;
 }
 .stage-card.frame-q1:hover .frame-border,
 .boss-banner.frame-q1:hover .frame-border,
 .boss-mini-card.frame-q1:hover .frame-border {
-    border-color: rgba(167, 139, 250, 0.9);
-    animation-duration: 1.5s;
+    border-color: rgba(167, 139, 250, 0.95);
+    box-shadow:
+        0 0 16px rgba(167, 139, 250, 0.6),
+        0 0 35px rgba(167, 139, 250, 0.3),
+        0 0 60px rgba(167, 139, 250, 0.15),
+        inset 0 0 25px rgba(167, 139, 250, 0.12);
 }
 @keyframes frame-pulse-q1 {
-    0%, 100% { 
-        box-shadow: 0 0 14px rgba(167, 139, 250, 0.25), inset 0 0 14px rgba(167, 139, 250, 0.06);
-        border-color: rgba(167, 139, 250, 0.55);
+    0%, 100% {
+        box-shadow: 0 0 8px rgba(167, 139, 250, 0.4), 0 0 20px rgba(167, 139, 250, 0.2), 0 0 40px rgba(167, 139, 250, 0.1), inset 0 0 15px rgba(167, 139, 250, 0.08);
+        border-color: rgba(167, 139, 250, 0.7);
     }
-    50% { 
-        box-shadow: 0 0 28px rgba(167, 139, 250, 0.55), inset 0 0 24px rgba(167, 139, 250, 0.14);
-        border-color: rgba(167, 139, 250, 0.85);
+    50% {
+        box-shadow: 0 0 16px rgba(167, 139, 250, 0.6), 0 0 40px rgba(167, 139, 250, 0.35), 0 0 70px rgba(167, 139, 250, 0.15), inset 0 0 30px rgba(167, 139, 250, 0.15);
+        border-color: rgba(167, 139, 250, 0.95);
     }
 }
 
-/* ====== frame-q2: 琥珀金纹 (shine) - 击败杜尤达纳 ====== */
+/* ====== frame-q2: 琥珀金纹 (shine) ====== */
+.stage-card.frame-q2,
+.boss-banner.frame-q2,
+.boss-mini-card.frame-q2 {
+    --frame-color: #fbbf24;
+    --frame-speed: 5s;
+}
 .stage-card.frame-q2 .frame-border,
 .boss-banner.frame-q2 .frame-border,
 .boss-mini-card.frame-q2 .frame-border {
-    border: 2px solid rgba(251, 191, 36, 0.55);
-    box-shadow: 0 0 14px rgba(251, 191, 36, 0.25), inset 0 0 14px rgba(251, 191, 36, 0.06);
-    background: linear-gradient(105deg, 
-        transparent 40%, 
-        rgba(251, 191, 36, 0.15) 45%, 
-        rgba(255, 255, 255, 0.2) 50%, 
-        rgba(251, 191, 36, 0.15) 55%, 
-        transparent 60%);
-    background-size: 200% 100%;
-    animation: frame-shine-q2 3.5s ease-in-out infinite;
+    border: 2.5px solid rgba(251, 191, 36, 0.7);
+    box-shadow:
+        0 0 8px rgba(251, 191, 36, 0.4),
+        0 0 20px rgba(251, 191, 36, 0.2),
+        0 0 40px rgba(251, 191, 36, 0.1),
+        inset 0 0 15px rgba(251, 191, 36, 0.08);
+    background: linear-gradient(105deg,
+        transparent 25%,
+        rgba(251, 191, 36, 0.2) 40%,
+        rgba(255, 255, 255, 0.35) 50%,
+        rgba(251, 191, 36, 0.2) 60%,
+        transparent 75%);
+    background-size: 300% 100%;
+    animation: frame-shine-q2 3s ease-in-out infinite;
 }
 .stage-card.frame-q2:hover .frame-border,
 .boss-banner.frame-q2:hover .frame-border,
 .boss-mini-card.frame-q2:hover .frame-border {
-    border-color: rgba(251, 191, 36, 0.9);
-    box-shadow: 0 0 24px rgba(251, 191, 36, 0.45), inset 0 0 20px rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.95);
+    box-shadow:
+        0 0 14px rgba(251, 191, 36, 0.6),
+        0 0 35px rgba(251, 191, 36, 0.35),
+        0 0 60px rgba(251, 191, 36, 0.15),
+        inset 0 0 25px rgba(251, 191, 36, 0.12);
 }
 @keyframes frame-shine-q2 {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% { background-position: 300% 0; }
+    100% { background-position: -300% 0; }
 }
 
-/* ====== frame-q3: 橙焰巨锤 (flame) - 击败库巴卡那 ====== */
+/* ====== frame-q3: 橙焰巨锤 (flame) ====== */
+.stage-card.frame-q3,
+.boss-banner.frame-q3,
+.boss-mini-card.frame-q3 {
+    --frame-color: #f97316;
+    --frame-speed: 1.8s;
+}
 .stage-card.frame-q3 .frame-border,
 .boss-banner.frame-q3 .frame-border,
 .boss-mini-card.frame-q3 .frame-border {
-    border: 2px solid rgba(249, 115, 22, 0.55);
-    box-shadow: 
-        0 0 10px rgba(249, 115, 22, 0.3),
-        0 0 20px rgba(234, 88, 12, 0.15),
-        inset 0 0 12px rgba(249, 115, 22, 0.06);
-    animation: frame-flame-q3 1.8s ease-in-out infinite;
+    border: 3px solid rgba(249, 115, 22, 0.75);
+    box-shadow:
+        0 0 10px rgba(249, 115, 22, 0.5),
+        0 0 25px rgba(234, 88, 12, 0.3),
+        0 0 50px rgba(234, 88, 12, 0.12),
+        inset 0 0 18px rgba(249, 115, 22, 0.1);
+    animation: frame-flame-q3 1.5s ease-in-out infinite;
 }
 .stage-card.frame-q3:hover .frame-border,
 .boss-banner.frame-q3:hover .frame-border,
 .boss-mini-card.frame-q3:hover .frame-border {
-    border-color: rgba(249, 115, 22, 0.9);
-    animation-duration: 1s;
+    border-color: rgba(249, 115, 22, 0.95);
+    animation-duration: 0.8s;
 }
 @keyframes frame-flame-q3 {
     0%, 100% {
-        box-shadow: 0 0 10px rgba(249, 115, 22, 0.3), 0 0 20px rgba(234, 88, 12, 0.15), inset 0 0 12px rgba(249, 115, 22, 0.06);
-        border-color: rgba(249, 115, 22, 0.55);
+        box-shadow: 0 0 10px rgba(249, 115, 22, 0.5), 0 0 25px rgba(234, 88, 12, 0.3), 0 0 50px rgba(234, 88, 12, 0.12), inset 0 0 18px rgba(249, 115, 22, 0.1);
+        border-color: rgba(249, 115, 22, 0.75);
+        transform: scaleY(1);
     }
     25% {
-        box-shadow: 0 0 16px rgba(249, 115, 22, 0.5), 0 0 30px rgba(234, 88, 12, 0.25), inset 0 0 18px rgba(249, 115, 22, 0.1);
-        border-color: rgba(249, 115, 22, 0.75);
+        box-shadow: 0 0 18px rgba(249, 115, 22, 0.65), 0 0 40px rgba(234, 88, 12, 0.4), 0 0 65px rgba(234, 88, 12, 0.18), inset 0 0 25px rgba(249, 115, 22, 0.15);
+        border-color: rgba(249, 115, 22, 0.9);
+        transform: scaleY(1.005);
     }
     50% {
-        box-shadow: 0 0 12px rgba(249, 115, 22, 0.4), 0 0 24px rgba(234, 88, 12, 0.2), inset 0 0 14px rgba(249, 115, 22, 0.08);
-        border-color: rgba(249, 115, 22, 0.65);
+        box-shadow: 0 0 12px rgba(249, 115, 22, 0.55), 0 0 30px rgba(234, 88, 12, 0.35), 0 0 55px rgba(234, 88, 12, 0.14), inset 0 0 20px rgba(249, 115, 22, 0.12);
+        border-color: rgba(249, 115, 22, 0.8);
     }
     75% {
-        box-shadow: 0 0 20px rgba(249, 115, 22, 0.55), 0 0 35px rgba(234, 88, 12, 0.3), inset 0 0 20px rgba(249, 115, 22, 0.12);
-        border-color: rgba(249, 115, 22, 0.8);
+        box-shadow: 0 0 22px rgba(249, 115, 22, 0.7), 0 0 50px rgba(234, 88, 12, 0.45), 0 0 75px rgba(234, 88, 12, 0.2), inset 0 0 28px rgba(249, 115, 22, 0.18);
+        border-color: rgba(249, 115, 22, 0.92);
+        transform: scaleY(1.003);
     }
 }
 
-/* ====== frame-q4: 暗紫密谋 (flow) - 击败森古尼 ====== */
+/* ====== frame-q4: 暗紫密谋 (flow) ====== */
+.stage-card.frame-q4,
+.boss-banner.frame-q4,
+.boss-mini-card.frame-q4 {
+    --frame-color: #8b5cf6;
+    --frame-speed: 6s;
+}
 .stage-card.frame-q4 .frame-border,
 .boss-banner.frame-q4 .frame-border,
 .boss-mini-card.frame-q4 .frame-border {
-    border: 2px solid rgba(139, 92, 246, 0.55);
-    box-shadow: 0 0 14px rgba(139, 92, 246, 0.25), inset 0 0 14px rgba(139, 92, 246, 0.06);
-    animation: frame-flow-q4 3s linear infinite;
+    border: 2.5px solid rgba(139, 92, 246, 0.7);
+    box-shadow:
+        0 0 10px rgba(139, 92, 246, 0.4),
+        0 0 25px rgba(139, 92, 246, 0.2),
+        0 0 45px rgba(139, 92, 246, 0.1),
+        inset 0 0 15px rgba(139, 92, 246, 0.08);
+    animation: frame-flow-q4 4s linear infinite;
 }
 .stage-card.frame-q4:hover .frame-border,
 .boss-banner.frame-q4:hover .frame-border,
 .boss-mini-card.frame-q4:hover .frame-border {
-    animation-duration: 1.5s;
+    animation-duration: 2s;
 }
 @keyframes frame-flow-q4 {
     0%, 100% {
-        border-color: rgba(139, 92, 246, 0.55);
-        box-shadow: 0 0 14px rgba(139, 92, 246, 0.25), inset 0 0 14px rgba(139, 92, 246, 0.06);
+        border-color: rgba(139, 92, 246, 0.7);
+        box-shadow: 0 0 10px rgba(139, 92, 246, 0.4), 0 0 25px rgba(139, 92, 246, 0.2), 0 0 45px rgba(139, 92, 246, 0.1), inset 0 0 15px rgba(139, 92, 246, 0.08);
+        filter: hue-rotate(0deg);
     }
     33% {
-        border-color: rgba(109, 40, 217, 0.7);
-        box-shadow: 0 0 20px rgba(109, 40, 217, 0.4), inset 0 0 18px rgba(109, 40, 217, 0.1);
+        border-color: rgba(109, 40, 217, 0.85);
+        box-shadow: 0 0 18px rgba(109, 40, 217, 0.55), 0 0 40px rgba(109, 40, 217, 0.3), 0 0 65px rgba(109, 40, 217, 0.12), inset 0 0 22px rgba(109, 40, 217, 0.12);
+        filter: hue-rotate(-15deg);
     }
     66% {
-        border-color: rgba(167, 139, 250, 0.7);
-        box-shadow: 0 0 20px rgba(167, 139, 250, 0.4), inset 0 0 18px rgba(167, 139, 250, 0.1);
+        border-color: rgba(167, 139, 250, 0.85);
+        box-shadow: 0 0 18px rgba(167, 139, 250, 0.55), 0 0 40px rgba(167, 139, 250, 0.3), 0 0 65px rgba(167, 139, 250, 0.12), inset 0 0 22px rgba(167, 139, 250, 0.12);
+        filter: hue-rotate(15deg);
     }
 }
 
-/* ====== frame-q5: 赤红幻术 (phantom) - 击败因陀罗吉 ====== */
+/* ====== frame-q5: 赤红幻术 (phantom) ====== */
+.stage-card.frame-q5,
+.boss-banner.frame-q5,
+.boss-mini-card.frame-q5 {
+    --frame-color: #ef4444;
+    --frame-speed: 2.2s;
+}
 .stage-card.frame-q5 .frame-border,
 .boss-banner.frame-q5 .frame-border,
 .boss-mini-card.frame-q5 .frame-border {
-    border: 2px solid rgba(239, 68, 68, 0.55);
-    box-shadow: 0 0 14px rgba(239, 68, 68, 0.25), inset 0 0 14px rgba(239, 68, 68, 0.06);
-    animation: frame-phantom-q5 2.2s ease-in-out infinite;
+    border: 2.5px solid rgba(239, 68, 68, 0.7);
+    box-shadow:
+        0 0 10px rgba(239, 68, 68, 0.45),
+        0 0 25px rgba(239, 68, 68, 0.25),
+        0 0 50px rgba(239, 68, 68, 0.1),
+        inset 0 0 15px rgba(239, 68, 68, 0.08);
+    animation: frame-phantom-q5 2s ease-in-out infinite;
 }
 .stage-card.frame-q5:hover .frame-border,
 .boss-banner.frame-q5:hover .frame-border,
 .boss-mini-card.frame-q5:hover .frame-border {
-    border-color: rgba(239, 68, 68, 0.9);
-    animation-duration: 1.1s;
+    border-color: rgba(239, 68, 68, 0.95);
+    animation-duration: 1s;
 }
 @keyframes frame-phantom-q5 {
     0%, 100% {
-        box-shadow: 
-            0 0 10px rgba(239, 68, 68, 0.25),
-            0 0 0px rgba(239, 68, 68, 0),
-            inset 0 0 14px rgba(239, 68, 68, 0.06);
-        border-color: rgba(239, 68, 68, 0.5);
+        box-shadow: 0 0 10px rgba(239, 68, 68, 0.45), 0 0 25px rgba(239, 68, 68, 0.25), 0 0 50px rgba(239, 68, 68, 0.1), inset 0 0 15px rgba(239, 68, 68, 0.08);
+        border-color: rgba(239, 68, 68, 0.7);
+        opacity: 1;
     }
     50% {
-        box-shadow: 
-            0 0 10px rgba(239, 68, 68, 0.45),
-            0 0 30px rgba(239, 68, 68, 0.3),
-            inset 0 0 22px rgba(239, 68, 68, 0.12);
-        border-color: rgba(239, 68, 68, 0.85);
+        box-shadow: 0 0 20px rgba(239, 68, 68, 0.7), 0 0 45px rgba(239, 68, 68, 0.4), 0 0 80px rgba(239, 68, 68, 0.18), 0 0 0px rgba(239, 68, 68, 0), inset 0 0 30px rgba(239, 68, 68, 0.15);
+        border-color: rgba(239, 68, 68, 0.95);
+        opacity: 0.85;
     }
 }
 
-/* ====== frame-q6: 烈焰荆棘 (flame) - 击败堕神 ====== */
+/* ====== frame-q6: 烈焰荆棘 (flame) ====== */
+.stage-card.frame-q6,
+.boss-banner.frame-q6,
+.boss-mini-card.frame-q6 {
+    --frame-color: #dc2626;
+    --frame-speed: 1.2s;
+}
 .stage-card.frame-q6 .frame-border,
 .boss-banner.frame-q6 .frame-border,
 .boss-mini-card.frame-q6 .frame-border {
-    border: 2px solid rgba(220, 38, 38, 0.55);
-    box-shadow: 
-        0 0 12px rgba(220, 38, 38, 0.3),
-        0 0 24px rgba(153, 27, 27, 0.15),
-        inset 0 0 14px rgba(220, 38, 38, 0.06);
-    animation: frame-flame-q6 1.6s ease-in-out infinite;
+    border: 3px solid rgba(220, 38, 38, 0.8);
+    box-shadow:
+        0 0 12px rgba(220, 38, 38, 0.55),
+        0 0 28px rgba(153, 27, 27, 0.3),
+        0 0 55px rgba(153, 27, 27, 0.15),
+        inset 0 0 18px rgba(220, 38, 38, 0.1);
+    animation: frame-flame-q6 1.3s ease-in-out infinite;
 }
 .stage-card.frame-q6:hover .frame-border,
 .boss-banner.frame-q6:hover .frame-border,
 .boss-mini-card.frame-q6:hover .frame-border {
-    border-color: rgba(220, 38, 38, 0.9);
-    animation-duration: 0.8s;
+    border-color: rgba(220, 38, 38, 0.95);
+    animation-duration: 0.7s;
 }
 @keyframes frame-flame-q6 {
     0%, 100% {
-        box-shadow: 0 0 12px rgba(220, 38, 38, 0.3), 0 0 24px rgba(153, 27, 27, 0.15), inset 0 0 14px rgba(220, 38, 38, 0.06);
-        border-color: rgba(220, 38, 38, 0.55);
-    }
-    25% {
-        box-shadow: 0 0 20px rgba(220, 38, 38, 0.55), 0 0 35px rgba(153, 27, 27, 0.3), inset 0 0 20px rgba(220, 38, 38, 0.12);
+        box-shadow: 0 0 12px rgba(220, 38, 38, 0.55), 0 0 28px rgba(153, 27, 27, 0.3), 0 0 55px rgba(153, 27, 27, 0.15), inset 0 0 18px rgba(220, 38, 38, 0.1);
         border-color: rgba(220, 38, 38, 0.8);
     }
-    50% {
-        box-shadow: 0 0 14px rgba(220, 38, 38, 0.4), 0 0 28px rgba(153, 27, 27, 0.2), inset 0 0 16px rgba(220, 38, 38, 0.08);
-        border-color: rgba(220, 38, 38, 0.65);
+    20% {
+        box-shadow: 0 0 22px rgba(220, 38, 38, 0.75), 0 0 50px rgba(153, 27, 27, 0.45), 0 0 80px rgba(153, 27, 27, 0.2), inset 0 0 28px rgba(220, 38, 38, 0.18);
+        border-color: rgba(220, 38, 38, 0.92);
     }
-    75% {
-        box-shadow: 0 0 24px rgba(220, 38, 38, 0.6), 0 0 40px rgba(153, 27, 27, 0.35), inset 0 0 22px rgba(220, 38, 38, 0.14);
+    40% {
+        box-shadow: 0 0 14px rgba(220, 38, 38, 0.6), 0 0 35px rgba(153, 27, 27, 0.35), 0 0 65px rgba(153, 27, 27, 0.18), inset 0 0 20px rgba(220, 38, 38, 0.12);
         border-color: rgba(220, 38, 38, 0.85);
+    }
+    60% {
+        box-shadow: 0 0 28px rgba(220, 38, 38, 0.8), 0 0 55px rgba(153, 27, 27, 0.5), 0 0 90px rgba(153, 27, 27, 0.25), inset 0 0 32px rgba(220, 38, 38, 0.2);
+        border-color: rgba(220, 38, 38, 0.95);
+    }
+    80% {
+        box-shadow: 0 0 16px rgba(220, 38, 38, 0.65), 0 0 38px rgba(153, 27, 27, 0.38), 0 0 70px rgba(153, 27, 27, 0.2), inset 0 0 22px rgba(220, 38, 38, 0.14);
+        border-color: rgba(220, 38, 38, 0.88);
     }
 }
 
-/* ====== frame-q7: 极光幻彩 (aurora) - 击败混沌王 ====== */
+/* ====== frame-q7: 极光幻彩 (aurora) ====== */
+.stage-card.frame-q7,
+.boss-banner.frame-q7,
+.boss-mini-card.frame-q7 {
+    --frame-color: #7c3aed;
+    --frame-speed: 2s;
+}
 .stage-card.frame-q7 .frame-border,
 .boss-banner.frame-q7 .frame-border,
 .boss-mini-card.frame-q7 .frame-border {
-    border: 2.5px solid rgba(124, 58, 237, 0.6);
-    box-shadow: 0 0 16px rgba(124, 58, 237, 0.3), inset 0 0 16px rgba(124, 58, 237, 0.08);
-    animation: frame-aurora-q7 4s ease-in-out infinite;
+    border: 3px solid rgba(124, 58, 237, 0.75);
+    box-shadow:
+        0 0 12px rgba(124, 58, 237, 0.5),
+        0 0 30px rgba(124, 58, 237, 0.25),
+        0 0 55px rgba(124, 58, 237, 0.12),
+        inset 0 0 18px rgba(124, 58, 237, 0.1);
+    animation: frame-aurora-q7 5s ease-in-out infinite;
 }
 .stage-card.frame-q7:hover .frame-border,
 .boss-banner.frame-q7:hover .frame-border,
 .boss-mini-card.frame-q7:hover .frame-border {
-    animation-duration: 2s;
+    animation-duration: 2.5s;
 }
 @keyframes frame-aurora-q7 {
     0%, 100% {
-        border-color: rgba(34, 197, 94, 0.6);
-        box-shadow: 0 0 16px rgba(34, 197, 94, 0.3), inset 0 0 16px rgba(34, 197, 94, 0.08);
+        border-color: rgba(34, 197, 94, 0.8);
+        box-shadow: 0 0 12px rgba(34, 197, 94, 0.5), 0 0 30px rgba(34, 197, 94, 0.25), 0 0 55px rgba(34, 197, 94, 0.12), inset 0 0 18px rgba(34, 197, 94, 0.1);
     }
-    16% {
-        border-color: rgba(167, 139, 250, 0.6);
-        box-shadow: 0 0 18px rgba(167, 139, 250, 0.35), inset 0 0 18px rgba(167, 139, 250, 0.1);
+    14% {
+        border-color: rgba(167, 139, 250, 0.8);
+        box-shadow: 0 0 14px rgba(167, 139, 250, 0.5), 0 0 35px rgba(167, 139, 250, 0.25), 0 0 60px rgba(167, 139, 250, 0.12), inset 0 0 18px rgba(167, 139, 250, 0.1);
     }
-    33% {
-        border-color: rgba(251, 191, 36, 0.6);
-        box-shadow: 0 0 18px rgba(251, 191, 36, 0.35), inset 0 0 18px rgba(251, 191, 36, 0.1);
+    28% {
+        border-color: rgba(251, 191, 36, 0.8);
+        box-shadow: 0 0 14px rgba(251, 191, 36, 0.5), 0 0 35px rgba(251, 191, 36, 0.25), 0 0 60px rgba(251, 191, 36, 0.12), inset 0 0 18px rgba(251, 191, 36, 0.1);
     }
-    50% {
-        border-color: rgba(249, 115, 22, 0.6);
-        box-shadow: 0 0 18px rgba(249, 115, 22, 0.35), inset 0 0 18px rgba(249, 115, 22, 0.1);
+    42% {
+        border-color: rgba(249, 115, 22, 0.8);
+        box-shadow: 0 0 14px rgba(249, 115, 22, 0.5), 0 0 35px rgba(249, 115, 22, 0.25), 0 0 60px rgba(249, 115, 22, 0.12), inset 0 0 18px rgba(249, 115, 22, 0.1);
     }
-    66% {
-        border-color: rgba(139, 92, 246, 0.6);
-        box-shadow: 0 0 18px rgba(139, 92, 246, 0.35), inset 0 0 18px rgba(139, 92, 246, 0.1);
+    57% {
+        border-color: rgba(139, 92, 246, 0.8);
+        box-shadow: 0 0 14px rgba(139, 92, 246, 0.5), 0 0 35px rgba(139, 92, 246, 0.25), 0 0 60px rgba(139, 92, 246, 0.12), inset 0 0 18px rgba(139, 92, 246, 0.1);
     }
-    83% {
-        border-color: rgba(239, 68, 68, 0.6);
-        box-shadow: 0 0 18px rgba(239, 68, 68, 0.35), inset 0 0 18px rgba(239, 68, 68, 0.1);
+    71% {
+        border-color: rgba(239, 68, 68, 0.8);
+        box-shadow: 0 0 14px rgba(239, 68, 68, 0.5), 0 0 35px rgba(239, 68, 68, 0.25), 0 0 60px rgba(239, 68, 68, 0.12), inset 0 0 18px rgba(239, 68, 68, 0.1);
+    }
+    85% {
+        border-color: rgba(220, 38, 38, 0.8);
+        box-shadow: 0 0 14px rgba(220, 38, 38, 0.5), 0 0 35px rgba(220, 38, 38, 0.25), 0 0 60px rgba(220, 38, 38, 0.12), inset 0 0 18px rgba(220, 38, 38, 0.1);
     }
 }
 
 /* 已通关普通关卡可叠加低透明度边框（降低视觉干扰） */
-.stage-card.cleared.frame-q0 .frame-border { opacity: 0.7; }
-.stage-card.cleared.frame-q1 .frame-border { opacity: 0.7; }
-.stage-card.cleared.frame-q2 .frame-border { opacity: 0.7; }
-.stage-card.cleared.frame-q3 .frame-border { opacity: 0.7; }
-.stage-card.cleared.frame-q4 .frame-border { opacity: 0.7; }
-.stage-card.cleared.frame-q5 .frame-border { opacity: 0.7; }
-.stage-card.cleared.frame-q6 .frame-border { opacity: 0.7; }
-.stage-card.cleared.frame-q7 .frame-border { opacity: 0.7; }
+.stage-card.cleared.frame-q0 .frame-border { opacity: 0.85; }
+.stage-card.cleared.frame-q1 .frame-border { opacity: 0.85; }
+.stage-card.cleared.frame-q2 .frame-border { opacity: 0.85; }
+.stage-card.cleared.frame-q3 .frame-border { opacity: 0.85; }
+.stage-card.cleared.frame-q4 .frame-border { opacity: 0.85; }
+.stage-card.cleared.frame-q5 .frame-border { opacity: 0.85; }
+.stage-card.cleared.frame-q6 .frame-border { opacity: 0.85; }
+.stage-card.cleared.frame-q7 .frame-border { opacity: 0.85; }
 .stage-card.cleared:hover .frame-border { opacity: 1; }
 /* ========== BOSS 战对峙动画 ========== */
 /* 用户攻击冲刺 */
