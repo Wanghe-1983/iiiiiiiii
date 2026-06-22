@@ -2025,18 +2025,39 @@ const ChallengeModule = {
         if (qType === 'choice' || qType === 'listening') {
             const currentIsDialogue = isDialogue;
             const globalPool = state._globalDistractors || { words: [], sentences: [], dialogues: [] };
-            // 确定当前题目对应的干扰项池
-            const pool = currentIsDialogue
-                ? globalPool.dialogues
-                : (q.chinese && globalPool.words.includes(q.chinese)) ? globalPool.words
-                : globalPool.sentences;
-            // 从全局池中取干扰项（排除正确答案）
-            let wrongOptions = this._shuffle(pool.filter(o => o !== correctAnswer)).slice(0, 3);
-            // 全局池仍不足时，从当前关卡全部题目中补充
+            // 根据正确答案长度判断题目类型：短词(<=6字)视为单词题，否则视为句子题
+            const answerLen = (correctAnswer || '').replace(/[\s。！？，、；：‘’“”（）【】]/g, '').length;
+            const isWordQuestion = !currentIsDialogue && answerLen <= 6;
+            let pool;
+            if (currentIsDialogue) {
+                pool = globalPool.dialogues;
+            } else if (isWordQuestion) {
+                // 单词题：优先从words池取，words不足时从sentences中过滤出短词补充
+                pool = globalPool.words.length > 0 ? globalPool.words
+                    : globalPool.sentences.filter(s => s.replace(/[\s。！？，、；：‘’“”（）【】]/g, '').length <= 8);
+            } else {
+                // 句子题：从sentences池取，sentences不足时从words中过滤
+                pool = globalPool.sentences.length > 0 ? globalPool.sentences
+                    : globalPool.words;
+            }
+            // 类型保护：过滤掉明显不匹配的选项（单词题排除含标点/过长的句子）
+            const filteredPool = pool.filter(o => {
+                if (isWordQuestion) {
+                    return o.replace(/[\s。！？]/g, '').length <= 12 && !/[。！？]$/.test(o);
+                }
+                return true;
+            });
+            // 从过滤后的池中取干扰项（排除正确答案）
+            let wrongOptions = this._shuffle(filteredPool.filter(o => o !== correctAnswer)).slice(0, 3);
+            // 全局池仍不足时，从当前关卡全部题目中按类型补充
             if (wrongOptions.length < 3) {
                 const allLocal = state.questions
                     .map(item => item.lines !== undefined ? (item.title || '') : (item.chinese || ''))
-                    .filter(o => Boolean(o) && o !== correctAnswer && !wrongOptions.includes(o));
+                    .filter(o => {
+                        if (!o || o === correctAnswer || wrongOptions.includes(o)) return false;
+                        if (isWordQuestion) return o.replace(/[\s。！？]/g, '').length <= 12 && !/[。！？]$/.test(o);
+                        return true;
+                    });
                 wrongOptions = wrongOptions.concat(this._shuffle(allLocal).slice(0, 3 - wrongOptions.length));
             }
             options = this._shuffle([correctAnswer, ...wrongOptions]);
