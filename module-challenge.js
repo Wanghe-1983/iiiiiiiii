@@ -1412,14 +1412,24 @@ const ChallengeModule = {
         const bossHpMode = isBoss ? (bossParams.hpMode || 1) : 0;
         const bossDef = isBoss ? stage.bossDef : null;
 
-        // 构建全局同类干扰项池（从同 unit 的所有同类型内容中提取，避免干扰项类型错配）
+        // 构建全局干扰项池（从所有等级的对应类别中收集，不受课本限制）
         const globalDistractorPool = { words: [], sentences: [], dialogues: [] };
+        const allLevels = CourseContent.getLevels();
+        for (const lv of allLevels) {
+            for (const u of (lv.units || [])) {
+                globalDistractorPool.words.push(...(u.words || []).map(w => w.chinese || '').filter(Boolean));
+                globalDistractorPool.sentences.push(...(u.sentences || []).map(s => s.chinese || '').filter(Boolean));
+                globalDistractorPool.dialogues.push(...(u.dialogues || []).map(d => d.title || '').filter(Boolean));
+            }
+        }
+        // 同 unit 优先池（就近匹配，语义更相关）
+        const localDistractorPool = { words: [], sentences: [], dialogues: [] };
         if (levelData) {
             const srcUnit = (levelData.units || []).find(u => u.id === stage.unitId);
             if (srcUnit) {
-                globalDistractorPool.words = (srcUnit.words || []).map(w => w.chinese || '').filter(Boolean);
-                globalDistractorPool.sentences = (srcUnit.sentences || []).map(s => s.chinese || '').filter(Boolean);
-                globalDistractorPool.dialogues = (srcUnit.dialogues || []).map(d => d.title || '').filter(Boolean);
+                localDistractorPool.words = (srcUnit.words || []).map(w => w.chinese || '').filter(Boolean);
+                localDistractorPool.sentences = (srcUnit.sentences || []).map(s => s.chinese || '').filter(Boolean);
+                localDistractorPool.dialogues = (srcUnit.dialogues || []).map(d => d.title || '').filter(Boolean);
             }
         }
 
@@ -1427,6 +1437,7 @@ const ChallengeModule = {
             stageId,
             questions: questions,
             _globalDistractors: globalDistractorPool,
+            _localDistractors: localDistractorPool,
             currentIndex: 0,
             correct: 0,
             answers: [],
@@ -2020,44 +2031,34 @@ const ChallengeModule = {
         const _modeSettings = _isHellStage ? (_sysInfo2.hellSettings || {}) : (_sysInfo2.normalSettings || {});
         const showSliders = _modeSettings.speedControl !== false && _modeSettings.loopControl !== false;
 
-        // 构建选项池 - 按题目类型匹配干扰项，避免生词题出现短句答案
+        // 构建选项池 - 对话题用对话池，非对话题用词汇+短句混合池，干扰项不受课本限制
         let options = [];
         if (qType === 'choice' || qType === 'listening') {
-            const currentIsDialogue = isDialogue;
             const globalPool = state._globalDistractors || { words: [], sentences: [], dialogues: [] };
-            // 根据正确答案长度判断题目类型：短词(<=6字)视为单词题，否则视为句子题
-            const answerLen = (correctAnswer || '').replace(/[\s。！？，、；：‘’“”（）【】]/g, '').length;
-            const isWordQuestion = !currentIsDialogue && answerLen <= 6;
+            const localPool = state._localDistractors || { words: [], sentences: [], dialogues: [] };
             let pool;
-            if (currentIsDialogue) {
-                pool = globalPool.dialogues;
-            } else if (isWordQuestion) {
-                // 单词题：优先从words池取，words不足时从sentences中过滤出短词补充
-                pool = globalPool.words.length > 0 ? globalPool.words
-                    : globalPool.sentences.filter(s => s.replace(/[\s。！？，、；：‘’“”（）【】]/g, '').length <= 8);
+            if (isDialogue) {
+                // 对话题：仅从对话池取，避免类型错配
+                pool = [...(localPool.dialogues || []), ...(globalPool.dialogues || [])];
             } else {
-                // 句子题：从sentences池取，sentences不足时从words中过滤
-                pool = globalPool.sentences.length > 0 ? globalPool.sentences
-                    : globalPool.words;
+                // 非对话题（单词/短句）：词汇+短句混合池，同unit优先+全等级补充
+                pool = [...(localPool.words || []), ...(localPool.sentences || []),
+                        ...(globalPool.words || []), ...(globalPool.sentences || [])];
             }
-            // 类型保护：过滤掉明显不匹配的选项（单词题排除含标点/过长的句子）
-            const filteredPool = pool.filter(o => {
-                if (isWordQuestion) {
-                    return o.replace(/[\s。！？]/g, '').length <= 12 && !/[。！？]$/.test(o);
-                }
+            // 去重 + 排除正确答案
+            const seen = new Set();
+            const uniquePool = pool.filter(o => {
+                if (!o || o === correctAnswer || seen.has(o)) return false;
+                seen.add(o);
                 return true;
             });
-            // 从过滤后的池中取干扰项（排除正确答案）
-            let wrongOptions = this._shuffle(filteredPool.filter(o => o !== correctAnswer)).slice(0, 3);
-            // 全局池仍不足时，从当前关卡全部题目中按类型补充
+            // 从池中取干扰项（洗牌后取3个）
+            let wrongOptions = this._shuffle(uniquePool).slice(0, 3);
+            // 仍不足时从当前关卡全部题目中补充
             if (wrongOptions.length < 3) {
                 const allLocal = state.questions
                     .map(item => item.lines !== undefined ? (item.title || '') : (item.chinese || ''))
-                    .filter(o => {
-                        if (!o || o === correctAnswer || wrongOptions.includes(o)) return false;
-                        if (isWordQuestion) return o.replace(/[\s。！？]/g, '').length <= 12 && !/[。！？]$/.test(o);
-                        return true;
-                    });
+                    .filter(o => o && o !== correctAnswer && !wrongOptions.includes(o));
                 wrongOptions = wrongOptions.concat(this._shuffle(allLocal).slice(0, 3 - wrongOptions.length));
             }
             options = this._shuffle([correctAnswer, ...wrongOptions]);
