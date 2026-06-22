@@ -3271,20 +3271,34 @@ const ChallengeModule = {
         setTimeout(() => { if (flashOverlay.parentElement) flashOverlay.remove(); }, 800);
     },
 
-    /** 显示技能名称浮动标签 */
+    /** 显示技能名称浮动标签 - 清晰锐利版 */
     _showSkillName(container, skillName) {
+        // 外层包裹器（居中用）
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'position:absolute;top:15%;left:50%;transform:translateX(-50%);z-index:100;pointer-events:none;white-space:nowrap;';
+
+        // 技能名称主体
         const el = document.createElement('div');
         el.className = 'boss-skill-name-tag';
-        el.textContent = skillName;
-        // 外框发光包裹
         el.innerHTML = '<span class="boss-skill-glow">' + skillName + '</span>';
-        el.style.cssText = 'position:absolute;top:18%;left:50%;transform:translateX(-50%);z-index:100;font-size:1.4rem;font-weight:900;letter-spacing:0.2em;pointer-events:none;animation:skill-name-pop 1.6s ease-out forwards;white-space:nowrap;';
-        container.appendChild(el);
-        // 在技能名下方画一道冲击波线
-        const wave = document.createElement('div');
-        wave.style.cssText = 'position:absolute;top:26%;left:50%;transform:translateX(-50%);width:0;height:2px;background:linear-gradient(90deg,transparent,#ff4444,transparent);z-index:99;pointer-events:none;animation:skill-wave 0.6s 0.3s ease-out forwards;';
-        container.appendChild(wave);
-        setTimeout(() => { if (el.parentElement) el.remove(); if (wave.parentElement) wave.remove(); }, 1700);
+
+        // 技能名下方装饰线
+        const line = document.createElement('div');
+        line.className = 'boss-skill-line';
+
+        // 技能名两侧能量线
+        const leftLine = document.createElement('div');
+        leftLine.className = 'boss-skill-side-line boss-skill-side-left';
+        const rightLine = document.createElement('div');
+        rightLine.className = 'boss-skill-side-line boss-skill-side-right';
+
+        wrapper.appendChild(leftLine);
+        wrapper.appendChild(el);
+        wrapper.appendChild(line);
+        wrapper.appendChild(rightLine);
+        container.appendChild(wrapper);
+
+        setTimeout(() => { if (wrapper.parentElement) wrapper.remove(); }, 2200);
     },
 
     /** 粒子爆发效果 */
