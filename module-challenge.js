@@ -938,6 +938,11 @@ const ChallengeModule = {
                     stageGrid += '<div class="stage-card ' + statusClass + (_equippedFrameSet.has('q' + String(stage.levelId)) ? ' frame-q' + String(stage.levelId) : '') + '" style="--stage-color:' + lvColor + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
                         + '<div class="stage-card-color-bar"></div>'
                         + (_equippedFrameSet.has('q' + String(stage.levelId)) ? '<div class="frame-border"></div>' : '')
+                        + '<div class="stage-card-deco-bg"></div>'
+                        + '<div class="stage-card-deco-glow"></div>'
+                        + '<div class="stage-card-deco-lines">'
+                        + '<div class="stage-card-deco-line"></div><div class="stage-card-deco-line"></div><div class="stage-card-deco-line"></div><div class="stage-card-deco-line"></div><div class="stage-card-deco-line"></div>'
+                        + '</div>'
                         + '<div class="stage-card-number">' + (i + 1) + '</div>'
                         + '<div class="stage-card-icon">' + stageIconHtml + '</div>'
                         + (isCleared ? '<div class="stage-card-stars">' + this._renderStars(stars) + '</div>' : '')
@@ -1864,9 +1869,7 @@ const ChallengeModule = {
                             </div>
                         </div>
                         <div style="margin-top:14px;display:flex;justify-content:center;">
-                            <button style="background:rgba(148,163,184,0.08);color:#64748b;border:1px solid rgba(148,163,184,0.15);padding:7px 14px;border-radius:10px;cursor:pointer;font-size:0.72rem;display:flex;align-items:center;gap:5px;" onclick="ChallengeModule.confirmExit()">
-                                <i class="fas fa-arrow-left"></i> \u8fd4\u56de\u5173\u5361
-                            </button>
+                            <button class="ch-action-btn ch-action-btn-back" onclick="ChallengeModule.confirmExit()"><i class="fas fa-arrow-left"></i> 返回关卡</button>
                         </div>
                     </div>`;
 
@@ -1965,9 +1968,7 @@ const ChallengeModule = {
                         </button>
                     </div>
                     <div style="margin-top:20px;display:flex;justify-content:center;">
-                        <button style="background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:0.78rem;display:flex;align-items:center;gap:5px;" onclick="ChallengeModule.confirmExit()">
-                            <i class="fas fa-arrow-left"></i> \u8fd4\u56de\u5173\u5361
-                        </button>
+                        <button class="ch-action-btn ch-action-btn-back" onclick="ChallengeModule.confirmExit()"><i class="fas fa-arrow-left"></i> 返回关卡</button>
                     </div>
                 </div>
             `;
@@ -2159,9 +2160,7 @@ const ChallengeModule = {
         if (!isImmediateGrading) {
             bottomBtns = `<div style="margin-top:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
                 <div style="display:flex;gap:8px;">
-                    <button style="background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:0.78rem;display:flex;align-items:center;gap:5px;" onclick="ChallengeModule.confirmExit()">
-                        <i class="fas fa-sign-out-alt"></i> \u9000\u51fa
-                    </button>
+                    <button class="ch-action-btn ch-action-btn-exit" onclick="ChallengeModule.confirmExit()"><i class="fas fa-sign-out-alt"></i> 退出闯关</button>
                     ${canSkip ? `<button style="background:rgba(96,165,250,0.12);color:#60a5fa;border:1px solid rgba(96,165,250,0.3);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:0.78rem;display:flex;align-items:center;gap:5px;" onclick="ChallengeModule.skipQuestion()">
                         <i class="fas fa-forward"></i> \u8df3\u8fc7
                     </button>` : ''}
@@ -2172,9 +2171,7 @@ const ChallengeModule = {
             </div>`;
         } else {
             bottomBtns = `<div style="margin-top:16px;display:flex;align-items:center;justify-content:flex-end;gap:10px;">
-                <button style="background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2);padding:8px 16px;border-radius:10px;cursor:pointer;font-size:0.78rem;display:flex;align-items:center;gap:5px;" onclick="ChallengeModule.confirmExit()">
-                    <i class="fas fa-sign-out-alt"></i> \u9000\u51fa
-                </button>
+                <button class="ch-action-btn ch-action-btn-exit" onclick="ChallengeModule.confirmExit()"><i class="fas fa-sign-out-alt"></i> 退出闯关</button>
             </div>`;
         }
 
@@ -2563,7 +2560,7 @@ const ChallengeModule = {
                         <i class="fas fa-redo"></i> 再来一次
                     </button>
                     <button class="result-btn back" onclick="ChallengeModule.exitStage()">
-                        <i class="fas fa-map"></i> 返回关卡
+                        <i class="fas fa-map"></i> 返回关卡列表
                     </button>
                 </div>
             </div>
@@ -3138,7 +3135,12 @@ const ChallengeModule = {
         }
 
         const gameOver = result !== null;
-        return { gameOver, result, damageType, damage, isLastStand, isRageHit };
+        // BOSS技能名称：答错时从bossDef.attacks随机选取
+        let skillName = '';
+        if ((damageType === 'user' || damageType === 'lastStand') && state.bossDef && state.bossDef.attacks && state.bossDef.attacks.length > 0) {
+            skillName = state.bossDef.attacks[Math.floor(Math.random() * state.bossDef.attacks.length)];
+        }
+        return { gameOver, result, damageType, damage, isLastStand, isRageHit, skillName };
     },
 
     /**
@@ -3225,6 +3227,10 @@ const ChallengeModule = {
             }, 150);
         } else if (damageType === 'lastStand') {
             // ===== 最后一搏特效 =====
+            const lastStandSkillName = (bossResult && bossResult.skillName) ? bossResult.skillName : '';
+            if (lastStandSkillName && playPage) {
+                this._showSkillName(playPage, lastStandSkillName);
+            }
             if (playPage) {
                 playPage.style.animation = 'screen-shake-strong 0.5s ease';
                 setTimeout(() => playPage.style.animation = '', 500);
@@ -3270,9 +3276,15 @@ const ChallengeModule = {
         const el = document.createElement('div');
         el.className = 'boss-skill-name-tag';
         el.textContent = skillName;
-        el.style.cssText = 'position:absolute;top:20%;left:50%;transform:translateX(-50%);z-index:100;font-size:1.2rem;font-weight:900;color:#ff4444;text-shadow:0 0 10px rgba(255,68,68,0.8),0 2px 4px rgba(0,0,0,0.8);letter-spacing:0.15em;pointer-events:none;animation:skill-name-pop 1.2s ease-out forwards;';
+        // 外框发光包裹
+        el.innerHTML = '<span class="boss-skill-glow">' + skillName + '</span>';
+        el.style.cssText = 'position:absolute;top:18%;left:50%;transform:translateX(-50%);z-index:100;font-size:1.4rem;font-weight:900;letter-spacing:0.2em;pointer-events:none;animation:skill-name-pop 1.6s ease-out forwards;white-space:nowrap;';
         container.appendChild(el);
-        setTimeout(() => { if (el.parentElement) el.remove(); }, 1300);
+        // 在技能名下方画一道冲击波线
+        const wave = document.createElement('div');
+        wave.style.cssText = 'position:absolute;top:26%;left:50%;transform:translateX(-50%);width:0;height:2px;background:linear-gradient(90deg,transparent,#ff4444,transparent);z-index:99;pointer-events:none;animation:skill-wave 0.6s 0.3s ease-out forwards;';
+        container.appendChild(wave);
+        setTimeout(() => { if (el.parentElement) el.remove(); if (wave.parentElement) wave.remove(); }, 1700);
     },
 
     /** 粒子爆发效果 */
@@ -3532,7 +3544,7 @@ const ChallengeModule = {
 
                 <div class="boss-result-actions">
                     <button class="boss-btn boss-btn-return" onclick="ChallengeModule._returnToMap()">
-                        <i class="fas fa-map"></i> 返回关卡列表
+                        <i class="fas fa-arrow-left"></i> 返回关卡列表
                     </button>
                 </div>
             </div>
@@ -3604,7 +3616,7 @@ const ChallengeModule = {
                         <i class="fas fa-redo"></i> 再战一次
                     </button>
                     <button class="boss-btn boss-btn-return" onclick="ChallengeModule._returnToMap()">
-                        <i class="fas fa-map"></i> 返回关卡列表
+                        <i class="fas fa-arrow-left"></i> 返回关卡列表
                     </button>
                 </div>
             </div>
@@ -4103,7 +4115,7 @@ const ChallengeModule = {
         let html = `
             <div class="ch-header">
                 <button class="ch-back-btn" onclick="ChallengeModule.enterRank(); ChallengeModule.render();">
-                    <i class="fas fa-arrow-left"></i> 返回
+                    <i class="fas fa-arrow-left"></i> 返回排行榜
                 </button>
                 <h2 class="ch-title">称号墙</h2>
                 <button class="ch-back-btn" onclick="ChallengeModule.renderBossCodex()" style="background:rgba(167,139,250,0.15);color:#a78bfa;border:1px solid rgba(167,139,250,0.3);" title="BOSS图鉴">
