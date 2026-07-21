@@ -834,8 +834,9 @@ const ChallengeModule = {
         // [DEBUG removed] _equippedFrameIds:', JSON.stringify(this._equippedFrameIds), 'first stage levelId:', this.allStages[0]?.levelId);
         groups.forEach(group => {
             const hellTag = group.isHell ? `<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);border-radius:6px;font-size:0.7rem;font-weight:600;"><i class="fas fa-skull-crossbones"></i> 地狱模式</span>` : '';
-            stageGrid += `<div class="stage-group">`;
+            stageGrid += `<div class="stage-group-wrap">`;
             stageGrid += `<div class="stage-group-header"><span class="sg-dot" style="background:${group.isHell ? '#f87171' : '#60a5fa'};"></span><span class="sg-name">${group.levelName}</span>${hellTag}</div>`;
+            stageGrid += `<div class="stage-grid">`;
             group.stages.forEach(({stage, index: i}) => {
                 const isBoss = stage._isBoss === true;
                 const p = this.serverProgress[stage.id];
@@ -927,32 +928,25 @@ const ChallengeModule = {
                         + '</div>'
                         + '</div>';
                 } else {
-                    // 普通关卡 — 统一大卡片设计
+                    // 普通关卡 — 紧凑正方形卡片
                     const stageColors = ['#22c55e','#a78bfa','#fbbf24','#f97316','#8b5cf6','#ef4444','#dc2626','#7c3aed'];
                     const lvColor = stageColors[parseInt(stage.levelId) % 8] || '#60a5fa';
-                    const stageIconHtml = isLocked
-                        ? '<i class="fas fa-lock"></i>'
-                        : isCleared ? this._renderStars(stars)
-                        : '<i class="fas fa-play-circle"></i>';
-                    const statusCls = isLocked ? 'locked' : isCleared ? 'cleared' : 'available';
-                    const statusLabel = isLocked ? (isReadonly ? '未开放' : '🔒') : isCleared ? '✓' : isCurrent ? '⚔' : '⚔';
+                    const badgeHtml = isLocked
+                        ? (isReadonly ? '<span class="sc-badge sc-badge-ro"><i class="fas fa-lock" style="color:#f59e0b;"></i></span>' : '<span class="sc-badge sc-badge-lock"><i class="fas fa-lock"></i></span>')
+                        : isCleared ? '<span class="sc-badge sc-badge-stars">' + this._renderStars(stars) + '</span>'
+                        : isCurrent ? '<span class="sc-badge sc-badge-current"><i class="fas fa-play-circle"></i></span>'
+                        : '<span class="sc-badge sc-badge-go">⚔</span>';
                     stageGrid += '<div class="stage-card ' + statusClass + (_equippedFrameSet.has('q' + String(stage.levelId)) ? ' frame-q' + String(stage.levelId) : '') + '" style="--stage-color:' + lvColor + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
-                        + '<div class="stage-card-color-bar"></div>'
                         + (_equippedFrameSet.has('q' + String(stage.levelId)) ? '<div class="frame-border"></div>' : '')
-                        + '<div class="stage-card-deco-bg"></div>'
-                        + '<div class="stage-card-deco-glow"></div>'
-                        + '<div class="stage-card-deco-lines">'
-                        + '<div class="stage-card-deco-line"></div><div class="stage-card-deco-line"></div><div class="stage-card-deco-line"></div><div class="stage-card-deco-line"></div><div class="stage-card-deco-line"></div>'
-                        + '</div>'
-                        + '<div class="stage-card-number">' + (i + 1) + '</div>'
-                        + '<div class="stage-card-icon">' + stageIconHtml + '</div>'
-                        + (isCleared ? '<div class="stage-card-stars">' + this._renderStars(stars) + '</div>' : '')
-                        + '<div class="stage-card-progress"><div class="stage-card-progress-fill" style="width:' + (isCleared ? '100%' : isCurrent ? '25%' : '0%') + '"></div></div>'
-                        + '<div class="stage-card-label">第' + (i + 1) + '关</div>'
-                        + '<div class="stage-card-status status-' + statusCls + '">' + statusLabel + '</div>'
-                        + '</div>';                }
-                stageGrid += '</div>'; // close stage-group
+                        + badgeHtml
+                        + '<div class="sc-number">' + String(i + 1).padStart(2, '0') + '</div>'
+                        + '<div class="sc-label">第' + (i + 1) + '关</div>'
+                        + '<div class="sc-bar"><div class="sc-bar-fill" style="width:' + (isCleared ? '100%' : isCurrent ? '25%' : '0%') + ';background:' + lvColor + ';"></div></div>'
+                        + '</div>';
+                }
             });
+            stageGrid += '</div>'; // close stage-grid
+            stageGrid += '</div>'; // close stage-group-wrap
         });
 
         const clearedPct = stages.length > 0 ? Math.round(totalCleared / stages.length * 100) : 0;
@@ -981,7 +975,7 @@ const ChallengeModule = {
                     </div>
                     <span class="stages-progress-text">${totalCleared} / ${stages.length}</span>
                 </div>
-                <div class="stage-grid">${stageGrid}</div>
+                <div class="stages-groups">${stageGrid}</div>
             </div>
         `;
     },

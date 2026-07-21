@@ -1031,16 +1031,14 @@
 }
 
 /* ========== 等级分组容器 ========== */
-.stage-group {
-    /* 网格子项需要横跨整行以包含内部子网格 */
-    display: contents;
+.stage-group-wrap {
+    margin-bottom: 8px;
 }
 .stage-group-header {
-    grid-column: 1 / -1;
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 4px 4px;
+    padding: 8px 4px 4px;
 }
 .sg-dot {
     width: 8px;
@@ -1055,11 +1053,129 @@
     font-weight: 700;
 }
 
+/* ========== 紧凑关卡卡片子元素 ========== */
+.sc-number {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--stage-color, #60a5fa);
+    line-height: 1;
+    text-shadow: 0 0 12px color-mix(in srgb, var(--stage-color, #60a5fa) 25%, transparent);
+    margin-bottom: 2px;
+}
+.sc-label {
+    font-size: 0.62rem;
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: 6px;
+    letter-spacing: 0.03em;
+}
+.sc-bar {
+    width: 60%;
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+}
+.sc-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.4s;
+}
+
+/* 卡片状态角标 */
+.sc-badge {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    font-size: 0.6rem;
+    padding: 2px 5px;
+    border-radius: 6px;
+    z-index: 2;
+    line-height: 1;
+}
+.sc-badge-stars {
+    background: rgba(251,191,36,0.15);
+    color: #fbbf24;
+    font-size: 0.55rem;
+    letter-spacing: 1px;
+}
+.sc-badge-current {
+    background: color-mix(in srgb, var(--stage-color, #60a5fa) 20%, transparent);
+    color: var(--stage-color, #60a5fa);
+    font-size: 0.7rem;
+    animation: sc-pulse 2s ease-in-out infinite;
+}
+.sc-badge-go {
+    background: rgba(99,102,241,0.1);
+    color: #818cf8;
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+.sc-badge-lock {
+    background: rgba(100,116,139,0.1);
+    color: #475569;
+    font-size: 0.65rem;
+}
+.sc-badge-ro {
+    background: rgba(245,158,11,0.1);
+    color: #f59e0b;
+    font-size: 0.65rem;
+}
+@keyframes sc-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--stage-color, #60a5fa) 25%, transparent); }
+    50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--stage-color, #60a5fa) 0%, transparent); }
+}
+
+/* 紧凑卡片状态色 */
+.stage-card.available {
+    background: rgba(30, 41, 59, 0.35);
+    border-color: rgba(99, 102, 241, 0.2);
+}
+.stage-card.available:hover {
+    border-color: rgba(99, 102, 241, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(99,102,241,0.12);
+}
+.stage-card.current {
+    background: color-mix(in srgb, var(--stage-color, #60a5fa) 8%, rgba(15,23,42,0.6));
+    border-color: var(--stage-color, #6366f1);
+}
+.stage-card.cleared {
+    background: rgba(16, 185, 129, 0.06);
+    border-color: rgba(16, 185, 129, 0.25);
+}
+.stage-card.locked {
+    background: rgba(30, 41, 59, 0.15);
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+.stage-card.current .sc-number {
+    color: var(--stage-color, #60a5fa);
+}
+.stage-card.cleared .sc-number {
+    color: #34d399;
+    text-shadow: 0 0 10px rgba(52,211,153,0.25);
+}
+.stage-card.locked .sc-number {
+    color: #475569;
+    text-shadow: none;
+}
+.stage-card.cleared .sc-label {
+    color: #6ee7b7;
+}
+
+/* stages-groups 外层容器 */
+.stages-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
 .stage-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 12px;
-    padding: 4px 0;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    padding: 6px 0 12px;
 }
 
 .stage-card {
@@ -1068,12 +1184,12 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 16px 10px;
-    border-radius: 16px;
-    min-height: 180px;
+    padding: 10px 6px;
+    border-radius: 14px;
+    aspect-ratio: 1 / 1;
     cursor: pointer;
     transition: all 0.25s;
-    border: 2px solid transparent;
+    border: 1.5px solid transparent;
     text-align: center;
     overflow: visible;
 }
@@ -4061,6 +4177,7 @@
     backdrop-filter: blur(4px);
     position: relative;
     overflow: visible;
+    aspect-ratio: 1 / 1;
 }
 
 .stage-card::before {
@@ -4180,12 +4297,12 @@
     letter-spacing: 0.5px;
 }
 
-/* 关卡网格升级 */
+/* 关卡网格升级 - 4列固定 */
 .stage-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 10px;
-    padding: 4px 0;
+    padding: 6px 0 12px;
 }
 
 /* BOSS关卡标签升级 */
