@@ -834,7 +834,8 @@ const ChallengeModule = {
         // [DEBUG removed] _equippedFrameIds:', JSON.stringify(this._equippedFrameIds), 'first stage levelId:', this.allStages[0]?.levelId);
         groups.forEach(group => {
             const hellTag = group.isHell ? `<span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);border-radius:6px;font-size:0.7rem;font-weight:600;"><i class="fas fa-skull-crossbones"></i> 地狱模式</span>` : '';
-            stageGrid += `<div style="grid-column:1/-1;padding:8px 4px 2px;display:flex;align-items:center;gap:8px;"><span style="font-size:0.75rem;color:#64748b;font-weight:600;">${group.levelName}</span>${hellTag}</div>`;
+            stageGrid += `<div class="stage-group">`;
+            stageGrid += `<div class="stage-group-header"><span class="sg-dot" style="background:${group.isHell ? '#f87171' : '#60a5fa'};"></span><span class="sg-name">${group.levelName}</span>${hellTag}</div>`;
             group.stages.forEach(({stage, index: i}) => {
                 const isBoss = stage._isBoss === true;
                 const p = this.serverProgress[stage.id];
@@ -950,33 +951,35 @@ const ChallengeModule = {
                         + '<div class="stage-card-label">第' + (i + 1) + '关</div>'
                         + '<div class="stage-card-status status-' + statusCls + '">' + statusLabel + '</div>'
                         + '</div>';                }
+                stageGrid += '</div>'; // close stage-group
             });
         });
 
+        const clearedPct = stages.length > 0 ? Math.round(totalCleared / stages.length * 100) : 0;
+        const barColor = isHellMode ? '#f87171' : '#60a5fa';
         container.innerHTML = `
             <div class="stages-page">
-                <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0 8px;">
-                    <span style="font-size:0.82rem;color:${isHellMode ? '#f87171' : '#60a5fa'};font-weight:700;">
-                        ${isHellMode ? '<i class="fas fa-skull-crossbones"></i> 地狱模式' : '<i class="fas fa-shield-halved"></i> 普通模式'}
-                    </span>
-                    <div style="display:flex;align-items:center;gap:10px;">
+                <div class="stages-header-bar">
+                    <div class="stages-header-left">
+                        <span class="stages-header-icon" style="color:${barColor};">
+                            ${isHellMode ? '<i class="fas fa-skull-crossbones"></i>' : '<i class="fas fa-shield-halved"></i>'}
+                        </span>
+                        <span class="stages-header-title" style="color:${barColor};">${isHellMode ? '地狱模式' : '普通模式'}</span>
                         ${this._getTitleBadgeHTML()}
-                        <span style="font-size:0.72rem;color:#64748b;">共 ${stages.length} 关</span>
+                    </div>
+                    <div class="stages-header-stats">
+                        <div class="sh-stat"><span class="sh-stat-num" style="color:${barColor};">${totalCleared}</span><span class="sh-stat-label">通关</span></div>
+                        <span class="sh-stat-dot"></span>
+                        <div class="sh-stat"><span class="sh-stat-num">${totalScore.toFixed(0)}</span><span class="sh-stat-label">积分</span></div>
+                        <span class="sh-stat-dot"></span>
+                        <div class="sh-stat"><span class="sh-stat-num" style="color:#fbbf24;">${maxStars}</span><span class="sh-stat-label">星数</span></div>
                     </div>
                 </div>
-                <div class="stages-summary">
-                    <div class="summary-card">
-                        <div class="summary-num">${totalCleared}</div>
-                        <div class="summary-label">已通关</div>
+                <div class="stages-progress-wrap">
+                    <div class="stages-progress-track">
+                        <div class="stages-progress-fill" style="width:${clearedPct}%;background:${barColor};"></div>
                     </div>
-                    <div class="summary-card">
-                        <div class="summary-num">${totalScore.toFixed(0)}</div>
-                        <div class="summary-label">总积分</div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="summary-num">${maxStars}</div>
-                        <div class="summary-label">星数</div>
-                    </div>
+                    <span class="stages-progress-text">${totalCleared} / ${stages.length}</span>
                 </div>
                 <div class="stage-grid">${stageGrid}</div>
             </div>

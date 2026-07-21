@@ -941,6 +941,120 @@
     margin-top: 2px;
 }
 
+/* ========== 选关页顶部横幅 ========== */
+.stages-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(30, 41, 59, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    margin-bottom: 10px;
+    backdrop-filter: blur(6px);
+}
+.stages-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.stages-header-icon {
+    font-size: 1.1rem;
+}
+.stages-header-title {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+}
+.stages-header-stats {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sh-stat {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+.sh-stat-num {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #e2e8f0;
+}
+.sh-stat-label {
+    font-size: 0.62rem;
+    color: #64748b;
+    font-weight: 500;
+}
+.sh-stat-dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #475569;
+}
+
+/* ========== 通关进度条 ========== */
+.stages-progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding: 0 2px;
+}
+.stages-progress-track {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.stages-progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+.stages-progress-fill::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0; bottom: 0; width: 20px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4));
+    border-radius: 4px;
+}
+.stages-progress-text {
+    font-size: 0.65rem;
+    color: #64748b;
+    font-weight: 600;
+    white-space: nowrap;
+    min-width: 50px;
+    text-align: right;
+}
+
+/* ========== 等级分组容器 ========== */
+.stage-group {
+    /* 网格子项需要横跨整行以包含内部子网格 */
+    display: contents;
+}
+.stage-group-header {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 4px 4px;
+}
+.sg-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px currentColor;
+}
+.sg-name {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    font-weight: 700;
+}
+
 .stage-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -4072,41 +4186,6 @@
     grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
     gap: 10px;
     padding: 4px 0;
-}
-
-/* 总结卡片升级 */
-.stages-summary {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 16px;
-}
-
-.summary-card {
-    flex: 1;
-    text-align: center;
-    padding: 12px 8px;
-    background: rgba(30, 41, 59, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 12px;
-    backdrop-filter: blur(8px);
-    transition: transform 0.2s;
-}
-
-.summary-card:hover {
-    transform: translateY(-2px);
-}
-
-.summary-num {
-    font-size: 1.3rem;
-    font-weight: 800;
-    color: #e2e8f0;
-    margin-bottom: 2px;
-}
-
-.summary-label {
-    font-size: 0.7rem;
-    color: #64748b;
-    font-weight: 500;
 }
 
 /* BOSS关卡标签升级 */
