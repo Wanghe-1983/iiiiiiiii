@@ -942,11 +942,11 @@ const ChallengeModule = {
                         : isCleared ? '<span class="sc-badge sc-badge-stars">' + this._renderStars(stars) + '</span>'
                         : isCurrent ? '<span class="sc-badge sc-badge-current"><i class="fas fa-play-circle"></i></span>'
                         : '<span class="sc-badge sc-badge-go">⚔</span>';
-                    const cornersHtml = isLocked ? '' : '<span class="sc-corner sc-corner-tl"></span><span class="sc-corner sc-corner-tr"></span><span class="sc-corner sc-corner-bl"></span><span class="sc-corner sc-corner-br"></span>';
                     stageGrid += '<div class="stage-card ' + statusClass + (_equippedFrameSet.has('q' + String(stage.levelId)) ? ' frame-q' + String(stage.levelId) : '') + '" style="--stage-color:' + lvColor + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
                         + (_equippedFrameSet.has('q' + String(stage.levelId)) ? '<div class="frame-border"></div>' : '')
-                        + '<div class="sc-bg-glow"></div>'
-                        + cornersHtml
+                        + '<div class="sc-castle-bg"></div>'
+                        + '<div class="sc-battlement"></div>'
+                        + '<div class="sc-arch"></div>'
                         + badgeHtml
                         + '<div class="sc-number">' + String(i + 1).padStart(2, '0') + '</div>'
                         + '<div class="sc-label">第' + (i + 1) + '关</div>'

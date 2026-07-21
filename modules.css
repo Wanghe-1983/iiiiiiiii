@@ -1076,32 +1076,32 @@
 
 /* ========== 紧凑关卡卡片子元素 ========== */
 .sc-number {
-    font-size: 1.9rem;
+    font-size: 2rem;
     font-weight: 900;
-    color: var(--stage-color, #60a5fa);
+    color: #e2e8f0;
     line-height: 1;
-    text-shadow: 0 2px 8px color-mix(in srgb, var(--stage-color, #60a5fa) 30%, transparent);
-    margin-bottom: 2px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5), 0 0 16px color-mix(in srgb, var(--stage-color, #60a5fa) 40%, transparent);
+    margin-bottom: 3px;
     position: relative;
-    z-index: 1;
+    z-index: 2;
 }
 .sc-label {
-    font-size: 0.62rem;
+    font-size: 0.6rem;
     color: #94a3b8;
     font-weight: 600;
     margin-bottom: 6px;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     position: relative;
-    z-index: 1;
+    z-index: 2;
 }
 .sc-bar {
     width: 55%;
     height: 3px;
-    background: rgba(255,255,255,0.05);
+    background: rgba(0,0,0,0.3);
     border-radius: 3px;
     overflow: hidden;
     position: relative;
-    z-index: 1;
+    z-index: 2;
 }
 .sc-bar-fill {
     height: 100%;
@@ -1109,185 +1109,247 @@
     transition: width 0.4s;
 }
 
-/* ========== 卡片背景造型 ========== */
-.sc-bg-glow {
+/* ========== 古堡风格卡片 — 石墙背景 ========== */
+.sc-castle-bg {
+    position: absolute;
+    inset: 0;
+    border-radius: 10px;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+/* 石墙纹理 */
+.sc-castle-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        /* 砖缝竖线 */
+        repeating-linear-gradient(90deg, rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 1px, transparent 1px, transparent 33%),
+        /* 砖缝横线（上下错开）*/
+        repeating-linear-gradient(0deg, rgba(0,0,0,0.12) 0px, rgba(0,0,0,0.12) 1px, transparent 1px, transparent 50%);
+    border-radius: 10px;
+    opacity: 0.5;
+}
+/* 门拱光效 */
+.sc-castle-bg::after {
+    content: '';
+    position: absolute;
+    bottom: -10%; left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 60%;
+    background: radial-gradient(ellipse at center bottom, color-mix(in srgb, var(--stage-color, #60a5fa) 20%, transparent) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* ========== 城垛顶部装饰 ========== */
+.sc-battlement {
+    position: absolute;
+    top: -6px;
+    left: 2px;
+    right: 2px;
+    height: 6px;
+    z-index: 3;
+    pointer-events: none;
+    display: flex;
+    gap: 2px;
+    overflow: hidden;
+}
+.sc-battlement::before {
+    content: '';
+    flex: 1;
+    background:
+        repeating-linear-gradient(90deg,
+            var(--stage-color, #60a5fa) 0px, var(--stage-color, #60a5fa) 6px,
+            transparent 6px, transparent 10px
+        );
+    border-radius: 1px 1px 0 0;
+    opacity: 0.35;
+}
+.sc-battlement::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        repeating-linear-gradient(90deg,
+            transparent 0px, transparent 6px,
+            color-mix(in srgb, var(--stage-color, #60a5fa) 50%, transparent) 6px, color-mix(in srgb, var(--stage-color, #60a5fa) 50%, transparent) 10px
+        );
+    border-radius: 1px 1px 0 0;
+    opacity: 0.1;
+}
+
+/* ========== 门拱造型 ========== */
+.sc-arch {
     position: absolute;
     bottom: 0; left: 50%;
     transform: translateX(-50%);
-    width: 70%;
-    height: 50%;
-    background: radial-gradient(ellipse at center bottom, color-mix(in srgb, var(--stage-color, #60a5fa) 12%, transparent) 0%, transparent 70%);
-    pointer-events: none;
+    width: 56%;
+    height: 38%;
+    border-radius: 56% 56% 0 0;
     z-index: 0;
-    border-radius: 50%;
+    pointer-events: none;
+    border: 2px solid rgba(0,0,0,0.15);
+    border-bottom: none;
+    background: radial-gradient(ellipse at center bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 50%, transparent 70%);
 }
 
-/* ========== 卡片边框造型（梯形/石门风格）========== */
+/* ========== 立体边框（多层 box-shadow 模拟石墙厚度）========== */
 .stage-card::after {
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: 14px;
-    border: 1.5px solid transparent;
-    background: linear-gradient(135deg, color-mix(in srgb, var(--stage-color, #60a5fa) 35%, transparent) 0%, transparent 40%, transparent 60%, color-mix(in srgb, var(--stage-color, #60a5fa) 15%, transparent) 100%) border-box;
-    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.6;
-    transition: opacity 0.3s;
-}
-
-/* ========== 卡片角装饰 ========== */
-.stage-card .sc-corner {
-    position: absolute;
-    width: 10px;
-    height: 10px;
+    border-radius: 10px;
+    border: 1.5px solid color-mix(in srgb, var(--stage-color, #60a5fa) 20%, rgba(100,116,139,0.3));
     pointer-events: none;
     z-index: 1;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.06),
+        inset 0 -1px 0 rgba(0,0,0,0.2);
+    transition: border-color 0.3s;
 }
-.stage-card .sc-corner::before,
-.stage-card .sc-corner::after {
-    content: '';
-    position: absolute;
-    background: var(--stage-color, #60a5fa);
-    border-radius: 1px;
-    opacity: 0.4;
-}
-.stage-card .sc-corner-tl { top: 3px; left: 3px; }
-.stage-card .sc-corner-tr { top: 3px; right: 3px; }
-.stage-card .sc-corner-bl { bottom: 3px; left: 3px; }
-.stage-card .sc-corner-br { bottom: 3px; right: 3px; }
-.stage-card .sc-corner-tl::before,
-.stage-card .sc-corner-br::before { width: 8px; height: 1.5px; }
-.stage-card .sc-corner-tl::after,
-.stage-card .sc-corner-br::after { width: 1.5px; height: 8px; top: 0; }
-.stage-card .sc-corner-tr::before,
-.stage-card .sc-corner-bl::before { width: 8px; height: 1.5px; }
-.stage-card .sc-corner-tr::after,
-.stage-card .sc-corner-bl::after { width: 1.5px; height: 8px; top: 0; right: 0; }
 
 /* ========== 卡片状态角标 ========== */
 .sc-badge {
     position: absolute;
-    top: 5px;
-    left: 5px;
-    font-size: 0.6rem;
-    padding: 2px 5px;
-    border-radius: 5px;
-    z-index: 3;
-    line-height: 1;
-    backdrop-filter: blur(4px);
+    top: 10px;
+    left: 6px;
+    font-size: 0.55rem;
+    padding: 1px 5px;
+    border-radius: 4px;
+    z-index: 4;
+    line-height: 1.4;
 }
 .sc-badge-stars {
-    background: rgba(251,191,36,0.18);
+    background: rgba(0,0,0,0.4);
     color: #fbbf24;
     font-size: 0.55rem;
     letter-spacing: 1px;
-    border: 1px solid rgba(251,191,36,0.25);
+    border: 1px solid rgba(251,191,36,0.3);
 }
 .sc-badge-current {
-    background: color-mix(in srgb, var(--stage-color, #60a5fa) 18%, transparent);
-    color: var(--stage-color, #60a5fa);
-    font-size: 0.7rem;
+    background: color-mix(in srgb, var(--stage-color, #60a5fa) 25%, rgba(0,0,0,0.4));
+    color: #fff;
+    font-size: 0.6rem;
     animation: sc-pulse 2s ease-in-out infinite;
-    border: 1px solid color-mix(in srgb, var(--stage-color, #60a5fa) 25%, transparent);
+    border: 1px solid color-mix(in srgb, var(--stage-color, #60a5fa) 35%, transparent);
+    text-shadow: 0 0 6px var(--stage-color, #60a5fa);
 }
 .sc-badge-go {
-    background: rgba(99,102,241,0.1);
+    background: rgba(0,0,0,0.3);
     color: #818cf8;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     font-weight: 700;
 }
 .sc-badge-lock {
-    background: rgba(100,116,139,0.1);
+    background: rgba(0,0,0,0.2);
     color: #475569;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
 }
 .sc-badge-ro {
-    background: rgba(245,158,11,0.1);
+    background: rgba(0,0,0,0.25);
     color: #f59e0b;
-    font-size: 0.65rem;
+    font-size: 0.6rem;
 }
 @keyframes sc-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--stage-color, #60a5fa) 25%, transparent); }
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--stage-color, #60a5fa) 30%, transparent); }
     50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--stage-color, #60a5fa) 0%, transparent); }
 }
 
-/* ========== 卡片各状态完整造型 ========== */
+/* ========== 各状态立体造型 ========== */
 .stage-card.available {
-    background: linear-gradient(160deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.6) 100%);
+    background:
+        linear-gradient(170deg, rgba(50, 60, 80, 0.7) 0%, rgba(20, 28, 40, 0.85) 100%);
     border-color: transparent;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04);
+    box-shadow:
+        0 4px 12px rgba(0,0,0,0.4),
+        0 1px 3px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.06),
+        inset 0 -2px 4px rgba(0,0,0,0.2);
+    border-radius: 10px;
 }
 .stage-card.available:hover {
-    transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 8px 24px color-mix(in srgb, var(--stage-color, #60a5fa) 18%, transparent), inset 0 1px 0 rgba(255,255,255,0.06);
+    transform: translateY(-4px) scale(1.04);
+    box-shadow:
+        0 12px 32px rgba(0,0,0,0.5),
+        0 2px 8px rgba(0,0,0,0.3),
+        0 0 24px color-mix(in srgb, var(--stage-color, #60a5fa) 15%, transparent),
+        inset 0 1px 0 rgba(255,255,255,0.08);
 }
 .stage-card.available:hover::after {
-    opacity: 1;
+    border-color: color-mix(in srgb, var(--stage-color, #60a5fa) 40%, rgba(100,116,139,0.3));
 }
 .stage-card.current {
-    background: linear-gradient(160deg, color-mix(in srgb, var(--stage-color, #60a5fa) 12%, rgba(15,23,42,0.5)) 0%, rgba(15,23,42,0.7) 100%);
+    background:
+        linear-gradient(170deg, color-mix(in srgb, var(--stage-color, #60a5fa) 18%, rgba(30,35,50,0.8)) 0%, rgba(15,20,30,0.9) 100%);
     border-color: transparent;
-    box-shadow: 0 0 20px color-mix(in srgb, var(--stage-color, #60a5fa) 12%, transparent), inset 0 0 20px color-mix(in srgb, var(--stage-color, #60a5fa) 5%, transparent);
-    animation: sc-current-breathe 3s ease-in-out infinite;
+    box-shadow:
+        0 4px 16px rgba(0,0,0,0.5),
+        0 0 28px color-mix(in srgb, var(--stage-color, #60a5fa) 18%, transparent),
+        inset 0 1px 0 rgba(255,255,255,0.08),
+        inset 0 0 20px color-mix(in srgb, var(--stage-color, #60a5fa) 6%, transparent);
+    animation: sc-castle-breathe 3s ease-in-out infinite;
+    border-radius: 10px;
 }
 .stage-card.current::after {
-    opacity: 1;
-    animation: sc-border-flow 3s linear infinite;
+    border-color: color-mix(in srgb, var(--stage-color, #60a5fa) 45%, rgba(100,116,139,0.3));
+    animation: sc-castle-glow 3s ease-in-out infinite;
 }
-@keyframes sc-current-breathe {
-    0%, 100% { box-shadow: 0 0 16px color-mix(in srgb, var(--stage-color, #60a5fa) 10%, transparent), inset 0 0 16px color-mix(in srgb, var(--stage-color, #60a5fa) 4%, transparent); }
-    50% { box-shadow: 0 0 28px color-mix(in srgb, var(--stage-color, #60a5fa) 18%, transparent), inset 0 0 24px color-mix(in srgb, var(--stage-color, #60a5fa) 8%, transparent); }
+@keyframes sc-castle-breathe {
+    0%, 100% { box-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 0 20px color-mix(in srgb, var(--stage-color, #60a5fa) 12%, transparent), inset 0 0 16px color-mix(in srgb, var(--stage-color, #60a5fa) 4%, transparent); }
+    50% { box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 36px color-mix(in srgb, var(--stage-color, #60a5fa) 25%, transparent), inset 0 0 28px color-mix(in srgb, var(--stage-color, #60a5fa) 10%, transparent); }
 }
-@keyframes sc-border-flow {
-    0% { background: linear-gradient(0deg, color-mix(in srgb, var(--stage-color, #60a5fa) 50%, transparent) 0%, transparent 50%) border-box; }
-    25% { background: linear-gradient(90deg, color-mix(in srgb, var(--stage-color, #60a5fa) 50%, transparent) 0%, transparent 50%) border-box; }
-    50% { background: linear-gradient(180deg, color-mix(in srgb, var(--stage-color, #60a5fa) 50%, transparent) 0%, transparent 50%) border-box; }
-    75% { background: linear-gradient(270deg, color-mix(in srgb, var(--stage-color, #60a5fa) 50%, transparent) 0%, transparent 50%) border-box; }
-    100% { background: linear-gradient(360deg, color-mix(in srgb, var(--stage-color, #60a5fa) 50%, transparent) 0%, transparent 50%) border-box; }
+@keyframes sc-castle-glow {
+    0%, 100% { border-color: color-mix(in srgb, var(--stage-color, #60a5fa) 35%, rgba(100,116,139,0.3)); box-shadow: inset 0 1px 0 rgba(255,255,255,0.06); }
+    50% { border-color: color-mix(in srgb, var(--stage-color, #60a5fa) 55%, rgba(100,116,139,0.3)); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 0 8px color-mix(in srgb, var(--stage-color, #60a5fa) 15%, transparent); }
 }
 .stage-card.cleared {
-    background: linear-gradient(160deg, rgba(16, 185, 129, 0.08) 0%, rgba(15, 23, 42, 0.5) 100%);
+    background:
+        linear-gradient(170deg, rgba(16, 60, 50, 0.5) 0%, rgba(15, 25, 35, 0.75) 100%);
     border-color: transparent;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow:
+        0 3px 10px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+    border-radius: 10px;
 }
 .stage-card.cleared::after {
-    opacity: 0.4;
+    border-color: rgba(52,211,153,0.25);
 }
 .stage-card.locked {
-    background: rgba(30, 41, 59, 0.12);
+    background:
+        linear-gradient(170deg, rgba(30, 35, 45, 0.3) 0%, rgba(15, 18, 25, 0.4) 100%);
     border-color: transparent;
-    opacity: 0.3;
+    opacity: 0.28;
     cursor: not-allowed;
     box-shadow: none;
+    border-radius: 10px;
+    filter: grayscale(0.5);
 }
 .stage-card.locked::after {
-    opacity: 0.15;
+    border-color: rgba(100,116,139,0.15);
 }
-.stage-card.locked .sc-corner::before,
-.stage-card.locked .sc-corner::after {
-    opacity: 0.15;
-}
+.stage-card.locked .sc-castle-bg::before { opacity: 0.2; }
+.stage-card.locked .sc-battlement::before { opacity: 0.08; }
 
-/* 状态文字颜色覆盖 */
+/* 状态文字颜色 */
 .stage-card.current .sc-number {
-    color: var(--stage-color, #60a5fa);
-    filter: brightness(1.2);
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5), 0 0 20px var(--stage-color, #60a5fa);
 }
 .stage-card.cleared .sc-number {
-    color: #34d399;
-    text-shadow: 0 0 14px rgba(52,211,153,0.35);
+    color: #6ee7b7;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5), 0 0 14px rgba(52,211,153,0.3);
 }
 .stage-card.locked .sc-number {
     color: #475569;
-    text-shadow: none;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 .stage-card.cleared .sc-label {
     color: #6ee7b7;
+}
+.stage-card.available .sc-number {
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5), 0 0 12px color-mix(in srgb, var(--stage-color, #60a5fa) 30%, transparent);
 }
 
 /* stages-groups 外层容器 */
