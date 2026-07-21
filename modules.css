@@ -992,6 +992,27 @@
     border-radius: 50%;
     background: #475569;
 }
+/* 列数切换按钮 */
+.sg-cols-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #94a3b8;
+    font-size: 0.65rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.sg-cols-btn:hover {
+    background: rgba(255,255,255,0.1);
+    color: #e2e8f0;
+    border-color: rgba(255,255,255,0.2);
+}
 
 /* ========== 通关进度条 ========== */
 .stages-progress-wrap {
@@ -1055,55 +1076,124 @@
 
 /* ========== 紧凑关卡卡片子元素 ========== */
 .sc-number {
-    font-size: 1.8rem;
+    font-size: 1.9rem;
     font-weight: 900;
     color: var(--stage-color, #60a5fa);
     line-height: 1;
-    text-shadow: 0 0 12px color-mix(in srgb, var(--stage-color, #60a5fa) 25%, transparent);
+    text-shadow: 0 2px 8px color-mix(in srgb, var(--stage-color, #60a5fa) 30%, transparent);
     margin-bottom: 2px;
+    position: relative;
+    z-index: 1;
 }
 .sc-label {
     font-size: 0.62rem;
-    color: #64748b;
+    color: #94a3b8;
     font-weight: 600;
     margin-bottom: 6px;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.04em;
+    position: relative;
+    z-index: 1;
 }
 .sc-bar {
-    width: 60%;
+    width: 55%;
     height: 3px;
-    background: rgba(255,255,255,0.06);
-    border-radius: 2px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 3px;
     overflow: hidden;
+    position: relative;
+    z-index: 1;
 }
 .sc-bar-fill {
     height: 100%;
-    border-radius: 2px;
+    border-radius: 3px;
     transition: width 0.4s;
 }
 
-/* 卡片状态角标 */
+/* ========== 卡片背景造型 ========== */
+.sc-bg-glow {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 50%;
+    background: radial-gradient(ellipse at center bottom, color-mix(in srgb, var(--stage-color, #60a5fa) 12%, transparent) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    border-radius: 50%;
+}
+
+/* ========== 卡片边框造型（梯形/石门风格）========== */
+.stage-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    border: 1.5px solid transparent;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--stage-color, #60a5fa) 35%, transparent) 0%, transparent 40%, transparent 60%, color-mix(in srgb, var(--stage-color, #60a5fa) 15%, transparent) 100%) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+    transition: opacity 0.3s;
+}
+
+/* ========== 卡片角装饰 ========== */
+.stage-card .sc-corner {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    pointer-events: none;
+    z-index: 1;
+}
+.stage-card .sc-corner::before,
+.stage-card .sc-corner::after {
+    content: '';
+    position: absolute;
+    background: var(--stage-color, #60a5fa);
+    border-radius: 1px;
+    opacity: 0.4;
+}
+.stage-card .sc-corner-tl { top: 3px; left: 3px; }
+.stage-card .sc-corner-tr { top: 3px; right: 3px; }
+.stage-card .sc-corner-bl { bottom: 3px; left: 3px; }
+.stage-card .sc-corner-br { bottom: 3px; right: 3px; }
+.stage-card .sc-corner-tl::before,
+.stage-card .sc-corner-br::before { width: 8px; height: 1.5px; }
+.stage-card .sc-corner-tl::after,
+.stage-card .sc-corner-br::after { width: 1.5px; height: 8px; top: 0; }
+.stage-card .sc-corner-tr::before,
+.stage-card .sc-corner-bl::before { width: 8px; height: 1.5px; }
+.stage-card .sc-corner-tr::after,
+.stage-card .sc-corner-bl::after { width: 1.5px; height: 8px; top: 0; right: 0; }
+
+/* ========== 卡片状态角标 ========== */
 .sc-badge {
     position: absolute;
-    top: 6px;
-    left: 6px;
+    top: 5px;
+    left: 5px;
     font-size: 0.6rem;
     padding: 2px 5px;
-    border-radius: 6px;
-    z-index: 2;
+    border-radius: 5px;
+    z-index: 3;
     line-height: 1;
+    backdrop-filter: blur(4px);
 }
 .sc-badge-stars {
-    background: rgba(251,191,36,0.15);
+    background: rgba(251,191,36,0.18);
     color: #fbbf24;
     font-size: 0.55rem;
     letter-spacing: 1px;
+    border: 1px solid rgba(251,191,36,0.25);
 }
 .sc-badge-current {
-    background: color-mix(in srgb, var(--stage-color, #60a5fa) 20%, transparent);
+    background: color-mix(in srgb, var(--stage-color, #60a5fa) 18%, transparent);
     color: var(--stage-color, #60a5fa);
     font-size: 0.7rem;
     animation: sc-pulse 2s ease-in-out infinite;
+    border: 1px solid color-mix(in srgb, var(--stage-color, #60a5fa) 25%, transparent);
 }
 .sc-badge-go {
     background: rgba(99,102,241,0.1);
@@ -1123,38 +1213,74 @@
 }
 @keyframes sc-pulse {
     0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--stage-color, #60a5fa) 25%, transparent); }
-    50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--stage-color, #60a5fa) 0%, transparent); }
+    50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--stage-color, #60a5fa) 0%, transparent); }
 }
 
-/* 紧凑卡片状态色 */
+/* ========== 卡片各状态完整造型 ========== */
 .stage-card.available {
-    background: rgba(30, 41, 59, 0.35);
-    border-color: rgba(99, 102, 241, 0.2);
+    background: linear-gradient(160deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.6) 100%);
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04);
 }
 .stage-card.available:hover {
-    border-color: rgba(99, 102, 241, 0.5);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(99,102,241,0.12);
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--stage-color, #60a5fa) 18%, transparent), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.stage-card.available:hover::after {
+    opacity: 1;
 }
 .stage-card.current {
-    background: color-mix(in srgb, var(--stage-color, #60a5fa) 8%, rgba(15,23,42,0.6));
-    border-color: var(--stage-color, #6366f1);
+    background: linear-gradient(160deg, color-mix(in srgb, var(--stage-color, #60a5fa) 12%, rgba(15,23,42,0.5)) 0%, rgba(15,23,42,0.7) 100%);
+    border-color: transparent;
+    box-shadow: 0 0 20px color-mix(in srgb, var(--stage-color, #60a5fa) 12%, transparent), inset 0 0 20px color-mix(in srgb, var(--stage-color, #60a5fa) 5%, transparent);
+    animation: sc-current-breathe 3s ease-in-out infinite;
+}
+.stage-card.current::after {
+    opacity: 1;
+    animation: sc-border-flow 3s linear infinite;
+}
+@keyframes sc-current-breathe {
+    0%, 100% { box-shadow: 0 0 16px color-mix(in srgb, var(--stage-color, #60a5fa) 10%, transparent), inset 0 0 16px color-mix(in srgb, var(--stage-color, #60a5fa) 4%, transparent); }
+    50% { box-shadow: 0 0 28px color-mix(in srgb, var(--stage-color, #60a5fa) 18%, transparent), inset 0 0 24px color-mix(in srgb, var(--stage-color, #60a5fa) 8%, transparent); }
+}
+@keyframes sc-border-flow {
+    0% { background: linear-gradient(0deg, color-mix(in srgb, var(--stage-color, #60a5fa) 50%, transparent) 0%, transparent 50%) border-box; }
+    25% { background: linear-gradient(90deg, color-mix(in srgb, var(--stage-color, #60a5fa) 50%, transparent) 0%, transparent 50%) border-box; }
+    50% { background: linear-gradient(180deg, color-mix(in srgb, var(--stage-color, #60a5fa) 50%, transparent) 0%, transparent 50%) border-box; }
+    75% { background: linear-gradient(270deg, color-mix(in srgb, var(--stage-color, #60a5fa) 50%, transparent) 0%, transparent 50%) border-box; }
+    100% { background: linear-gradient(360deg, color-mix(in srgb, var(--stage-color, #60a5fa) 50%, transparent) 0%, transparent 50%) border-box; }
 }
 .stage-card.cleared {
-    background: rgba(16, 185, 129, 0.06);
-    border-color: rgba(16, 185, 129, 0.25);
+    background: linear-gradient(160deg, rgba(16, 185, 129, 0.08) 0%, rgba(15, 23, 42, 0.5) 100%);
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.stage-card.cleared::after {
+    opacity: 0.4;
 }
 .stage-card.locked {
-    background: rgba(30, 41, 59, 0.15);
-    opacity: 0.35;
+    background: rgba(30, 41, 59, 0.12);
+    border-color: transparent;
+    opacity: 0.3;
     cursor: not-allowed;
+    box-shadow: none;
 }
+.stage-card.locked::after {
+    opacity: 0.15;
+}
+.stage-card.locked .sc-corner::before,
+.stage-card.locked .sc-corner::after {
+    opacity: 0.15;
+}
+
+/* 状态文字颜色覆盖 */
 .stage-card.current .sc-number {
     color: var(--stage-color, #60a5fa);
+    filter: brightness(1.2);
 }
 .stage-card.cleared .sc-number {
     color: #34d399;
-    text-shadow: 0 0 10px rgba(52,211,153,0.25);
+    text-shadow: 0 0 14px rgba(52,211,153,0.35);
 }
 .stage-card.locked .sc-number {
     color: #475569;
@@ -1172,8 +1298,9 @@
 }
 
 .stage-grid {
+    --grid-cols: 4;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
     gap: 10px;
     padding: 6px 0 12px;
 }
@@ -1196,17 +1323,17 @@
 
 .stage-card.available {
     background: rgba(30, 41, 59, 0.4);
-    border-color: rgba(99, 102, 241, 0.3);
+    border-color: transparent;
 }
 
 .stage-card.available:hover {
-    border-color: rgba(99, 102, 241, 0.6);
+    border-color: transparent;
     transform: translateY(-2px);
 }
 
 .stage-card.current {
     background: rgba(99, 102, 241, 0.15);
-    border-color: var(--accent, #6366f1);
+    border-color: transparent;
     animation: pulse-border 2s ease-in-out infinite;
 }
 
@@ -1217,7 +1344,7 @@
 
 .stage-card.cleared {
     background: rgba(16, 185, 129, 0.1);
-    border-color: rgba(16, 185, 129, 0.3);
+    border-color: transparent;
 }
 
 .stage-card.locked {
@@ -1227,23 +1354,23 @@
 }
 
 .stage-card.stage-hell {
-    border-color: rgba(239, 68, 68, 0.25);
+    border-color: transparent;
 }
 .stage-card.stage-hell.available {
     background: rgba(239, 68, 68, 0.06);
-    border-color: rgba(239, 68, 68, 0.3);
+    border-color: transparent;
 }
 .stage-card.stage-hell.available:hover {
-    border-color: rgba(239, 68, 68, 0.6);
+    border-color: transparent;
 }
 .stage-card.stage-hell.current {
     background: rgba(239, 68, 68, 0.1);
-    border-color: #ef4444;
+    border-color: transparent;
     animation: pulse-border-hell 2s ease-in-out infinite;
 }
 .stage-card.stage-hell.cleared {
     background: rgba(239, 68, 68, 0.05);
-    border-color: rgba(239, 68, 68, 0.3);
+    border-color: transparent;
 }
 @keyframes pulse-border-hell {
     0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
@@ -4299,8 +4426,9 @@
 
 /* 关卡网格升级 - 4列固定 */
 .stage-grid {
+    --grid-cols: 4;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
     gap: 10px;
     padding: 6px 0 12px;
 }

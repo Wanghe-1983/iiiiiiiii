@@ -787,6 +787,12 @@ const ChallengeModule = {
         // 直接使用 allStages（已按模式生成，已按等级过滤）
         const stages = this.allStages;
 
+        // 网格列数：优先 localStorage > 后台设置 > 默认4列
+        const _sysCfg = window._systemInfo || {};
+        const _defaultCols = parseInt(_sysCfg.challengeGridCols) || 4;
+        const savedCols = parseInt(localStorage.getItem('challenge_grid_cols'));
+        const gridCols = (savedCols >= 2 && savedCols <= 6) ? savedCols : _defaultCols;
+
         if (stages.length === 0) {
             container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);">' + (isHellMode ? '地狱模式暂无关卡' : '暂无关卡') + '</div>';
             return;
@@ -936,8 +942,11 @@ const ChallengeModule = {
                         : isCleared ? '<span class="sc-badge sc-badge-stars">' + this._renderStars(stars) + '</span>'
                         : isCurrent ? '<span class="sc-badge sc-badge-current"><i class="fas fa-play-circle"></i></span>'
                         : '<span class="sc-badge sc-badge-go">⚔</span>';
+                    const cornersHtml = isLocked ? '' : '<span class="sc-corner sc-corner-tl"></span><span class="sc-corner sc-corner-tr"></span><span class="sc-corner sc-corner-bl"></span><span class="sc-corner sc-corner-br"></span>';
                     stageGrid += '<div class="stage-card ' + statusClass + (_equippedFrameSet.has('q' + String(stage.levelId)) ? ' frame-q' + String(stage.levelId) : '') + '" style="--stage-color:' + lvColor + ';" onclick="' + (isLocked ? '' : "ChallengeModule.enterStage('" + stage.id + "')") + '" ' + (isReadonly ? 'title="该课程暂未开放"' : '') + '>'
                         + (_equippedFrameSet.has('q' + String(stage.levelId)) ? '<div class="frame-border"></div>' : '')
+                        + '<div class="sc-bg-glow"></div>'
+                        + cornersHtml
                         + badgeHtml
                         + '<div class="sc-number">' + String(i + 1).padStart(2, '0') + '</div>'
                         + '<div class="sc-label">第' + (i + 1) + '关</div>'
@@ -968,6 +977,9 @@ const ChallengeModule = {
                         <span class="sh-stat-dot"></span>
                         <div class="sh-stat"><span class="sh-stat-num" style="color:#fbbf24;">${maxStars}</span><span class="sh-stat-label">星数</span></div>
                     </div>
+                    <div class="sg-cols-btn" onclick="ChallengeModule._cycleGridCols()" title="切换列数">
+                        <i class="fas fa-th"></i> ${gridCols}列
+                    </div>
                 </div>
                 <div class="stages-progress-wrap">
                     <div class="stages-progress-track">
@@ -975,10 +987,19 @@ const ChallengeModule = {
                     </div>
                     <span class="stages-progress-text">${totalCleared} / ${stages.length}</span>
                 </div>
-                <div class="stages-groups">${stageGrid}</div>
+                <div class="stages-groups" style="--grid-cols:${gridCols};">${stageGrid}</div>
             </div>
         `;
     },
+    _cycleGridCols() {
+        const _sysCfg = window._systemInfo || {};
+        const _default = parseInt(_sysCfg.challengeGridCols) || 4;
+        const current = parseInt(localStorage.getItem('challenge_grid_cols')) || _default;
+        const next = current >= 6 ? 2 : current + 1;
+        localStorage.setItem('challenge_grid_cols', next);
+        this.render();
+    },
+
     /**
      * BOSS 关卡门造型
      */
